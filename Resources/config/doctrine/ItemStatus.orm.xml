@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+    <entity name="Sulu\Bundle\SalesCoreBundle\Entity\ItemStatus" table="sc_item_status">
+        <id name="id" type="integer" column="id">
+            <generator strategy="AUTO"/>
+        </id>
+        <one-to-many field="item" target-entity="Sulu\Bundle\SalesCoreBundle\Entity\Item" mapped-by="itemStatus"/>
+        <one-to-many field="itemStatusTranslations" target-entity="Sulu\Bundle\SalesCoreBundle\Entity\ItemStatusTranslations" mapped-by="itemStatus"/>
+    </entity>
+</doctrine-mapping>
