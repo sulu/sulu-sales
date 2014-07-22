@@ -1,9 +1,9 @@
 {
-    "name": "sulu/salescore-bundle",
+    "name": "sulu/sales-core-bundle",
     "type": "sulu-bundle",
-    "description": "TODO",
+    "description": "Core Bundle of Sulu Sales",
     "license": "MIT",
-    "keywords": ["TODO"],
+    "keywords": ["sales","items"],
     "authors": [
         {
             "name": "Sulu Community",
