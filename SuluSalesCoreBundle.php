@@ -8,7 +8,7 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Sulu\Bundle\SalesCoreBundle;
+namespace Sulu\Bundle\Sales\CoreBundle;
 
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
