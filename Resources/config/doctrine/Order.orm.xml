@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+    <entity name="Sulu\Bundle\Sales\OrderBundle\Entity\Order" table="so_order">
+        <id name="id" type="integer" column="id">
+            <generator strategy="AUTO"/>
+        </id>
+
+        <field name="number" type="string" column="number" length="255" nullable="false"/>
+        <field name="sessionId" type="string" column="sessionId" length="255" nullable="true"/>
+        <field name="currency" type="string" column="currency" length="255" nullable="true"/>
+
+        <field name="termsOfDelivery" type="string" column="termsOfDelivery" length="255" nullable="true"/>
+        <field name="termsOfPayment" type="string" column="termsOfPayment" length="255" nullable="true"/>
+
+        <field name="costCentre" type="string" column="costCentre" nullable="true"/>
+        <field name="commission" type="string" column="commission" nullable="true"/>
+
+        <field name="created" type="datetime" column="created"></field>
+        <field name="changed" type="datetime" column="changed"></field>
+        <field name="desiredDeliveryDate" type="datetime" column="desiredDeliveryDate" nullable="true"></field>
+        <field name="taxfree" type="bool" column="taxfree" nullable="true"></field>
+
+        <many-to-one field="status" target-entity="Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatus">
+            <join-columns>
+                <join-column name="idOrderStatus" referenced-column-name="id" on-delete="SET NULL"/>
+            </join-columns>
+        </many-to-one>
+        <many-to-one field="account" target-entity="Sulu\Bundle\ContactBundle\Entity\Account">
+            <join-columns>
+                <join-column name="idAccounts" referenced-column-name="id" on-delete="SET NULL"/>
+            </join-columns>
+        </many-to-one>
+        <many-to-one field="contact" target-entity="Sulu\Bundle\ContactBundle\Entity\Contact">
+            <join-columns>
+                <join-column name="idContactsCustomer" referenced-column-name="id" on-delete="SET NULL"/>
+            </join-columns>
+        </many-to-one>
+        <many-to-one field="responsibleContact" target-entity="Sulu\Bundle\ContactBundle\Entity\Contact">
+            <join-columns>
+                <join-column name="idContactsResponsible" referenced-column-name="id" on-delete="SET NULL"/>
+            </join-columns>
+        </many-to-one>
+        <many-to-one field="changer" target-entity="Sulu\Component\Security\UserInterface">
+            <join-columns>
+                <join-column name="idUsersChanger" referenced-column-name="id" on-delete="SET NULL" nullable="true"/>
+            </join-columns>
+        </many-to-one>
+        <many-to-one field="creator" target-entity="Sulu\Component\Security\UserInterface">
+            <join-columns>
+                <join-column name="idUsersCreator" referenced-column-name="id" on-delete="SET NULL" nullable="true"/>
+            </join-columns>
+        </many-to-one>
+
+        <many-to-many field="items" target-entity="Sulu\Bundle\Sales\CoreBundle\Entity\Item">
+            <join-table name="so_order_items">
+                <join-columns>
+                    <join-column name="idOrders" referenced-column-name="id"/>
+                </join-columns>
+                <inverse-join-columns>
+                    <join-column name="idItems" referenced-column-name="id"/>
+                </inverse-join-columns>
+            </join-table>
+        </many-to-many>
+    </entity>
+</doctrine-mapping>
