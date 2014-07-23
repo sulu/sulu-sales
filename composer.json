@@ -4,6 +4,7 @@
     "description": "Core Bundle of Sulu Sales",
     "license": "MIT",
     "keywords": ["sales","items"],
+    "version": "dev-develop",
     "authors": [
         {
             "name": "Sulu Community",
@@ -13,8 +14,11 @@
     "require": {
         "php": ">=5.4",
         "doctrine/orm": ">=2.2.3,<2.4-dev",
-        "friendsofsymfony/rest-bundle": "1.0.*",
+        "friendsofsymfony/rest-bundle": "dev-master@dev",
         "jms/serializer-bundle": "@dev",
+        "stof/doctrine-extensions-bundle": "1.1.*@dev",
+        "willdurand/hateoas-bundle": "0.3.*",
+
         "sulu/sulu": "dev-develop",
         "sulu/admin-bundle": "dev-develop",
         "sulu/product-bundle": "dev-develop",
@@ -29,8 +33,8 @@
     },
     "autoload": {
         "psr-0": {
-            "Sulu\\Bundle\\SalesCoreBundle": ""
+            "Sulu\\Bundle\\Sales\\CoreBundle": ""
         }
     },
-    "target-dir": "Sulu/Bundle/SalesCoreBundle"
+    "target-dir": "Sulu/Bundle/Sales/CoreBundle"
 }
