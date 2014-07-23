@@ -11,7 +11,7 @@
 
         <many-to-one field="status" target-entity="Sulu\Bundle\Sales\CoreBundle\Entity\ItemStatus">
             <join-columns>
-                <join-column name="idInvoiceStatus" referenced-column-name="id" on-delete="CASCADE"/>
+                <join-column name="idItemStatus" referenced-column-name="id" on-delete="CASCADE"/>
             </join-columns>
         </many-to-one>
     </entity>

@@ -12,7 +12,7 @@ use Doctrine\Common\DataFixtures\AbstractFixture;
 use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
 
-class LoadDefaultTypes extends AbstractFixture implements OrderedFixtureInterface
+class LoadItemStatus extends AbstractFixture implements OrderedFixtureInterface
 {
     /**
      * {@inheritDoc}

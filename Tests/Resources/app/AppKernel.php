@@ -17,7 +17,6 @@ class AppKernel extends Kernel
             new FOS\RestBundle\FOSRestBundle(),
 
             // Sulu
-            new \Sulu\Bundle\CoreBundle\SuluCoreBundle(),
             new \Sulu\Bundle\AdminBundle\SuluAdminBundle(),
             new \Sulu\Bundle\Sales\CoreBundle\SuluSalesCoreBundle(),
         );
