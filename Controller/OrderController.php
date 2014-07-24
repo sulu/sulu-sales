@@ -9,6 +9,11 @@
  */
 
 namespace Sulu\Bundle\Sales\OrderBundle\Controller;
+use FOS\RestBundle\Routing\ClassResourceInterface;
+use Hateoas\Representation\CollectionRepresentation;
+use Sulu\Component\Rest\ListBuilder\ListRepresentation;
+use Sulu\Component\Rest\RestController;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Makes orders available through a REST API
