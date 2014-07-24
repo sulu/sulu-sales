@@ -77,26 +77,26 @@ class ItemStatus
     }
 
     /**
-     * Add itemStatusTranslations
+     * Add itemStatusTranslation
      *
-     * @param \Sulu\Bundle\Sales\CoreBundle\Entity\ItemStatusTranslations $itemStatusTranslations
+     * @param \Sulu\Bundle\Sales\CoreBundle\Entity\ItemStatusTranslation $itemStatusTranslation
      * @return ItemStatus
      */
-    public function addItemStatusTranslation(\Sulu\Bundle\Sales\CoreBundle\Entity\ItemStatusTranslations $itemStatusTranslations)
+    public function addItemStatusTranslation(\Sulu\Bundle\Sales\CoreBundle\Entity\ItemStatusTranslation $itemStatusTranslation)
     {
-        $this->itemStatusTranslations[] = $itemStatusTranslations;
+        $this->itemStatusTranslations[] = $itemStatusTranslation;
     
         return $this;
     }
 
     /**
-     * Remove itemStatusTranslations
+     * Remove itemStatusTranslation
      *
-     * @param \Sulu\Bundle\Sales\CoreBundle\Entity\ItemStatusTranslations $itemStatusTranslations
+     * @param \Sulu\Bundle\Sales\CoreBundle\Entity\ItemStatusTranslation $itemStatusTranslation
      */
-    public function removeItemStatusTranslation(\Sulu\Bundle\Sales\CoreBundle\Entity\ItemStatusTranslations $itemStatusTranslations)
+    public function removeItemStatusTranslation(\Sulu\Bundle\Sales\CoreBundle\Entity\ItemStatusTranslation $itemStatusTranslation)
     {
-        $this->itemStatusTranslations->removeElement($itemStatusTranslations);
+        $this->itemStatusTranslations->removeElement($itemStatusTranslation);
     }
 
     /**

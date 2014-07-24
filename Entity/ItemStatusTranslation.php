@@ -5,9 +5,9 @@ namespace Sulu\Bundle\Sales\CoreBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * ItemStatusTranslations
+ * ItemStatusTranslation
  */
-class ItemStatusTranslations
+class ItemStatusTranslation
 {
     /**
      * @var string
@@ -34,7 +34,7 @@ class ItemStatusTranslations
      * Set name
      *
      * @param string $name
-     * @return ItemStatusTranslations
+     * @return ItemStatusTranslation
      */
     public function setName($name)
     {
@@ -57,7 +57,7 @@ class ItemStatusTranslations
      * Set locale
      *
      * @param string $locale
-     * @return ItemStatusTranslations
+     * @return ItemStatusTranslation
      */
     public function setLocale($locale)
     {
@@ -90,7 +90,7 @@ class ItemStatusTranslations
      * Set status
      *
      * @param \Sulu\Bundle\Sales\CoreBundle\Entity\ItemStatus $status
-     * @return ItemStatusTranslations
+     * @return ItemStatusTranslation
      */
     public function setStatus(\Sulu\Bundle\Sales\CoreBundle\Entity\ItemStatus $status = null)
     {
