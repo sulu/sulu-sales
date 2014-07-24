@@ -60,7 +60,7 @@ class Order
     private $desiredDeliveryDate;
 
     /**
-     * @var bool
+     * @var boolean
      */
     private $taxfree;
 
@@ -345,10 +345,10 @@ class Order
     /**
      * Set taxfree
      *
-     * @param \bool $taxfree
+     * @param boolean $taxfree
      * @return Order
      */
-    public function setTaxfree(\bool $taxfree)
+    public function setTaxfree($taxfree)
     {
         $this->taxfree = $taxfree;
     
@@ -358,7 +358,7 @@ class Order
     /**
      * Get taxfree
      *
-     * @return \bool 
+     * @return boolean 
      */
     public function getTaxfree()
     {

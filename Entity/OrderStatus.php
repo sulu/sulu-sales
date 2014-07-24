@@ -22,7 +22,7 @@ class OrderStatus
     /**
      * @var \Doctrine\Common\Collections\Collection
      */
-    private $orderStatusTranslations;
+    private $translations;
 
     /**
      * Constructor
@@ -30,7 +30,7 @@ class OrderStatus
     public function __construct()
     {
         $this->order = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->orderStatusTranslations = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->translations = new \Doctrine\Common\Collections\ArrayCollection();
     }
     
     /**
@@ -77,35 +77,35 @@ class OrderStatus
     }
 
     /**
-     * Add orderStatusTranslations
+     * Add translations
      *
-     * @param \Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatusTranslations $orderStatusTranslations
+     * @param \Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatusTranslation $translations
      * @return OrderStatus
      */
-    public function addOrderStatusTranslation(\Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatusTranslations $orderStatusTranslations)
+    public function addTranslation(\Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatusTranslation $translations)
     {
-        $this->orderStatusTranslations[] = $orderStatusTranslations;
+        $this->translations[] = $translations;
     
         return $this;
     }
 
     /**
-     * Remove orderStatusTranslations
+     * Remove translations
      *
-     * @param \Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatusTranslations $orderStatusTranslations
+     * @param \Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatusTranslation $translations
      */
-    public function removeOrderStatusTranslation(\Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatusTranslations $orderStatusTranslations)
+    public function removeTranslation(\Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatusTranslation $translations)
     {
-        $this->orderStatusTranslations->removeElement($orderStatusTranslations);
+        $this->translations->removeElement($translations);
     }
 
     /**
-     * Get orderStatusTranslations
+     * Get translations
      *
      * @return \Doctrine\Common\Collections\Collection 
      */
-    public function getOrderStatusTranslations()
+    public function getTranslations()
     {
-        return $this->orderStatusTranslations;
+        return $this->translations;
     }
 }
