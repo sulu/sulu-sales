@@ -10,7 +10,7 @@
         <field name="number" type="string" column="number" length="255" nullable="true"/>
         <field name="quantity" type="float" column="quanity"/>
         <field name="quantityUnit" type="string" column="quanityUnit" length="60"/>
-        <field name="useProductsPrice" type="bool" column="useProductsPrice"/>
+        <field name="useProductsPrice" type="boolean" column="useProductsPrice"/>
         <field name="tax" type="float" column="tax"/>
         <field name="price" type="float" column="price" nullable="true"/>
         <field name="discount" type="float" column="discount" nullable="true"/>
@@ -23,12 +23,14 @@
         <field name="created" type="datetime" column="created"></field>
         <field name="changed" type="datetime" column="changed"></field>
 
-        <many-to-one field="status" target-entity="Sulu\Bundle\Sales\CoreBundle\Entity\ItemStatus">
+        <one-to-many field="attributes" target-entity="Sulu\Bundle\Sales\CoreBundle\Entity\ItemAttribute" mapped-by="item"/>
+
+        <many-to-one field="status" target-entity="Sulu\Bundle\Sales\CoreBundle\Entity\ItemStatus" inversed-by="item">
             <join-columns>
                 <join-column name="idItemStatus" referenced-column-name="id" on-delete="SET NULL"/>
             </join-columns>
         </many-to-one>
-        <many-to-one field="product" target-entity="Sulu\Bundle\Sales\CoreBundle\Entity\Product">
+        <many-to-one field="product" target-entity="Sulu\Bundle\ProductBundle\Entity\Product">
             <join-columns>
                 <join-column name="idProducts" referenced-column-name="id" on-delete="SET NULL" nullable="true"/>
             </join-columns>

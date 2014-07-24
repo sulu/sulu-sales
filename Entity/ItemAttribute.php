@@ -25,18 +25,11 @@ class ItemAttribute
     private $id;
 
     /**
-     * @var \Doctrine\Common\Collections\Collection
+     * @var \Sulu\Bundle\Sales\CoreBundle\Entity\Item
      */
     private $item;
 
-    /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        $this->item = new \Doctrine\Common\Collections\ArrayCollection();
-    }
-    
+
     /**
      * Set attribute
      *
@@ -94,32 +87,22 @@ class ItemAttribute
     }
 
     /**
-     * Add item
+     * Set item
      *
      * @param \Sulu\Bundle\Sales\CoreBundle\Entity\Item $item
      * @return ItemAttribute
      */
-    public function addItem(\Sulu\Bundle\Sales\CoreBundle\Entity\Item $item)
+    public function setItem(\Sulu\Bundle\Sales\CoreBundle\Entity\Item $item = null)
     {
-        $this->item[] = $item;
+        $this->item = $item;
     
         return $this;
     }
 
     /**
-     * Remove item
-     *
-     * @param \Sulu\Bundle\Sales\CoreBundle\Entity\Item $item
-     */
-    public function removeItem(\Sulu\Bundle\Sales\CoreBundle\Entity\Item $item)
-    {
-        $this->item->removeElement($item);
-    }
-
-    /**
      * Get item
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return \Sulu\Bundle\Sales\CoreBundle\Entity\Item 
      */
     public function getItem()
     {

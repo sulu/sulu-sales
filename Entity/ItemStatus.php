@@ -22,7 +22,7 @@ class ItemStatus
     /**
      * @var \Doctrine\Common\Collections\Collection
      */
-    private $itemStatusTranslations;
+    private $translations;
 
     /**
      * Constructor
@@ -30,7 +30,7 @@ class ItemStatus
     public function __construct()
     {
         $this->item = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->itemStatusTranslations = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->translations = new \Doctrine\Common\Collections\ArrayCollection();
     }
     
     /**
@@ -77,35 +77,35 @@ class ItemStatus
     }
 
     /**
-     * Add itemStatusTranslation
+     * Add translations
      *
-     * @param \Sulu\Bundle\Sales\CoreBundle\Entity\ItemStatusTranslation $itemStatusTranslation
+     * @param \Sulu\Bundle\Sales\CoreBundle\Entity\ItemStatusTranslation $translations
      * @return ItemStatus
      */
-    public function addItemStatusTranslation(\Sulu\Bundle\Sales\CoreBundle\Entity\ItemStatusTranslation $itemStatusTranslation)
+    public function addTranslation(\Sulu\Bundle\Sales\CoreBundle\Entity\ItemStatusTranslation $translations)
     {
-        $this->itemStatusTranslations[] = $itemStatusTranslation;
+        $this->translations[] = $translations;
     
         return $this;
     }
 
     /**
-     * Remove itemStatusTranslation
+     * Remove translations
      *
-     * @param \Sulu\Bundle\Sales\CoreBundle\Entity\ItemStatusTranslation $itemStatusTranslation
+     * @param \Sulu\Bundle\Sales\CoreBundle\Entity\ItemStatusTranslation $translations
      */
-    public function removeItemStatusTranslation(\Sulu\Bundle\Sales\CoreBundle\Entity\ItemStatusTranslation $itemStatusTranslation)
+    public function removeTranslation(\Sulu\Bundle\Sales\CoreBundle\Entity\ItemStatusTranslation $translations)
     {
-        $this->itemStatusTranslations->removeElement($itemStatusTranslation);
+        $this->translations->removeElement($translations);
     }
 
     /**
-     * Get itemStatusTranslations
+     * Get translations
      *
      * @return \Doctrine\Common\Collections\Collection 
      */
-    public function getItemStatusTranslations()
+    public function getTranslations()
     {
-        return $this->itemStatusTranslations;
+        return $this->translations;
     }
 }

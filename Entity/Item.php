@@ -30,7 +30,7 @@ class Item
     private $quantityUnit;
 
     /**
-     * @var bool
+     * @var boolean
      */
     private $useProductsPrice;
 
@@ -95,12 +95,17 @@ class Item
     private $id;
 
     /**
+     * @var \Doctrine\Common\Collections\Collection
+     */
+    private $attributes;
+
+    /**
      * @var \Sulu\Bundle\Sales\CoreBundle\Entity\ItemStatus
      */
     private $status;
 
     /**
-     * @var \Sulu\Bundle\Sales\CoreBundle\Entity\Product
+     * @var \Sulu\Bundle\ProductBundle\Entity\Product
      */
     private $product;
 
@@ -114,7 +119,14 @@ class Item
      */
     private $creator;
 
-
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->attributes = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+    
     /**
      * Set name
      *
@@ -210,10 +222,10 @@ class Item
     /**
      * Set useProductsPrice
      *
-     * @param \bool $useProductsPrice
+     * @param boolean $useProductsPrice
      * @return Item
      */
-    public function setUseProductsPrice(\bool $useProductsPrice)
+    public function setUseProductsPrice($useProductsPrice)
     {
         $this->useProductsPrice = $useProductsPrice;
     
@@ -223,7 +235,7 @@ class Item
     /**
      * Get useProductsPrice
      *
-     * @return \bool 
+     * @return boolean 
      */
     public function getUseProductsPrice()
     {
@@ -494,6 +506,39 @@ class Item
     }
 
     /**
+     * Add attributes
+     *
+     * @param \Sulu\Bundle\Sales\CoreBundle\Entity\ItemAttribute $attributes
+     * @return Item
+     */
+    public function addAttribute(\Sulu\Bundle\Sales\CoreBundle\Entity\ItemAttribute $attributes)
+    {
+        $this->attributes[] = $attributes;
+    
+        return $this;
+    }
+
+    /**
+     * Remove attributes
+     *
+     * @param \Sulu\Bundle\Sales\CoreBundle\Entity\ItemAttribute $attributes
+     */
+    public function removeAttribute(\Sulu\Bundle\Sales\CoreBundle\Entity\ItemAttribute $attributes)
+    {
+        $this->attributes->removeElement($attributes);
+    }
+
+    /**
+     * Get attributes
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getAttributes()
+    {
+        return $this->attributes;
+    }
+
+    /**
      * Set status
      *
      * @param \Sulu\Bundle\Sales\CoreBundle\Entity\ItemStatus $status
@@ -519,10 +564,10 @@ class Item
     /**
      * Set product
      *
-     * @param \Sulu\Bundle\Sales\CoreBundle\Entity\Product $product
+     * @param \Sulu\Bundle\ProductBundle\Entity\Product $product
      * @return Item
      */
-    public function setProduct(\Sulu\Bundle\Sales\CoreBundle\Entity\Product $product = null)
+    public function setProduct(\Sulu\Bundle\ProductBundle\Entity\Product $product = null)
     {
         $this->product = $product;
     
@@ -532,7 +577,7 @@ class Item
     /**
      * Get product
      *
-     * @return \Sulu\Bundle\Sales\CoreBundle\Entity\Product 
+     * @return \Sulu\Bundle\ProductBundle\Entity\Product 
      */
     public function getProduct()
     {
