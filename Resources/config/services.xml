@@ -11,6 +11,7 @@
     <services>
         <service id="sulu_sales_core.admin" class="%sulu_sales_core.admin.class%">
             <tag name="sulu.admin" />
+            <argument>%sulu_admin.name%</argument>
         </service>
     </services>
 </container>
