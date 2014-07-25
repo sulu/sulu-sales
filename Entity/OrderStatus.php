@@ -108,4 +108,22 @@ class OrderStatus
     {
         return $this->translations;
     }
+
+    /**
+     * Returns the translation for the given locale
+     * @param string $locale
+     * @return OrderStatusTranslation
+     */
+    public function getTranslation($locale)
+    {
+        $translation = null;
+        foreach ($this->translations as $translationData) {
+            if ($translationData->getLocale() == $locale) {
+                $translation = $translationData;
+                break;
+            }
+        }
+
+        return $translation;
+    }
 }

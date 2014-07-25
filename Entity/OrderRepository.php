@@ -12,4 +12,98 @@ use Doctrine\ORM\EntityRepository;
  */
 class OrderRepository extends EntityRepository
 {
+    /**
+     * @param $id
+     * @return Order|null
+     */
+    public function findById($id)
+    {
+        try {
+            $qb = $this->createQueryBuilder('o')
+                ->andWhere('o.id = :orderId')
+                ->setParameter('orderId', $id);
+
+            return $qb->getQuery()->getSingleResult();
+        } catch (NoResultException $exc) {
+            return null;
+        }
+    }
+
+    /**
+     * Returns all orders in the given locale
+     * @param string $locale The locale of the order to load
+     * @return Order[]|null
+     */
+    public function findAllByLocale($locale)
+    {
+        try {
+            return $this->getOrderQuery($locale)->getQuery()->getResult();
+        } catch (NoResultException $exc) {
+            return null;
+        }
+    }
+
+    /**
+     * Returns all orders and filters them
+     * @param $locale
+     * @param array $filter
+     * @return Order[]|null
+     */
+    public function findByLocaleAndFilter($locale, array $filter)
+    {
+        try {
+            $qb = $this->getOrderQuery($locale);
+
+            foreach ($filter as $key => $value) {
+                switch ($key) {
+                    case 'status':
+                        $qb->andWhere('status.id = :' . $key);
+                        $qb->setParameter($key, $value);
+                        break;
+                }
+            }
+
+            $query = $qb->getQuery();
+            return $query->getResult();
+        } catch (NoResultException $ex) {
+            return null;
+        }
+    }
+
+    /**
+     * Finds an order by id and locale
+     * @param $id
+     * @param $locale
+     * @return Order|null
+     */
+    public function findByIdAndLocale($id, $locale)
+    {
+        try {
+            $qb = $this->getOrderQuery($locale);
+            $qb->andWhere('o.id = :orderId');
+            $qb->setParameter('orderId', $id);
+
+            return $qb->getQuery()->getSingleResult();
+        } catch (NoResultException $exc) {
+            return null;
+        }
+    }
+
+    /**
+     * Returns query for orders
+     * @param string $locale The locale to load
+     * @return \Doctrine\ORM\QueryBuilder
+     */
+    private function getOrderQuery($locale)
+    {
+        $qb = $this->createQueryBuilder('o')
+            ->leftJoin('o.deliveryAddress', 'deliveryAddress')
+            ->leftJoin('o.invoiceAddress', 'invoiceAddress')
+            ->leftJoin('o.status', 'status')
+            ->leftJoin('status.translations', 'statusTranslations', 'WITH', 'statusTranslations.locale = :locale')
+            ->leftJoin('o.items', 'items')
+//            ->andWhere('statusTranslations.locale = :locale')
+            ->setParameter('locale', $locale);
+        return $qb;
+    }
 }

@@ -11,6 +11,7 @@
 namespace Sulu\Bundle\Sales\OrderBundle\Controller;
 use FOS\RestBundle\Routing\ClassResourceInterface;
 use Hateoas\Representation\CollectionRepresentation;
+use Sulu\Bundle\Sales\OrderBundle\Order\OrderManager;
 use Sulu\Component\Rest\ListBuilder\ListRepresentation;
 use Sulu\Component\Rest\RestController;
 use Symfony\Component\HttpFoundation\Request;
@@ -27,7 +28,7 @@ class OrderController extends RestController implements ClassResourceInterface
     /**
      * Returns the repository object for AdvancedProduct
      *
-     * @return ProductManagerInterface
+     * @return OrderManager
      */
     private function getManager()
     {
@@ -44,11 +45,6 @@ class OrderController extends RestController implements ClassResourceInterface
         $status = $request->get('status');
         if ($status) {
             $filter['status'] = $status;
-        }
-
-        $type = $request->get('type');
-        if ($type) {
-            $filter['type'] = $type;
         }
 
         if ($request->get('flat') == 'true') {
@@ -69,7 +65,7 @@ class OrderController extends RestController implements ClassResourceInterface
             $list = new ListRepresentation(
                 $listBuilder->execute(),
                 self::$entityKey,
-                'get_products',
+                'get_orders',
                 $request->query->all(),
                 $listBuilder->getCurrentPage(),
                 $listBuilder->getLimit(),
@@ -83,6 +79,29 @@ class OrderController extends RestController implements ClassResourceInterface
         }
 
         $view = $this->view($list, 200);
+        return $this->handleView($view);
+    }
+
+    /**
+     * Retrieves and shows a product with the given ID
+     *
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     * @param integer $id product ID
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function getAction(Request $request, $id)
+    {
+        $locale = $this->getLocale($request);
+        $view = $this->responseGetById(
+            $id,
+            function ($id) use ($locale) {
+                /** @var Product $product */
+                $product = $this->getManager()->findByIdAndLocale($id, $locale);
+
+                return $product;
+            }
+        );
+
         return $this->handleView($view);
     }
 

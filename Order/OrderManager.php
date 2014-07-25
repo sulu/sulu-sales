@@ -15,6 +15,7 @@ use Sulu\Bundle\Sales\OrderBundle\Entity\OrderRepository;
 use Sulu\Bundle\Sales\OrderBundle\Order\Exception\OrderNotFoundException;
 use Sulu\Component\Manager\AbstractManager;
 use Sulu\Component\Rest\ListBuilder\Doctrine\FieldDescriptor\DoctrineFieldDescriptor;
+use Sulu\Bundle\Sales\OrderBundle\Api\Order;
 
 class OrderManager extends AbstractManager
 {
@@ -92,17 +93,40 @@ class OrderManager extends AbstractManager
      * Finds an order by id and locale
      * @param $id
      * @param $locale
-     * @return null|Product
+     * @return null|Order
      */
     public function findByIdAndLocale($id, $locale)
     {
-        $product = $this->productRepository->findByIdAndLocale($id, $locale);
+        $order = $this->orderRepository->findByIdAndLocale($id, $locale);
 
-        if ($product) {
-            return new Product($product, $locale);
+        if ($order) {
+            return new Order($order, $locale);
         } else {
             return null;
         }
+    }
+
+    /**
+     * @param $locale
+     * @param array $filter
+     * @return mixed
+     */
+    public function findAllByLocale($locale, $filter = array())
+    {
+        if (empty($filter)) {
+            $order = $this->orderRepository->findAllByLocale($locale);
+        } else {
+            $order = $this->orderRepository->findByLocaleAndFilter($locale, $filter);
+        }
+
+        array_walk(
+            $order,
+            function (&$order) use ($locale) {
+                $order = new Order($order, $locale);
+            }
+        );
+
+        return $order;
     }
 
     /**

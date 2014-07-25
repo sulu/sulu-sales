@@ -545,4 +545,60 @@ class Order
     {
         return $this->creator;
     }
+    /**
+     * @var \Sulu\Bundle\Sales\OrderBundle\Entity\OrderAddress
+     */
+    private $deliveryAddress;
+
+    /**
+     * @var \Sulu\Bundle\Sales\OrderBundle\Entity\OrderAddress
+     */
+    private $invoiceAddress;
+
+
+    /**
+     * Set deliveryAddress
+     *
+     * @param \Sulu\Bundle\Sales\OrderBundle\Entity\OrderAddress $deliveryAddress
+     * @return Order
+     */
+    public function setDeliveryAddress(\Sulu\Bundle\Sales\OrderBundle\Entity\OrderAddress $deliveryAddress = null)
+    {
+        $this->deliveryAddress = $deliveryAddress;
+    
+        return $this;
+    }
+
+    /**
+     * Get deliveryAddress
+     *
+     * @return \Sulu\Bundle\Sales\OrderBundle\Entity\OrderAddress 
+     */
+    public function getDeliveryAddress()
+    {
+        return $this->deliveryAddress;
+    }
+
+    /**
+     * Set invoiceAddress
+     *
+     * @param \Sulu\Bundle\Sales\OrderBundle\Entity\OrderAddress $invoiceAddress
+     * @return Order
+     */
+    public function setInvoiceAddress(\Sulu\Bundle\Sales\OrderBundle\Entity\OrderAddress $invoiceAddress = null)
+    {
+        $this->invoiceAddress = $invoiceAddress;
+    
+        return $this;
+    }
+
+    /**
+     * Get invoiceAddress
+     *
+     * @return \Sulu\Bundle\Sales\OrderBundle\Entity\OrderAddress 
+     */
+    public function getInvoiceAddress()
+    {
+        return $this->invoiceAddress;
+    }
 }
