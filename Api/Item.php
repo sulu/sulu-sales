@@ -3,6 +3,7 @@
 namespace Sulu\Bundle\Sales\CoreBundle\Api;
 
 use JMS\Serializer\Annotation\VirtualProperty;
+use Sulu\Bundle\ProductBundle\Api\Product;
 use Sulu\Bundle\Sales\CoreBundle\Entity\Item as Entity;
 use Sulu\Bundle\Sales\CoreBundle\Entity\ItemAttribute;
 use Sulu\Component\Rest\ApiWrapper;
@@ -463,5 +464,29 @@ class Item extends ApiWrapper
     public function getAttributes()
     {
         return $this->entity->getAttributes();
+    }
+
+    /**
+     * @param $product
+     * @return Item
+     */
+    public function setProduct($product)
+    {
+        $this->entity->setProduct($product);
+
+        return $this;
+    }
+
+    /**
+     * @return Product
+     * @VirtualProperty
+     * @SerializedName("product")
+     */
+    public function getProduct()
+    {
+        if ($this->getEntity()->getProduct()) {
+            return new Product($this->entity->getProduct(), $this->locale);
+        }
+        return null;
     }
 }
