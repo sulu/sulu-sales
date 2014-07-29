@@ -27,7 +27,7 @@
 
         <many-to-one field="status" target-entity="Sulu\Bundle\Sales\CoreBundle\Entity\ItemStatus" inversed-by="item">
             <join-columns>
-                <join-column name="idItemStatus" referenced-column-name="id" on-delete="SET NULL"/>
+                <join-column name="idItemStatus" referenced-column-name="id" nullable="false"/>
             </join-columns>
         </many-to-one>
         <many-to-one field="product" target-entity="Sulu\Bundle\ProductBundle\Entity\Product">

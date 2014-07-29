@@ -3,6 +3,7 @@
 namespace Sulu\Bundle\Sales\CoreBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation\Exclude;
 
 /**
  * ItemAttribute
@@ -26,6 +27,7 @@ class ItemAttribute
 
     /**
      * @var \Sulu\Bundle\Sales\CoreBundle\Entity\Item
+     * @Exclude
      */
     private $item;
 

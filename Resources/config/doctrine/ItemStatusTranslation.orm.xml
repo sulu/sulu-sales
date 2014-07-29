@@ -6,12 +6,12 @@
         <id name="id" type="integer" column="id">
             <generator strategy="AUTO"/>
         </id>
-        <field name="name" type="string" column="name" length="255"/>
-        <field name="locale" type="string" column="locale" length="10"/>
+        <field name="name" type="string" column="name" length="255" nullable="false"/>
+        <field name="locale" type="string" column="locale" length="10" nullable="false"/>
 
         <many-to-one field="status" target-entity="Sulu\Bundle\Sales\CoreBundle\Entity\ItemStatus" inversed-by="translations">
             <join-columns>
-                <join-column name="idItemStatus" referenced-column-name="id" on-delete="CASCADE"/>
+                <join-column name="idItemStatus" referenced-column-name="id" on-delete="CASCADE" nullable="false"/>
             </join-columns>
         </many-to-one>
     </entity>
