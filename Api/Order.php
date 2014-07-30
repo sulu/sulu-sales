@@ -3,6 +3,7 @@
 namespace Sulu\Bundle\Sales\OrderBundle\Api;
 
 use JMS\Serializer\Annotation\VirtualProperty;
+use Sulu\Bundle\Sales\CoreBundle\Api\Item;
 use Sulu\Bundle\Sales\OrderBundle\Entity\Order as Entity;
 use Sulu\Component\Rest\ApiWrapper;
 use Hateoas\Configuration\Annotation\Relation;
@@ -20,7 +21,8 @@ class Order extends ApiWrapper
      * @param Entity $order The order to wrap
      * @param string $locale The locale of this order
      */
-    public function __construct(Entity $order, $locale) {
+    public function __construct(Entity $order, $locale)
+    {
         $this->entity = $order;
         $this->locale = $locale;
     }
@@ -113,456 +115,424 @@ class Order extends ApiWrapper
 
     /**
      * Get sessionId
+     * @return string
      * @VirtualProperty
      * @SerializedName("changed")
-     * @return string
      */
     public function getSessionId()
     {
         return $this->entity->getSessionId();
     }
 
-//    /**
-//     * Set currency
-//     *
-//     * @param string $currency
-//     * @return Order
-//     */
-//    public function setCurrency($currency)
-//    {
-//        $this->currency = $currency;
-//
-//        return $this;
-//    }
-//
-//    /**
-//     * Get currency
-//     *
-//     * @return string
-//     */
-//    public function getCurrency()
-//    {
-//        return $this->currency;
-//    }
-//
-//    /**
-//     * Set termsOfDelivery
-//     *
-//     * @param string $termsOfDelivery
-//     * @return Order
-//     */
-//    public function setTermsOfDelivery($termsOfDelivery)
-//    {
-//        $this->termsOfDelivery = $termsOfDelivery;
-//
-//        return $this;
-//    }
-//
-//    /**
-//     * Get termsOfDelivery
-//     *
-//     * @return string
-//     */
-//    public function getTermsOfDelivery()
-//    {
-//        return $this->termsOfDelivery;
-//    }
-//
-//    /**
-//     * Set termsOfPayment
-//     *
-//     * @param string $termsOfPayment
-//     * @return Order
-//     */
-//    public function setTermsOfPayment($termsOfPayment)
-//    {
-//        $this->termsOfPayment = $termsOfPayment;
-//
-//        return $this;
-//    }
-//
-//    /**
-//     * Get termsOfPayment
-//     *
-//     * @return string
-//     */
-//    public function getTermsOfPayment()
-//    {
-//        return $this->termsOfPayment;
-//    }
-//
-//    /**
-//     * Set costCentre
-//     *
-//     * @param string $costCentre
-//     * @return Order
-//     */
-//    public function setCostCentre($costCentre)
-//    {
-//        $this->costCentre = $costCentre;
-//
-//        return $this;
-//    }
-//
-//    /**
-//     * Get costCentre
-//     *
-//     * @return string
-//     */
-//    public function getCostCentre()
-//    {
-//        return $this->costCentre;
-//    }
-//
-//    /**
-//     * Set commission
-//     *
-//     * @param string $commission
-//     * @return Order
-//     */
-//    public function setCommission($commission)
-//    {
-//        $this->commission = $commission;
-//
-//        return $this;
-//    }
-//
-//    /**
-//     * Get commission
-//     *
-//     * @return string
-//     */
-//    public function getCommission()
-//    {
-//        return $this->commission;
-//    }
-//
-//    /**
-//     * Set created
-//     *
-//     * @param \DateTime $created
-//     * @return Order
-//     */
-//    public function setCreated($created)
-//    {
-//        $this->created = $created;
-//
-//        return $this;
-//    }
-//
-//    /**
-//     * Get created
-//     *
-//     * @return \DateTime
-//     */
-//    public function getCreated()
-//    {
-//        return $this->created;
-//    }
-//
-//    /**
-//     * Set changed
-//     *
-//     * @param \DateTime $changed
-//     * @return Order
-//     */
-//    public function setChanged($changed)
-//    {
-//        $this->changed = $changed;
-//
-//        return $this;
-//    }
-//
-//    /**
-//     * Get changed
-//     *
-//     * @return \DateTime
-//     */
-//    public function getChanged()
-//    {
-//        return $this->changed;
-//    }
-//
-//    /**
-//     * Set desiredDeliveryDate
-//     *
-//     * @param \DateTime $desiredDeliveryDate
-//     * @return Order
-//     */
-//    public function setDesiredDeliveryDate($desiredDeliveryDate)
-//    {
-//        $this->desiredDeliveryDate = $desiredDeliveryDate;
-//
-//        return $this;
-//    }
-//
-//    /**
-//     * Get desiredDeliveryDate
-//     *
-//     * @return \DateTime
-//     */
-//    public function getDesiredDeliveryDate()
-//    {
-//        return $this->desiredDeliveryDate;
-//    }
-//
-//    /**
-//     * Set taxfree
-//     *
-//     * @param boolean $taxfree
-//     * @return Order
-//     */
-//    public function setTaxfree($taxfree)
-//    {
-//        $this->taxfree = $taxfree;
-//
-//        return $this;
-//    }
-//
-//    /**
-//     * Get taxfree
-//     *
-//     * @return boolean
-//     */
-//    public function getTaxfree()
-//    {
-//        return $this->taxfree;
-//    }
-//
-//    /**
-//     * Get id
-//     *
-//     * @return integer
-//     */
-//    public function getId()
-//    {
-//        return $this->id;
-//    }
-//
-//    /**
-//     * Set status
-//     *
-//     * @param \Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatus $status
-//     * @return Order
-//     */
-//    public function setStatus(\Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatus $status = null)
-//    {
-//        $this->status = $status;
-//
-//        return $this;
-//    }
-//
-//    /**
-//     * Get status
-//     *
-//     * @return \Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatus
-//     */
-//    public function getStatus()
-//    {
-//        return $this->status;
-//    }
-//
-//    /**
-//     * Set account
-//     *
-//     * @param \Sulu\Bundle\ContactBundle\Entity\Account $account
-//     * @return Order
-//     */
-//    public function setAccount(\Sulu\Bundle\ContactBundle\Entity\Account $account = null)
-//    {
-//        $this->account = $account;
-//
-//        return $this;
-//    }
-//
-//    /**
-//     * Get account
-//     *
-//     * @return \Sulu\Bundle\ContactBundle\Entity\Account
-//     */
-//    public function getAccount()
-//    {
-//        return $this->account;
-//    }
-//
-//    /**
-//     * Set contact
-//     *
-//     * @param \Sulu\Bundle\ContactBundle\Entity\Contact $contact
-//     * @return Order
-//     */
-//    public function setContact(\Sulu\Bundle\ContactBundle\Entity\Contact $contact = null)
-//    {
-//        $this->contact = $contact;
-//
-//        return $this;
-//    }
-//
-//    /**
-//     * Get contact
-//     *
-//     * @return \Sulu\Bundle\ContactBundle\Entity\Contact
-//     */
-//    public function getContact()
-//    {
-//        return $this->contact;
-//    }
-//
-//    /**
-//     * Set responsibleContact
-//     *
-//     * @param \Sulu\Bundle\ContactBundle\Entity\Contact $responsibleContact
-//     * @return Order
-//     */
-//    public function setResponsibleContact(\Sulu\Bundle\ContactBundle\Entity\Contact $responsibleContact = null)
-//    {
-//        $this->responsibleContact = $responsibleContact;
-//
-//        return $this;
-//    }
-//
-//    /**
-//     * Get responsibleContact
-//     *
-//     * @return \Sulu\Bundle\ContactBundle\Entity\Contact
-//     */
-//    public function getResponsibleContact()
-//    {
-//        return $this->responsibleContact;
-//    }
-//
-//    /**
-//     * Add items
-//     *
-//     * @param \Sulu\Bundle\Sales\CoreBundle\Entity\Item $items
-//     * @return Order
-//     */
-//    public function addItem(\Sulu\Bundle\Sales\CoreBundle\Entity\Item $items)
-//    {
-//        $this->items[] = $items;
-//
-//        return $this;
-//    }
-//
-//    /**
-//     * Remove items
-//     *
-//     * @param \Sulu\Bundle\Sales\CoreBundle\Entity\Item $items
-//     */
-//    public function removeItem(\Sulu\Bundle\Sales\CoreBundle\Entity\Item $items)
-//    {
-//        $this->items->removeElement($items);
-//    }
-//
-//    /**
-//     * Get items
-//     *
-//     * @return \Doctrine\Common\Collections\Collection
-//     */
-//    public function getItems()
-//    {
-//        return $this->items;
-//    }
-//
-//    /**
-//     * Set changer
-//     *
-//     * @param \Sulu\Bundle\SecurityBundle\Entity\User $changer
-//     * @return Order
-//     */
-//    public function setChanger(\Sulu\Bundle\SecurityBundle\Entity\User $changer = null)
-//    {
-//        $this->changer = $changer;
-//
-//        return $this;
-//    }
-//
-//    /**
-//     * Get changer
-//     *
-//     * @return \Sulu\Bundle\SecurityBundle\Entity\User
-//     */
-//    public function getChanger()
-//    {
-//        return $this->changer;
-//    }
-//
-//    /**
-//     * Set creator
-//     *
-//     * @param \Sulu\Bundle\SecurityBundle\Entity\User $creator
-//     * @return Order
-//     */
-//    public function setCreator(\Sulu\Bundle\SecurityBundle\Entity\User $creator = null)
-//    {
-//        $this->creator = $creator;
-//
-//        return $this;
-//    }
-//
-//    /**
-//     * Get creator
-//     *
-//     * @return \Sulu\Bundle\SecurityBundle\Entity\User
-//     */
-//    public function getCreator()
-//    {
-//        return $this->creator;
-//    }
-//    /**
-//     * @var \Sulu\Bundle\Sales\OrderBundle\Entity\OrderAddress
-//     */
-//    private $deliveryAddress;
-//
-//    /**
-//     * @var \Sulu\Bundle\Sales\OrderBundle\Entity\OrderAddress
-//     */
-//    private $invoiceAddress;
-//
-//
-//    /**
-//     * Set deliveryAddress
-//     *
-//     * @param \Sulu\Bundle\Sales\OrderBundle\Entity\OrderAddress $deliveryAddress
-//     * @return Order
-//     */
-//    public function setDeliveryAddress(\Sulu\Bundle\Sales\OrderBundle\Entity\OrderAddress $deliveryAddress = null)
-//    {
-//        $this->deliveryAddress = $deliveryAddress;
-//
-//        return $this;
-//    }
-//
-//    /**
-//     * Get deliveryAddress
-//     *
-//     * @return \Sulu\Bundle\Sales\OrderBundle\Entity\OrderAddress
-//     */
-//    public function getDeliveryAddress()
-//    {
-//        return $this->deliveryAddress;
-//    }
-//
-//    /**
-//     * Set invoiceAddress
-//     *
-//     * @param \Sulu\Bundle\Sales\OrderBundle\Entity\OrderAddress $invoiceAddress
-//     * @return Order
-//     */
-//    public function setInvoiceAddress(\Sulu\Bundle\Sales\OrderBundle\Entity\OrderAddress $invoiceAddress = null)
-//    {
-//        $this->invoiceAddress = $invoiceAddress;
-//
-//        return $this;
-//    }
-//
-//    /**
-//     * Get invoiceAddress
-//     *
-//     * @return \Sulu\Bundle\Sales\OrderBundle\Entity\OrderAddress
-//     */
-//    public function getInvoiceAddress()
-//    {
-//        return $this->invoiceAddress;
-//    }
+    /**
+     * Set status
+     * @param OrderStatus
+     * @return Order
+     */
+    public function setStatus($status)
+    {
+        $this->entity->setStatus($status);
+
+        return $this;
+    }
+
+    /**
+     * Get sessionId
+     * @return OrderStatus
+     * @VirtualProperty
+     * @SerializedName("changed")
+     */
+    public function getStatus()
+    {
+        return new OrderStatus($this->entity->getStatus(), $this->locale);
+    }
+
+    /**
+     * Set currency
+     *
+     * @param string $currency
+     * @return Order
+     */
+    public function setCurrency($currency)
+    {
+        $this->entity->setCurrency($currency);
+
+        return $this;
+    }
+
+    /**
+     * Get currency
+     * @VirtualProperty
+     * @SerializedName("currency")
+     * @return string
+     */
+    public function getCurrency()
+    {
+        return $this->entity->getCurrency();
+    }
+
+    /**
+     * Set termsOfDelivery
+     *
+     * @param string $termsOfDelivery
+     * @return Order
+     */
+    public function setTermsOfDelivery($termsOfDelivery)
+    {
+        $this->entity->setCurrency($termsOfDelivery);
+
+        return $this;
+    }
+
+    /**
+     * Get termsOfDelivery
+     *
+     * @return string
+     * @VirtualProperty
+     * @SerializedName("termsOfDelivery")
+     */
+    public function getTermsOfDelivery()
+    {
+        return $this->entity->getTermsOfDelivery();
+    }
+
+    /**
+     * Set termsOfPayment
+     *
+     * @param string $termsOfPayment
+     * @return Order
+     */
+    public function setTermsOfPayment($termsOfPayment)
+    {
+        $this->entity->setTermsOfDelivery($termsOfPayment);
+
+        return $this;
+    }
+
+    /**
+     * Get termsOfPayment
+     *
+     * @return string
+     * @VirtualProperty
+     * @SerializedName("termsOfPayment")
+     */
+    public function getTermsOfPayment()
+    {
+        return $this->entity->getTermsOfPayment();
+    }
+
+    /**
+     * Set costCentre
+     *
+     * @param string $costCentre
+     * @return Order
+     */
+    public function setCostCentre($costCentre)
+    {
+        $this->entity->setCostCentre($costCentre);
+
+        return $this;
+    }
+
+    /**
+     * Get costCentre
+     *
+     * @return string
+     * @VirtualProperty
+     * @SerializedName("costCentre")
+     */
+    public function getCostCentre()
+    {
+        return $this->entity->getCostCentre();
+    }
+
+    /**
+     * Set commission
+     *
+     * @param string $commission
+     * @return Order
+     */
+    public function setCommission($commission)
+    {
+        $this->entity->setCommission($commission);
+
+        return $this;
+    }
+
+    /**
+     * Get commission
+     *
+     * @return string
+     * @VirtualProperty
+     * @SerializedName("commission")
+     */
+    public function getCommission()
+    {
+        return $this->entity->getCommission();
+    }
+
+    /**
+     * Set desiredDeliveryDate
+     *
+     * @param \DateTime $desiredDeliveryDate
+     * @return Order
+     */
+    public function setDesiredDeliveryDate($desiredDeliveryDate)
+    {
+        $this->entity->setDesiredDeliveryDate($desiredDeliveryDate);
+
+        return $this;
+    }
+
+    /**
+     * Get desiredDeliveryDate
+     *
+     * @return \DateTime
+     * @VirtualProperty
+     * @SerializedName("desiredDeliveryDate")
+     */
+    public function getDesiredDeliveryDate()
+    {
+        return $this->entity->getDesiredDeliveryDate();
+    }
+
+    /**
+     * Set taxfree
+     *
+     * @param boolean $taxfree
+     * @return Order
+     */
+    public function setTaxfree($taxfree)
+    {
+        $this->entity->setTaxfree($taxfree);
+
+        return $this;
+    }
+
+    /**
+     * Get taxfree
+     *
+     * @return boolean
+     * @VirtualProperty
+     * @SerializedName("taxfree")
+     */
+    public function getTaxfree()
+    {
+        return $this->entity->getTaxfree();
+    }
+
+    /**
+     * Set account
+     *
+     * @param \Sulu\Bundle\ContactBundle\Entity\Account $account
+     * @return Order
+     */
+    public function setAccount(\Sulu\Bundle\ContactBundle\Entity\Account $account = null)
+    {
+        $this->entity->setAccount($account);
+
+        return $this;
+    }
+
+    /**
+     * Get account
+     *
+     * @return \Sulu\Bundle\ContactBundle\Entity\Account
+     * @VirtualProperty
+     * @SerializedName("account")
+     */
+    public function getAccount()
+    {
+        return $this->entity->getAccount();
+    }
+
+    /**
+     * Set contact
+     *
+     * @param \Sulu\Bundle\ContactBundle\Entity\Contact $contact
+     * @return Order
+     */
+    public function setContact(\Sulu\Bundle\ContactBundle\Entity\Contact $contact = null)
+    {
+        $this->entity->setContact($contact);
+
+        return $this;
+    }
+
+    /**
+     * Get contact
+     *
+     * @return \Sulu\Bundle\ContactBundle\Entity\Contact
+     * @VirtualProperty
+     * @SerializedName("contact")
+     */
+    public function getContact()
+    {
+        return $this->entity->getContact();
+    }
+
+    /**
+     * Set responsibleContact
+     *
+     * @param \Sulu\Bundle\ContactBundle\Entity\Contact $responsibleContact
+     * @return Order
+     */
+    public function setResponsibleContact(\Sulu\Bundle\ContactBundle\Entity\Contact $responsibleContact = null)
+    {
+        $this->entity->setResponsibleContact();
+
+        return $this;
+    }
+
+    /**
+     * Get responsibleContact
+     *
+     * @return \Sulu\Bundle\ContactBundle\Entity\Contact
+     * @VirtualProperty
+     * @SerializedName("responsibleContact")
+     */
+    public function getResponsibleContact()
+    {
+        return $this->entity->getResponsibleContact();
+    }
+
+    /**
+     * Add item
+     *
+     * @param \Sulu\Bundle\Sales\CoreBundle\Entity\Item $item
+     * @return Order
+     */
+    public function addItem(\Sulu\Bundle\Sales\CoreBundle\Entity\Item $item)
+    {
+        $this->entity->addItem($item);
+
+        return $this;
+    }
+
+    /**
+     * Remove item
+     *
+     * @param \Sulu\Bundle\Sales\CoreBundle\Entity\Item $item
+     */
+    public function removeItem(\Sulu\Bundle\Sales\CoreBundle\Entity\Item $item)
+    {
+        $this->entity->removeItem($item);
+    }
+
+    /**
+     * Get items
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     *
+     * @VirtualProperty
+     * @SerializedName("items")
+     */
+    public function getItems()
+    {
+        $items = array();
+        foreach ($this->entity->getItems() as $item) {
+            $items[] = new Item($item, $this->locale);
+        }
+        return $items;
+    }
+
+    /**
+     * Set changer
+     *
+     * @param \Sulu\Bundle\SecurityBundle\Entity\User $changer
+     * @return Order
+     */
+    public function setChanger(\Sulu\Bundle\SecurityBundle\Entity\User $changer = null)
+    {
+        $this->entity->setChanger($changer);
+
+        return $this;
+    }
+
+    /**
+     * Get changer
+     *
+     * @return \Sulu\Bundle\SecurityBundle\Entity\User
+     * @VirtualProperty
+     * @SerializedName("changer")
+     */
+    public function getChanger()
+    {
+        return $this->entity->getChanger();
+    }
+
+    /**
+     * Set creator
+     *
+     * @param \Sulu\Bundle\SecurityBundle\Entity\User $creator
+     * @return Order
+     */
+    public function setCreator(\Sulu\Bundle\SecurityBundle\Entity\User $creator = null)
+    {
+        $this->entity->setCreator($creator);
+
+        return $this;
+    }
+
+    /**
+     * Get creator
+     *
+     * @return \Sulu\Bundle\SecurityBundle\Entity\User
+     * @VirtualProperty
+     * @SerializedName("creator")
+     */
+    public function getCreator()
+    {
+        return $this->entity->getCreator();
+    }
+
+    /**
+     * Set deliveryAddress
+     *
+     * @param \Sulu\Bundle\Sales\OrderBundle\Entity\OrderAddress $deliveryAddress
+     * @return Order
+     */
+    public function setDeliveryAddress(\Sulu\Bundle\Sales\OrderBundle\Entity\OrderAddress $deliveryAddress = null)
+    {
+        $this->entity->setDeliveryAddress($deliveryAddress);
+
+        return $this;
+    }
+
+    /**
+     * Get deliveryAddress
+     *
+     * @return \Sulu\Bundle\Sales\OrderBundle\Entity\OrderAddress
+     * @VirtualProperty
+     * @SerializedName("deliveryAddress")
+     */
+    public function getDeliveryAddress()
+    {
+        return $this->entity->getDeliveryAddress();
+    }
+
+    /**
+     * Set invoiceAddress
+     *
+     * @param \Sulu\Bundle\Sales\OrderBundle\Entity\OrderAddress $invoiceAddress
+     * @return Order
+     */
+    public function setInvoiceAddress(\Sulu\Bundle\Sales\OrderBundle\Entity\OrderAddress $invoiceAddress = null)
+    {
+        $this->entity->setInvoiceAddress($invoiceAddress);
+
+        return $this;
+    }
+
+    /**
+     * Get invoiceAddress
+     *
+     * @return \Sulu\Bundle\Sales\OrderBundle\Entity\OrderAddress
+     * @VirtualProperty
+     * @SerializedName("invoiceAddress")
+     */
+    public function getInvoiceAddress()
+    {
+        return $this->entity->getInvoiceAddress();
+    }
 }

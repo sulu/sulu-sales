@@ -25,9 +25,9 @@ class OrderController extends RestController implements ClassResourceInterface
 
     protected static $entityName = 'SuluSalesOrderBundle:Order';
 
+    protected static $entityKey = 'orders';
+
     /**
-     * Returns the repository object for AdvancedProduct
-     *
      * @return OrderManager
      */
     private function getManager()
@@ -83,10 +83,10 @@ class OrderController extends RestController implements ClassResourceInterface
     }
 
     /**
-     * Retrieves and shows a product with the given ID
+     * Retrieves and shows an order with the given ID
      *
      * @param \Symfony\Component\HttpFoundation\Request $request
-     * @param integer $id product ID
+     * @param integer $id order ID
      * @return \Symfony\Component\HttpFoundation\Response
      */
     public function getAction(Request $request, $id)
@@ -95,12 +95,90 @@ class OrderController extends RestController implements ClassResourceInterface
         $view = $this->responseGetById(
             $id,
             function ($id) use ($locale) {
-                /** @var Product $product */
-                $product = $this->getManager()->findByIdAndLocale($id, $locale);
+                /** @var Order $order */
+                $order = $this->getManager()->findByIdAndLocale($id, $locale);
 
-                return $product;
+                return $order;
             }
         );
+
+        return $this->handleView($view);
+    }
+
+    /**
+     * Creates and stores a new order.
+     *
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function postAction(Request $request)
+    {
+        try {
+            $order = $this->getManager()->save(
+                $request->request->all(),
+                $this->getLocale($request),
+                $this->getUser()->getId()
+            );
+
+            $view = $this->view($order, 200);
+        } catch (OrderDependencyNotFoundException $exc) {
+            $exception = new EntityNotFoundException($exc->getEntityName(), $exc->getId());
+            $view = $this->view($exception->toArray(), 400);
+        } catch (MissingOrderAttributeException $exc) {
+            $exception = new MissingArgumentException(self::$entityName, $exc->getAttribute());
+            $view = $this->view($exception->toArray(), 400);
+        }
+
+        return $this->handleView($view);
+    }
+
+    /**
+     * Change a order.
+     *
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     * @param integer $id order ID
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function putAction(Request $request, $id)
+    {
+        try {
+            $order = $this->getManager()->save(
+                $request->request->all(),
+                $this->getLocale($request),
+                $this->getUser()->getId(),
+                $id
+            );
+
+            $view = $this->view($order, 200);
+        } catch (OrderNotFoundException $exc) {
+            $exception = new EntityNotFoundException($exc->getEntityName(), $exc->getId());
+            $view = $this->view($exception->toArray(), 404);
+        } catch (OrderDependencyNotFoundException $exc) {
+            $exception = new EntityNotFoundException($exc->getEntityName(), $exc->getId());
+            $view = $this->view($exception->toArray(), 400);
+        } catch (MissingOrderAttributeException $exc) {
+            $exception = new MissingArgumentException(self::$entityName, $exc->getAttribute());
+            $view = $this->view($exception->toArray(), 400);
+        }
+
+        return $this->handleView($view);
+    }
+
+    /**
+     * Delete an order with the given id.
+     *
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     * @param integer $id orderid
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function deleteAction(Request $request, $id)
+    {
+        $locale = $this->getLocale($request);
+
+        $delete = function ($id) use ($locale) {
+            $this->getManager()->delete($id, $this->getUser()->getId());
+        };
+        $view = $this->responseDelete($id, $delete);
 
         return $this->handleView($view);
     }

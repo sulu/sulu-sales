@@ -10,7 +10,7 @@
 
 namespace Sulu\Bundle\Sales\OrderBundle\Order\Exception;
 
-class OrderNotFoundException extends OrderException
+class OrderDependencyNotFoundException extends OrderException
 {
     /**
      * The name of the object not found
@@ -24,11 +24,11 @@ class OrderNotFoundException extends OrderException
      */
     private $id;
 
-    public function __construct($id)
+    public function __construct($entityName, $id)
     {
-        $this->entityName = 'SuluSalesOrderBundle:Order';
+        $this->entityName = $entityName;
         $this->id = $id;
-        parent::__construct('The order with the id "' . $this->id . '" was not found.', 0);
+        parent::__construct('The order dependency "' . $this->entityName . ' with the id "' . $this->id . '" was not found.', 0);
     }
 
     /**

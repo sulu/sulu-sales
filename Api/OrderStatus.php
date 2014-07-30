@@ -35,11 +35,29 @@ class OrderStatus extends ApiWrapper
 
     /**
      * Returns the status
-     * @return int
+     * @return string
      * @VirtualProperty
-     * @SerializedName("id")
+     * @SerializedName("status")
      */
     public function getStatus() {
-        return $this->entity->getTranslation($this->locale)->getTranslation()->getName;
+        return $this->getTranslation($this->locale)->getName();
+    }
+
+    /**
+     * Returns the translation for the given locale
+     * @param string $locale
+     * @return OrderStatusTranslation
+     */
+    public function getTranslation($locale)
+    {
+        $translation = null;
+        foreach ($this->entity->getTranslations() as $translationData) {
+            if ($translationData->getLocale() == $locale) {
+                $translation = $translationData;
+                break;
+            }
+        }
+
+        return $translation;
     }
 }

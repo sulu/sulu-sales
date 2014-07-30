@@ -22,19 +22,19 @@
         <field name="desiredDeliveryDate" type="datetime" column="desiredDeliveryDate" nullable="true"></field>
         <field name="taxfree" type="boolean" column="taxfree" nullable="true"></field>
 
-        <one-to-one field="deliveryAddress" target-entity="Sulu\Bundle\Sales\OrderBundle\Entity\OrderAddress" inversed-by="order">
+        <one-to-one field="deliveryAddress" target-entity="Sulu\Bundle\Sales\OrderBundle\Entity\OrderAddress">
             <join-columns>
                 <join-column name="idOrderAddressesDelivery"/>
             </join-columns>
         </one-to-one>
-        <one-to-one field="invoiceAddress" target-entity="Sulu\Bundle\Sales\OrderBundle\Entity\OrderAddress" inversed-by="order">
+        <one-to-one field="invoiceAddress" target-entity="Sulu\Bundle\Sales\OrderBundle\Entity\OrderAddress">
             <join-columns>
                 <join-column name="idOrderAddressesInvoice"/>
             </join-columns>
         </one-to-one>
         <many-to-one field="status" target-entity="Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatus" inversed-by="order">
             <join-columns>
-                <join-column name="idOrderStatus" referenced-column-name="id" on-delete="SET NULL"/>
+                <join-column name="idOrderStatus" referenced-column-name="id" nullable="false"/>
             </join-columns>
         </many-to-one>
         <many-to-one field="account" target-entity="Sulu\Bundle\ContactBundle\Entity\Account">

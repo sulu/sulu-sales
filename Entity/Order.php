@@ -3,6 +3,7 @@
 namespace Sulu\Bundle\Sales\OrderBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Sulu\Component\Security\UserInterface;
 
 /**
  * Order
@@ -95,12 +96,12 @@ class Order
     private $items;
 
     /**
-     * @var \Sulu\Bundle\SecurityBundle\Entity\User
+     * @var UserInterface
      */
     private $changer;
 
     /**
-     * @var \Sulu\Bundle\SecurityBundle\Entity\User
+     * @var UserInterface
      */
     private $creator;
 
@@ -501,12 +502,10 @@ class Order
     }
 
     /**
-     * Set changer
-     *
-     * @param \Sulu\Bundle\SecurityBundle\Entity\User $changer
-     * @return Order
+     * @param UserInterface $changer
+     * @return $this
      */
-    public function setChanger(\Sulu\Bundle\SecurityBundle\Entity\User $changer = null)
+    public function setChanger(UserInterface $changer = null)
     {
         $this->changer = $changer;
     
@@ -516,7 +515,7 @@ class Order
     /**
      * Get changer
      *
-     * @return \Sulu\Bundle\SecurityBundle\Entity\User 
+     * @return UserInterface
      */
     public function getChanger()
     {
@@ -526,10 +525,10 @@ class Order
     /**
      * Set creator
      *
-     * @param \Sulu\Bundle\SecurityBundle\Entity\User $creator
+     * @param UserInterface $creator
      * @return Order
      */
-    public function setCreator(\Sulu\Bundle\SecurityBundle\Entity\User $creator = null)
+    public function setCreator(UserInterface $creator = null)
     {
         $this->creator = $creator;
     
@@ -539,7 +538,7 @@ class Order
     /**
      * Get creator
      *
-     * @return \Sulu\Bundle\SecurityBundle\Entity\User 
+     * @return UserInterface 
      */
     public function getCreator()
     {

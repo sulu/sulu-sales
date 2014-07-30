@@ -52,7 +52,7 @@ class OrderAddress
     /**
      * @var string
      */
-    private $plz;
+    private $zip;
 
     /**
      * @var string
@@ -275,26 +275,26 @@ class OrderAddress
     }
 
     /**
-     * Set plz
+     * Set zip
      *
-     * @param string $plz
+     * @param string $zip
      * @return OrderAddress
      */
-    public function setPlz($plz)
+    public function setZip($zip)
     {
-        $this->plz = $plz;
+        $this->zip = $zip;
     
         return $this;
     }
 
     /**
-     * Get plz
+     * Get zip
      *
      * @return string 
      */
-    public function getPlz()
+    public function getZip()
     {
-        return $this->plz;
+        return $this->zip;
     }
 
     /**
@@ -443,5 +443,33 @@ class OrderAddress
     public function getId()
     {
         return $this->id;
+    }
+    /**
+     * @var \Sulu\Bundle\ContactBundle\Entity\Address
+     */
+    private $address;
+
+
+    /**
+     * Set address
+     *
+     * @param \Sulu\Bundle\ContactBundle\Entity\Address $address
+     * @return OrderAddress
+     */
+    public function setAddress(\Sulu\Bundle\ContactBundle\Entity\Address $address = null)
+    {
+        $this->address = $address;
+    
+        return $this;
+    }
+
+    /**
+     * Get address
+     *
+     * @return \Sulu\Bundle\ContactBundle\Entity\Address 
+     */
+    public function getAddress()
+    {
+        return $this->address;
     }
 }

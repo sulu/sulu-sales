@@ -14,12 +14,18 @@
         <field name="addition" type="string" column="addition" length="255" nullable="true"/>
         <field name="number" type="string" column="number" length="25" nullable="false"/>
         <field name="city" type="string" column="city" length="255" nullable="false"/>
-        <field name="plz" type="string" column="plz" length="10" nullable="false"/>
+        <field name="zip" type="string" column="zip" length="10" nullable="false"/>
         <field name="state" type="string" column="state" length="255" nullable="true"/>
         <field name="country" type="string" column="country" length="255" nullable="false"/>
         <field name="box" type="string" column="box" length="255" nullable="true"/>
         <field name="uid" type="string" column="uid" length="255" nullable="true"/>
         <field name="phone" type="string" column="phone" length="255" nullable="true"/>
         <field name="phoneMobile" type="string" column="phoneMobile" length="255" nullable="true"/>
+
+        <one-to-one field="address" target-entity="Sulu\Bundle\ContactBundle\Entity\Address">
+            <join-columns>
+                <join-column name="idAddresses" referenced-column-name="id" on-delete="SET NULL" nullable="true"/>
+            </join-columns>
+        </one-to-one>
     </entity>
 </doctrine-mapping>
