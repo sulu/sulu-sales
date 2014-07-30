@@ -28,6 +28,12 @@ doctrine:
             Sulu\Component\Security\UserInterface: Sulu\Bundle\TestBundle\Entity\TestUser
             Sulu\Bundle\ProductBundle\Entity\ProductInterface: Sulu\Bundle\ProductBundle\Entity\Product
 
+
+stof_doctrine_extensions:
+    orm:
+        default:
+            tree: true
+
 monolog:
     handlers:
         main:

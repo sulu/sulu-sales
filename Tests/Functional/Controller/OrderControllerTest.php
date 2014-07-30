@@ -17,6 +17,7 @@ use Sulu\Bundle\ContactBundle\Entity\Account;
 use Sulu\Bundle\ContactBundle\Entity\Address;
 use Sulu\Bundle\ContactBundle\Entity\AddressType;
 use Sulu\Bundle\ContactBundle\Entity\Contact;
+use Sulu\Bundle\ContactBundle\Entity\ContactTitle;
 use Sulu\Bundle\ContactBundle\Entity\Country;
 use Sulu\Bundle\ContactBundle\Entity\Phone;
 use Sulu\Bundle\ContactBundle\Entity\PhoneType;
@@ -186,6 +187,8 @@ class OrderControllerTest extends DatabaseTestCase
             self::$em->getClassMetadata('Sulu\Bundle\ContactBundle\Entity\AddressType'),
             self::$em->getClassMetadata('Sulu\Bundle\ContactBundle\Entity\BankAccount'),
             self::$em->getClassMetadata('Sulu\Bundle\ContactBundle\Entity\Contact'),
+            self::$em->getClassMetadata('Sulu\Bundle\ContactBundle\Entity\ContactTitle'),
+            self::$em->getClassMetadata('Sulu\Bundle\ContactBundle\Entity\Position'),
             self::$em->getClassMetadata('Sulu\Bundle\ContactBundle\Entity\ContactLocale'),
             self::$em->getClassMetadata('Sulu\Bundle\ContactBundle\Entity\Country'),
             self::$em->getClassMetadata('Sulu\Bundle\ContactBundle\Entity\ContactAddress'),
@@ -211,13 +214,14 @@ class OrderControllerTest extends DatabaseTestCase
 
     private function setUpTestData()
     {
-//        // account
-//        $this->account = new Account();
-//        $this->account->setName('Company');
-//        $this->account->setCreated(new DateTime());
-//        $this->account->setChanged(new DateTime());
-//        $this->account->setType(Account::TYPE_BASIC);
-//        $this->account->setDisabled(0);
+        // account
+        $this->account = new Account();
+        $this->account->setName('Company');
+        $this->account->setCreated(new DateTime());
+        $this->account->setChanged(new DateTime());
+        $this->account->setType(Account::TYPE_BASIC);
+        $this->account->setUid('uid-123');
+        $this->account->setDisabled(0);
 
         // country
         $country = new Country();
@@ -245,11 +249,14 @@ class OrderControllerTest extends DatabaseTestCase
         $this->phone->setPhone('+43 123 / 456 789');
         $this->phone->setPhoneType($phoneType);
 
+        // title
+        $title = new ContactTitle();
+        $title->setTitle('Dr');
         // contact
         $this->contact = new Contact();
         $this->contact->setFirstName('John');
         $this->contact->setLastName('Doe');
-        $this->contact->setTitle('Dr');
+        $this->contact->setTitle($title);
         $this->contact->setCreated(new DateTime());
         $this->contact->setChanged(new DateTime());
 
@@ -264,7 +271,7 @@ class OrderControllerTest extends DatabaseTestCase
         $this->orderAddressDelivery = new OrderAddress();
         $this->orderAddressDelivery->setFirstName($this->contact->getFirstName());
         $this->orderAddressDelivery->setLastName($this->contact->getLastName());
-        $this->orderAddressDelivery->setTitle($this->contact->getTitle());
+        $this->orderAddressDelivery->setTitle($this->contact->getTitle()->getTitle());
         $this->orderAddressDelivery->setStreet($this->address->getStreet());
         $this->orderAddressDelivery->setNumber($this->address->getNumber());
         $this->orderAddressDelivery->setAddition($this->address->getAddition());
@@ -273,12 +280,13 @@ class OrderControllerTest extends DatabaseTestCase
         $this->orderAddressDelivery->setState($this->address->getState());
         $this->orderAddressDelivery->setCountry($this->address->getCountry()->getName());
         $this->orderAddressDelivery->setBox($this->address->getPostboxNumber());
-//        $this->orderAddressDelivery->setAccountName($this->account->getName());
-//        $this->orderAddressDelivery->setUid($this->account->getUid());
+        $this->orderAddressDelivery->setAccountName($this->account->getName());
+        $this->orderAddressDelivery->setUid($this->account->getUid());
         $this->orderAddressDelivery->setPhone($this->phone->getPhone());
         $this->orderAddressDelivery->setPhoneMobile('+43 123 / 456');
         $this->orderAddressDelivery->setAddress($this->address);
         // clone address for invoice
+        $this->orderAddressInvoice = clone $this->orderAddressDelivery;
         $this->orderAddressInvoice = clone $this->orderAddressDelivery;
 
         // order
@@ -364,7 +372,8 @@ class OrderControllerTest extends DatabaseTestCase
 
         $this->order->addItem($this->item);
 
-//        self::$em->persist($this->account);
+        self::$em->persist($this->account);
+        self::$em->persist($title);
         self::$em->persist($country);
         self::$em->persist($addressType);
         self::$em->persist($this->address);
@@ -421,7 +430,7 @@ class OrderControllerTest extends DatabaseTestCase
         $this->assertEquals($this->orderAddressDelivery->getId(), $response->deliveryAddress->id);
         $this->assertEquals('John', $response->deliveryAddress->firstName);
         $this->assertEquals('Doe', $response->deliveryAddress->lastName);
-        $this->assertEquals('Account1', $response->deliveryAddress->accountName);
+        $this->assertEquals('Company', $response->deliveryAddress->accountName);
         $this->assertEquals('Dr', $response->deliveryAddress->title);
         $this->assertEquals('Sample-Street', $response->deliveryAddress->street);
         $this->assertEquals('Entrance 2', $response->deliveryAddress->addition);

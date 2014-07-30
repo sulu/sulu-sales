@@ -44,6 +44,16 @@ class OrderStatus
     }
 
     /**
+     * @param $id
+     * @return $this
+     */
+    public function setId($id)
+    {
+        $this->id = $id;;
+        return $this;
+    }
+
+    /**
      * Add order
      *
      * @param \Sulu\Bundle\Sales\OrderBundle\Entity\Order $order

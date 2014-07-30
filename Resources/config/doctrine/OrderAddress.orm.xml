@@ -22,10 +22,10 @@
         <field name="phone" type="string" column="phone" length="255" nullable="true"/>
         <field name="phoneMobile" type="string" column="phoneMobile" length="255" nullable="true"/>
 
-        <one-to-one field="address" target-entity="Sulu\Bundle\ContactBundle\Entity\Address">
+        <many-to-one field="address" target-entity="Sulu\Bundle\ContactBundle\Entity\Address">
             <join-columns>
                 <join-column name="idAddresses" referenced-column-name="id" on-delete="SET NULL" nullable="true"/>
             </join-columns>
-        </one-to-one>
+        </many-to-one>
     </entity>
 </doctrine-mapping>

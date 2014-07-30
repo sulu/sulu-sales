@@ -11,20 +11,23 @@
 namespace Sulu\Bundle\Sales\OrderBundle\Order;
 
 use Doctrine\Common\Persistence\ObjectManager;
+use Sulu\Bundle\ContactBundle\Entity\Account;
+use Sulu\Bundle\ContactBundle\Entity\Address;
 use Sulu\Bundle\ContactBundle\Entity\ContactRepository;
+use Sulu\Bundle\Sales\OrderBundle\Entity\OrderAddress;
 use Sulu\Bundle\Sales\OrderBundle\Entity\OrderRepository;
 use Sulu\Bundle\Sales\OrderBundle\Order\Exception\MissingOrderAttributeException;
 use Sulu\Bundle\Sales\OrderBundle\Order\Exception\OrderNotFoundException;
-use Sulu\Component\Manager\AbstractManager;
 use Sulu\Component\Rest\ListBuilder\Doctrine\FieldDescriptor\DoctrineFieldDescriptor;
 use Sulu\Bundle\Sales\OrderBundle\Api\Order;
 use Sulu\Component\Security\UserRepositoryInterface;
 use DateTime;
 
-class OrderManager extends AbstractManager
+class OrderManager
 {
     protected static $orderEntityName = 'SuluSalesOrderBundle:Order';
     protected static $contactEntityName = 'SuluContactBundle:Contact';
+    protected static $addressEntityName = 'SuluContactBundle:Address';
     protected static $accountEntityName = 'SuluContactBundle:Account';
     protected static $orderStatusEntityName = 'SuluSalesOrderBundle:OrderStatus';
     protected static $orderStatusTranslationEntityName = 'SuluSalesOrderBundle:OrderStatusTranslation';
@@ -108,15 +111,6 @@ class OrderManager extends AbstractManager
             $order->setDesiredDeliveryDate($desiredDeliveryDate);
         }
 
-        // TODO: relational data
-        if ($this->checkIfSet('deliveryAddress', $data)) {
-
-        }
-
-        $order->setDeliveryAddress($this->getProperty($data, 'deliveryAddress', $order->getDeliveryAddress()));
-        $order->setInvoiceAddress($this->getProperty($data, 'invoiceAddress', $order->getInvoiceAddress()));
-
-
         // TODO: handle
         $order->setTermsOfDelivery($this->getProperty($data, 'termsOfDelivery', $order->getTermsOfDelivery()));
         $order->setTermsOfPayment($this->getProperty($data, 'termsOfPayment', $order->getTermsOfPayment()));
@@ -134,6 +128,10 @@ class OrderManager extends AbstractManager
         $this->addContactRelation($data, 'responsibleContact', function($contact) use ($order) {
             $order->setResponsibleContact($contact);
         });
+
+        // deliveryAddress
+        $deliveryAddress = new OrderAddress();
+        $this->addAddressRelation($data['deliveryAddress'], $contact);
 
         $order->setChanged(new DateTime());
         $order->setChanger($user);
@@ -241,7 +239,6 @@ class OrderManager extends AbstractManager
     private function checkRequiredData($data, $isNew)
     {
         // check if contact and status are set
-//        $this->checkDataSet($data, 'status', $isNew) && $this->checkDataSet($data['status'], 'id', $isNew);
         $this->checkDataSet($data, 'contact', $isNew) && $this->checkDataSet($data['contact'], 'id', $isNew);
         $this->checkDataSet($data, 'deliveryAddress', $isNew) && $this->checkDataSet($data['deliveryAddress'], 'id', $isNew);
         $this->checkDataSet($data, 'invoiceAddress', $isNew) && $this->checkDataSet($data['invoiceAddress'], 'id', $isNew);
@@ -290,5 +287,69 @@ class OrderManager extends AbstractManager
             }
             $addCallback($contact);
         }
+    }
+
+    /**
+     * @param $addressData
+     * @param Contact $contact
+     * @param Account $account
+     * @throws OrderDependencyNotFoundException
+     */
+    private function createOrderAddress($addressData, Contact $contact, Account $account) {
+        if (array_key_exists('id', $addressData)) {
+
+            $orderAddress = new OrderAddress();
+
+            // add contact data
+            $orderAddress->setFirstName($contact->getFirstName());
+            $orderAddress->setLastName($contact->getLastName());
+            $orderAddress->setTitle($contact->getTitle());
+
+            // add account data
+            if ($account) {
+                $orderAddress->setAccountName($account->getName());
+                $orderAddress->setUid($account->getUid());
+            }
+
+            // TODO: add phone
+
+            /** @var Address $address */
+            $addressId = $addressData['id'];
+            $address = $this->em->getRepository(self::$addressEntityName)->find($addressId);
+            if (!$address) {
+                throw new OrderDependencyNotFoundException(self::$addressEntityName, $addressId);
+            }
+            $this->copyAddressToOrderAddress($orderAddress, $address);
+        }
+    }
+
+    /**
+     * copies address data to order address
+     * @param OrderAddress $orderAddress
+     * @param Address $address
+     */
+    private function copyAddressToOrderAddress(OrderAddress &$orderAddress, Address $address)
+    {
+        $orderAddress->setAddress($address);
+        $orderAddress->setStreet($address->getStreet());
+        $orderAddress->setNumber($address->getNumber());
+        $orderAddress->setAddition($address->getAddition());
+        $orderAddress->setCity($address->getCity());
+        $orderAddress->setZip($address->getZip());
+        $orderAddress->setState($address->getState());
+        $orderAddress->setCountry($address->getCountry()->getName());
+        $orderAddress->setBox(sprintf('%s %s %s', $address->getPostboxNumber(), $address->getPostboxPostcode(), $address->getPostboxCity()));
+    }
+
+    /**
+     * Returns the entry from the data with the given key, or the given default value, if the key does not exist
+     * @param array $data
+     * @param string $key
+     * @param string $default
+     * @return mixed
+     */
+    private function getProperty(array $data, $key, $default = null)
+    {
+        return array_key_exists($key, $data) ? $data[$key] : $default;
     }
 }
