@@ -13,10 +13,12 @@ namespace Sulu\Bundle\Sales\OrderBundle\Order;
 use Doctrine\Common\Persistence\ObjectManager;
 use Sulu\Bundle\ContactBundle\Entity\Account;
 use Sulu\Bundle\ContactBundle\Entity\Address;
+use Sulu\Bundle\ContactBundle\Entity\Contact;
 use Sulu\Bundle\ContactBundle\Entity\ContactRepository;
 use Sulu\Bundle\Sales\OrderBundle\Entity\OrderAddress;
 use Sulu\Bundle\Sales\OrderBundle\Entity\OrderRepository;
 use Sulu\Bundle\Sales\OrderBundle\Order\Exception\MissingOrderAttributeException;
+use Sulu\Bundle\Sales\OrderBundle\Order\Exception\OrderDependencyNotFoundException;
 use Sulu\Bundle\Sales\OrderBundle\Order\Exception\OrderNotFoundException;
 use Sulu\Component\Rest\ListBuilder\Doctrine\FieldDescriptor\DoctrineFieldDescriptor;
 use Sulu\Bundle\Sales\OrderBundle\Api\Order;
@@ -129,27 +131,64 @@ class OrderManager
             $order->setResponsibleContact($contact);
         });
 
-        // deliveryAddress
-        $deliveryAddress = new OrderAddress();
-        $this->addAddressRelation($data['deliveryAddress'], $contact);
+        $accountData = $this->getProperty($data, 'account');
+        if ($accountData) {
+            if (!array_key_exists('id', $accountData)) {
+                throw new MissingOrderAttributeException('account.id');
+            }
+            // FIXME: get inject repository class
+            $account = $this->em->getRepository(self::$accountEntityName)->find($accountData['id']);
+            if (!$account) {
+                throw new OrderDependencyNotFoundException(self::$accountEntityName, $accountData['id']);
+            }
+        }
 
-        $order->setChanged(new DateTime());
-        $order->setChanger($user);
-
+        // create order (POST)
         if ($order->getId() == null) {
             $order->setCreated(new DateTime());
             $order->setCreator($user);
             $this->em->persist($order->getEntity());
+
+            // create OrderAddress
+            $deliveryAddress = new OrderAddress();
+            $invoiceAddress = new OrderAddress();
+            // persist entities
+            $this->em->persist($deliveryAddress);
+            $this->em->persist($invoiceAddress);
+            // assign to order
+            $order->setDeliveryAddress($deliveryAddress);
+            $order->setInvoiceAddress($invoiceAddress);
         }
+
+        // set OrderAddress data
+        $this->setOrderAddress($order->getDeliveryAddress(), $data['deliveryAddress']['id'], $order->getContact(), $account);
+        $this->setOrderAddress($order->getInvoiceAddress(), $data['invoiceAddress']['id'], $order->getContact(), $account);
+
+
+        $order->setChanged(new DateTime());
+        $order->setChanger($user);
 
         $this->em->flush();
 
         return $order;
     }
 
-    public function delete()
+    /**
+     * deletes an order
+     * @param $id
+     * @throws Exception\OrderNotFoundException
+     */
+    public function delete($id)
     {
+        // TODO: move order to an archive instead of remove it from database
+        $order= $this->orderRepository->findById($id);
 
+        if (!$order) {
+            throw new OrderNotFoundException($id);
+        }
+
+        $this->em->remove($order);
+        $this->em->flush();
     }
 
     /**
@@ -290,16 +329,14 @@ class OrderManager
     }
 
     /**
-     * @param $addressData
+     * @param OrderAddress $orderAddress
+     * @param $addressId
      * @param Contact $contact
      * @param Account $account
      * @throws OrderDependencyNotFoundException
      */
-    private function createOrderAddress($addressData, Contact $contact, Account $account) {
-        if (array_key_exists('id', $addressData)) {
-
-            $orderAddress = new OrderAddress();
-
+    private function setOrderAddress(OrderAddress $orderAddress, $addressId, Contact $contact, Account $account = null) {
+        // check if address with id can be found
             // add contact data
             $orderAddress->setFirstName($contact->getFirstName());
             $orderAddress->setLastName($contact->getLastName());
@@ -314,13 +351,11 @@ class OrderManager
             // TODO: add phone
 
             /** @var Address $address */
-            $addressId = $addressData['id'];
             $address = $this->em->getRepository(self::$addressEntityName)->find($addressId);
             if (!$address) {
                 throw new OrderDependencyNotFoundException(self::$addressEntityName, $addressId);
             }
             $this->copyAddressToOrderAddress($orderAddress, $address);
-        }
     }
 
     /**
@@ -338,7 +373,9 @@ class OrderManager
         $orderAddress->setZip($address->getZip());
         $orderAddress->setState($address->getState());
         $orderAddress->setCountry($address->getCountry()->getName());
-        $orderAddress->setBox(sprintf('%s %s %s', $address->getPostboxNumber(), $address->getPostboxPostcode(), $address->getPostboxCity()));
+        // TODO: check whats really needed at postbox address
+//        $orderAddress->setBox(sprintf('%s %s %s', $address->getPostboxNumber(), $address->getPostboxPostcode(), $address->getPostboxCity()));
+        $orderAddress->setBox($address->getPostboxNumber());
     }
 
     /**

@@ -66,9 +66,17 @@ class OrderControllerTest extends DatabaseTestCase
      */
     private $address;
     /**
+     * @var Address
+     */
+    private $address2;
+    /**
      * @var Contact
      */
     private $contact;
+    /**
+     * @var Contact
+     */
+    private $contact2;
     /**
      * @var Order
      */
@@ -204,8 +212,6 @@ class OrderControllerTest extends DatabaseTestCase
             self::$em->getClassMetadata('Sulu\Bundle\TagBundle\Entity\Tag'),
             self::$em->getClassMetadata('Sulu\Bundle\ContactBundle\Entity\TermsOfPayment'),
             self::$em->getClassMetadata('Sulu\Bundle\ContactBundle\Entity\TermsOfDelivery'),
-
-
         );
 
         self::$tool->dropSchema(self::$entities);
@@ -241,6 +247,14 @@ class OrderControllerTest extends DatabaseTestCase
         $this->address->setCountry($country);
         $this->address->setPostboxNumber('Box2');
         $this->address->setAddressType($addressType);
+        // address
+        $this->address2 = new Address();
+        $this->address2->setStreet('Street');
+        $this->address2->setNumber('2');
+        $this->address2->setCity('Utopia');
+        $this->address2->setZip('1');
+        $this->address2->setCountry($country);
+        $this->address2->setAddressType($addressType);
 
         // phone
         $phoneType = new PhoneType();
@@ -259,6 +273,12 @@ class OrderControllerTest extends DatabaseTestCase
         $this->contact->setTitle($title);
         $this->contact->setCreated(new DateTime());
         $this->contact->setChanged(new DateTime());
+        // contact
+        $this->contact2 = new Contact();
+        $this->contact2->setFirstName('Johanna');
+        $this->contact2->setLastName('Dole');
+        $this->contact2->setCreated(new DateTime());
+        $this->contact2->setChanged(new DateTime());
 
         // order status
         $this->orderStatus = new OrderStatus();
@@ -377,9 +397,11 @@ class OrderControllerTest extends DatabaseTestCase
         self::$em->persist($country);
         self::$em->persist($addressType);
         self::$em->persist($this->address);
+        self::$em->persist($this->address2);
         self::$em->persist($phoneType);
         self::$em->persist($this->phone);
         self::$em->persist($this->contact);
+        self::$em->persist($this->contact2);
         self::$em->persist($this->order);
         self::$em->persist($order2);
         self::$em->persist($this->orderStatus);
@@ -500,98 +522,84 @@ class OrderControllerTest extends DatabaseTestCase
             '/api/orders/1',
             array(
                 'number' => 'EvilNumber',
-                'supplierName' => 'Mr.Supplier',
                 'contact' => array(
+                    'id' => 2
+                ),
+                'account' => array(
                     'id' => 1
                 ),
-                'invoiceAddress' => 1,
-                'deliveryAddress' => 1,
-
+                'invoiceAddress' => array(
+                    'id' => 1
+                ),
+                'deliveryAddress' => array(
+                    'id' => 2
+                )
             )
         );
         $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
 
-        $this->client->request('GET', '/api/order/1');
+        $this->client->request('GET', '/api/orders/1');
         $response = json_decode($this->client->getResponse()->getContent());
         $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
-        $this->assertEquals('EnglishProductTranslationNameNew-1', $response->name);
-        $this->assertEquals('EvilCode', $response->code);
         $this->assertEquals('EvilNumber', $response->number);
-        $this->assertEquals('EvilKnievel', $response->manufacturer);
+
+        $this->checkOrderAddress($response->invoiceAddress, $this->address, $this->contact2, $this->account);
+        $this->checkOrderAddress($response->deliveryAddress, $this->address2, $this->contact2, $this->account);
+
     }
 
     public function testPutNotExisting()
     {
-//        $this->client->request('PUT', '/api/products/666', array('code' => 'MissingProduct'));
-//        $response = json_decode($this->client->getResponse()->getContent());
-//
-//        $this->assertEquals(404, $this->client->getResponse()->getStatusCode());
-//
-//        $this->assertEquals(
-//            'Entity with the type "SuluProductBundle:Product" and the id "666" not found.',
-//            $response->message
-//        );
+        $this->client->request('PUT', '/api/orders/666', array('code' => 'MissingProduct'));
+        $response = json_decode($this->client->getResponse()->getContent());
+
+        $this->assertEquals(404, $this->client->getResponse()->getStatusCode());
+
+        $this->assertEquals(
+            'Entity with the type "SuluSalesOrderBundle:Order" and the id "666" not found.',
+            $response->message
+        );
     }
 
-    public function testPutMissingNumber()
-    {
-    }
     public function testPost($testParent = false)
     {
-//        $data = array(
-//            'code' => 'CODE:0815',
-//            'name' => 'English Product',
-//            'shortDescription' => 'This is an english product.',
-//            'longDescription' => 'Indeed, it\'s a real english product.',
-//            'number' => 'NUMBER:0815',
-//            'manufacturer' => $this->product1->getManufacturer(),
-//            'manufacturerCountry' => array(
-//                'id' => $this->product1->getManufacturerCountry()
-//            ),
-//            'cost' => 666.66,
-//            'priceInfo' => 'Preis Info',
-//            'status' => array(
-//                'id' => $this->productStatus1->getId()
-//            ),
-//            'type' => array(
-//                'id' => $this->type1->getId()
-//            ),
-//            'attributeSet' => array(
-//                'id' => $this->attributeSet1->getId()
-//            )
-//        );
-//
-//        if ($testParent) {
-//            $data['parent']['id'] = $this->product2->getId();
-//        }
-//
-//        $this->client->request('POST', '/api/products', $data);
-//        $response = json_decode($this->client->getResponse()->getContent());
-//
-//        $this->client->request('GET', '/api/products/' . $response->id);
-//        $response = json_decode($this->client->getResponse()->getContent());
-//        $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
-//
-//        $this->assertEquals('English Product', $response->name);
-//        $this->assertEquals('This is an english product.', $response->shortDescription);
-//        $this->assertEquals('Indeed, it\'s a real english product.', $response->longDescription);
-//
-//        $this->assertEquals('CODE:0815', $response->code);
-//        $this->assertEquals('NUMBER:0815', $response->number);
-//        $this->assertEquals(666.66, $response->cost);
-//        $this->assertEquals('Preis Info', $response->priceInfo);
-//        $this->assertEquals($this->product1->getManufacturer(), $response->manufacturer);
-//
-//        $this->assertEquals('EnglishProductStatus-1', $response->status->name);
-//
-//        $this->assertEquals('EnglishProductType-1', $response->type->name);
-//
-//        $this->assertEquals($this->attributeSet1->getId(), $response->attributeSet->id);
-//        $this->assertEquals('EnglishTemplate-1', $response->attributeSet->name);
-//
-//        if ($testParent) {
-//            $this->assertEquals($this->product2->getId(), $response->parent->id);
-//        }
+        $data = array(
+            'number' => 'NUMBER:0815',
+            'supplierName' => $this->account->getName(),
+            'account' => array(
+                'id' => 1
+            ),
+            'contact' => array(
+                'id' => 1
+            ),
+            'invoiceAddress' => array(
+                'id' => 1
+            ),
+            'deliveryAddress' => array(
+                'id' => 2
+            )
+        );
+
+        $this->client->request('POST', '/api/orders', $data);
+        $response = json_decode($this->client->getResponse()->getContent());
+
+        $this->client->request('GET', '/api/orders/' . $response->id);
+        $response = json_decode($this->client->getResponse()->getContent());
+        $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
+
+        $this->assertEquals('NUMBER:0815', $response->number);
+        $this->assertEquals($this->product1->getManufacturer(), $response->manufacturer);
+
+        $this->assertEquals('EnglishProductStatus-1', $response->status->name);
+
+        $this->assertEquals('EnglishProductType-1', $response->type->name);
+
+        $this->assertEquals($this->attributeSet1->getId(), $response->attributeSet->id);
+        $this->assertEquals('EnglishTemplate-1', $response->attributeSet->name);
+
+        if ($testParent) {
+            $this->assertEquals($this->product2->getId(), $response->parent->id);
+        }
     }
 
     public function testDeleteById()
@@ -601,5 +609,40 @@ class OrderControllerTest extends DatabaseTestCase
 //
 //        $this->client->request('GET', '/api/products/1');
 //        $this->assertEquals('404', $this->client->getResponse()->getStatusCode());
+    }
+
+    // compares an order-address response with its origin entities
+    private function checkOrderAddress($orderAddress, Address $address, Contact $contact, Account $account = null) {
+        // contact
+        $this->assertEquals($contact->getFirstName(), $orderAddress->firstName);
+        $this->assertEquals($contact->getLastName(), $orderAddress->lastName);
+        if ($contact->getTitle() !== null) {
+            $this->assertEquals($contact->getTitle()->getTitle(), $orderAddress->title);
+        }
+
+        // address
+        $this->assertEqualsIfExists($address->getStreet(), $orderAddress, 'street');
+        $this->assertEqualsIfExists($address->getAddition(), $orderAddress, 'addition');
+        $this->assertEqualsIfExists($address->getNumber(), $orderAddress, 'number');
+        $this->assertEqualsIfExists($address->getCity(), $orderAddress, 'city');
+        $this->assertEqualsIfExists($address->getZip(), $orderAddress, 'zip');
+        $this->assertEqualsIfExists($address->getCountry()->getName(), $orderAddress, 'country');
+        $this->assertEqualsIfExists($address->getPostboxNumber(), $orderAddress, 'box');
+
+        // account
+        if ($account) {
+            $this->assertEqualsIfExists($account->getName(), $orderAddress, 'accountName');
+            $this->assertEqualsIfExists($account->getUid(), $orderAddress, 'uid');
+        }
+
+        // TODO: check phone
+//        $this->assertEquals('+43 123 / 456 789', $orderAddress->phone);
+//        $this->assertEquals('+43 123 / 456', $orderAddress->phoneMobile);
+    }
+
+    private function assertEqualsIfExists($firstValue, $secondObject, $value) {
+        if ($firstValue !== null) {
+            $this->assertEquals($firstValue, $secondObject->$value);
+        }
     }
 }

@@ -29,19 +29,20 @@ class LoadOrderStatus extends AbstractFixture implements OrderedFixtureInterface
         $status->setId(1);
         $this->createStatusTranslation($manager, $status, 'Created', 'en');
         $this->createStatusTranslation($manager, $status, 'Erstellt', 'de');
+        $manager->persist($status);
 
         // cart
         $status = new OrderStatus();
         $status->setId(2);
         $this->createStatusTranslation($manager, $status, 'In Cart', 'en');
         $this->createStatusTranslation($manager, $status, 'Im Warenkorb', 'de');
+        $manager->persist($status);
 
         // confirmed
         $status = new OrderStatus();
         $status->setId(3);
         $this->createStatusTranslation($manager, $status, 'Confirmed', 'en');
         $this->createStatusTranslation($manager, $status, 'Bestätigt', 'de');
-
         $manager->persist($status);
 
         $manager->flush();
