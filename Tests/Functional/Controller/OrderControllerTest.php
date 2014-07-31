@@ -604,11 +604,11 @@ class OrderControllerTest extends DatabaseTestCase
 
     public function testDeleteById()
     {
-//        $this->client->request('DELETE', '/api/products/1');
-//        $this->assertEquals('204', $this->client->getResponse()->getStatusCode());
-//
-//        $this->client->request('GET', '/api/products/1');
-//        $this->assertEquals('404', $this->client->getResponse()->getStatusCode());
+        $this->client->request('DELETE', '/api/orders/1');
+        $this->assertEquals('204', $this->client->getResponse()->getStatusCode());
+
+        $this->client->request('GET', '/api/orders/1');
+        $this->assertEquals('404', $this->client->getResponse()->getStatusCode());
     }
 
     // compares an order-address response with its origin entities
