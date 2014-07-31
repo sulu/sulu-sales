@@ -8,6 +8,7 @@ use Sulu\Bundle\Sales\OrderBundle\Entity\Order as Entity;
 use Sulu\Component\Rest\ApiWrapper;
 use Hateoas\Configuration\Annotation\Relation;
 use JMS\Serializer\Annotation\SerializedName;
+use Sulu\Component\Security\UserInterface;
 use DateTime;
 
 /**
@@ -439,10 +440,10 @@ class Order extends ApiWrapper
     /**
      * Set changer
      *
-     * @param \Sulu\Bundle\SecurityBundle\Entity\User $changer
+     * @param UserInterface $changer
      * @return Order
      */
-    public function setChanger(\Sulu\Bundle\SecurityBundle\Entity\User $changer = null)
+    public function setChanger(UserInterface $changer = null)
     {
         $this->entity->setChanger($changer);
 
@@ -452,7 +453,7 @@ class Order extends ApiWrapper
     /**
      * Get changer
      *
-     * @return \Sulu\Bundle\SecurityBundle\Entity\User
+     * @return UserInterface
      * @VirtualProperty
      * @SerializedName("changer")
      */
@@ -464,10 +465,10 @@ class Order extends ApiWrapper
     /**
      * Set creator
      *
-     * @param \Sulu\Bundle\SecurityBundle\Entity\User $creator
+     * @param UserInterface $creator
      * @return Order
      */
-    public function setCreator(\Sulu\Bundle\SecurityBundle\Entity\User $creator = null)
+    public function setCreator(UserInterface $creator = null)
     {
         $this->entity->setCreator($creator);
 
@@ -477,7 +478,7 @@ class Order extends ApiWrapper
     /**
      * Get creator
      *
-     * @return \Sulu\Bundle\SecurityBundle\Entity\User
+     * @return UserInterface
      * @VirtualProperty
      * @SerializedName("creator")
      */

@@ -3,6 +3,7 @@
 namespace Sulu\Bundle\Sales\OrderBundle\Entity;
 
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\NoResultException;
 
 /**
  * OrderRepository

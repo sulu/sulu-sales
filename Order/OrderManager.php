@@ -15,8 +15,11 @@ use Sulu\Bundle\ContactBundle\Entity\Account;
 use Sulu\Bundle\ContactBundle\Entity\Address;
 use Sulu\Bundle\ContactBundle\Entity\Contact;
 use Sulu\Bundle\ContactBundle\Entity\ContactRepository;
+use Sulu\Bundle\Sales\OrderBundle\Api\OrderStatus;
+use Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatus as OrderStatusEntity;
 use Sulu\Bundle\Sales\OrderBundle\Entity\OrderAddress;
 use Sulu\Bundle\Sales\OrderBundle\Entity\OrderRepository;
+use Sulu\Bundle\Sales\OrderBundle\Entity\Order as OrderEntity;
 use Sulu\Bundle\Sales\OrderBundle\Order\Exception\MissingOrderAttributeException;
 use Sulu\Bundle\Sales\OrderBundle\Order\Exception\OrderDependencyNotFoundException;
 use Sulu\Bundle\Sales\OrderBundle\Order\Exception\OrderNotFoundException;
@@ -81,7 +84,8 @@ class OrderManager
      * @param null $id
      * @return null|Order|\Sulu\Bundle\Sales\OrderBundle\Entity\Order
      * @throws Exception\OrderNotFoundException
-     * @throws OrderDependencyNotFoundException
+     * @throws Exception\MissingOrderAttributeException
+     * @throws Exception\OrderDependencyNotFoundException
      */
     public function save(array $data, $locale, $userId, $id = null)
     {
@@ -148,6 +152,11 @@ class OrderManager
             $order->setCreated(new DateTime());
             $order->setCreator($user);
             $this->em->persist($order->getEntity());
+
+            // TODO: determine orders status
+            // FIXME: currently the status with id=1 is taken
+            $status = $this->em->getRepository(self::$orderStatusEntityName)->find(1);
+            $order->setStatus($status);
 
             // create OrderAddress
             $deliveryAddress = new OrderAddress();
@@ -340,12 +349,15 @@ class OrderManager
             // add contact data
             $orderAddress->setFirstName($contact->getFirstName());
             $orderAddress->setLastName($contact->getLastName());
-            $orderAddress->setTitle($contact->getTitle());
+            $orderAddress->setTitle($contact->getTitle()->getTitle());
 
             // add account data
             if ($account) {
                 $orderAddress->setAccountName($account->getName());
                 $orderAddress->setUid($account->getUid());
+            } else {
+                $orderAddress->setAccountName(null);
+                $orderAddress->setUid(null);
             }
 
             // TODO: add phone

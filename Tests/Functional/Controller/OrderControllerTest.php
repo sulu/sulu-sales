@@ -550,7 +550,7 @@ class OrderControllerTest extends DatabaseTestCase
 
     public function testPutNotExisting()
     {
-        $this->client->request('PUT', '/api/orders/666', array('code' => 'MissingProduct'));
+        $this->client->request('PUT', '/api/orders/666', array('number' => '123'));
         $response = json_decode($this->client->getResponse()->getContent());
 
         $this->assertEquals(404, $this->client->getResponse()->getStatusCode());
@@ -588,18 +588,11 @@ class OrderControllerTest extends DatabaseTestCase
         $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
 
         $this->assertEquals('NUMBER:0815', $response->number);
-        $this->assertEquals($this->product1->getManufacturer(), $response->manufacturer);
+        $this->assertEquals('English-Order-Status-1', $response->status->status);
 
-        $this->assertEquals('EnglishProductStatus-1', $response->status->name);
+        $this->checkOrderAddress($response->invoiceAddress, $this->address, $this->contact, $this->account);
+        $this->checkOrderAddress($response->deliveryAddress, $this->address2, $this->contact, $this->account);
 
-        $this->assertEquals('EnglishProductType-1', $response->type->name);
-
-        $this->assertEquals($this->attributeSet1->getId(), $response->attributeSet->id);
-        $this->assertEquals('EnglishTemplate-1', $response->attributeSet->name);
-
-        if ($testParent) {
-            $this->assertEquals($this->product2->getId(), $response->parent->id);
-        }
     }
 
     public function testDeleteById()

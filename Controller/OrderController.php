@@ -11,7 +11,11 @@
 namespace Sulu\Bundle\Sales\OrderBundle\Controller;
 use FOS\RestBundle\Routing\ClassResourceInterface;
 use Hateoas\Representation\CollectionRepresentation;
+use Sulu\Bundle\Sales\OrderBundle\Order\Exception\MissingOrderAttributeException;
+use Sulu\Bundle\Sales\OrderBundle\Order\Exception\OrderDependencyNotFoundException;
+use Sulu\Bundle\Sales\OrderBundle\Order\Exception\OrderNotFoundException;
 use Sulu\Bundle\Sales\OrderBundle\Order\OrderManager;
+use Sulu\Component\Rest\Exception\EntityNotFoundException;
 use Sulu\Component\Rest\ListBuilder\ListRepresentation;
 use Sulu\Component\Rest\RestController;
 use Symfony\Component\HttpFoundation\Request;
