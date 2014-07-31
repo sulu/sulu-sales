@@ -25,12 +25,13 @@ define({
 
         app.components.addSource('sulusalesorder', '/bundles/sulusalesorder/js/components');
 
-        // Example: list all contacts
-        // sandbox.mvc.routes.push({
-        //     route: 'contacts/contacts',
-        //    callback: function(){
-        //         this.html('<div data-aura-component="contacts@sulucontact" data-aura-display="list"/>');
-        //     }
-        // });
+        // list all contacts
+        sandbox.mvc.routes.push({
+            route: 'sales/orders',
+            callback: function() {
+                console.log("ASDF",'added new route');
+                this.html('<div data-aura-component="orders@sulusalesorder" data-aura-display="list"/>');
+            }
+        });
     }
 });

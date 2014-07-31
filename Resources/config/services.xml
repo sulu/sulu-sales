@@ -5,6 +5,7 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
     <parameters>
         <parameter key="sulu_sales_order.admin.class">Sulu\Bundle\Sales\OrderBundle\Admin\SuluSalesOrderAdmin</parameter>
+        <parameter key="sulu_sales_order.admin.content_navigation.class">Sulu\Bundle\Sales\OrderBundle\Admin\SuluSalesOrderContentNavigation</parameter>
         <parameter key="sulu_sales_order.order_repository.class">Sulu\Bundle\Sales\OrderBundle\Entity\OrderRepository</parameter>
         <parameter key="sulu_sales_order.order_manager.class">Sulu\Bundle\Sales\OrderBundle\Order\OrderManager</parameter>
     </parameters>
@@ -12,6 +13,8 @@
         <service id="sulu_sales_order.admin" class="%sulu_sales_order.admin.class%">
             <tag name="sulu.admin" />
             <argument>%sulu_admin.name%</argument>
+        </service>
+        <service id="sulu_sales_order.admin.content_navigation" class="%sulu_sales_order.admin.content_navigation.class%">
         </service>
         <service id="sulu_sales_order.order_repository" class="%sulu_sales_order.order_repository.class%"
                  factory-method="getRepository" factory-service="doctrine.orm.entity_manager">

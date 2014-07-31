@@ -23,8 +23,10 @@ use Sulu\Bundle\Sales\OrderBundle\Entity\Order as OrderEntity;
 use Sulu\Bundle\Sales\OrderBundle\Order\Exception\MissingOrderAttributeException;
 use Sulu\Bundle\Sales\OrderBundle\Order\Exception\OrderDependencyNotFoundException;
 use Sulu\Bundle\Sales\OrderBundle\Order\Exception\OrderNotFoundException;
+use Sulu\Component\Rest\ListBuilder\Doctrine\FieldDescriptor\DoctrineConcatenationFieldDescriptor;
 use Sulu\Component\Rest\ListBuilder\Doctrine\FieldDescriptor\DoctrineFieldDescriptor;
 use Sulu\Bundle\Sales\OrderBundle\Api\Order;
+use Sulu\Component\Rest\ListBuilder\Doctrine\FieldDescriptor\DoctrineJoinDescriptor;
 use Sulu\Component\Security\UserRepositoryInterface;
 use DateTime;
 
@@ -264,8 +266,45 @@ class OrderManager
      */
     private function initializeFieldDescriptors()
     {
-        $this->fieldDescriptors['id'] = new DoctrineFieldDescriptor('id', 'id', self::$orderEntityName);
+        $this->fieldDescriptors['id'] = new DoctrineFieldDescriptor('id', 'id', self::$orderEntityName, null, array(), true);
         $this->fieldDescriptors['number'] = new DoctrineFieldDescriptor('number', 'number', self::$orderEntityName);
+
+        // TODO: get customer from order-address
+
+//        $contactJoin = array(
+//            self::$contactEntityName => new DoctrineJoinDescriptor(
+//                    self::$contactEntityName,
+//                    self::$orderEntityName . '.contact'
+//                )
+//        );
+//
+//        $this->fieldDescriptors['contact'] = new DoctrineConcatenationFieldDescriptor(
+//            array(
+//                new DoctrineFieldDescriptor(
+//                    'firstName',
+//                    'contact',
+//                    self::$contactEntityName,
+//                    'contact.contacts.contact',
+//                    $contactJoin
+//                ),
+//                new DoctrineFieldDescriptor(
+//                    'lastName',
+//                    'contact',
+//                    self::$contactEntityName,
+//                    'contact.contacts.contact',
+//                    $contactJoin
+//                )
+//            ),
+//            'fullName',
+//            'public.name',
+//            ' ',
+//            false,
+//            true,
+//            '',
+//            '',
+//            '160px'
+//        );
+
         // FIXME: fix this
 //        $this->fieldDescriptors['status'] = new DoctrineFieldDescriptor(
 //            'name',

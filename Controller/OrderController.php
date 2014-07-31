@@ -40,6 +40,16 @@ class OrderController extends RestController implements ClassResourceInterface
     }
 
     /**
+     * returns all fields that can be used by list
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function fieldsAction()
+    {
+        // default contacts list
+        return $this->handleView($this->view(array_values($this->getManager()->getFieldDescriptors()), 200));
+    }
+
+    /**
      * @param Request $request
      * @return mixed
      */
