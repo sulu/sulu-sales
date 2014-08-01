@@ -38,7 +38,7 @@ define({
             route: 'sales/orders/add',
             callback: function() {
                 this.html(
-                    '<div data-aura-component="orders/components/content@sulucontact" data-aura-display="content" data-aura-content="form" />'
+                    '<div data-aura-component="orders/components/content@sulusalesorder" data-aura-display="content" data-aura-content="form" />'
                 );
             }
         });
@@ -48,7 +48,7 @@ define({
             route: 'sales/orders/edit::id/:content',
             callback: function(id, content) {
                 this.html(
-                    '<div data-aura-component="orders/components/content@sulucontact" data-aura-display="content" data-aura-content="' + content + '" data-aura-id="' + id + '"/>'
+                    '<div data-aura-component="orders/components/content@sulusalesorder" data-aura-display="content" data-aura-content="' + content + '" data-aura-id="' + id + '"/>'
                 );
             }
         });

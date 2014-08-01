@@ -23,9 +23,9 @@ define([
             if (this.options.display === 'list') {
                 this.renderList();
             } else if (this.options.display === 'form') {
-//                this.renderForm().then(function() {
+                this.renderForm().then(function() {
 //                    AccountsUtilHeader.setHeader.call(this, this.account, this.options.accountType);
-//                }.bind(this));
+                }.bind(this));
             } else {
                 throw 'display type wrong';
             }
@@ -33,19 +33,30 @@ define([
 
         bindCustomEvents: function() {
             // delete order
-            this.sandbox.on('sulu.contacts.account.delete', this.del.bind(this));
+            this.sandbox.on('sulu.salesorder.order.delete', this.del.bind(this));
 //
 //            // save the current package
-//            this.sandbox.on('sulu.contacts.accounts.save', this.save.bind(this));
-//
-//            // wait for navigation events
-//            this.sandbox.on('sulu.contacts.accounts.load', this.load.bind(this));
+            this.sandbox.on('sulu.salesorder.order.save', this.save.bind(this));
+
+            // wait for navigation events
+            this.sandbox.on('sulu.salesorder.orders.load', this.load.bind(this));
+
+            // add new order
+            this.sandbox.on('sulu.salesorder.order.new', function() {
+                this.add();
+            }, this);
+
+            // load list view
+            this.sandbox.on('sulu.salesorder.orders.list', function() {
+                this.sandbox.emit('sulu.router.navigate', 'sales/orders');
+            }, this);
         },
 
         /**
          * Binds general sidebar events
          */
-        bindSidebarEvents: function(){
+        bindSidebarEvents: function() {
+            // bind sidebar
 //            this.sandbox.dom.off('#sidebar');
 //
 //            this.sandbox.dom.on('#sidebar', 'click', function(event) {
@@ -60,38 +71,54 @@ define([
 //            }.bind(this), '#main-contact');
         },
 
+        load: function(id) {
+            this.sandbox.emit('sulu.router.navigate', 'sales/orders/edit:' + id + '/details');
+        },
+
         // show confirmation and delete account
         del: function() {
-
                 this.sandbox.emit('sulu.header.toolbar.item.loading', 'options-button');
-                this.order.destroy({
-                    data: {removeContacts: !!removeContacts},
-                    processData: true,
-                    success: function() {
-                        this.sandbox.emit('sulu.router.navigate', 'contacts/accounts');
-                    }.bind(this)
-                });
+
+            // show dialog
+            this.sandbox.emit('sulu.overlay.show-warning',
+                'sulu.overlay.be-careful',
+                'sulu.overlay.delete-desc',
+                null,
+                function() {
+                    this.order.destroy({
+                        success: function() {
+                            this.sandbox.emit('sulu.router.navigate', 'sales/order');
+                        }.bind(this)
+                    });
+                }
+            );
         },
+
+
 
         // saves an account
         save: function(data) {
-//            this.sandbox.emit('sulu.header.toolbar.item.loading', 'save-button');
-//
-//            this.account.set(data);
-//            this.account.save(null, {
-//                // on success save contacts id
-//                success: function(response) {
-//                    var model = response.toJSON();
-//                    if (!!data.id) {
-//                        this.sandbox.emit('sulu.contacts.accounts.saved', model);
-//                    } else {
-//                        this.sandbox.emit('sulu.router.navigate', 'contacts/accounts/edit:' + model.id + '/details');
-//                    }
-//                }.bind(this),
-//                error: function() {
-//                    this.sandbox.logger.log("error while saving profile");
-//                }.bind(this)
-//            });
+            this.sandbox.emit('sulu.header.toolbar.item.loading', 'save-button');
+
+            this.order.set(data);
+            this.order.save(null, {
+                // on success save contacts id
+                success: function(response) {
+                    var model = response.toJSON();
+                    if (!!data.id) {
+                        this.sandbox.emit('sulu.salesorder.order.saved', model);
+                    } else {
+                        this.sandbox.emit('sulu.router.navigate', 'sales/orders/edit:' + model.id + '/overview');
+                    }
+                }.bind(this),
+                error: function() {
+                    this.sandbox.logger.log("error while saving profile");
+                }.bind(this)
+            });
+        },
+
+        add: function(data) {
+
         },
 
         renderList: function() {
@@ -109,71 +136,34 @@ define([
 
         renderForm: function() {
             // load data and show form
-            this.order = new Account();
+            this.order = new Order();
 
-            var accTypeId,
-                $form = this.sandbox.dom.createElement('<div id="accounts-form-container"/>'),
+            var $form = this.sandbox.dom.createElement('<div id="order-form-container"/>'),
                 dfd = this.sandbox.data.deferred();
             this.html($form);
 
             if (!!this.options.id) {
-                this.account = new Account({id: this.options.id});
+                this.order = new Order({id: this.options.id});
                 //account = this.getModel(this.options.id);
-                this.account.fetch({
+                this.order.fetch({
                     success: function(model) {
                         this.sandbox.start([
-                            {name: 'accounts/components/form@sulucontact', options: { el: $form, data: model.toJSON()}}
+                            {name: 'orders/components/form@sulusalesorder', options: { el: $form, data: model.toJSON()}}
                         ]);
                         dfd.resolve();
                     }.bind(this),
                     error: function() {
-                        this.sandbox.logger.log("error while fetching contact");
+                        this.sandbox.logger.log("error while fetching order");
                         dfd.reject();
                     }.bind(this)
                 });
             } else {
-                accTypeId = AccountsUtilHeader.getAccountTypeIdByTypeName.call(this, this.options.accountType);
-                this.account.set({type: accTypeId});
                 this.sandbox.start([
-                    {name: 'accounts/components/form@sulucontact', options: { el: $form, data: this.account.toJSON()}}
+                    {name: 'orders/components/form@sulusalesorder', options: { el: $form, data: this.order.toJSON()}}
                 ]);
                 dfd.resolve();
             }
             return dfd.promise();
-        },
-
-        showDeleteConfirmation: function(ids, callbackFunction) {
-            if (ids.length === 0) {
-                return;
-            } else if (ids.length === 1) {
-                // if only one account was selected - get related sub-companies and contacts (and show the first 3 ones)
-                this.confirmSingleDeleteDialog(ids[0], callbackFunction);
-            } else {
-                // if multiple accounts were selected, get related sub-companies and show simplified message
-                this.confirmMultipleDeleteDialog(ids, callbackFunction);
-            }
-        },
-
-        confirmSingleDeleteDialog: function(id, callbackFunction) {
-            var url = '/admin/api/accounts/' + id + '/deleteinfo';
-
-            this.sandbox.util.ajax({
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-
-                context: this,
-                type: 'GET',
-                url: url,
-
-                success: function(response) {
-                    this.showConfirmSingleDeleteDialog(response, id, callbackFunction);
-                }.bind(this),
-
-                error: function(jqXHR, textStatus, errorThrown) {
-                    this.sandbox.logger.error("error during get request: " + textStatus, errorThrown);
-                }.bind(this)
-            });
-        },
+        }
     };
 });

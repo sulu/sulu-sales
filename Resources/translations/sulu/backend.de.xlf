@@ -2,25 +2,29 @@
 <xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
     <file source-language="de" datatype="plaintext" original="file.ext">
         <body>
-            <trans-unit id="a50accg2ac181350142c0b4720e29ff1" resname="order.orders.title">
-                <source>order.orders.title</source>
+            <trans-unit id="a50accg2ac181350142c0b4720e29ff1" resname="salesorder.orders.title">
+                <source>salesorder.orders.title</source>
                 <target>Aufträge</target>
             </trans-unit>
-            <trans-unit id="a50accg2ac181350142c0b4720e29ff2" resname="order.orders.number">
-                <source>order.orders.number</source>
+            <trans-unit id="a50accg2ac181350142c0b4720e29ff2" resname="salesorder.orders.number">
+                <source>salesorder.orders.number</source>
                 <target>Auftragsnummer</target>
             </trans-unit>
-            <trans-unit id="a50accg2ac181350142c0b4720e29ff3" resname="order.orders.contact">
-                <source>order.orders.contact</source>
+            <trans-unit id="a50accg2ac181350142c0b4720e29ff3" resname="salesorder.orders.contact">
+                <source>salesorder.orders.contact</source>
                 <target>Kunde</target>
             </trans-unit>
-            <trans-unit id="a50accg2ac181350142c0b4720e29ff4" resname="order.orders.contactNumber">
-                <source>order.orders.contactNumber</source>
+            <trans-unit id="a50accg2ac181350142c0b4720e29ff4" resname="salesorder.orders.contactNumber">
+                <source>salesorder.orders.contactNumber</source>
                 <target>Kundennummer</target>
             </trans-unit>
-            <trans-unit id="a50accg2ac181350142c0b4720e29ff5" resname="order.orders.status">
-                <source>order.orders.status</source>
+            <trans-unit id="a50accg2ac181350142c0b4720e29ff5" resname="salesorder.orders.status">
+                <source>salesorder.orders.status</source>
                 <target>Status</target>
+            </trans-unit>
+            <trans-unit id="a50accg2ac181350142c0b4720e29ff6" resname="salesorder.order">
+                <source>salesorder.order</source>
+                <target>Auftrag</target>
             </trans-unit>
         </body>
     </file>

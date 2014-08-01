@@ -1,0 +1,24 @@
+<form id="order-form" class="form-horizontal">
+    <input type="hidden" data-mapper-property="id"/>
+    <div class="changeListener">
+        <div class="grid-row small">
+            <div class="grid-col-6">
+                <div class="form-group">
+                    <label for="first-name" class="required"><%=translate('order.orders.contact')%></label>
+                    {#<input class="form-element" type="text" id="first-name" data-validation-required="true"#}
+                           {#data-validation-min-length="3" data-mapper-property="firstName" value=""/>#}
+                    <div id="contact-input"></div>
+                </div>
+            </div>
+            <div class="grid-col-6">
+                <div class="form-group">
+                    <label for="order-number" class="required"><%=translate('order.orders.number')%></label>
+                    <input class="form-element" type="text" id="order-number" data-trigger="focusout"
+                           data-validation-required="true" data-validation-min-length="3" data-mapper-property="number"
+                           value=""/>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+

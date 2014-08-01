@@ -20,13 +20,13 @@ define(function() {
             // delete clicked
             this.sandbox.on('sulu.list-toolbar.delete', function() {
                 this.sandbox.emit('husky.datagrid.items.get-selected', function(ids) {
-                    this.sandbox.emit('sulu.salesorder.delete', ids);
+                    this.sandbox.emit('sulu.salesorder.order.delete', ids);
                 }.bind(this));
             }, this);
 
             // add clicked
             this.sandbox.on('sulu.list-toolbar.add', function() {
-                this.sandbox.emit('sulu.salesorder.new');
+                this.sandbox.emit('sulu.salesorder.order.new');
             }, this);
         };
 
@@ -47,12 +47,12 @@ define(function() {
         },
 
         header: {
-            title: 'order.orders.title',
+            title: 'salesorder.orders.title',
             noBack: true,
 
             breadcrumb: [
                 {title: 'navigation.sales'},
-                {title: 'order.orders.title'}
+                {title: 'salesorder.orders.title'}
             ]
         },
 
@@ -84,7 +84,7 @@ define(function() {
                             icons: [
                                 {
                                     icon: 'pencil',
-                                    column: 'fullName',
+                                    column: 'number',
                                     align: 'left',
                                     callback: function(id) {
                                         this.sandbox.emit('sulu.salesorder.orders.load', id);

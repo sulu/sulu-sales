@@ -20,5 +20,16 @@ class TemplateController extends RestController
         );
     }
 
+    /**
+     * Returns Template for list
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function orderFormAction()
+    {
+        return $this->render(
+            'SuluSalesOrderBundle:Template:order.form.html.twig'
+        );
+    }
+
 
 }

@@ -13,7 +13,7 @@ namespace Sulu\Bundle\Sales\OrderBundle\Admin;
 use Sulu\Bundle\AdminBundle\Admin\ContentNavigation;
 use Sulu\Bundle\AdminBundle\Navigation\NavigationItem;
 
-class SuluContactContentNavigation extends ContentNavigation
+class SuluSalesOrderContentNavigation extends ContentNavigation
 {
 
     public function __construct()
@@ -24,12 +24,12 @@ class SuluContactContentNavigation extends ContentNavigation
 
         /* CONTACTS */
         // details
-        $details = new NavigationItem('content-navigation.sales.order.overview');
-        $details->setAction('overview');
-        $details->setContentType('order');
-        $details->setContentComponent('orders@sulusalesorder');
-        $details->setContentComponentOptions(array('display'=>'form'));
-        $this->addNavigationItem($details);
+        $overview = new NavigationItem('public.overview');
+        $overview->setAction('overview');
+        $overview->setContentType('order');
+        $overview->setContentComponent('orders@sulusalesorder');
+        $overview->setContentComponentOptions(array('display'=>'form'));
+        $this->addNavigationItem($overview);
 
 //        // activities
 //        $activities = new NavigationItem('content-navigation.sales.order.');

@@ -271,7 +271,7 @@ class OrderManager
     private function initializeFieldDescriptors($locale)
     {
         $this->fieldDescriptors['id'] = new DoctrineFieldDescriptor('id', 'id', self::$orderEntityName, 'public.id', array(), true);
-        $this->fieldDescriptors['number'] = new DoctrineFieldDescriptor('number', 'number', self::$orderEntityName, 'order.orders.number');
+        $this->fieldDescriptors['number'] = new DoctrineFieldDescriptor('number', 'number', self::$orderEntityName, 'order.orders.number', array(), false, true);
 
         // TODO: get customer from order-address
 
@@ -303,7 +303,7 @@ class OrderManager
             'order.orders.contact',
             ' ',
             false,
-            true,
+            false,
             '',
             '',
             '160px'
@@ -313,7 +313,7 @@ class OrderManager
             'name',
             'status',
             self::$orderStatusTranslationEntityName,
-            'order.order.status',
+            'order.orders.status',
             array(
                 self::$orderStatusEntityName => new DoctrineJoinDescriptor(
                     self::$orderStatusEntityName,
