@@ -41,12 +41,14 @@ class OrderController extends RestController implements ClassResourceInterface
 
     /**
      * returns all fields that can be used by list
+     * @param Request $request
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function fieldsAction()
+    public function fieldsAction(Request $request)
     {
+        $locale = $this->getLocale($request);
         // default contacts list
-        return $this->handleView($this->view(array_values($this->getManager()->getFieldDescriptors()), 200));
+        return $this->handleView($this->view(array_values($this->getManager()->getFieldDescriptors($locale)), 200));
     }
 
     /**
@@ -55,6 +57,8 @@ class OrderController extends RestController implements ClassResourceInterface
      */
     public function cgetAction(Request $request) {
         $filter = array();
+
+        $locale = $this->getLocale($request);
 
         $status = $request->get('status');
         if ($status) {
@@ -70,7 +74,7 @@ class OrderController extends RestController implements ClassResourceInterface
 
             $listBuilder = $factory->create(self::$entityName);
 
-            $restHelper->initializeListBuilder($listBuilder, $this->getManager()->getFieldDescriptors());
+            $restHelper->initializeListBuilder($listBuilder, $this->getManager()->getFieldDescriptors($locale));
 
             foreach ($filter as $key => $value) {
                 $listBuilder->where($this->getManager()->getFieldDescriptor($key), $value);

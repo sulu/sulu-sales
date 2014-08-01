@@ -37,8 +37,11 @@ class OrderManager
     protected static $addressEntityName = 'SuluContactBundle:Address';
     protected static $accountEntityName = 'SuluContactBundle:Account';
     protected static $orderStatusEntityName = 'SuluSalesOrderBundle:OrderStatus';
+    protected static $orderAddressEntityName = 'SuluSalesOrderBundle:OrderAddress';
     protected static $orderStatusTranslationEntityName = 'SuluSalesOrderBundle:OrderStatusTranslation';
     protected static $itemEntityName = 'SuluSalesCoreBundle:Item';
+
+    private $currentLocale;
 
     /**
      * @var ObjectManager
@@ -75,8 +78,6 @@ class OrderManager
         $this->orderRepository = $orderRepository;
         $this->userRepository = $userRepository;
         $this->em = $em;
-
-        $this->initializeFieldDescriptors();
     }
 
     /**
@@ -203,11 +204,14 @@ class OrderManager
     }
 
     /**
-     * get all field descriptors
+     * @param $locale
      * @return \Sulu\Component\Rest\ListBuilder\Doctrine\FieldDescriptor\DoctrineFieldDescriptor[]
      */
-    public function getFieldDescriptors()
+    public function getFieldDescriptors($locale)
     {
+        if ($locale !== $this->currentLocale) {
+            $this->initializeFieldDescriptors($locale);
+        }
         return $this->fieldDescriptors;
     }
 
@@ -264,58 +268,64 @@ class OrderManager
     /**
      * initializes field descriptors
      */
-    private function initializeFieldDescriptors()
+    private function initializeFieldDescriptors($locale)
     {
-        $this->fieldDescriptors['id'] = new DoctrineFieldDescriptor('id', 'id', self::$orderEntityName, null, array(), true);
-        $this->fieldDescriptors['number'] = new DoctrineFieldDescriptor('number', 'number', self::$orderEntityName);
+        $this->fieldDescriptors['id'] = new DoctrineFieldDescriptor('id', 'id', self::$orderEntityName, 'public.id', array(), true);
+        $this->fieldDescriptors['number'] = new DoctrineFieldDescriptor('number', 'number', self::$orderEntityName, 'order.orders.number');
 
         // TODO: get customer from order-address
 
-//        $contactJoin = array(
-//            self::$contactEntityName => new DoctrineJoinDescriptor(
-//                    self::$contactEntityName,
-//                    self::$orderEntityName . '.contact'
-//                )
-//        );
-//
-//        $this->fieldDescriptors['contact'] = new DoctrineConcatenationFieldDescriptor(
-//            array(
-//                new DoctrineFieldDescriptor(
-//                    'firstName',
-//                    'contact',
-//                    self::$contactEntityName,
-//                    'contact.contacts.contact',
-//                    $contactJoin
-//                ),
-//                new DoctrineFieldDescriptor(
-//                    'lastName',
-//                    'contact',
-//                    self::$contactEntityName,
-//                    'contact.contacts.contact',
-//                    $contactJoin
-//                )
-//            ),
-//            'fullName',
-//            'public.name',
-//            ' ',
-//            false,
-//            true,
-//            '',
-//            '',
-//            '160px'
-//        );
+        $contactJoin = array(
+            self::$orderAddressEntityName => new DoctrineJoinDescriptor(
+                    self::$orderAddressEntityName,
+                    self::$orderEntityName . '.invoiceAddress'
+                )
+        );
 
-        // FIXME: fix this
-//        $this->fieldDescriptors['status'] = new DoctrineFieldDescriptor(
-//            'name',
-//            'status',
-//            self::$orderStatusTranslationEntityName,
-//            'en',
-//            array(
-//                self::$orderStatusEntityName => self::$orderEntityName . '.status',
-//                self::$orderStatusTranslationEntityName => self::$orderStatusEntityName . '.translations',
-//            )
-//        );
+        $this->fieldDescriptors['contact'] = new DoctrineConcatenationFieldDescriptor(
+            array(
+                new DoctrineFieldDescriptor(
+                    'firstName',
+                    'contact',
+                    self::$orderAddressEntityName,
+                    'contact.contacts.contact',
+                    $contactJoin
+                ),
+                new DoctrineFieldDescriptor(
+                    'lastName',
+                    'contact',
+                    self::$orderAddressEntityName,
+                    'contact.contacts.contact',
+                    $contactJoin
+                )
+            ),
+            'contact',
+            'order.orders.contact',
+            ' ',
+            false,
+            true,
+            '',
+            '',
+            '160px'
+        );
+
+        $this->fieldDescriptors['status'] = new DoctrineFieldDescriptor(
+            'name',
+            'status',
+            self::$orderStatusTranslationEntityName,
+            'order.order.status',
+            array(
+                self::$orderStatusEntityName => new DoctrineJoinDescriptor(
+                    self::$orderStatusEntityName,
+                    self::$orderEntityName . '.status'
+                ),
+                self::$orderStatusTranslationEntityName => new DoctrineJoinDescriptor(
+                    self::$orderStatusTranslationEntityName,
+                    self::$orderStatusEntityName . '.translations',
+                    self::$orderStatusTranslationEntityName . ".locale = '".$locale."'"
+                )
+            )
+        );
     }
 
     /**

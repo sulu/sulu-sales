@@ -39,10 +39,11 @@ define(function() {
                 leftSpace: false,
                 rightSpace: false
             },
-            sidebar: {
-                width: 'fixed',
-                cssClasses: 'sidebar-padding-50'
-            }
+            sidebar: false
+//            {
+//                width: 'fixed',
+//                cssClasses: 'sidebar-padding-50'
+//            }
         },
 
         header: {

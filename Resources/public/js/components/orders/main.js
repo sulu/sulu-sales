@@ -8,8 +8,8 @@
  */
 
 define([
-//    'sulucontact/model/account',
-], function() {
+    'sulusalesorder/model/order'
+], function(Order) {
 
     'use strict';
 
@@ -18,9 +18,7 @@ define([
         initialize: function() {
             this.bindCustomEvents();
             this.bindSidebarEvents();
-            this.account = null;
-            this.accountType = null;
-            this.accountTypes = null;
+            this.order = null;
 
             if (this.options.display === 'list') {
                 this.renderList();
@@ -64,18 +62,15 @@ define([
 
         // show confirmation and delete account
         del: function() {
-//            this.confirmSingleDeleteDialog(this.options.id, function(wasConfirmed, removeContacts) {
-//                if (wasConfirmed) {
-//                    this.sandbox.emit('sulu.header.toolbar.item.loading', 'options-button');
-//                    this.account.destroy({
-//                        data: {removeContacts: !!removeContacts},
-//                        processData: true,
-//                        success: function() {
-//                            this.sandbox.emit('sulu.router.navigate', 'contacts/accounts');
-//                        }.bind(this)
-//                    });
-//                }
-//            }.bind(this));
+
+                this.sandbox.emit('sulu.header.toolbar.item.loading', 'options-button');
+                this.order.destroy({
+                    data: {removeContacts: !!removeContacts},
+                    processData: true,
+                    success: function() {
+                        this.sandbox.emit('sulu.router.navigate', 'contacts/accounts');
+                    }.bind(this)
+                });
         },
 
         // saves an account
@@ -113,38 +108,38 @@ define([
         },
 
         renderForm: function() {
-//            // load data and show form
-//            this.account = new Account();
-//
-//            var accTypeId,
-//                $form = this.sandbox.dom.createElement('<div id="accounts-form-container"/>'),
-//                dfd = this.sandbox.data.deferred();
-//            this.html($form);
-//
-//            if (!!this.options.id) {
-//                this.account = new Account({id: this.options.id});
-//                //account = this.getModel(this.options.id);
-//                this.account.fetch({
-//                    success: function(model) {
-//                        this.sandbox.start([
-//                            {name: 'accounts/components/form@sulucontact', options: { el: $form, data: model.toJSON()}}
-//                        ]);
-//                        dfd.resolve();
-//                    }.bind(this),
-//                    error: function() {
-//                        this.sandbox.logger.log("error while fetching contact");
-//                        dfd.reject();
-//                    }.bind(this)
-//                });
-//            } else {
-//                accTypeId = AccountsUtilHeader.getAccountTypeIdByTypeName.call(this, this.options.accountType);
-//                this.account.set({type: accTypeId});
-//                this.sandbox.start([
-//                    {name: 'accounts/components/form@sulucontact', options: { el: $form, data: this.account.toJSON()}}
-//                ]);
-//                dfd.resolve();
-//            }
-//            return dfd.promise();
+            // load data and show form
+            this.order = new Account();
+
+            var accTypeId,
+                $form = this.sandbox.dom.createElement('<div id="accounts-form-container"/>'),
+                dfd = this.sandbox.data.deferred();
+            this.html($form);
+
+            if (!!this.options.id) {
+                this.account = new Account({id: this.options.id});
+                //account = this.getModel(this.options.id);
+                this.account.fetch({
+                    success: function(model) {
+                        this.sandbox.start([
+                            {name: 'accounts/components/form@sulucontact', options: { el: $form, data: model.toJSON()}}
+                        ]);
+                        dfd.resolve();
+                    }.bind(this),
+                    error: function() {
+                        this.sandbox.logger.log("error while fetching contact");
+                        dfd.reject();
+                    }.bind(this)
+                });
+            } else {
+                accTypeId = AccountsUtilHeader.getAccountTypeIdByTypeName.call(this, this.options.accountType);
+                this.account.set({type: accTypeId});
+                this.sandbox.start([
+                    {name: 'accounts/components/form@sulucontact', options: { el: $form, data: this.account.toJSON()}}
+                ]);
+                dfd.resolve();
+            }
+            return dfd.promise();
         },
 
         showDeleteConfirmation: function(ids, callbackFunction) {
