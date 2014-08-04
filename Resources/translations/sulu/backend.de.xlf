@@ -12,11 +12,11 @@
             </trans-unit>
             <trans-unit id="a50accg2ac181350142c0b4720e29ff3" resname="salesorder.orders.contact">
                 <source>salesorder.orders.contact</source>
-                <target>Kunde</target>
+                <target>Ansprechperson</target>
             </trans-unit>
             <trans-unit id="a50accg2ac181350142c0b4720e29ff4" resname="salesorder.orders.contactNumber">
                 <source>salesorder.orders.contactNumber</source>
-                <target>Kundennummer</target>
+                <target>Ansprechperson ID</target>
             </trans-unit>
             <trans-unit id="a50accg2ac181350142c0b4720e29ff5" resname="salesorder.orders.status">
                 <source>salesorder.orders.status</source>
@@ -25,6 +25,34 @@
             <trans-unit id="a50accg2ac181350142c0b4720e29ff6" resname="salesorder.order">
                 <source>salesorder.order</source>
                 <target>Auftrag</target>
+            </trans-unit>
+            <trans-unit id="a50accg2ac181350142c0b4720e29ff7" resname="salesorder.orders.account">
+                <source>salesorder.orders.account</source>
+                <target>Unternehmen</target>
+            </trans-unit>
+            <trans-unit id="a50accg2ac181350142c0b4720e29ff8" resname="salesorder.orders.commission">
+                <source>salesorder.orders.commission</source>
+                <target>Kommission</target>
+            </trans-unit>
+            <trans-unit id="a50accg2ac181350142c0b4720e29ff9" resname="salesorder.orders.responsibleContact">
+                <source>salesorder.orders.responsibleContact</source>
+                <target>Sachbearbeiter</target>
+            </trans-unit>
+            <trans-unit id="a50accg2ac181350142c0b4720e29f10" resname="salesorder.orders.costCentre">
+                <source>salesorder.orders.costCentre</source>
+                <target>Kostenstelle</target>
+            </trans-unit>
+            <trans-unit id="a50accg2ac181350142c0b4720e29f11" resname="salesorder.orders.taxFree">
+                <source>salesorder.orders.taxFree</source>
+                <target>Steuerfrei</target>
+            </trans-unit>
+            <trans-unit id="a50accg2ac181350142c0b4720e29f12" resname="salesorder.orders.deliveryAddress">
+                <source>salesorder.orders.deliveryAddress</source>
+                <target>Lieferaddr.</target>
+            </trans-unit>
+            <trans-unit id="a50accg2ac181350142c0b4720e29f13" resname="salesorder.orders.invoiceAddress">
+                <source>salesorder.orders.invoiceAddress</source>
+                <target>Rechnungsadr.</target>
             </trans-unit>
         </body>
     </file>

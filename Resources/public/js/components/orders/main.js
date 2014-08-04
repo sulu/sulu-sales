@@ -33,23 +33,19 @@ define([
 
         bindCustomEvents: function() {
             // delete order
-            this.sandbox.on('sulu.salesorder.order.delete', this.del.bind(this));
-//
-//            // save the current package
-            this.sandbox.on('sulu.salesorder.order.save', this.save.bind(this));
+            this.sandbox.on('sulu.salesorder.order.delete', this.delOrder.bind(this));
+
+            // save the current package
+            this.sandbox.on('sulu.salesorder.order.save', this.saveOrder.bind(this));
 
             // wait for navigation events
-            this.sandbox.on('sulu.salesorder.orders.load', this.load.bind(this));
+            this.sandbox.on('sulu.salesorder.orders.load', this.loadOrder.bind(this));
 
             // add new order
-            this.sandbox.on('sulu.salesorder.order.new', function() {
-                this.add();
-            }, this);
+            this.sandbox.on('sulu.salesorder.order.new', this.addOrder.bind(this));
 
             // load list view
-            this.sandbox.on('sulu.salesorder.orders.list', function() {
-                this.sandbox.emit('sulu.router.navigate', 'sales/orders');
-            }, this);
+            this.sandbox.on('sulu.salesorder.orders.list', this.showOrderList.bind(this));
         },
 
         /**
@@ -71,12 +67,12 @@ define([
 //            }.bind(this), '#main-contact');
         },
 
-        load: function(id) {
+        loadOrder: function(id) {
             this.sandbox.emit('sulu.router.navigate', 'sales/orders/edit:' + id + '/details');
         },
 
         // show confirmation and delete account
-        del: function() {
+        delOrder: function() {
                 this.sandbox.emit('sulu.header.toolbar.item.loading', 'options-button');
 
             // show dialog
@@ -94,10 +90,12 @@ define([
             );
         },
 
-
+        showOrderList: function() {
+            this.sandbox.emit('sulu.router.navigate', 'sales/orders');
+        },
 
         // saves an account
-        save: function(data) {
+        saveOrder: function(data) {
             this.sandbox.emit('sulu.header.toolbar.item.loading', 'save-button');
 
             this.order.set(data);
@@ -117,8 +115,8 @@ define([
             });
         },
 
-        add: function(data) {
-
+        addOrder: function(data) {
+            this.sandbox.emit('sulu.router.navigate', 'sales/orders/add');
         },
 
         renderList: function() {
