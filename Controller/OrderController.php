@@ -16,6 +16,7 @@ use Sulu\Bundle\Sales\OrderBundle\Order\Exception\OrderDependencyNotFoundExcepti
 use Sulu\Bundle\Sales\OrderBundle\Order\Exception\OrderNotFoundException;
 use Sulu\Bundle\Sales\OrderBundle\Order\OrderManager;
 use Sulu\Component\Rest\Exception\EntityNotFoundException;
+use Sulu\Component\Rest\Exception\MissingArgumentException;
 use Sulu\Component\Rest\ListBuilder\ListRepresentation;
 use Sulu\Component\Rest\RestController;
 use Symfony\Component\HttpFoundation\Request;

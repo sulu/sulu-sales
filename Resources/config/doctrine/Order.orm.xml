@@ -2,25 +2,28 @@
 <doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                   xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
-    <entity name="Sulu\Bundle\Sales\OrderBundle\Entity\Order" table="so_order" repository-class="Sulu\Bundle\Sales\OrderBundle\Entity\OrderRepository">
+    <entity name="Sulu\Bundle\Sales\OrderBundle\Entity\Order" table="so_orders" repository-class="Sulu\Bundle\Sales\OrderBundle\Entity\OrderRepository">
         <id name="id" type="integer" column="id">
             <generator strategy="AUTO"/>
         </id>
 
         <field name="number" type="string" column="number" length="255" nullable="false"/>
+        <field name="orderNumber" type="string" column="orderNumber" nullable="true"/>
+        <field name="type" type="integer" column="type" nullable="true"/>
         <field name="sessionId" type="string" column="sessionId" length="255" nullable="true"/>
         <field name="currency" type="string" column="currency" length="255" nullable="true"/>
-
-        <field name="termsOfDelivery" type="string" column="termsOfDelivery" length="255" nullable="true"/>
-        <field name="termsOfPayment" type="string" column="termsOfPayment" length="255" nullable="true"/>
+        <field name="taxfree" type="boolean" column="taxfree" nullable="true"></field>
 
         <field name="costCentre" type="string" column="costCentre" nullable="true"/>
         <field name="commission" type="string" column="commission" nullable="true"/>
 
+        <field name="customerName" type="string" column="customerName" length="255" nullable="true"/>
+        <field name="termsOfDeliveryContent" type="string" column="termsOfDeliveryContent" length="255" nullable="true"/>
+        <field name="termsOfPaymentContent" type="string" column="termsOfPaymentContent" length="255" nullable="true"/>
+
         <field name="created" type="datetime" column="created"></field>
         <field name="changed" type="datetime" column="changed"></field>
         <field name="desiredDeliveryDate" type="datetime" column="desiredDeliveryDate" nullable="true"></field>
-        <field name="taxfree" type="boolean" column="taxfree" nullable="true"></field>
 
         <one-to-one field="deliveryAddress" target-entity="Sulu\Bundle\Sales\OrderBundle\Entity\OrderAddress">
             <join-columns>
@@ -30,6 +33,16 @@
         <one-to-one field="invoiceAddress" target-entity="Sulu\Bundle\Sales\OrderBundle\Entity\OrderAddress">
             <join-columns>
                 <join-column name="idOrderAddressesInvoice"/>
+            </join-columns>
+        </one-to-one>
+        <one-to-one field="termsOfDelivery" target-entity="Sulu\Bundle\ContactBundle\Entity\TermsOfDelivery">
+            <join-columns>
+                <join-column name="idTermsOfDelivery"/>
+            </join-columns>
+        </one-to-one>
+        <one-to-one field="termsOfPayment" target-entity="Sulu\Bundle\ContactBundle\Entity\TermsOfPayment">
+            <join-columns>
+                <join-column name="idTermsOfPayment"/>
             </join-columns>
         </one-to-one>
         <many-to-one field="status" target-entity="Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatus" inversed-by="order">

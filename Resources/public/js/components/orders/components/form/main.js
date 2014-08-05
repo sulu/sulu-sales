@@ -15,10 +15,11 @@ define([], function() {
 
         constants = {
             accountContactsUrl: '/admin/api/accounts/<%= id %>/contacts?flat=true',
-            accountAddressesUrl: '/admin/api/accounts/<%= id %>/addresses',
+            accountAddressesUrl: '/admin/api/accounts/<%= id %>/addresses?flat=true',
+            accountUrl: '/admin/api/accounts?searchFields=name&flat=true&fields=id,name',
             accountInputId: '#account-input',
-            deliveryAddressSelect: '#delivery-address-select',
-            paymentAddressSelect: '#payment-address-select',
+            deliveryAddressInstanceName: 'delivery-address-select',
+            paymentAddressInstanceName: 'payment-address-select',
             contactSelectId: '#contact-select'
         },
 
@@ -40,10 +41,10 @@ define([], function() {
 
             // contact saved
             this.sandbox.on('sulu.salesorder.order.saved', function(data) {
-//                this.options.data = data;
+                this.options.data = data;
+                this.setHeaderBar(true);
 //                this.initContactData();
 //                this.setFormData(data);
-//                this.setHeaderBar(true);
             }, this);
 
             // contact save
@@ -53,7 +54,7 @@ define([], function() {
 
             // back to list
             this.sandbox.on('sulu.header.back', function() {
-                this.sandbox.emit('sulu.salesorder.order.list');
+                this.sandbox.emit('sulu.salesorder.orders.list');
             }, this);
 
             // TODO desired deliverydate
@@ -69,7 +70,7 @@ define([], function() {
          * default title as fallback
          */
         setTitle = function() {
-            var title = this.sandbox.translate('salesorder.orders'),
+            var title = this.sandbox.translate('salesorder.order'),
                 breadcrumb = [
                     {title: 'navigation.sales'},
                     {title: 'salesorder.orders.title', event: 'sulu.salesorder.orders.list'}
@@ -108,12 +109,13 @@ define([], function() {
 
             this.sandbox.start(form);
 
+            // TODO: init desired delivery date
             this.dfdDesiredDeliveryDate.resolve();
 
-            // start contact select
-            initContactSelect.call(this);
-            initAddressSelect.call(this, [], constants.deliveryAddressSelect);
-            initAddressSelect.call(this, [], constants.paymentAddressSelect);
+            // TODO init address and contacts
+            if (!!data.account && !!data.account.id) {
+                initSelectsByAccountId.call(this, data.account.id, data);
+            }
 
             // starts form components
             this.sandbox.start([
@@ -121,7 +123,7 @@ define([], function() {
                     name: 'auto-complete@husky',
                     options: {
                         el: constants.accountInputId,
-                        remoteUrl: '/admin/api/accounts?searchFields=name&flat=true&fields=id,name',
+                        remoteUrl: constants.accountUrl,
                         resultKey: 'accounts',
                         getParameter: 'search',
                         value: !!data.account ? data.account : '',
@@ -130,19 +132,6 @@ define([], function() {
                         noNewValues: true
                     }
                 }
-//                    ,{
-//                        name: 'auto-complete@husky',
-//                        options: {
-//                            el: '#contact-input',
-//                            remoteUrl: '/admin/api/contacts?searchFields=fullName&flat=true&fields=id,fullName',
-//                            resultKey: 'contacts',
-//                            getParameter: 'search',
-//                            value: !!data.contact ? data.contact : '',
-//                            instanceName: this.contactInstanceName,
-//                            valueKey: 'fullName',
-//                            noNewValues: true
-//                        }
-//                    }
             ]);
         },
 
@@ -154,55 +143,18 @@ define([], function() {
 
             preselectedElements = preselectedElements || [];
 
-            this.sandbox.stop(constants.contactSelectId + '> .select-container');
-
-            var $selectContainer = this.sandbox.dom.createElement('<div class="select-container"/>');
-            this.sandbox.dom.append(constants.contactSelectId, $selectContainer);
-
-            this.sandbox.start([
-                {
-                    name: 'select@husky',
-                    options: {
-                        el: $selectContainer,
-                        instanceName: 'contact-select',
-                        valueName: 'fullName',
-                        multipleSelect: false,
-                        defaultLabel: this.sandbox.translate('dropdown.please-choose'),
-                        preSelectedElements: preselectedElements,
-                        data: data
-                    }
-                }
-            ]);
+            this.sandbox.emit('husky.select.contact-select.update', data, preselectedElements);
         },
 
-        initAddressSelect = function(data, selectId, preselectedElements) {
+        initAddressSelect = function(data, selectInstanceName, preselectedElements) {
 
             preselectedElements = preselectedElements || [];
 
-            this.sandbox.stop(selectId + '> .select-container');
-
-            var $selectContainer = this.sandbox.dom.createElement('<div class="select-container"/>');
-            this.sandbox.dom.append(selectId, $selectContainer);
-
-            this.sandbox.start([
-                {
-                    name: 'select@husky',
-                    options: {
-                        el: $selectContainer,
-                        instanceName: 'address-select',
-                        valueName: 'street',
-                        multipleSelect: false,
-                        defaultLabel: this.sandbox.translate('dropdown.please-choose'),
-                        preSelectedElements: preselectedElements,
-                        data: data
-                    }
-                }
-            ]);
+            this.sandbox.emit('husky.select.' + selectInstanceName + '.update', data, preselectedElements);
         },
 
         accountChangedListener = function(event) {
-            var data,
-                id = event.id;
+            var id = event.id;
 
             // if account has been changed
             if (id !== this.accountId) {
@@ -210,31 +162,39 @@ define([], function() {
 
                 if (id) {
                     // load contacts of account
-                    this.sandbox.util.load(this.sandbox.util.template(constants.accountContactsUrl, {id: id}))
-                        .then(function(response) {
-                            data = response._embedded.contacts;
-                            initContactSelect.call(this, data);
-                        }.bind(this))
-                        .fail(function(textStatus, error) {
-                            this.sandbox.logger.error(textStatus, error);
-                        }.bind(this));
-
-                    // load addresses of account
-                    this.sandbox.util.load(this.sandbox.util.template(constants.accountAddressesUrl, {id: id}))
-                        .then(function(response) {
-                            data = response._embedded.addresses;
-                            initAddressSelect.call(this, data, constants.deliveryAddressSelect);
-                            initAddressSelect.call(this, data, constants.paymentAddressSelect);
-                        }.bind(this))
-                        .fail(function(textStatus, error) {
-                            this.sandbox.logger.error(textStatus, error);
-                        }.bind(this));
+                    initSelectsByAccountId.call(this, id);
                 } else {
                     initContactSelect.call(this, []);
-                    initAddressSelect.call(this, [], constants.deliveryAddressSelect);
-                    initAddressSelect.call(this, [], constants.paymentAddressSelect);
+                    initAddressSelect.call(this, [], constants.deliveryAddressInstanceName);
+                    initAddressSelect.call(this, [], constants.paymentAddressInstanceName);
                 }
             }
+        },
+
+        initSelectsByAccountId = function(id, orderData) {
+            var data, preselect;
+            this.sandbox.util.load(this.sandbox.util.template(constants.accountContactsUrl, {id: id}))
+                .then(function(response) {
+                    data = response._embedded.contacts;
+                    preselect = !!orderData && orderData.contact ? [orderData.contact.id] : null;
+                    initContactSelect.call(this, data, preselect);
+                }.bind(this))
+                .fail(function(textStatus, error) {
+                    this.sandbox.logger.error(textStatus, error);
+                }.bind(this));
+
+            // load addresses of account
+            this.sandbox.util.load(this.sandbox.util.template(constants.accountAddressesUrl, {id: id}))
+                .then(function(response) {
+                    data = response._embedded.addresses;
+                    preselect = !!orderData && orderData.deliveryAddress ? [orderData.deliveryAddress.address.id] : null;
+                    initAddressSelect.call(this, data, constants.deliveryAddressInstanceName, preselect);
+                    preselect = !!orderData && orderData.invoiceAddress ? [orderData.invoiceAddress.address.id] : null;
+                    initAddressSelect.call(this, data, constants.paymentAddressInstanceName, preselect);
+                }.bind(this))
+                .fail(function(textStatus, error) {
+                    this.sandbox.logger.error(textStatus, error);
+                }.bind(this));
         };
     return (function() {
         return {
@@ -305,7 +265,7 @@ define([], function() {
             submit: function() {
                 this.sandbox.logger.log('save Model');
 
-//                if (this.sandbox.form.validate(form)) {
+                if (this.sandbox.form.validate(form)) {
                     var data = this.sandbox.form.getData(form);
 
                     if (data.id === '') {
@@ -314,18 +274,13 @@ define([], function() {
 
                     // FIXME auto complete in mapper
                     // only get id, if auto-complete is not empty:
-
-//                    TODO: contact + account
-                    data.contact = {
-                        id: this.sandbox.dom.attr('#' + this.contactInstanceName, 'data-id')
-                    };
                     data.account = {
                         id: this.sandbox.dom.attr('#' + this.accountInstanceName, 'data-id')
                     };
 
                     this.sandbox.logger.log('log data', data);
                     this.sandbox.emit('sulu.salesorder.order.save', data);
-//                }
+                }
             },
 
             // @var Bool saved - defines if saved state should be shown

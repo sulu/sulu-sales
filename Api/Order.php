@@ -3,6 +3,8 @@
 namespace Sulu\Bundle\Sales\OrderBundle\Api;
 
 use JMS\Serializer\Annotation\VirtualProperty;
+use Sulu\Bundle\ContactBundle\Entity\TermsOfDelivery;
+use Sulu\Bundle\ContactBundle\Entity\TermsOfPayment;
 use Sulu\Bundle\Sales\CoreBundle\Api\Item;
 use Sulu\Bundle\Sales\OrderBundle\Entity\Order as Entity;
 use Sulu\Component\Rest\ApiWrapper;
@@ -173,14 +175,35 @@ class Order extends ApiWrapper
     }
 
     /**
+     * @param string $customerName
+     * @return Order
+     */
+    public function setCustomerName($customerName)
+    {
+        $this->entity->setCustomerName($customerName);
+
+        return $this;
+    }
+
+    /**
+     * @VirtualProperty
+     * @SerializedName("customerName")
+     * @return string
+     */
+    public function getCustomerName()
+    {
+        return $this->entity->getCustomerName();
+    }
+
+    /**
      * Set termsOfDelivery
      *
-     * @param string $termsOfDelivery
+     * @param TermsOfDelivery $termsOfDelivery
      * @return Order
      */
     public function setTermsOfDelivery($termsOfDelivery)
     {
-        $this->entity->setCurrency($termsOfDelivery);
+        $this->entity->setTermsOfDelivery($termsOfDelivery);
 
         return $this;
     }
@@ -188,13 +211,47 @@ class Order extends ApiWrapper
     /**
      * Get termsOfDelivery
      *
-     * @return string
+     * @return TermsOfDelivery
      * @VirtualProperty
      * @SerializedName("termsOfDelivery")
      */
     public function getTermsOfDelivery()
     {
-        return $this->entity->getTermsOfDelivery();
+        if ($terms = $this->entity->getTermsOfDelivery()) {
+            return array(
+                'id' => $terms->getId(),
+                'terms' => $terms->getTerms()
+            );
+        }
+    }
+
+    /**
+     * Set termsOfPayment
+     *
+     * @param TermsOfPayment $termsOfPayment
+     * @return Order
+     */
+    public function setTermsOfPayment($termsOfPayment)
+    {
+        $this->entity->setTermsOfPayment($termsOfPayment);
+
+        return $this;
+    }
+
+    /**
+     * Get termsOfPayment
+     * @return TermsOfPayment
+     * @VirtualProperty
+     * @SerializedName("termsOfPayment")
+     */
+    public function getTermsOfPayment()
+    {
+        if ($terms = $this->entity->getTermsOfPayment()) {
+            return array(
+                'id' => $terms->getId(),
+                'terms' => $terms->getTerms()
+            );
+        }
     }
 
     /**
@@ -203,9 +260,9 @@ class Order extends ApiWrapper
      * @param string $termsOfPayment
      * @return Order
      */
-    public function setTermsOfPayment($termsOfPayment)
+    public function setTermsOfPaymentContent($termsOfPayment)
     {
-        $this->entity->setTermsOfDelivery($termsOfPayment);
+        $this->entity->setTermsOfPaymentContent($termsOfPayment);
 
         return $this;
     }
@@ -215,11 +272,36 @@ class Order extends ApiWrapper
      *
      * @return string
      * @VirtualProperty
-     * @SerializedName("termsOfPayment")
+     * @SerializedName("termsOfPaymentContent")
      */
-    public function getTermsOfPayment()
+    public function getTermsOfPaymentContent()
     {
-        return $this->entity->getTermsOfPayment();
+        return $this->entity->getTermsOfPaymentContent();
+    }
+
+    /**
+     * Set termsOfDelivery
+     *
+     * @param string $termsOfDelivery
+     * @return Order
+     */
+    public function setTermsOfDeliveryContent($termsOfDelivery)
+    {
+        $this->entity->setTermsOfDeliveryContent($termsOfDelivery);
+
+        return $this;
+    }
+
+    /**
+     * Get termsOfDelivery
+     *
+     * @return string
+     * @VirtualProperty
+     * @SerializedName("termsOfDeliveryContent")
+     */
+    public function getTermsOfDeliveryContent()
+    {
+        return $this->entity->getTermsOfDeliveryContent();
     }
 
     /**
@@ -344,7 +426,12 @@ class Order extends ApiWrapper
      */
     public function getAccount()
     {
-        return $this->entity->getAccount();
+        if ($account = $this->entity->getAccount()) {
+            return array(
+                'id' => $account->getId(),
+                'name' => $account->getName()
+            );
+        }
     }
 
     /**
@@ -369,7 +456,12 @@ class Order extends ApiWrapper
      */
     public function getContact()
     {
-        return $this->entity->getContact();
+        if ($contact = $this->entity->getContact()) {
+            return array(
+                'id' => $contact->getId(),
+                'fullName' => $contact->getFullName()
+            );
+        }
     }
 
     /**
@@ -380,7 +472,7 @@ class Order extends ApiWrapper
      */
     public function setResponsibleContact(\Sulu\Bundle\ContactBundle\Entity\Contact $responsibleContact = null)
     {
-        $this->entity->setResponsibleContact();
+        $this->entity->setResponsibleContact($responsibleContact);
 
         return $this;
     }
@@ -454,8 +546,6 @@ class Order extends ApiWrapper
      * Get changer
      *
      * @return UserInterface
-     * @VirtualProperty
-     * @SerializedName("changer")
      */
     public function getChanger()
     {
@@ -479,8 +569,6 @@ class Order extends ApiWrapper
      * Get creator
      *
      * @return UserInterface
-     * @VirtualProperty
-     * @SerializedName("creator")
      */
     public function getCreator()
     {

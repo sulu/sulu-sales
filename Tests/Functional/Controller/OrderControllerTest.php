@@ -315,8 +315,8 @@ class OrderControllerTest extends DatabaseTestCase
         $this->order->setCommission('commission');
         $this->order->setCostCentre('cost-centre');
         $this->order->setCurrency('EUR');
-        $this->order->setTermsOfDelivery('10kg minimum');
-        $this->order->setTermsOfPayment('10% off');
+        $this->order->setTermsOfDeliveryContent('10kg minimum');
+        $this->order->setTermsOfPaymentContent('10% off');
         $this->order->setCreated(new DateTime());
         $this->order->setChanged(new DateTime());
         $this->order->setDesiredDeliveryDate(new DateTime('2015-01-01'));
@@ -439,8 +439,8 @@ class OrderControllerTest extends DatabaseTestCase
         $this->assertEquals((new DateTime('2015-01-01'))->getTimestamp(), (new DateTime($response->desiredDeliveryDate))->getTimestamp());
         $this->assertEquals(true, $response->taxfree);
         $this->assertEquals('commission', $response->commission);
-        $this->assertEquals('10kg minimum', $response->termsOfDelivery);
-        $this->assertEquals('10% off', $response->termsOfPayment);
+        $this->assertEquals('10kg minimum', $response->termsOfDeliveryContent);
+        $this->assertEquals('10% off', $response->termsOfPaymentContent);
         // order status
         $this->assertEquals('English-Order-Status-1', $response->status->status);
         $this->assertEquals($this->orderStatus->getId(), $response->status->id);

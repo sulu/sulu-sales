@@ -15,6 +15,7 @@ use Sulu\Bundle\ContactBundle\Entity\Account;
 use Sulu\Bundle\ContactBundle\Entity\Address;
 use Sulu\Bundle\ContactBundle\Entity\Contact;
 use Sulu\Bundle\ContactBundle\Entity\ContactRepository;
+use Sulu\Bundle\ContactBundle\Entity\TermsOfDelivery;
 use Sulu\Bundle\Sales\OrderBundle\Api\OrderStatus;
 use Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatus as OrderStatusEntity;
 use Sulu\Bundle\Sales\OrderBundle\Entity\OrderAddress;
@@ -40,6 +41,8 @@ class OrderManager
     protected static $orderAddressEntityName = 'SuluSalesOrderBundle:OrderAddress';
     protected static $orderStatusTranslationEntityName = 'SuluSalesOrderBundle:OrderStatusTranslation';
     protected static $itemEntityName = 'SuluSalesCoreBundle:Item';
+    protected static $termsOfDeliveryEntityName = 'SuluContactBundle:TermsOfDelivery';
+    protected static $termsOfPaymentEntityName = 'SuluContactBundle:TermsOfPayment';
 
     private $currentLocale;
 
@@ -93,7 +96,7 @@ class OrderManager
     public function save(array $data, $locale, $userId, $id = null)
     {
         if ($id) {
-            $order = $this->orderRepository->findByIdAndLocale($id, $locale);
+            $order = $this->findByIdAndLocale($id, $locale);
 
             if (!$order) {
                 throw new OrderNotFoundException($id);
@@ -120,35 +123,22 @@ class OrderManager
             $order->setDesiredDeliveryDate($desiredDeliveryDate);
         }
 
-        // TODO: handle
-        $order->setTermsOfDelivery($this->getProperty($data, 'termsOfDelivery', $order->getTermsOfDelivery()));
-        $order->setTermsOfPayment($this->getProperty($data, 'termsOfPayment', $order->getTermsOfPayment()));
+        $this->setTermsOfDelivery($data, $order);
+        $this->setTermsOfPayment($data, $order);
+
+        $account = $this->setAccount($data, $order);
 
         // TODO: check sessionID
 //        $order->setSessionId($this->getProperty($data, 'number', $order->getNumber()));
-        // TODO: set correct status
-//        $order->setStatus($this->getProperty($data, 'status', $order->getNumber()));
 
         // add contact
-        $this->addContactRelation($data, 'contact', function($contact) use ($order) {
+        $contact = $this->addContactRelation($data, 'contact', function($contact) use ($order) {
             $order->setContact($contact);
         });
         // add contact
         $this->addContactRelation($data, 'responsibleContact', function($contact) use ($order) {
             $order->setResponsibleContact($contact);
         });
-
-        $accountData = $this->getProperty($data, 'account');
-        if ($accountData) {
-            if (!array_key_exists('id', $accountData)) {
-                throw new MissingOrderAttributeException('account.id');
-            }
-            // FIXME: get inject repository class
-            $account = $this->em->getRepository(self::$accountEntityName)->find($accountData['id']);
-            if (!$account) {
-                throw new OrderDependencyNotFoundException(self::$accountEntityName, $accountData['id']);
-            }
-        }
 
         // create order (POST)
         if ($order->getId() == null) {
@@ -172,10 +162,13 @@ class OrderManager
             $order->setInvoiceAddress($invoiceAddress);
         }
 
-        // set OrderAddress data
-        $this->setOrderAddress($order->getDeliveryAddress(), $data['deliveryAddress']['id'], $order->getContact(), $account);
-        $this->setOrderAddress($order->getInvoiceAddress(), $data['invoiceAddress']['id'], $order->getContact(), $account);
+        // set customer name to account if set, otherwise to contact
+        $customerName = $account !== null ? $account->getName() : $contact->getFullName();
+        $order->setCustomerName($customerName);
 
+        // set OrderAddress data
+        $this->setOrderAddress($order->getDeliveryAddress(), $data['deliveryAddress']['id'], $contact, $account);
+        $this->setOrderAddress($order->getInvoiceAddress(), $data['paymentAddress']['id'], $contact, $account);
 
         $order->setChanged(new DateTime());
         $order->setChanger($user);
@@ -338,7 +331,7 @@ class OrderManager
         // check if contact and status are set
         $this->checkDataSet($data, 'contact', $isNew) && $this->checkDataSet($data['contact'], 'id', $isNew);
         $this->checkDataSet($data, 'deliveryAddress', $isNew) && $this->checkDataSet($data['deliveryAddress'], 'id', $isNew);
-        $this->checkDataSet($data, 'invoiceAddress', $isNew) && $this->checkDataSet($data['invoiceAddress'], 'id', $isNew);
+        $this->checkDataSet($data, 'paymentAddress', $isNew) && $this->checkDataSet($data['paymentAddress'], 'id', $isNew);
     }
 
     /**
@@ -368,10 +361,11 @@ class OrderManager
 
     /**
      * searches for contact in specified data and calls callback function
-     * @param array $dataKey
-     * @param $data
+     * @param array $data
+     * @param $dataKey
      * @param $addCallback
-     * @throws OrderDependencyNotFoundException
+     * @return Contact
+     * @throws Exception\OrderDependencyNotFoundException
      */
     private function addContactRelation(array $data, $dataKey, $addCallback) {
         if (array_key_exists($dataKey, $data) && array_key_exists('id', $data[$dataKey])) {
@@ -383,6 +377,7 @@ class OrderManager
                 throw new OrderDependencyNotFoundException(self::$contactEntityName, $contactId);
             }
             $addCallback($contact);
+            return $contact;
         }
     }
 
@@ -398,7 +393,9 @@ class OrderManager
             // add contact data
             $orderAddress->setFirstName($contact->getFirstName());
             $orderAddress->setLastName($contact->getLastName());
-            $orderAddress->setTitle($contact->getTitle()->getTitle());
+            if ($contact->getTitle() !== null) {
+                $orderAddress->setTitle($contact->getTitle()->getTitle());
+            }
 
             // add account data
             if ($account) {
@@ -449,5 +446,89 @@ class OrderManager
     private function getProperty(array $data, $key, $default = null)
     {
         return array_key_exists($key, $data) ? $data[$key] : $default;
+    }
+
+    /**
+     * @param $data
+     * @param Order $order
+     * @return null|object
+     * @throws Exception\MissingOrderAttributeException
+     * @throws Exception\OrderDependencyNotFoundException
+     */
+    private function setTermsOfDelivery($data, Order $order) {
+        // terms of delivery
+        $termsOfDeliveryData = $this->getProperty($data, 'termsOfDelivery');
+        if ($termsOfDeliveryData) {
+            if (!array_key_exists('id', $termsOfDeliveryData)) {
+                throw new MissingOrderAttributeException('termsOfDelivery.id');
+            }
+            // TODO: inject repository class
+            $terms = $this->em->getRepository(self::$termsOfDeliveryEntityName)->find($termsOfDeliveryData['id']);
+            if (!$terms) {
+                throw new OrderDependencyNotFoundException(self::$termsOfDeliveryEntityName, $termsOfDeliveryData['id']);
+            }
+            $order->setTermsOfDelivery($terms);
+            $order->setTermsOfDeliveryContent($terms->getTerms());
+            return $terms;
+        } else {
+            $order->setTermsOfDelivery(null);
+            $order->setTermsOfDeliveryContent(null);
+        }
+        return null;
+    }
+
+    /**
+     * @param $data
+     * @param Order $order
+     * @return null|object
+     * @throws Exception\MissingOrderAttributeException
+     * @throws Exception\OrderDependencyNotFoundException
+     */
+    private function setTermsOfPayment($data, Order $order) {
+        // terms of delivery
+        $termsOfPaymentData = $this->getProperty($data, 'termsOfPayment');
+        if ($termsOfPaymentData) {
+            if (!array_key_exists('id', $termsOfPaymentData)) {
+                throw new MissingOrderAttributeException('termsOfPayment.id');
+            }
+            // TODO: inject repository class
+            $terms = $this->em->getRepository(self::$termsOfPaymentEntityName)->find($termsOfPaymentData['id']);
+            if (!$terms) {
+                throw new OrderDependencyNotFoundException(self::$termsOfPaymentEntityName, $termsOfPaymentData['id']);
+            }
+            $order->setTermsOfPayment($terms);
+            $order->setTermsOfPaymentContent($terms->getTerms());
+            return $terms;
+        } else {
+            $order->setTermsOfPayment(null);
+            $order->setTermsOfPaymentContent(null);
+        }
+        return null;
+    }
+
+    /**
+     * @param $data
+     * @param Order $order
+     * @return null|object
+     * @throws Exception\MissingOrderAttributeException
+     * @throws Exception\OrderDependencyNotFoundException
+     */
+    private function setAccount($data, Order $order) {
+        $accountData = $this->getProperty($data, 'account');
+        if ($accountData) {
+            if (!array_key_exists('id', $accountData)) {
+                throw new MissingOrderAttributeException('account.id');
+            }
+            // TODO: inject repository class
+            $account = $this->em->getRepository(self::$accountEntityName)->find($accountData['id']);
+            if (!$account) {
+                throw new OrderDependencyNotFoundException(self::$accountEntityName, $accountData['id']);
+            }
+            $order->setAccount($account);
+            return $account;
+        } else {
+            $order->setAccount(null);
+        }
+        return null;
     }
 }
