@@ -21,6 +21,8 @@ use Sulu\Bundle\ContactBundle\Entity\ContactTitle;
 use Sulu\Bundle\ContactBundle\Entity\Country;
 use Sulu\Bundle\ContactBundle\Entity\Phone;
 use Sulu\Bundle\ContactBundle\Entity\PhoneType;
+use Sulu\Bundle\ContactBundle\Entity\TermsOfDelivery;
+use Sulu\Bundle\ContactBundle\Entity\TermsOfPayment;
 use Sulu\Bundle\ProductBundle\Entity\Product;
 use Sulu\Bundle\ProductBundle\Entity\ProductTranslation;
 use Sulu\Bundle\ProductBundle\Entity\Status;
@@ -93,6 +95,14 @@ class OrderControllerTest extends DatabaseTestCase
      * @var OrderStatus
      */
     private $orderStatus;
+    /**
+     * @var TermsOfDelivery
+     */
+    private $termsOfDelivery;
+    /**
+     * @var TermsOfPayment
+     */
+    private $termsOfPayment;
     /**
      * @var OrderStatusTranslation
      */
@@ -309,14 +319,22 @@ class OrderControllerTest extends DatabaseTestCase
         $this->orderAddressInvoice = clone $this->orderAddressDelivery;
         $this->orderAddressInvoice = clone $this->orderAddressDelivery;
 
+        $this->termsOfDelivery = new TermsOfDelivery();
+        $this->termsOfDelivery->setTerms('10kg minimum');
+        $this->termsOfPayment = new TermsOfPayment();
+        $this->termsOfPayment->setTerms('10% off');
+
         // order
         $this->order = new Order();
         $this->order->setNumber('1234');
         $this->order->setCommission('commission');
         $this->order->setCostCentre('cost-centre');
+        $this->order->setCustomerName($this->contact->getFullName());
         $this->order->setCurrency('EUR');
-        $this->order->setTermsOfDeliveryContent('10kg minimum');
-        $this->order->setTermsOfPaymentContent('10% off');
+        $this->order->setTermsOfDelivery($this->termsOfDelivery);
+        $this->order->setTermsOfDeliveryContent($this->termsOfDelivery->getTerms());
+        $this->order->setTermsOfPayment($this->termsOfPayment);
+        $this->order->setTermsOfPaymentContent($this->termsOfPayment->getTerms());
         $this->order->setCreated(new DateTime());
         $this->order->setChanged(new DateTime());
         $this->order->setDesiredDeliveryDate(new DateTime('2015-01-01'));
@@ -395,6 +413,9 @@ class OrderControllerTest extends DatabaseTestCase
         self::$em->persist($this->account);
         self::$em->persist($title);
         self::$em->persist($country);
+        self::$em->persist($this->termsOfPayment);
+        self::$em->persist($this->termsOfDelivery);
+        self::$em->persist($country);
         self::$em->persist($addressType);
         self::$em->persist($this->address);
         self::$em->persist($this->address2);
@@ -446,8 +467,6 @@ class OrderControllerTest extends DatabaseTestCase
         $this->assertEquals($this->orderStatus->getId(), $response->status->id);
         // contact
         $this->assertEquals($this->contact->getId(), $response->contact->id);
-        $this->assertEquals($this->contact->getFirstName(), $response->contact->firstName);
-        $this->assertEquals($this->contact->getLastName(), $response->contact->lastName);
         // order Address delivery
         $this->assertEquals($this->orderAddressDelivery->getId(), $response->deliveryAddress->id);
         $this->assertEquals('John', $response->deliveryAddress->firstName);
@@ -521,14 +540,14 @@ class OrderControllerTest extends DatabaseTestCase
             'PUT',
             '/api/orders/1',
             array(
-                'number' => 'EvilNumber',
+                'orderNumber' => 'EvilNumber',
                 'contact' => array(
                     'id' => 2
                 ),
                 'account' => array(
                     'id' => 1
                 ),
-                'invoiceAddress' => array(
+                'paymentAddress' => array(
                     'id' => 1
                 ),
                 'deliveryAddress' => array(
@@ -541,7 +560,7 @@ class OrderControllerTest extends DatabaseTestCase
         $this->client->request('GET', '/api/orders/1');
         $response = json_decode($this->client->getResponse()->getContent());
         $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
-        $this->assertEquals('EvilNumber', $response->number);
+        $this->assertEquals('EvilNumber', $response->orderNumber);
 
         $this->checkOrderAddress($response->invoiceAddress, $this->address, $this->contact2, $this->account);
         $this->checkOrderAddress($response->deliveryAddress, $this->address2, $this->contact2, $this->account);
@@ -564,7 +583,7 @@ class OrderControllerTest extends DatabaseTestCase
     public function testPost($testParent = false)
     {
         $data = array(
-            'number' => 'NUMBER:0815',
+            'orderNumber' => 'NUMBER:0815',
             'supplierName' => $this->account->getName(),
             'account' => array(
                 'id' => 1
@@ -572,11 +591,17 @@ class OrderControllerTest extends DatabaseTestCase
             'contact' => array(
                 'id' => 1
             ),
-            'invoiceAddress' => array(
+            'paymentAddress' => array(
                 'id' => 1
             ),
             'deliveryAddress' => array(
                 'id' => 2
+            ),
+            'termsOfDelivery' => array(
+                'id' => 1
+            ),
+            'termsOfPayment' => array(
+                'id' => 1
             )
         );
 
@@ -587,7 +612,7 @@ class OrderControllerTest extends DatabaseTestCase
         $response = json_decode($this->client->getResponse()->getContent());
         $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
 
-        $this->assertEquals('NUMBER:0815', $response->number);
+        $this->assertEquals('NUMBER:0815', $response->orderNumber);
         $this->assertEquals('English-Order-Status-1', $response->status->status);
 
         $this->checkOrderAddress($response->invoiceAddress, $this->address, $this->contact, $this->account);

@@ -7,7 +7,7 @@
             <generator strategy="AUTO"/>
         </id>
 
-        <field name="number" type="string" column="number" length="255" nullable="false"/>
+        <field name="number" type="string" column="number" length="255" nullable="true"/>
         <field name="orderNumber" type="string" column="orderNumber" nullable="true"/>
         <field name="type" type="integer" column="type" nullable="true"/>
         <field name="sessionId" type="string" column="sessionId" length="255" nullable="true"/>
@@ -17,7 +17,7 @@
         <field name="costCentre" type="string" column="costCentre" nullable="true"/>
         <field name="commission" type="string" column="commission" nullable="true"/>
 
-        <field name="customerName" type="string" column="customerName" length="255" nullable="true"/>
+        <field name="customerName" type="string" column="customerName" length="255" nullable="false"/>
         <field name="termsOfDeliveryContent" type="string" column="termsOfDeliveryContent" length="255" nullable="true"/>
         <field name="termsOfPaymentContent" type="string" column="termsOfPaymentContent" length="255" nullable="true"/>
 
@@ -35,16 +35,16 @@
                 <join-column name="idOrderAddressesInvoice"/>
             </join-columns>
         </one-to-one>
-        <one-to-one field="termsOfDelivery" target-entity="Sulu\Bundle\ContactBundle\Entity\TermsOfDelivery">
+        <many-to-one field="termsOfDelivery" target-entity="Sulu\Bundle\ContactBundle\Entity\TermsOfDelivery">
             <join-columns>
                 <join-column name="idTermsOfDelivery"/>
             </join-columns>
-        </one-to-one>
-        <one-to-one field="termsOfPayment" target-entity="Sulu\Bundle\ContactBundle\Entity\TermsOfPayment">
+        </many-to-one>
+        <many-to-one field="termsOfPayment" target-entity="Sulu\Bundle\ContactBundle\Entity\TermsOfPayment">
             <join-columns>
                 <join-column name="idTermsOfPayment"/>
             </join-columns>
-        </one-to-one>
+        </many-to-one>
         <many-to-one field="status" target-entity="Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatus" inversed-by="order">
             <join-columns>
                 <join-column name="idOrderStatus" referenced-column-name="id" nullable="false"/>

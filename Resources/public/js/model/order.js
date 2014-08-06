@@ -10,9 +10,8 @@
 define([
     'mvc/relationalmodel',
     'mvc/hasmany',
-    'mvc/hasone',
-//    'sulucontact/model/bankAccount'
-], function(RelationalModel, HasMany, HasOne) {
+    'mvc/hasone'
+], function(RelationalModel) {
 
     'use strict';
     
@@ -24,12 +23,6 @@ define([
                 number: ''
 
             };
-        }, relations: [
-//            {
-//                type: HasMany,
-//                key: 'emails',
-//                relatedModel: Email
-//            },
-        ]
+        }, relations: []
     });
 });

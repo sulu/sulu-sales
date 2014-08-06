@@ -16,8 +16,6 @@ use Sulu\Bundle\ContactBundle\Entity\Address;
 use Sulu\Bundle\ContactBundle\Entity\Contact;
 use Sulu\Bundle\ContactBundle\Entity\ContactRepository;
 use Sulu\Bundle\ContactBundle\Entity\TermsOfDelivery;
-use Sulu\Bundle\Sales\OrderBundle\Api\OrderStatus;
-use Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatus as OrderStatusEntity;
 use Sulu\Bundle\Sales\OrderBundle\Entity\OrderAddress;
 use Sulu\Bundle\Sales\OrderBundle\Entity\OrderRepository;
 use Sulu\Bundle\Sales\OrderBundle\Entity\Order as OrderEntity;
@@ -110,7 +108,7 @@ class OrderManager
 
         $user = $this->userRepository->findUserById($userId);
 
-        $order->setNumber($this->getProperty($data, 'number', $order->getNumber()));
+        $order->setOrderNumber($this->getProperty($data, 'orderNumber', $order->getOrderNumber()));
         $order->setCurrency($this->getProperty($data, 'currency', $order->getCurrency()));
         $order->setCostCentre($this->getProperty($data, 'costCentre', $order->getCostCentre()));
         $order->setCommission($this->getProperty($data, 'commission', $order->getCommission()));
@@ -169,6 +167,9 @@ class OrderManager
         // set OrderAddress data
         $this->setOrderAddress($order->getDeliveryAddress(), $data['deliveryAddress']['id'], $contact, $account);
         $this->setOrderAddress($order->getInvoiceAddress(), $data['paymentAddress']['id'], $contact, $account);
+
+        // handle items
+        $this->handleItems($data, $order);
 
         $order->setChanged(new DateTime());
         $order->setChanger($user);
@@ -353,7 +354,8 @@ class OrderManager
         return $keyExists;
     }
 
-    private function checkIfSet($key, $data) {
+    private function checkIfSet($key, $data)
+    {
         $keyExists = array_key_exists($key, $data);
 
         return $keyExists && $data[$key] !== null && $data[$key] !== '';
@@ -367,7 +369,8 @@ class OrderManager
      * @return Contact
      * @throws Exception\OrderDependencyNotFoundException
      */
-    private function addContactRelation(array $data, $dataKey, $addCallback) {
+    private function addContactRelation(array $data, $dataKey, $addCallback)
+    {
         if (array_key_exists($dataKey, $data) && array_key_exists('id', $data[$dataKey])) {
             $contactId = $data[$dataKey]['id'];
             /** @var Contact $contact */
@@ -388,7 +391,8 @@ class OrderManager
      * @param Account $account
      * @throws OrderDependencyNotFoundException
      */
-    private function setOrderAddress(OrderAddress $orderAddress, $addressId, Contact $contact, Account $account = null) {
+    private function setOrderAddress(OrderAddress $orderAddress, $addressId, Contact $contact, Account $account = null)
+    {
         // check if address with id can be found
             // add contact data
             $orderAddress->setFirstName($contact->getFirstName());
@@ -455,7 +459,8 @@ class OrderManager
      * @throws Exception\MissingOrderAttributeException
      * @throws Exception\OrderDependencyNotFoundException
      */
-    private function setTermsOfDelivery($data, Order $order) {
+    private function setTermsOfDelivery($data, Order $order)
+    {
         // terms of delivery
         $termsOfDeliveryData = $this->getProperty($data, 'termsOfDelivery');
         if ($termsOfDeliveryData) {
@@ -484,7 +489,8 @@ class OrderManager
      * @throws Exception\MissingOrderAttributeException
      * @throws Exception\OrderDependencyNotFoundException
      */
-    private function setTermsOfPayment($data, Order $order) {
+    private function setTermsOfPayment($data, Order $order)
+    {
         // terms of delivery
         $termsOfPaymentData = $this->getProperty($data, 'termsOfPayment');
         if ($termsOfPaymentData) {
@@ -513,7 +519,8 @@ class OrderManager
      * @throws Exception\MissingOrderAttributeException
      * @throws Exception\OrderDependencyNotFoundException
      */
-    private function setAccount($data, Order $order) {
+    private function setAccount($data, Order $order)
+    {
         $accountData = $this->getProperty($data, 'account');
         if ($accountData) {
             if (!array_key_exists('id', $accountData)) {
@@ -530,5 +537,10 @@ class OrderManager
             $order->setAccount(null);
         }
         return null;
+    }
+
+    private function handleItems($data, Order $order)
+    {
+        if
     }
 }

@@ -28,7 +28,7 @@
             </trans-unit>
             <trans-unit id="a50accg2ac181350142c0b4720e29ff7" resname="salesorder.orders.account">
                 <source>salesorder.orders.account</source>
-                <target>Unternehmen</target>
+                <target>Kunde</target>
             </trans-unit>
             <trans-unit id="a50accg2ac181350142c0b4720e29ff8" resname="salesorder.orders.commission">
                 <source>salesorder.orders.commission</source>

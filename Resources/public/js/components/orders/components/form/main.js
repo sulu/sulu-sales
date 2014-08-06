@@ -39,12 +39,12 @@ define([], function() {
                 this.dfdAutoCompleteInitialized.resolve();
             }, this);
 
+            this.sandbox.on('husky.auto-complete.' + this.accountInstanceName + '.selection-removed', accountChangedListener.bind(this));
+
             // contact saved
             this.sandbox.on('sulu.salesorder.order.saved', function(data) {
                 this.options.data = data;
                 this.setHeaderBar(true);
-//                this.initContactData();
-//                this.setFormData(data);
             }, this);
 
             // contact save
@@ -76,9 +76,9 @@ define([], function() {
                     {title: 'salesorder.orders.title', event: 'sulu.salesorder.orders.list'}
                 ];
 
-            if (!!this.options.data && !!this.options.data.id) {
-                title += ' #' + this.options.data.id;
-                breadcrumb.push({title: '#' + this.options.data.id});
+            if (!!this.options.data && !!this.options.data.number) {
+                title += ' #' + this.options.data.number;
+                breadcrumb.push({title: '#' + this.options.data.number});
             }
 
             this.sandbox.emit('sulu.header.set-title', title);
@@ -154,7 +154,7 @@ define([], function() {
         },
 
         accountChangedListener = function(event) {
-            var id = event.id;
+            var id = event.id || null;
 
             // if account has been changed
             if (id !== this.accountId) {
@@ -291,22 +291,6 @@ define([], function() {
                 }
                 this.saved = saved;
             },
-
-//            /**
-//             * Register events for editable drop downs
-//             * @param instanceName
-//             */
-//            initializeDropDownListender: function(instanceName) {
-//                var instance = 'husky.select.' + instanceName;
-//                this.sandbox.on(instance + '.selected.item', function(id) {
-//                    if (id > 0) {
-//                        this.setHeaderBar(false);
-//                    }
-//                }.bind(this));
-//                this.sandbox.on(instance + '.deselected.item', function() {
-//                    this.setHeaderBar(false);
-//                }.bind(this));
-//            },
 
             // event listens for changes in form
             listenForChange: function() {

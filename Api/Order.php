@@ -624,4 +624,25 @@ class Order extends ApiWrapper
     {
         return $this->entity->getInvoiceAddress();
     }
+
+    /**
+     * @param $number
+     * @return Order
+     */
+    public function setOrderNumber($number)
+    {
+        $this->entity->setOrderNumber($number);
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     * @VirtualProperty
+     * @SerializedName("orderNumber")
+     */
+    public function getOrderNumber()
+    {
+        return $this->entity->getOrderNumber();
+    }
 }

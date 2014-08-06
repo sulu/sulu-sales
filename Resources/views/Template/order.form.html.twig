@@ -39,7 +39,7 @@
             <div class="grid-col-6">
                 <div class="form-group">
                     <label for="order-number"><%=translate('salesorder.orders.number')%></label>
-                    <input id="order-number" class="form-element" type="text" disabled/>
+                    <input id="order-number" class="form-element" type="text" data-mapper-property="orderNumber"/>
                 </div>
             </div>
         </div>
@@ -54,7 +54,7 @@
                          data-aura-default-label="<%=translate('public.please-choose')%>"
                          data-aura-value-name="fullName"
                          data-aura-multiple-select="false"
-                         data-aura-instance-name="contact"
+                         data-aura-instance-name="responsible-contact-select"
                          data-type="husky-select"
                             {#data-type-label="translation"#}
                             {#data-type-required="translation"#}
