@@ -30,19 +30,5 @@ class SuluSalesOrderContentNavigation extends ContentNavigation
         $overview->setContentComponent('orders@sulusalesorder');
         $overview->setContentComponentOptions(array('display'=>'form'));
         $this->addNavigationItem($overview);
-
-//        // activities
-//        $activities = new NavigationItem('content-navigation.sales.order.');
-//        $activities->setAction('activities');
-//        $activities->setContentType('contact');
-//        $activities->setContentComponent('contacts@sulucontact');
-//        $activities->setContentComponentOptions(array('display'=>'activities'));
-//        $activities->setContentDisplay(array('edit'));
-//        $this->addNavigationItem($activities);
-
-    }
-
-    private function getViewForAccount() {
-
     }
 }

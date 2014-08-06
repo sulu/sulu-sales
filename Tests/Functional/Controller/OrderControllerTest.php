@@ -59,6 +59,8 @@ class OrderControllerTest extends DatabaseTestCase
      */
     private $testUser;
 
+    private $locale = 'en';
+
     /**
      * @var Account
      */
@@ -149,7 +151,7 @@ class OrderControllerTest extends DatabaseTestCase
         $this->testUser = new TestUser();
         $this->testUser->setUsername('test');
         $this->testUser->setPassword('test');
-        $this->testUser->setLocale('en');
+        $this->testUser->setLocale($this->locale);
     }
 
     private function setUpClient()
@@ -294,7 +296,7 @@ class OrderControllerTest extends DatabaseTestCase
         $this->orderStatus = new OrderStatus();
         $this->orderStatusTranslation = new OrderStatusTranslation();
         $this->orderStatusTranslation->setName('English-Order-Status-1');
-        $this->orderStatusTranslation->setLocale('en');
+        $this->orderStatusTranslation->setLocale($this->locale);
         $this->orderStatusTranslation->setStatus($this->orderStatus);
 
         // order address
@@ -354,13 +356,13 @@ class OrderControllerTest extends DatabaseTestCase
         // product type
         $productType = new Type();
         $productTypeTranslation = new TypeTranslation();
-        $productTypeTranslation->setLocale('en');
+        $productTypeTranslation->setLocale($this->locale);
         $productTypeTranslation->setName('EnglishProductType-1');
         $productTypeTranslation->setType($productType);
         // product status
         $productStatus = new Status();
         $productStatusTranslation = new StatusTranslation();
-        $productStatusTranslation->setLocale('en');
+        $productStatusTranslation->setLocale($this->locale);
         $productStatusTranslation->setName('EnglishProductStatus-1');
         $productStatusTranslation->setStatus($productStatus);
         // product
@@ -375,7 +377,7 @@ class OrderControllerTest extends DatabaseTestCase
         // product translation
         $productTranslation = new ProductTranslation();
         $productTranslation->setProduct($this->product);
-        $productTranslation->setLocale('en');
+        $productTranslation->setLocale($this->locale);
         $productTranslation->setName('EnglishProductTranslationName-1');
         $productTranslation->setShortDescription('EnglishProductShortDescription-1');
         $productTranslation->setLongDescription('EnglishProductLongDescription-1');
@@ -385,7 +387,7 @@ class OrderControllerTest extends DatabaseTestCase
         $this->itemStatus = new ItemStatus();
         $this->itemStatusTranslation = new ItemStatusTranslation();
         $this->itemStatusTranslation->setName('English-Item-Status-1');
-        $this->itemStatusTranslation->setLocale('en');
+        $this->itemStatusTranslation->setLocale($this->locale);
         $this->itemStatusTranslation->setStatus($this->itemStatus);
         // Item
         $this->item = new Item();
@@ -602,6 +604,14 @@ class OrderControllerTest extends DatabaseTestCase
             ),
             'termsOfPayment' => array(
                 'id' => 1
+            ),
+            'items' => array(
+                'name' => $this->product->getTranslation($this->locale),
+                'quantity' => 2,
+                'quantityUnit' => '1',
+                'product' => array(
+                    'id' => $this->product->getId()
+                )
             )
         );
 

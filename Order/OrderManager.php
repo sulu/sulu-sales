@@ -541,6 +541,8 @@ class OrderManager
 
     private function handleItems($data, Order $order)
     {
-        if
+        if ($this->checkIfSet('items', $data)) {
+
+        }
     }
 }
