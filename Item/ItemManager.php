@@ -260,7 +260,7 @@ class ItemManager
             if ($item->getUseProductsPrice() === true) {
                 $item->setPrice($product->getPrice());
                 $item->setNumber($product->getNumber());
-                $item->setDescription($product->getTranslation($locale));
+                $item->setDescription($product->getTranslation($locale)->getLongDescription());
             }
 //            $item->setTax($product->getTax())
 
