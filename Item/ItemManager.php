@@ -63,6 +63,7 @@ class ItemManager
     }
 
     /**
+     * creates an item, but does not flush
      * @param array $data
      * @param $locale
      * @param $userId
@@ -71,7 +72,7 @@ class ItemManager
      * @throws Exception\MissingItemAttributeException
      * @return null|\Sulu\Bundle\Sales\CoreBundle\Api\Item
      */
-    public function save(array $data, $locale, $userId, $id = null)
+    public function create(array $data, $locale, $userId, $id = null)
     {
 
         // check requiresd data
