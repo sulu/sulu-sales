@@ -256,7 +256,7 @@ class ItemManager
             }
             $item->setProduct($product);
             $item->setName($product);
-            $item->setUseProductsPrice($data['useProductsPrice']);
+            $item->setUseProductsPrice($this->getProperty($data, 'useProductsPrice', true));
             if ($item->getUseProductsPrice() === true) {
                 $item->setPrice($product->getPrice());
                 $item->setNumber($product->getNumber());
