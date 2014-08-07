@@ -18,6 +18,7 @@ class AppKernel extends Kernel
             new Stof\DoctrineExtensionsBundle\StofDoctrineExtensionsBundle(),
             new FOS\RestBundle\FOSRestBundle(),
             new Bazinga\Bundle\HateoasBundle\BazingaHateoasBundle(),
+            new \Liip\ThemeBundle\LiipThemeBundle(),
 
             // Sulu
             new \Sulu\Bundle\CoreBundle\SuluCoreBundle(),
@@ -29,6 +30,7 @@ class AppKernel extends Kernel
             new \Sulu\Bundle\TagBundle\SuluTagBundle(),
             new \Sulu\Bundle\Sales\OrderBundle\SuluSalesOrderBundle(),
             new \Sulu\Bundle\Sales\CoreBundle\SuluSalesCoreBundle(),
+            new \Sulu\Bundle\WebsiteBundle\SuluWebsiteBundle(),
         );
 
         return $bundles;

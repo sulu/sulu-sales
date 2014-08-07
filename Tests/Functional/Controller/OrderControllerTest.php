@@ -134,6 +134,10 @@ class OrderControllerTest extends DatabaseTestCase
      */
     private $productTypeTranslation;
     /**
+     * @var ProductTranslation
+     */
+    private $productTranslation;
+    /**
      * @var Phone
      */
     private $phone;
@@ -375,13 +379,13 @@ class OrderControllerTest extends DatabaseTestCase
         $this->product->setCreated(new DateTime());
         $this->product->setChanged(new DateTime());
         // product translation
-        $productTranslation = new ProductTranslation();
-        $productTranslation->setProduct($this->product);
-        $productTranslation->setLocale($this->locale);
-        $productTranslation->setName('EnglishProductTranslationName-1');
-        $productTranslation->setShortDescription('EnglishProductShortDescription-1');
-        $productTranslation->setLongDescription('EnglishProductLongDescription-1');
-        $this->product->addTranslation($productTranslation);
+        $this->productTranslation = new ProductTranslation();
+        $this->productTranslation->setProduct($this->product);
+        $this->productTranslation->setLocale($this->locale);
+        $this->productTranslation->setName('EnglishProductTranslationName-1');
+        $this->productTranslation->setShortDescription('EnglishProductShortDescription-1');
+        $this->productTranslation->setLongDescription('EnglishProductLongDescription-1');
+        $this->product->addTranslation($this->productTranslation);
 
         // Item Status
         $this->itemStatus = new ItemStatus();
@@ -435,7 +439,7 @@ class OrderControllerTest extends DatabaseTestCase
         self::$em->persist($this->itemStatus);
         self::$em->persist($this->itemStatusTranslation);
         self::$em->persist($this->product);
-        self::$em->persist($productTranslation);
+        self::$em->persist($this->productTranslation);
         self::$em->persist($productType);
         self::$em->persist($productTypeTranslation);
         self::$em->persist($productStatus);
@@ -582,7 +586,7 @@ class OrderControllerTest extends DatabaseTestCase
         );
     }
 
-    public function testPost($testParent = false)
+    public function testPost()
     {
         $data = array(
             'orderNumber' => 'NUMBER:0815',
@@ -605,14 +609,6 @@ class OrderControllerTest extends DatabaseTestCase
             'termsOfPayment' => array(
                 'id' => 1
             ),
-            'items' => array(
-                'name' => $this->product->getTranslation($this->locale),
-                'quantity' => 2,
-                'quantityUnit' => '1',
-                'product' => array(
-                    'id' => $this->product->getId()
-                )
-            )
         );
 
         $this->client->request('POST', '/api/orders', $data);
@@ -627,6 +623,56 @@ class OrderControllerTest extends DatabaseTestCase
 
         $this->checkOrderAddress($response->invoiceAddress, $this->address, $this->contact, $this->account);
         $this->checkOrderAddress($response->deliveryAddress, $this->address2, $this->contact, $this->account);
+    }
+
+    public function testPostItems()
+    {
+        $data = array(
+            'orderNumber' => 'NUMBER:0815',
+            'supplierName' => $this->account->getName(),
+            'account' => array(
+                'id' => 1
+            ),
+            'contact' => array(
+                'id' => 1
+            ),
+            'paymentAddress' => array(
+                'id' => 1
+            ),
+            'deliveryAddress' => array(
+                'id' => 2
+            ),
+            'items' => array(
+                array(
+                    'name' => $this->productTranslation->getName(),
+                    'number' => $this->product->getNumber(),
+                    'quantity' => 2,
+                    'quantityUnit' => 'pc',
+                    'price' => $this->product->getPrice(),
+                    'discount' => 10,
+                    'tax' => 20,
+                    'description' => $this->productTranslation->getLongDescription(),
+                    'useProductsPrice' => false,
+                    'weight' => 12,
+                    'width' => 13,
+                    'height' => 14,
+                    'length' => 15,
+                    'supplierName' => 'supplier',
+                    'product' => array(
+                        'id' => $this->product->getId()
+                    )
+                )
+            )
+        );
+
+        $this->client->request('POST', '/api/orders', $data);
+        $response = json_decode($this->client->getResponse()->getContent());
+
+        $this->client->request('GET', '/api/orders/' . $response->id);
+        $response = json_decode($this->client->getResponse()->getContent());
+        $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
+
+
 
     }
 
@@ -639,7 +685,9 @@ class OrderControllerTest extends DatabaseTestCase
         $this->assertEquals('404', $this->client->getResponse()->getStatusCode());
     }
 
-    // compares an order-address response with its origin entities
+    /**
+     * compares an order-address response with its origin entities
+     */
     private function checkOrderAddress($orderAddress, Address $address, Contact $contact, Account $account = null) {
         // contact
         $this->assertEquals($contact->getFirstName(), $orderAddress->firstName);
@@ -668,6 +716,9 @@ class OrderControllerTest extends DatabaseTestCase
 //        $this->assertEquals('+43 123 / 456', $orderAddress->phoneMobile);
     }
 
+    /**
+     * asserts equality if object's attribute exist
+     */
     private function assertEqualsIfExists($firstValue, $secondObject, $value) {
         if ($firstValue !== null) {
             $this->assertEquals($firstValue, $secondObject->$value);
