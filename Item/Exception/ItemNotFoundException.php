@@ -10,7 +10,7 @@
 
 namespace Sulu\Bundle\Sales\CoreBundle\Item\Exception;
 
-class ItemNotFoundException extends OrderException
+class ItemNotFoundException extends ItemException
 {
     /**
      * The name of the object not found
@@ -26,9 +26,9 @@ class ItemNotFoundException extends OrderException
 
     public function __construct($id)
     {
-        $this->entityName = 'SuluSalesOrderBundle:Order';
+        $this->entityName = 'SuluSalesCoreBundle:Item';
         $this->id = $id;
-        parent::__construct('The order with the id "' . $this->id . '" was not found.', 0);
+        parent::__construct('The item with the id "' . $this->id . '" was not found.', 0);
     }
 
     /**
