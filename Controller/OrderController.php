@@ -16,6 +16,7 @@ use Sulu\Bundle\Sales\OrderBundle\Order\Exception\OrderDependencyNotFoundExcepti
 use Sulu\Bundle\Sales\OrderBundle\Order\Exception\OrderNotFoundException;
 use Sulu\Bundle\Sales\OrderBundle\Order\OrderManager;
 use Sulu\Component\Rest\Exception\EntityNotFoundException;
+use Sulu\Component\Rest\Exception\MissingArgumentException;
 use Sulu\Component\Rest\ListBuilder\ListRepresentation;
 use Sulu\Component\Rest\RestController;
 use Symfony\Component\HttpFoundation\Request;
@@ -40,11 +41,25 @@ class OrderController extends RestController implements ClassResourceInterface
     }
 
     /**
+     * returns all fields that can be used by list
+     * @param Request $request
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function fieldsAction(Request $request)
+    {
+        $locale = $this->getLocale($request);
+        // default contacts list
+        return $this->handleView($this->view(array_values($this->getManager()->getFieldDescriptors($locale)), 200));
+    }
+
+    /**
      * @param Request $request
      * @return mixed
      */
     public function cgetAction(Request $request) {
         $filter = array();
+
+        $locale = $this->getLocale($request);
 
         $status = $request->get('status');
         if ($status) {
@@ -60,7 +75,7 @@ class OrderController extends RestController implements ClassResourceInterface
 
             $listBuilder = $factory->create(self::$entityName);
 
-            $restHelper->initializeListBuilder($listBuilder, $this->getManager()->getFieldDescriptors());
+            $restHelper->initializeListBuilder($listBuilder, $this->getManager()->getFieldDescriptors($locale));
 
             foreach ($filter as $key => $value) {
                 $listBuilder->where($this->getManager()->getFieldDescriptor($key), $value);

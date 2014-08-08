@@ -15,16 +15,17 @@ use Sulu\Bundle\ContactBundle\Entity\Account;
 use Sulu\Bundle\ContactBundle\Entity\Address;
 use Sulu\Bundle\ContactBundle\Entity\Contact;
 use Sulu\Bundle\ContactBundle\Entity\ContactRepository;
-use Sulu\Bundle\Sales\OrderBundle\Api\OrderStatus;
-use Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatus as OrderStatusEntity;
+use Sulu\Bundle\ContactBundle\Entity\TermsOfDelivery;
 use Sulu\Bundle\Sales\OrderBundle\Entity\OrderAddress;
 use Sulu\Bundle\Sales\OrderBundle\Entity\OrderRepository;
 use Sulu\Bundle\Sales\OrderBundle\Entity\Order as OrderEntity;
 use Sulu\Bundle\Sales\OrderBundle\Order\Exception\MissingOrderAttributeException;
 use Sulu\Bundle\Sales\OrderBundle\Order\Exception\OrderDependencyNotFoundException;
 use Sulu\Bundle\Sales\OrderBundle\Order\Exception\OrderNotFoundException;
+use Sulu\Component\Rest\ListBuilder\Doctrine\FieldDescriptor\DoctrineConcatenationFieldDescriptor;
 use Sulu\Component\Rest\ListBuilder\Doctrine\FieldDescriptor\DoctrineFieldDescriptor;
 use Sulu\Bundle\Sales\OrderBundle\Api\Order;
+use Sulu\Component\Rest\ListBuilder\Doctrine\FieldDescriptor\DoctrineJoinDescriptor;
 use Sulu\Component\Security\UserRepositoryInterface;
 use DateTime;
 
@@ -35,8 +36,13 @@ class OrderManager
     protected static $addressEntityName = 'SuluContactBundle:Address';
     protected static $accountEntityName = 'SuluContactBundle:Account';
     protected static $orderStatusEntityName = 'SuluSalesOrderBundle:OrderStatus';
+    protected static $orderAddressEntityName = 'SuluSalesOrderBundle:OrderAddress';
     protected static $orderStatusTranslationEntityName = 'SuluSalesOrderBundle:OrderStatusTranslation';
     protected static $itemEntityName = 'SuluSalesCoreBundle:Item';
+    protected static $termsOfDeliveryEntityName = 'SuluContactBundle:TermsOfDelivery';
+    protected static $termsOfPaymentEntityName = 'SuluContactBundle:TermsOfPayment';
+
+    private $currentLocale;
 
     /**
      * @var ObjectManager
@@ -73,8 +79,6 @@ class OrderManager
         $this->orderRepository = $orderRepository;
         $this->userRepository = $userRepository;
         $this->em = $em;
-
-        $this->initializeFieldDescriptors();
     }
 
     /**
@@ -90,7 +94,7 @@ class OrderManager
     public function save(array $data, $locale, $userId, $id = null)
     {
         if ($id) {
-            $order = $this->orderRepository->findByIdAndLocale($id, $locale);
+            $order = $this->findByIdAndLocale($id, $locale);
 
             if (!$order) {
                 throw new OrderNotFoundException($id);
@@ -104,7 +108,7 @@ class OrderManager
 
         $user = $this->userRepository->findUserById($userId);
 
-        $order->setNumber($this->getProperty($data, 'number', $order->getNumber()));
+        $order->setOrderNumber($this->getProperty($data, 'orderNumber', $order->getOrderNumber()));
         $order->setCurrency($this->getProperty($data, 'currency', $order->getCurrency()));
         $order->setCostCentre($this->getProperty($data, 'costCentre', $order->getCostCentre()));
         $order->setCommission($this->getProperty($data, 'commission', $order->getCommission()));
@@ -117,35 +121,22 @@ class OrderManager
             $order->setDesiredDeliveryDate($desiredDeliveryDate);
         }
 
-        // TODO: handle
-        $order->setTermsOfDelivery($this->getProperty($data, 'termsOfDelivery', $order->getTermsOfDelivery()));
-        $order->setTermsOfPayment($this->getProperty($data, 'termsOfPayment', $order->getTermsOfPayment()));
+        $this->setTermsOfDelivery($data, $order);
+        $this->setTermsOfPayment($data, $order);
+
+        $account = $this->setAccount($data, $order);
 
         // TODO: check sessionID
 //        $order->setSessionId($this->getProperty($data, 'number', $order->getNumber()));
-        // TODO: set correct status
-//        $order->setStatus($this->getProperty($data, 'status', $order->getNumber()));
 
         // add contact
-        $this->addContactRelation($data, 'contact', function($contact) use ($order) {
+        $contact = $this->addContactRelation($data, 'contact', function($contact) use ($order) {
             $order->setContact($contact);
         });
         // add contact
         $this->addContactRelation($data, 'responsibleContact', function($contact) use ($order) {
             $order->setResponsibleContact($contact);
         });
-
-        $accountData = $this->getProperty($data, 'account');
-        if ($accountData) {
-            if (!array_key_exists('id', $accountData)) {
-                throw new MissingOrderAttributeException('account.id');
-            }
-            // FIXME: get inject repository class
-            $account = $this->em->getRepository(self::$accountEntityName)->find($accountData['id']);
-            if (!$account) {
-                throw new OrderDependencyNotFoundException(self::$accountEntityName, $accountData['id']);
-            }
-        }
 
         // create order (POST)
         if ($order->getId() == null) {
@@ -169,10 +160,16 @@ class OrderManager
             $order->setInvoiceAddress($invoiceAddress);
         }
 
-        // set OrderAddress data
-        $this->setOrderAddress($order->getDeliveryAddress(), $data['deliveryAddress']['id'], $order->getContact(), $account);
-        $this->setOrderAddress($order->getInvoiceAddress(), $data['invoiceAddress']['id'], $order->getContact(), $account);
+        // set customer name to account if set, otherwise to contact
+        $customerName = $account !== null ? $account->getName() : $contact->getFullName();
+        $order->setCustomerName($customerName);
 
+        // set OrderAddress data
+        $this->setOrderAddress($order->getDeliveryAddress(), $data['deliveryAddress']['id'], $contact, $account);
+        $this->setOrderAddress($order->getInvoiceAddress(), $data['paymentAddress']['id'], $contact, $account);
+
+        // handle items
+        $this->handleItems($data, $order);
 
         $order->setChanged(new DateTime());
         $order->setChanger($user);
@@ -201,11 +198,14 @@ class OrderManager
     }
 
     /**
-     * get all field descriptors
+     * @param $locale
      * @return \Sulu\Component\Rest\ListBuilder\Doctrine\FieldDescriptor\DoctrineFieldDescriptor[]
      */
-    public function getFieldDescriptors()
+    public function getFieldDescriptors($locale)
     {
+        if ($locale !== $this->currentLocale) {
+            $this->initializeFieldDescriptors($locale);
+        }
         return $this->fieldDescriptors;
     }
 
@@ -262,21 +262,64 @@ class OrderManager
     /**
      * initializes field descriptors
      */
-    private function initializeFieldDescriptors()
+    private function initializeFieldDescriptors($locale)
     {
-        $this->fieldDescriptors['id'] = new DoctrineFieldDescriptor('id', 'id', self::$orderEntityName);
-        $this->fieldDescriptors['number'] = new DoctrineFieldDescriptor('number', 'number', self::$orderEntityName);
-        // FIXME: fix this
-//        $this->fieldDescriptors['status'] = new DoctrineFieldDescriptor(
-//            'name',
-//            'status',
-//            self::$orderStatusTranslationEntityName,
-//            'en',
-//            array(
-//                self::$orderStatusEntityName => self::$orderEntityName . '.status',
-//                self::$orderStatusTranslationEntityName => self::$orderStatusEntityName . '.translations',
-//            )
-//        );
+        $this->fieldDescriptors['id'] = new DoctrineFieldDescriptor('id', 'id', self::$orderEntityName, 'public.id', array(), true);
+        $this->fieldDescriptors['number'] = new DoctrineFieldDescriptor('number', 'number', self::$orderEntityName, 'order.orders.number', array(), false, true);
+
+        // TODO: get customer from order-address
+
+        $contactJoin = array(
+            self::$orderAddressEntityName => new DoctrineJoinDescriptor(
+                    self::$orderAddressEntityName,
+                    self::$orderEntityName . '.invoiceAddress'
+                )
+        );
+
+        $this->fieldDescriptors['contact'] = new DoctrineConcatenationFieldDescriptor(
+            array(
+                new DoctrineFieldDescriptor(
+                    'firstName',
+                    'contact',
+                    self::$orderAddressEntityName,
+                    'contact.contacts.contact',
+                    $contactJoin
+                ),
+                new DoctrineFieldDescriptor(
+                    'lastName',
+                    'contact',
+                    self::$orderAddressEntityName,
+                    'contact.contacts.contact',
+                    $contactJoin
+                )
+            ),
+            'contact',
+            'order.orders.contact',
+            ' ',
+            false,
+            false,
+            '',
+            '',
+            '160px'
+        );
+
+        $this->fieldDescriptors['status'] = new DoctrineFieldDescriptor(
+            'name',
+            'status',
+            self::$orderStatusTranslationEntityName,
+            'order.orders.status',
+            array(
+                self::$orderStatusEntityName => new DoctrineJoinDescriptor(
+                    self::$orderStatusEntityName,
+                    self::$orderEntityName . '.status'
+                ),
+                self::$orderStatusTranslationEntityName => new DoctrineJoinDescriptor(
+                    self::$orderStatusTranslationEntityName,
+                    self::$orderStatusEntityName . '.translations',
+                    self::$orderStatusTranslationEntityName . ".locale = '".$locale."'"
+                )
+            )
+        );
     }
 
     /**
@@ -289,7 +332,7 @@ class OrderManager
         // check if contact and status are set
         $this->checkDataSet($data, 'contact', $isNew) && $this->checkDataSet($data['contact'], 'id', $isNew);
         $this->checkDataSet($data, 'deliveryAddress', $isNew) && $this->checkDataSet($data['deliveryAddress'], 'id', $isNew);
-        $this->checkDataSet($data, 'invoiceAddress', $isNew) && $this->checkDataSet($data['invoiceAddress'], 'id', $isNew);
+        $this->checkDataSet($data, 'paymentAddress', $isNew) && $this->checkDataSet($data['paymentAddress'], 'id', $isNew);
     }
 
     /**
@@ -311,7 +354,8 @@ class OrderManager
         return $keyExists;
     }
 
-    private function checkIfSet($key, $data) {
+    private function checkIfSet($key, $data)
+    {
         $keyExists = array_key_exists($key, $data);
 
         return $keyExists && $data[$key] !== null && $data[$key] !== '';
@@ -319,12 +363,14 @@ class OrderManager
 
     /**
      * searches for contact in specified data and calls callback function
-     * @param array $dataKey
-     * @param $data
+     * @param array $data
+     * @param $dataKey
      * @param $addCallback
-     * @throws OrderDependencyNotFoundException
+     * @return Contact
+     * @throws Exception\OrderDependencyNotFoundException
      */
-    private function addContactRelation(array $data, $dataKey, $addCallback) {
+    private function addContactRelation(array $data, $dataKey, $addCallback)
+    {
         if (array_key_exists($dataKey, $data) && array_key_exists('id', $data[$dataKey])) {
             $contactId = $data[$dataKey]['id'];
             /** @var Contact $contact */
@@ -334,6 +380,7 @@ class OrderManager
                 throw new OrderDependencyNotFoundException(self::$contactEntityName, $contactId);
             }
             $addCallback($contact);
+            return $contact;
         }
     }
 
@@ -344,12 +391,15 @@ class OrderManager
      * @param Account $account
      * @throws OrderDependencyNotFoundException
      */
-    private function setOrderAddress(OrderAddress $orderAddress, $addressId, Contact $contact, Account $account = null) {
+    private function setOrderAddress(OrderAddress $orderAddress, $addressId, Contact $contact, Account $account = null)
+    {
         // check if address with id can be found
             // add contact data
             $orderAddress->setFirstName($contact->getFirstName());
             $orderAddress->setLastName($contact->getLastName());
-            $orderAddress->setTitle($contact->getTitle()->getTitle());
+            if ($contact->getTitle() !== null) {
+                $orderAddress->setTitle($contact->getTitle()->getTitle());
+            }
 
             // add account data
             if ($account) {
@@ -400,5 +450,99 @@ class OrderManager
     private function getProperty(array $data, $key, $default = null)
     {
         return array_key_exists($key, $data) ? $data[$key] : $default;
+    }
+
+    /**
+     * @param $data
+     * @param Order $order
+     * @return null|object
+     * @throws Exception\MissingOrderAttributeException
+     * @throws Exception\OrderDependencyNotFoundException
+     */
+    private function setTermsOfDelivery($data, Order $order)
+    {
+        // terms of delivery
+        $termsOfDeliveryData = $this->getProperty($data, 'termsOfDelivery');
+        if ($termsOfDeliveryData) {
+            if (!array_key_exists('id', $termsOfDeliveryData)) {
+                throw new MissingOrderAttributeException('termsOfDelivery.id');
+            }
+            // TODO: inject repository class
+            $terms = $this->em->getRepository(self::$termsOfDeliveryEntityName)->find($termsOfDeliveryData['id']);
+            if (!$terms) {
+                throw new OrderDependencyNotFoundException(self::$termsOfDeliveryEntityName, $termsOfDeliveryData['id']);
+            }
+            $order->setTermsOfDelivery($terms);
+            $order->setTermsOfDeliveryContent($terms->getTerms());
+            return $terms;
+        } else {
+            $order->setTermsOfDelivery(null);
+            $order->setTermsOfDeliveryContent(null);
+        }
+        return null;
+    }
+
+    /**
+     * @param $data
+     * @param Order $order
+     * @return null|object
+     * @throws Exception\MissingOrderAttributeException
+     * @throws Exception\OrderDependencyNotFoundException
+     */
+    private function setTermsOfPayment($data, Order $order)
+    {
+        // terms of delivery
+        $termsOfPaymentData = $this->getProperty($data, 'termsOfPayment');
+        if ($termsOfPaymentData) {
+            if (!array_key_exists('id', $termsOfPaymentData)) {
+                throw new MissingOrderAttributeException('termsOfPayment.id');
+            }
+            // TODO: inject repository class
+            $terms = $this->em->getRepository(self::$termsOfPaymentEntityName)->find($termsOfPaymentData['id']);
+            if (!$terms) {
+                throw new OrderDependencyNotFoundException(self::$termsOfPaymentEntityName, $termsOfPaymentData['id']);
+            }
+            $order->setTermsOfPayment($terms);
+            $order->setTermsOfPaymentContent($terms->getTerms());
+            return $terms;
+        } else {
+            $order->setTermsOfPayment(null);
+            $order->setTermsOfPaymentContent(null);
+        }
+        return null;
+    }
+
+    /**
+     * @param $data
+     * @param Order $order
+     * @return null|object
+     * @throws Exception\MissingOrderAttributeException
+     * @throws Exception\OrderDependencyNotFoundException
+     */
+    private function setAccount($data, Order $order)
+    {
+        $accountData = $this->getProperty($data, 'account');
+        if ($accountData) {
+            if (!array_key_exists('id', $accountData)) {
+                throw new MissingOrderAttributeException('account.id');
+            }
+            // TODO: inject repository class
+            $account = $this->em->getRepository(self::$accountEntityName)->find($accountData['id']);
+            if (!$account) {
+                throw new OrderDependencyNotFoundException(self::$accountEntityName, $accountData['id']);
+            }
+            $order->setAccount($account);
+            return $account;
+        } else {
+            $order->setAccount(null);
+        }
+        return null;
+    }
+
+    private function handleItems($data, Order $order)
+    {
+        if ($this->checkIfSet('items', $data)) {
+
+        }
     }
 }

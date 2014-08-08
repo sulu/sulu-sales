@@ -5,13 +5,17 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
     <parameters>
         <parameter key="sulu_sales_order.admin.class">Sulu\Bundle\Sales\OrderBundle\Admin\SuluSalesOrderAdmin</parameter>
+        <parameter key="sulu_sales_order.admin.content_navigation.class">Sulu\Bundle\Sales\OrderBundle\Admin\SuluSalesOrderContentNavigation</parameter>
         <parameter key="sulu_sales_order.order_repository.class">Sulu\Bundle\Sales\OrderBundle\Entity\OrderRepository</parameter>
         <parameter key="sulu_sales_order.order_manager.class">Sulu\Bundle\Sales\OrderBundle\Order\OrderManager</parameter>
+        <parameter key="sulu_sales_order.order_listener.class">Sulu\Bundle\Sales\OrderBundle\EventListener\OrderListener</parameter>
     </parameters>
     <services>
         <service id="sulu_sales_order.admin" class="%sulu_sales_order.admin.class%">
             <tag name="sulu.admin" />
             <argument>%sulu_admin.name%</argument>
+        </service>
+        <service id="sulu_sales_order.admin.content_navigation" class="%sulu_sales_order.admin.content_navigation.class%">
         </service>
         <service id="sulu_sales_order.order_repository" class="%sulu_sales_order.order_repository.class%"
                  factory-method="getRepository" factory-service="doctrine.orm.entity_manager">
@@ -21,6 +25,9 @@
             <argument type="service" id="doctrine.orm.entity_manager" />
             <argument type="service" id="sulu_sales_order.order_repository" />
             <argument type="service" id="sulu_security.user_repository" />
+        </service>
+        <service id="sulu_sales_order.order_listener" class="%sulu_sales_order.order_listener.class%">
+            <tag name="doctrine.event_listener" event="postPersist" method="postPersist"/>
         </service>
     </services>
 </container>

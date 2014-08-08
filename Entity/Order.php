@@ -2,6 +2,7 @@
 
 namespace Sulu\Bundle\Sales\OrderBundle\Entity;
 
+use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Mapping as ORM;
 use Sulu\Component\Security\UserInterface;
 
@@ -10,10 +11,21 @@ use Sulu\Component\Security\UserInterface;
  */
 class Order
 {
+
     /**
      * @var string
      */
     private $number;
+
+    /**
+     * @var int
+     */
+    private $orderNumber;
+
+    /**
+     * @var int
+     */
+    private $type;
 
     /**
      * @var string
@@ -26,14 +38,9 @@ class Order
     private $currency;
 
     /**
-     * @var string
+     * @var boolean
      */
-    private $termsOfDelivery;
-
-    /**
-     * @var string
-     */
-    private $termsOfPayment;
+    private $taxfree;
 
     /**
      * @var string
@@ -44,6 +51,21 @@ class Order
      * @var string
      */
     private $commission;
+
+    /**
+     * @var string
+     */
+    private $customerName;
+
+    /**
+     * @var string
+     */
+    private $termsOfDeliveryContent;
+
+    /**
+     * @var string
+     */
+    private $termsOfPaymentContent;
 
     /**
      * @var \DateTime
@@ -61,14 +83,29 @@ class Order
     private $desiredDeliveryDate;
 
     /**
-     * @var boolean
-     */
-    private $taxfree;
-
-    /**
      * @var integer
      */
     private $id;
+
+    /**
+     * @var \Sulu\Bundle\Sales\OrderBundle\Entity\OrderAddress
+     */
+    private $deliveryAddress;
+
+    /**
+     * @var \Sulu\Bundle\Sales\OrderBundle\Entity\OrderAddress
+     */
+    private $invoiceAddress;
+
+    /**
+     * @var \Sulu\Bundle\ContactBundle\Entity\TermsOfDelivery
+     */
+    private $termsOfDelivery;
+
+    /**
+     * @var \Sulu\Bundle\ContactBundle\Entity\TermsOfPayment
+     */
+    private $termsOfPayment;
 
     /**
      * @var \Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatus
@@ -97,6 +134,7 @@ class Order
 
     /**
      * @var UserInterface
+     * @Exclude
      */
     private $changer;
 
@@ -112,7 +150,7 @@ class Order
     {
         $this->items = new \Doctrine\Common\Collections\ArrayCollection();
     }
-    
+
     /**
      * Set number
      *
@@ -122,18 +160,64 @@ class Order
     public function setNumber($number)
     {
         $this->number = $number;
-    
+
         return $this;
     }
 
     /**
      * Get number
      *
-     * @return string 
+     * @return string
      */
     public function getNumber()
     {
         return $this->number;
+    }
+
+    /**
+     * Set orderNumber
+     *
+     * @param string $orderNumber
+     * @return Order
+     */
+    public function setOrderNumber($orderNumber)
+    {
+        $this->orderNumber = $orderNumber;
+
+        return $this;
+    }
+
+    /**
+     * Get orderNumber
+     *
+     * @return string
+     */
+    public function getOrderNumber()
+    {
+        return $this->orderNumber;
+    }
+
+    /**
+     * Set type
+     *
+     * @param integer $type
+     * @return Order
+     */
+    public function setType($type)
+    {
+        $this->type = $type;
+
+        return $this;
+    }
+
+    /**
+     * Get type
+     *
+     * @return integer
+     */
+    public function getType()
+    {
+        return $this->type;
     }
 
     /**
@@ -145,14 +229,14 @@ class Order
     public function setSessionId($sessionId)
     {
         $this->sessionId = $sessionId;
-    
+
         return $this;
     }
 
     /**
      * Get sessionId
      *
-     * @return string 
+     * @return string
      */
     public function getSessionId()
     {
@@ -168,14 +252,14 @@ class Order
     public function setCurrency($currency)
     {
         $this->currency = $currency;
-    
+
         return $this;
     }
 
     /**
      * Get currency
      *
-     * @return string 
+     * @return string
      */
     public function getCurrency()
     {
@@ -183,49 +267,26 @@ class Order
     }
 
     /**
-     * Set termsOfDelivery
+     * Set taxfree
      *
-     * @param string $termsOfDelivery
+     * @param boolean $taxfree
      * @return Order
      */
-    public function setTermsOfDelivery($termsOfDelivery)
+    public function setTaxfree($taxfree)
     {
-        $this->termsOfDelivery = $termsOfDelivery;
-    
+        $this->taxfree = $taxfree;
+
         return $this;
     }
 
     /**
-     * Get termsOfDelivery
+     * Get taxfree
      *
-     * @return string 
+     * @return boolean
      */
-    public function getTermsOfDelivery()
+    public function getTaxfree()
     {
-        return $this->termsOfDelivery;
-    }
-
-    /**
-     * Set termsOfPayment
-     *
-     * @param string $termsOfPayment
-     * @return Order
-     */
-    public function setTermsOfPayment($termsOfPayment)
-    {
-        $this->termsOfPayment = $termsOfPayment;
-    
-        return $this;
-    }
-
-    /**
-     * Get termsOfPayment
-     *
-     * @return string 
-     */
-    public function getTermsOfPayment()
-    {
-        return $this->termsOfPayment;
+        return $this->taxfree;
     }
 
     /**
@@ -237,14 +298,14 @@ class Order
     public function setCostCentre($costCentre)
     {
         $this->costCentre = $costCentre;
-    
+
         return $this;
     }
 
     /**
      * Get costCentre
      *
-     * @return string 
+     * @return string
      */
     public function getCostCentre()
     {
@@ -260,18 +321,87 @@ class Order
     public function setCommission($commission)
     {
         $this->commission = $commission;
-    
+
         return $this;
     }
 
     /**
      * Get commission
      *
-     * @return string 
+     * @return string
      */
     public function getCommission()
     {
         return $this->commission;
+    }
+
+    /**
+     * Set customerName
+     *
+     * @param string $customerName
+     * @return Order
+     */
+    public function setCustomerName($customerName)
+    {
+        $this->customerName = $customerName;
+
+        return $this;
+    }
+
+    /**
+     * Get customerName
+     *
+     * @return string
+     */
+    public function getCustomerName()
+    {
+        return $this->customerName;
+    }
+
+    /**
+     * Set termsOfDeliveryContent
+     *
+     * @param string $termsOfDeliveryContent
+     * @return Order
+     */
+    public function setTermsOfDeliveryContent($termsOfDeliveryContent)
+    {
+        $this->termsOfDeliveryContent = $termsOfDeliveryContent;
+
+        return $this;
+    }
+
+    /**
+     * Get termsOfDeliveryContent
+     *
+     * @return string
+     */
+    public function getTermsOfDeliveryContent()
+    {
+        return $this->termsOfDeliveryContent;
+    }
+
+    /**
+     * Set termsOfPaymentContent
+     *
+     * @param string $termsOfPaymentContent
+     * @return Order
+     */
+    public function setTermsOfPaymentContent($termsOfPaymentContent)
+    {
+        $this->termsOfPaymentContent = $termsOfPaymentContent;
+
+        return $this;
+    }
+
+    /**
+     * Get termsOfPaymentContent
+     *
+     * @return string
+     */
+    public function getTermsOfPaymentContent()
+    {
+        return $this->termsOfPaymentContent;
     }
 
     /**
@@ -283,14 +413,14 @@ class Order
     public function setCreated($created)
     {
         $this->created = $created;
-    
+
         return $this;
     }
 
     /**
      * Get created
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getCreated()
     {
@@ -306,14 +436,14 @@ class Order
     public function setChanged($changed)
     {
         $this->changed = $changed;
-    
+
         return $this;
     }
 
     /**
      * Get changed
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getChanged()
     {
@@ -329,14 +459,14 @@ class Order
     public function setDesiredDeliveryDate($desiredDeliveryDate)
     {
         $this->desiredDeliveryDate = $desiredDeliveryDate;
-    
+
         return $this;
     }
 
     /**
      * Get desiredDeliveryDate
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getDesiredDeliveryDate()
     {
@@ -344,36 +474,105 @@ class Order
     }
 
     /**
-     * Set taxfree
-     *
-     * @param boolean $taxfree
-     * @return Order
-     */
-    public function setTaxfree($taxfree)
-    {
-        $this->taxfree = $taxfree;
-    
-        return $this;
-    }
-
-    /**
-     * Get taxfree
-     *
-     * @return boolean 
-     */
-    public function getTaxfree()
-    {
-        return $this->taxfree;
-    }
-
-    /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
     public function getId()
     {
         return $this->id;
+    }
+
+    /**
+     * Set deliveryAddress
+     *
+     * @param \Sulu\Bundle\Sales\OrderBundle\Entity\OrderAddress $deliveryAddress
+     * @return Order
+     */
+    public function setDeliveryAddress(\Sulu\Bundle\Sales\OrderBundle\Entity\OrderAddress $deliveryAddress = null)
+    {
+        $this->deliveryAddress = $deliveryAddress;
+
+        return $this;
+    }
+
+    /**
+     * Get deliveryAddress
+     *
+     * @return \Sulu\Bundle\Sales\OrderBundle\Entity\OrderAddress
+     */
+    public function getDeliveryAddress()
+    {
+        return $this->deliveryAddress;
+    }
+
+    /**
+     * Set invoiceAddress
+     *
+     * @param \Sulu\Bundle\Sales\OrderBundle\Entity\OrderAddress $invoiceAddress
+     * @return Order
+     */
+    public function setInvoiceAddress(\Sulu\Bundle\Sales\OrderBundle\Entity\OrderAddress $invoiceAddress = null)
+    {
+        $this->invoiceAddress = $invoiceAddress;
+
+        return $this;
+    }
+
+    /**
+     * Get invoiceAddress
+     *
+     * @return \Sulu\Bundle\Sales\OrderBundle\Entity\OrderAddress
+     */
+    public function getInvoiceAddress()
+    {
+        return $this->invoiceAddress;
+    }
+
+    /**
+     * Set termsOfDelivery
+     *
+     * @param \Sulu\Bundle\ContactBundle\Entity\TermsOfDelivery $termsOfDelivery
+     * @return Order
+     */
+    public function setTermsOfDelivery(\Sulu\Bundle\ContactBundle\Entity\TermsOfDelivery $termsOfDelivery = null)
+    {
+        $this->termsOfDelivery = $termsOfDelivery;
+
+        return $this;
+    }
+
+    /**
+     * Get termsOfDelivery
+     *
+     * @return \Sulu\Bundle\ContactBundle\Entity\TermsOfDelivery
+     */
+    public function getTermsOfDelivery()
+    {
+        return $this->termsOfDelivery;
+    }
+
+    /**
+     * Set termsOfPayment
+     *
+     * @param \Sulu\Bundle\ContactBundle\Entity\TermsOfPayment $termsOfPayment
+     * @return Order
+     */
+    public function setTermsOfPayment(\Sulu\Bundle\ContactBundle\Entity\TermsOfPayment $termsOfPayment = null)
+    {
+        $this->termsOfPayment = $termsOfPayment;
+
+        return $this;
+    }
+
+    /**
+     * Get termsOfPayment
+     *
+     * @return \Sulu\Bundle\ContactBundle\Entity\TermsOfPayment
+     */
+    public function getTermsOfPayment()
+    {
+        return $this->termsOfPayment;
     }
 
     /**
@@ -382,17 +581,17 @@ class Order
      * @param \Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatus $status
      * @return Order
      */
-    public function setStatus(\Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatus $status = null)
+    public function setStatus(\Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatus $status)
     {
         $this->status = $status;
-    
+
         return $this;
     }
 
     /**
      * Get status
      *
-     * @return \Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatus 
+     * @return \Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatus
      */
     public function getStatus()
     {
@@ -408,14 +607,14 @@ class Order
     public function setAccount(\Sulu\Bundle\ContactBundle\Entity\Account $account = null)
     {
         $this->account = $account;
-    
+
         return $this;
     }
 
     /**
      * Get account
      *
-     * @return \Sulu\Bundle\ContactBundle\Entity\Account 
+     * @return \Sulu\Bundle\ContactBundle\Entity\Account
      */
     public function getAccount()
     {
@@ -431,14 +630,14 @@ class Order
     public function setContact(\Sulu\Bundle\ContactBundle\Entity\Contact $contact = null)
     {
         $this->contact = $contact;
-    
+
         return $this;
     }
 
     /**
      * Get contact
      *
-     * @return \Sulu\Bundle\ContactBundle\Entity\Contact 
+     * @return \Sulu\Bundle\ContactBundle\Entity\Contact
      */
     public function getContact()
     {
@@ -454,14 +653,14 @@ class Order
     public function setResponsibleContact(\Sulu\Bundle\ContactBundle\Entity\Contact $responsibleContact = null)
     {
         $this->responsibleContact = $responsibleContact;
-    
+
         return $this;
     }
 
     /**
      * Get responsibleContact
      *
-     * @return \Sulu\Bundle\ContactBundle\Entity\Contact 
+     * @return \Sulu\Bundle\ContactBundle\Entity\Contact
      */
     public function getResponsibleContact()
     {
@@ -477,7 +676,7 @@ class Order
     public function addItem(\Sulu\Bundle\Sales\CoreBundle\Entity\Item $items)
     {
         $this->items[] = $items;
-    
+
         return $this;
     }
 
@@ -494,7 +693,7 @@ class Order
     /**
      * Get items
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return \Doctrine\Common\Collections\Collection
      */
     public function getItems()
     {
@@ -502,13 +701,15 @@ class Order
     }
 
     /**
+     * Set changer
+     *
      * @param UserInterface $changer
-     * @return $this
+     * @return Order
      */
     public function setChanger(UserInterface $changer = null)
     {
         $this->changer = $changer;
-    
+
         return $this;
     }
 
@@ -531,73 +732,17 @@ class Order
     public function setCreator(UserInterface $creator = null)
     {
         $this->creator = $creator;
-    
+
         return $this;
     }
 
     /**
      * Get creator
      *
-     * @return UserInterface 
+     * @return UserInterface
      */
     public function getCreator()
     {
         return $this->creator;
-    }
-    /**
-     * @var \Sulu\Bundle\Sales\OrderBundle\Entity\OrderAddress
-     */
-    private $deliveryAddress;
-
-    /**
-     * @var \Sulu\Bundle\Sales\OrderBundle\Entity\OrderAddress
-     */
-    private $invoiceAddress;
-
-
-    /**
-     * Set deliveryAddress
-     *
-     * @param \Sulu\Bundle\Sales\OrderBundle\Entity\OrderAddress $deliveryAddress
-     * @return Order
-     */
-    public function setDeliveryAddress(\Sulu\Bundle\Sales\OrderBundle\Entity\OrderAddress $deliveryAddress = null)
-    {
-        $this->deliveryAddress = $deliveryAddress;
-    
-        return $this;
-    }
-
-    /**
-     * Get deliveryAddress
-     *
-     * @return \Sulu\Bundle\Sales\OrderBundle\Entity\OrderAddress 
-     */
-    public function getDeliveryAddress()
-    {
-        return $this->deliveryAddress;
-    }
-
-    /**
-     * Set invoiceAddress
-     *
-     * @param \Sulu\Bundle\Sales\OrderBundle\Entity\OrderAddress $invoiceAddress
-     * @return Order
-     */
-    public function setInvoiceAddress(\Sulu\Bundle\Sales\OrderBundle\Entity\OrderAddress $invoiceAddress = null)
-    {
-        $this->invoiceAddress = $invoiceAddress;
-    
-        return $this;
-    }
-
-    /**
-     * Get invoiceAddress
-     *
-     * @return \Sulu\Bundle\Sales\OrderBundle\Entity\OrderAddress 
-     */
-    public function getInvoiceAddress()
-    {
-        return $this->invoiceAddress;
     }
 }

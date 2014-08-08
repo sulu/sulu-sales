@@ -20,6 +20,18 @@ class SuluSalesOrderAdmin extends Admin
     public function __construct($title)
     {
         $rootNavigationItem = new NavigationItem($title);
+
+        $section = new NavigationItem('');
+
+        $sales = new NavigationItem('navigation.sales');
+        $sales->setIcon('file-text-o');
+        $section->addChild($sales);
+
+        $order = new NavigationItem('navigation.sales.order');
+        $order->setAction('sales/orders');
+        $sales->addChild($order);
+
+        $rootNavigationItem->addChild($section);
         $this->setNavigation(new Navigation($rootNavigationItem));
     }
 
@@ -31,4 +43,11 @@ class SuluSalesOrderAdmin extends Admin
         return array();
     }
 
+    /**
+     * {@inheritdoc}
+     */
+    public function getJsBundleName()
+    {
+        return 'sulusalesorder';
+    }
 }
