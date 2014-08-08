@@ -67,24 +67,18 @@ class ItemManager
      * @param array $data
      * @param $locale
      * @param $userId
-     * @param null $id
-     * @throws Exception\ItemNotFoundException
-     * @throws Exception\MissingItemAttributeException
+     * @param \Sulu\Bundle\Sales\CoreBundle\Api\Item $item
+     * @internal param null $id
      * @return null|\Sulu\Bundle\Sales\CoreBundle\Api\Item
      */
-    public function create(array $data, $locale, $userId, $id = null)
+    public function save(array $data, $locale, $userId, Item $item = null)
     {
 
         // check requiresd data
-        $this->checkRequiredData($data, $id === null);
+        $this->checkRequiredData($data, !!$item);
 
         // get item
-        if ($id) {
-            $item = $this->findByIdAndLocale($id, $locale);
-            if (!$item) {
-                throw new ItemNotFoundException($id);
-            }
-        } else {
+        if (!$item) {
             $item = new Item(new ItemEntity(), $locale);
         }
 
@@ -97,7 +91,7 @@ class ItemManager
         if (!$product) {
             $item->setName($this->getProperty($data, 'name', $item->getName()));
             $item->setUseProductsPrice(false);
-            $item->setQuantityUnit($this->getProperty($data, 'pc', null));
+            $item->setQuantityUnit($this->getProperty($data, 'quantityUnit', null));
             $item->setTax($this->getProperty($data, 'tax', $item->getTax()));
             $item->setPrice($this->getProperty($data, 'price', $item->getPrice()));
         }
@@ -120,8 +114,6 @@ class ItemManager
 
         $item->setChanged(new DateTime());
         $item->setChanger($user);
-
-        $this->em->flush();
 
         return $item;
     }
@@ -256,14 +248,20 @@ class ItemManager
                 throw new ProductNotFoundException(self::$productEntityName, $productData['id']);
             }
             $item->setProduct($product);
-            $item->setName($product);
+            $translation = $product->getTranslation($locale);
+            $item->setName($translation->getName());
+            $item->setDescription($translation->getLongDescription());
             $item->setUseProductsPrice($this->getProperty($data, 'useProductsPrice', true));
+            $item->setNumber($product->getNumber());
+
+            // TODO: get unit from product
+            $item->setQuantityUnit('pc');
+            // TODO: get tax from product
+            $item->setTax(20);
+
             if ($item->getUseProductsPrice() === true) {
                 $item->setPrice($product->getPrice());
-                $item->setNumber($product->getNumber());
-                $item->setDescription($product->getTranslation($locale)->getLongDescription());
             }
-//            $item->setTax($product->getTax())
 
             return $product;
         } else {
