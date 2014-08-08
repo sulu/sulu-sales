@@ -1,0 +1,40 @@
+<tr class="item-table-row <%= rowClass %>" data-id="<%= id %>" data-row-id="<%= rowNumber %>">
+    <td class="row-number">
+        <%= rowNumber %>
+    </td>
+    <td class="item-name">
+        <span><%= name %></span>
+        <div class="product-search input-field" />
+    </td>
+    <td class="item-number">
+        <span><%= number %></span>
+    </td>
+    <td class="settings">
+        <i class="fa fa-list" />
+    </td>
+    <td class="item-quantity">
+        <% if (rowClass === 'header') { %>
+            <span><%= quantity %></span>
+        <% } %>
+        <input class="input-field form-element" value="<%= quantity %>"/>
+    </td>
+    <td class="item-quantity-unit">
+        <%= quantityUnit %>
+    </td>
+    <td class="item-price">
+        <% if (rowClass === 'header') { %>
+            <span><%= price %></span>
+        <% } %>
+        <input class="price input-field form-element" value="<%= price %>"/>
+    </td>
+    <td class="item-discount">
+        <% if (rowClass === 'header') { %>
+        <span><%= discount %></span>
+        <% } %>
+        <input class="discount input-field form-element" value="<%= discount %>"/>
+    </td>
+    <td class="item-overallPrice">
+        <%= overallPrice %>
+    </td>
+    <td class="item-remove">x</td>
+</tr>

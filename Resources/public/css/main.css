@@ -1,0 +1,41 @@
+/* line 1, ../scss/modules/item-table.scss */
+.item-table-list {
+  list-style: none;
+  padding: 0;
+}
+/* line 5, ../scss/modules/item-table.scss */
+.item-table-list .header {
+  border-bottom: 2px solid #ccc;
+  height: 50px;
+  padding-top: 10px;
+  border-color: #ccc;
+  vertical-align: bottom;
+  font-size: 14px;
+  padding: 8px 10px;
+}
+/* line 14, ../scss/modules/item-table.scss */
+.item-table-list .header .input-field {
+  display: none;
+}
+
+/* line 20, ../scss/modules/item-table.scss */
+.item-table-row {
+  height: 50px;
+}
+/* line 22, ../scss/modules/item-table.scss */
+.item-table-row .span {
+  height: 100%;
+}
+/* line 27, ../scss/modules/item-table.scss */
+.item-table-row.new .product-search {
+  display: block;
+}
+/* line 33, ../scss/modules/item-table.scss */
+.item-table-row .item-name {
+  min-width: 170px;
+}
+/* line 37, ../scss/modules/item-table.scss */
+.item-table-row .product-search {
+  margin: 0;
+  display: none;
+}

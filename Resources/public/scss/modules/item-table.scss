@@ -1,0 +1,41 @@
+.item-table-list {
+    list-style: none;
+    padding: 0;
+
+    .header {
+        border-bottom: 2px solid #ccc;
+        height: 50px;
+        padding-top: 10px;
+        border-color: #ccc;
+        vertical-align: bottom;
+        font-size: 14px;
+        padding: 8px 10px;
+
+        .input-field {
+            display: none;
+        }
+    }
+}
+
+.item-table-row {
+    height: 50px;
+    .span {
+        height: 100%;
+    }
+
+    &.new {
+        .product-search {
+            display: block;
+        }
+    }
+
+    // column specifics
+    .item-name {
+        min-width: 170px;
+    }
+
+    .product-search {
+        margin: 0;
+        display: none;
+    }
+}
