@@ -89,17 +89,15 @@ define([], function() {
             var formObject = this.sandbox.form.create(form);
             formObject.initialized.then(function() {
                 setFormData.call(this, data, true);
+                // TODO: resolve that form is set
+                startFormComponents.call(this, data);
             }.bind(this));
         },
 
         setFormData = function(data) {
             // add collection filters to form
             this.sandbox.form.setData(form, data).then(function() {
-
                 this.accountId = getAccountId.call(this);
-
-                // TODO: resolve that form is set
-                startFormComponents.call(this, data);
             }.bind(this)).fail(function(error) {
                 this.sandbox.logger.error("An error occured when setting data!", error);
             }.bind(this));
