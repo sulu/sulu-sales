@@ -20,7 +20,8 @@ define([], function() {
             accountInputId: '#account-input',
             deliveryAddressInstanceName: 'delivery-address-select',
             paymentAddressInstanceName: 'payment-address-select',
-            contactSelectId: '#contact-select'
+            contactSelectId: '#contact-select',
+            itemTableId: '#order-items'
         },
 
         setHeaderToolbar = function() {
@@ -128,6 +129,16 @@ define([], function() {
                         instanceName: this.accountInstanceName,
                         valueKey: 'name',
                         noNewValues: true
+                    }
+                }
+            ]);
+
+            this.sandbox.start([
+                {
+                    name: 'item-table@sulusalescore',
+                    options: {
+                        el: constants.itemTableId,
+                        data: !!this.options.data.items ? this.options.data.items : null
                     }
                 }
             ]);
@@ -275,6 +286,8 @@ define([], function() {
                     data.account = {
                         id: this.sandbox.dom.attr('#' + this.accountInstanceName, 'data-id')
                     };
+
+
 
                     this.sandbox.logger.log('log data', data);
                     this.sandbox.emit('sulu.salesorder.order.save', data);

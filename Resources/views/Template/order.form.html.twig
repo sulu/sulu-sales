@@ -1,7 +1,7 @@
 <form id="order-form" class="form-horizontal">
     <input type="hidden" data-mapper-property="id"/>
 
-    <div class="changeListener">
+    <div class="changeListener grid-row">
         <div class="grid-row small">
             <div class="grid-col-6">
                 <div class="form-group">
@@ -176,6 +176,7 @@
             </div>
         </div>
     </div>
+    <div id="order-items" data-type="itemTable" data-mapper-property="items"></div>
 </form>
 
 {% block data %}

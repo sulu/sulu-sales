@@ -486,7 +486,12 @@ class Order extends ApiWrapper
      */
     public function getResponsibleContact()
     {
-        return $this->entity->getResponsibleContact();
+        if ($contact = $this->entity->getResponsibleContact()) {
+            return array(
+                'id' => $contact->getId(),
+                'fullName' => $contact->getFullName()
+            );
+        }
     }
 
     /**
