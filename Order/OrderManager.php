@@ -70,6 +70,11 @@ class OrderManager
     /**
      * @var RestHelperInterface
      */
+    private $doctrineRestHelper;
+
+    /**
+     * @var RestHelperInterface
+     */
     private $restHelper;
 
     /**
@@ -83,14 +88,16 @@ class OrderManager
         OrderRepository $orderRepository,
         UserRepositoryInterface $userRepository,
         ItemManager $itemManager,
-        RestHelperInterface $restHelper
+        RestHelperInterface $restHelper,
+        RestHelperInterface $doctrineRestHelper
     )
     {
         $this->orderRepository = $orderRepository;
         $this->userRepository = $userRepository;
         $this->em = $em;
         $this->itemManager = $itemManager;
-        $this->restHelper = $restHelper;
+        $this->listRestHelper = $restHelper;
+        $this->doctrineRestHelper = $doctrineRestHelper;
     }
 
     /**
@@ -98,10 +105,9 @@ class OrderManager
      * @param $locale
      * @param $userId
      * @param null $id
-     * @return null|Order|\Sulu\Bundle\Sales\OrderBundle\Entity\Order
      * @throws Exception\OrderNotFoundException
-     * @throws Exception\MissingOrderAttributeException
-     * @throws Exception\OrderDependencyNotFoundException
+     * @throws Exception\OrderException
+     * @return null|Order|\Sulu\Bundle\Sales\OrderBundle\Entity\Order
      */
     public function save(array $data, $locale, $userId, $id = null)
     {
@@ -181,7 +187,9 @@ class OrderManager
         $this->setOrderAddress($order->getInvoiceAddress(), $data['paymentAddress']['id'], $contact, $account);
 
         // handle items
-        $this->processItems($data, $order, $locale, $userId);
+        if (!$this->processItems($data, $order, $locale, $userId)) {
+            throw new OrderException('Error while processing items');
+        }
 
         $order->setChanged(new DateTime());
         $order->setChanger($user);
@@ -575,6 +583,7 @@ class OrderManager
 
                 $update = function ($item, $matchedEntry) use ($locale, $userId, $order) {
                     $itemEntity = $this->itemManager->save($matchedEntry, $locale, $userId, $item);
+                    return $itemEntity ? true : false;
                 };
 
                 $add = function ($itemData) use ($locale, $userId, $order) {
@@ -582,7 +591,7 @@ class OrderManager
                     return $order->addItem($item->getEntity());
                 };
 
-                $result = $this->restHelper->processSubEntities($order->getItems(), $items, $get, $add, $update, $delete);
+                $result = $this->listRestHelper->processSubEntities($order->getItems(), $items, $get, $add, $update, $delete);
 
                 return $result;
             }

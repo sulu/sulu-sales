@@ -13,10 +13,12 @@ use FOS\RestBundle\Routing\ClassResourceInterface;
 use Hateoas\Representation\CollectionRepresentation;
 use Sulu\Bundle\Sales\OrderBundle\Order\Exception\MissingOrderAttributeException;
 use Sulu\Bundle\Sales\OrderBundle\Order\Exception\OrderDependencyNotFoundException;
+use Sulu\Bundle\Sales\OrderBundle\Order\Exception\OrderException;
 use Sulu\Bundle\Sales\OrderBundle\Order\Exception\OrderNotFoundException;
 use Sulu\Bundle\Sales\OrderBundle\Order\OrderManager;
 use Sulu\Component\Rest\Exception\EntityNotFoundException;
 use Sulu\Component\Rest\Exception\MissingArgumentException;
+use Sulu\Component\Rest\Exception\RestException;
 use Sulu\Component\Rest\ListBuilder\ListRepresentation;
 use Sulu\Component\Rest\RestController;
 use Symfony\Component\HttpFoundation\Request;
@@ -177,6 +179,9 @@ class OrderController extends RestController implements ClassResourceInterface
             $view = $this->view($exception->toArray(), 400);
         } catch (MissingOrderAttributeException $exc) {
             $exception = new MissingArgumentException(self::$entityName, $exc->getAttribute());
+            $view = $this->view($exception->toArray(), 400);
+        } catch (OrderException $exc) {
+            $exception = new RestException($exc->getMessage());
             $view = $this->view($exception->toArray(), 400);
         }
 
