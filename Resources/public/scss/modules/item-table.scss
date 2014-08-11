@@ -38,4 +38,15 @@
         margin: 0;
         display: none;
     }
+
+    // add padding to each row element
+    > * {
+        padding: 0 10px;
+    }
+}
+
+.item-remove {
+    a, a:visited, a:active {
+        color: black;
+    }
 }

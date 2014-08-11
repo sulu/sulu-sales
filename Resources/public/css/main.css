@@ -39,3 +39,12 @@
   margin: 0;
   display: none;
 }
+/* line 43, ../scss/modules/item-table.scss */
+.item-table-row > * {
+  padding: 0 10px;
+}
+
+/* line 49, ../scss/modules/item-table.scss */
+.item-remove a, .item-remove a:visited, .item-remove a:active {
+  color: black;
+}

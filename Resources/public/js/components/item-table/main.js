@@ -22,19 +22,25 @@ define([
     'use strict';
 
     var defaults = {
-            data: [],
+            data: []
         },
 
         constants = {
             listClass: '.item-table-list',
             productSearchClass: '.product-search',
-            productUrl: '/admin/api/products?flat=true&searchFields=number&fields=id,number'
+            rowIdPrefix: 'item-table-row-',
+            productsUrl: '/admin/api/products?flat=true&searchFields=number&fields=id,number',
+            productUrl: '/admin/api/products/'
         },
 
+        /**
+         * default values of a item row
+         */
         rowDefaults = {
             rowClass: null,
             id: null,
-            rowNumber: '',
+            rowNumber: null,
+            rowId: '',
             name: '',
             number: '',
             quantity: '',
@@ -45,6 +51,9 @@ define([
             currency: 'EUR'
         },
 
+        /**
+         * data that is shown in header
+         */
         getHeaderData = function() {
             return {
                 rowClass: 'header',
@@ -58,22 +67,57 @@ define([
             };
         },
 
+        /**
+         * bind custom events
+         */
         bindCustomEvents = function() {
 
         },
 
+        /**
+         * bind dom events
+         */
         bindDomEvents = function() {
-            this.sandbox.dom.on(this.$el, 'click', function(event) {
-                event.preventDefault();
-                addNewItem.call(this);
-            }.bind(this), '.add-row');
+
+            // add new item
+            this.sandbox.dom.on(this.$el, 'click', addNewItemClicked.bind(this), '.add-row');
+            // remove row
+            this.sandbox.dom.on(this.$el, 'click', removeRowClicked.bind(this), '.remove-row');
+
+            this.sandbox.dom.on(this.$el, 'data-changed', function(event) {
+                var items = event.items || [];
+                rerenderItems.call(this, items);
+            }.bind(this));
         },
 
-        productSelected = function(product) {
-            // TODO: show fixed row in component
+        /**
+         * called when a product gets selected in auto-complete
+         * @param product
+         * @param event
+         */
+        productSelected = function(product, event) {
 
+            var $row = this.sandbox.dom.closest(event.currentTarget, '.item-table-row'),
+                rowId = this.sandbox.dom.attr($row, 'id'),
+                itemData = {};
+
+            // load product details
+            this.sandbox.util.load(constants.productUrl + product.id)
+                .then(function(response) {
+                    // set item to product
+                    itemData = setItemByProduct.call(this, repsonse);
+                    updateItemRow.call(this, rowId, itemData);
+                }.bind(this))
+                .fail(function(request, message, error) {
+                    this.sandbox.logger.warn(request, message, error);
+                }.bind(this));
         },
 
+        /**
+         * TODO: move to template when mapper type is implemented
+         * initializes the product's auto-complete
+         * @param $row
+         */
         initProductSearch = function($row) {
             // initialize auto-complete when adding a new Item
             this.sandbox.start([
@@ -81,7 +125,7 @@ define([
                     name: 'auto-complete@husky',
                     options: {
                         el: this.sandbox.dom.find(constants.productSearchClass, $row),
-                        remoteUrl: constants.productUrl,
+                        remoteUrl: constants.productsUrl,
                         resultKey: 'products',
                         getParameter: 'search',
                         value: '',
@@ -95,51 +139,158 @@ define([
         },
 
         /**
-         * adds an existing item to the list
-         * @param item
+         *  DOM-EVENT listener: remove row
          */
-        addItem = function(item) {
+        removeRowClicked = function(event) {
+            event.preventDefault();
 
-            var data = this.sandbox.util.extend({}, rowDefaults, item, {
-                    rowNumber: ++this.rowCount
+            var $row = this.sandbox.dom.closest(event.currentTarget, '.item-table-row'),
+                rowId = this.sandbox.dom.attr($row, 'id');
+            removeItemRow.call(this, rowId, $row);
+        },
+
+        /**
+         * removes item at rowId
+         * @param rowId
+         */
+        removeItemData = function(rowId) {
+            // remove from items data
+            delete this.items[rowId];
+
+            refreshItemsData.call(this);
+        },
+
+        /**
+         * adds item to data at index rowId
+         * @param rowId
+         * @param itemData
+         */
+        addItemData = function(rowId, itemData) {
+            this.items[rowId] = itemData;
+
+            refreshItemsData.call(this);
+        },
+
+        /**
+         *  DOM-EVENT listener: add a new row
+         */
+        addNewItemClicked = function(event) {
+            event.preventDefault();
+            addNewItemRow.call(this);
+        },
+
+        /**
+         * removes row with
+         * @param id
+         * @param $row the row element
+         */
+        removeItemRow = function(rowId, $row) {
+            // remove from table
+            this.sandbox.dom.remove($row);
+
+            // decrease row counter
+            this.rowCount--;
+
+            removeItemData.call(this, rowId);
+        },
+
+        /**
+         * creates and returns a new row element
+         */
+        createItemRow = function(itemData, increaseCount) {
+            if (increaseCount !== false) {
+                this.rowCount++;
+            }
+
+            var data = this.sandbox.util.extend({}, rowDefaults, itemData, {
+                    rowId: constants.rowIdPrefix + this.rowCount,
+                    rowNumber: this.rowCount
                 }),
                 rowTpl = this.sandbox.util.template(RowTpl, data),
                 $row = this.sandbox.dom.createElement(rowTpl);
+            return $row;
+        },
+
+        /**
+         * adds an existing item to the list
+         * @param itemData
+         */
+        addItemRow = function(itemData) {
+            var $row = createItemRow.call(this, itemData);
             this.sandbox.dom.append(this.$find(constants.listClass), $row);
+            return $row;
+        },
+
+        /**
+         * updates a specific row
+         * @param rowId
+         */
+        updateItemRow = function(rowId, itemData) {
+            var $row = createItemRow.call(this, itemData, false);
+            this.sandbox.dom.replaceWith(this.$find('#' + rowId), $row);
+            // add to data
+            addItemData.call(this, rowId, itemData);
             return $row;
         },
 
         /**
          * adds a new item
          */
-        addNewItem = function() {
+        addNewItemRow = function() {
             var $row,
-                data =  {
+                data = {
                     rowClass: 'new'
                 };
-            $row = addItem.call(this, data);
+            $row = addItemRow.call(this, data);
             initProductSearch.call(this, $row);
         },
 
         /**
-         * render header line
+         * rerenders component
+         */
+        rerenderItems = function(items) {
+            this.items = [];
+            this.sandbox.dom.emtpy(this.table);
+            renderItems.call(this, items);
+        },
+
+        /**
+         * renders Items
          * @param items
          */
         renderItems = function(items) {
-            var i, length, item;
+            var i, length, item, $row, rowId;
             for (i = -1, length = items.length; ++i < length;) {
                 item = items[i];
 
-                this.items[item.id] = item;
+                $row = addItemRow.call(this, items[i]);
 
-                addItem.call(this, items[i]);
+                // add to items array
+                rowId = this.sandbox.dom.attr($row, 'id');
+                this.items[rowId] = item;
             }
+            // refresh items data attribute
+            refreshItemsData.call(this);
         },
 
+        setItemByProduct = function(productData) {
+            return {
+                name: productData.name,
+                product: productData
+            };
+        },
+
+        /**
+         * renders table head
+         */
         renderHeader = function() {
             var rowData = this.sandbox.util.extend({}, rowDefaults, getHeaderData.call(this)),
                 rowTpl = this.sandbox.util.template(RowTpl, rowData);
             this.sandbox.dom.append(this.$find(constants.listClass), rowTpl);
+        },
+
+        refreshItemsData = function() {
+            this.sandbox.dom.data(this.$el, 'items', this.getItems());
         };
 
     return {
@@ -151,6 +302,13 @@ define([
             // variables
             this.items = {};
             this.rowCount = 0;
+            this.table = null;
+
+            // if data is not set, check if it's set in elements DATA
+            var dataItems = this.sandbox.dom.data(this.$el, 'items');
+            if (this.options.data.length === 0 && !!dataItems && dataItems.length > 0) {
+                this.options.data = dataItems;
+            }
 
             // render component
             this.render();
@@ -162,15 +320,27 @@ define([
 
         render: function() {
             // init skeleton
-            var formTpl = this.sandbox.util.template(FormTpl, this.options.data);
-            this.html(formTpl);
+            this.table = this.sandbox.util.template(FormTpl, this.options.data);
+            this.html(this.table);
 
             // render header
             renderHeader.call(this);
 
             // render items
             renderItems.call(this, this.options.data);
-        }
+        },
 
+        /**
+         * returns current items
+         */
+        getItems: function() {
+            var i,
+                items = [];
+            // convert this.items to array
+            for (i in this.items) {
+                items.push(this.items[i]);
+            }
+            return items;
+        }
     };
 });

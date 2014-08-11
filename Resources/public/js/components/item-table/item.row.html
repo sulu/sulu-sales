@@ -1,4 +1,4 @@
-<tr class="item-table-row <%= rowClass %>" data-id="<%= id %>" data-row-id="<%= rowNumber %>">
+<tr id="<%= rowId %>" class="item-table-row <%= rowClass %>" data-id="<%= id %>" >
     <td class="row-number">
         <%= rowNumber %>
     </td>
@@ -36,5 +36,9 @@
     <td class="item-overallPrice">
         <%= overallPrice %>
     </td>
-    <td class="item-remove">x</td>
+    <td class="item-remove">
+        <% if (rowClass !== 'header') { %>
+            <a href="#"><i class="fa fa-times remove-row"></i></a>
+        <% } %>
+    </td>
 </tr>

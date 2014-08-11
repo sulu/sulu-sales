@@ -24,7 +24,6 @@ define([
 
             typeInterface = {
                 setValue: function(data) {
-
                     if (data === undefined || data === '' || data === null) {
                         return;
                     }
@@ -37,10 +36,7 @@ define([
                 },
 
                 getValue: function() {
-                    // For single select
-                    var items = this.$el.data('items');
-
-                    return items;
+                    return this.$el.data('items');
                 },
 
                 needsValidation: function() {
