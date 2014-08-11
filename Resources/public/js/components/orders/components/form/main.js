@@ -132,16 +132,6 @@ define([], function() {
                     }
                 }
             ]);
-
-            this.sandbox.start([
-                {
-                    name: 'item-table@sulusalescore',
-                    options: {
-                        el: constants.itemTableId,
-                        data: !!this.options.data.items ? this.options.data.items : null
-                    }
-                }
-            ]);
         },
 
         getAccountId = function() {

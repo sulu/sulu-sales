@@ -176,7 +176,11 @@
             </div>
         </div>
     </div>
-    <div id="order-items" data-type="itemTable" data-mapper-property="items"></div>
+    <div id="order-items"
+         data-aura-component="item-table@sulusalescore"
+         data-type="itemTable"
+         data-mapper-property="items">
+    </div>
 </form>
 
 {% block data %}
