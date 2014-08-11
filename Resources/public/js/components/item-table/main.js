@@ -105,7 +105,7 @@ define([
             this.sandbox.util.load(constants.productUrl + product.id)
                 .then(function(response) {
                     // set item to product
-                    itemData = setItemByProduct.call(this, repsonse);
+                    itemData = setItemByProduct.call(this, response);
                     updateItemRow.call(this, rowId, itemData);
                 }.bind(this))
                 .fail(function(request, message, error) {
@@ -276,6 +276,7 @@ define([
         setItemByProduct = function(productData) {
             return {
                 name: productData.name,
+                number: productData.number,
                 product: productData
             };
         },
