@@ -45,12 +45,7 @@ define([
                 },
 
                 validate: function() {
-                    var value = this.getValue();
-                    if (typeof value === 'object' && value.hasOwnProperty('id')) {
-                        return !!value.id;
-                    } else {
-                        return value !== '' && typeof value !== 'undefined';
-                    }
+                    return App.form.validate('#item-table-form');
                 }
             };
 

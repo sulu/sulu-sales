@@ -1,44 +1,50 @@
-<tr id="<%= rowId %>" class="item-table-row <%= rowClass %>" data-id="<%= id %>" >
-    <td class="row-number">
-        <%= rowNumber %>
-    </td>
+<% var disabled = rowClass === 'new' ? 'disabled' : '' ; %>
+
+<tr id="<%= rowId %>" class="item-table-row <%= rowClass %>" data-id="<%= id %>">
+    <td class="row-number"></td>
     <td class="item-name">
         <span><%= name %></span>
-        <div class="product-search input-field" />
+
+        <div class="product-search input-field"/>
     </td>
     <td class="item-number">
         <span><%= number %></span>
     </td>
     <td class="settings">
-        <i class="fa fa-list" />
+        <i class="fa fa-list"/>
     </td>
     <td class="item-quantity">
-        <% if (rowClass === 'header') { %>
-            <span><%= quantity %></span>
-        <% } %>
-        <input class="input-field form-element" value="<%= quantity %>"/>
+        <span>
+            <input class="input-field form-element"
+                   data-validation-required="true"
+                   data-validation-min-length="1"
+                   value="<%= quantity %>"
+            <%= disabled %>/>
+        </span>
     </td>
     <td class="item-quantity-unit">
         <%= quantityUnit %>
     </td>
     <td class="item-price">
-        <% if (rowClass === 'header') { %>
-            <span><%= price %></span>
-        <% } %>
-        <input class="price input-field form-element" value="<%= price %>"/>
+        <span>
+            <input class="price input-field form-element"
+                   data-validation-required="true"
+                   value="<%= price %>"
+            <%= disabled %>/>
+        </span>
     </td>
     <td class="item-discount">
-        <% if (rowClass === 'header') { %>
-        <span><%= discount %></span>
-        <% } %>
-        <input class="discount input-field form-element" value="<%= discount %>"/>
+        <span>
+            <input class="discount input-field form-element"
+                   data-validation-required="true"
+                   value="<%= discount %>"
+            <%= disabled %>/>
+        </span>
     </td>
     <td class="item-overallPrice">
         <%= overallPrice %>
     </td>
     <td class="item-remove">
-        <% if (rowClass !== 'header') { %>
-            <a href="#"><i class="fa fa-times remove-row"></i></a>
-        <% } %>
+        <a href="#"><i class="fa fa-times remove-row"></i></a>
     </td>
 </tr>

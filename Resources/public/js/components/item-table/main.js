@@ -16,8 +16,9 @@
  */
 define([
     'text!sulusalescore/components/item-table/item.form.html',
-    'text!sulusalescore/components/item-table/item.row.html'
-], function(FormTpl, RowTpl) {
+    'text!sulusalescore/components/item-table/item.row.html',
+    'text!sulusalescore/components/item-table/item.row-head.html'
+], function(FormTpl, RowTpl, RowHeadTpl) {
 
     'use strict';
 
@@ -26,11 +27,19 @@ define([
         },
 
         constants = {
+            formId: '#item-table-form',
             listClass: '.item-table-list',
             productSearchClass: '.product-search',
             rowIdPrefix: 'item-table-row-',
-            productsUrl: '/admin/api/products?flat=true&searchFields=number&fields=id,number',
-            productUrl: '/admin/api/products/'
+            productsUrl: '/admin/api/products?flat=true&searchFields=number,name&fields=id,name,number',
+            productUrl: '/admin/api/products/',
+            rowClass: '.item-table-row',
+            quantityRowClass: '.item-quantity',
+            quantityInput: '.item-quantity input',
+            priceRowClass: '.item-price',
+            priceInput: '.item-price input',
+            discountRowClass: '.item-discount',
+            discountInput: '.item-discount input'
         },
 
         /**
@@ -50,6 +59,14 @@ define([
             overallPrice: '',
             currency: 'EUR'
         },
+
+        eventNamespace = 'sulu.item-table.',
+
+        /**
+         * raised when an item is changed
+         * @event sulu.item-table.changed
+         */
+        EVENT_CHANGED =  eventNamespace + 'changed',
 
         /**
          * data that is shown in header
@@ -88,6 +105,71 @@ define([
                 var items = event.items || [];
                 rerenderItems.call(this, items);
             }.bind(this));
+
+            // input field listeners
+            this.sandbox.dom.on(this.$el, 'change', quantityChangedHandler.bind(this), constants.quantityInput);
+            this.sandbox.dom.on(this.$el, 'change', priceChangedHandler.bind(this), constants.priceInput);
+            this.sandbox.dom.on(this.$el, 'change', discountChangedHandler.bind(this), constants.discountInput);
+        },
+
+        /**
+         * triggered when quantity is changed
+         * @param event
+         */
+        quantityChangedHandler = function(event) {
+            var rowId = getRowData.call(this, event).id;
+            // update quantity
+            this.items[rowId].quantity = this.sandbox.dom.val(event.target);
+            refreshItemsData.call(this);
+
+            //TODO update rows overall price
+
+            //TODO update overall price
+
+            this.sandbox.emit(EVENT_CHANGED);
+        },
+
+        /**
+         * triggered when price is changed
+         * @param event
+         */
+        priceChangedHandler = function(event) {
+            var rowId = getRowData.call(this, event).id;
+            // update price
+            this.items[rowId].price = this.sandbox.dom.val(event.target);
+            refreshItemsData.call(this);
+
+            //TODO update rows overall price
+
+            //TODO update overall price
+
+            this.sandbox.emit(EVENT_CHANGED);
+        },
+
+        /**
+         * triggered when discount is changed
+         * @param event
+         */
+        discountChangedHandler = function(event) {
+            var rowId = getRowData.call(this, event).id;
+            // update discount
+            this.items[rowId].discount = this.sandbox.dom.val(event.target);
+            refreshItemsData.call(this);
+
+            //TODO update rows overall price
+
+            //TODO update overall price
+
+            this.sandbox.emit(EVENT_CHANGED);
+        },
+
+        getRowData = function(event) {
+            var $row = this.sandbox.dom.closest(event.target, '.item-table-row'),
+                rowId = this.sandbox.dom.attr($row, 'id');
+            return {
+                row: $row,
+                id: rowId
+            };
         },
 
         /**
@@ -97,7 +179,7 @@ define([
          */
         productSelected = function(product, event) {
 
-            var $row = this.sandbox.dom.closest(event.currentTarget, '.item-table-row'),
+            var $row = this.sandbox.dom.closest(event.currentTarget, constants.rowClass),
                 rowId = this.sandbox.dom.attr($row, 'id'),
                 itemData = {};
 
@@ -130,7 +212,7 @@ define([
                         getParameter: 'search',
                         value: '',
                         instanceName: 'products',
-                        valueKey: 'number',
+                        valueKey: 'name',
                         noNewValues: true,
                         selectCallback: productSelected.bind(this)
                     }
@@ -191,7 +273,13 @@ define([
             // decrease row counter
             this.rowCount--;
 
+            // remove from data
             removeItemData.call(this, rowId);
+
+            // remove validation
+            removeValidtaionFields($row);
+
+            this.sandbox.emit(EVENT_CHANGED);
         },
 
         /**
@@ -230,7 +318,27 @@ define([
             this.sandbox.dom.replaceWith(this.$find('#' + rowId), $row);
             // add to data
             addItemData.call(this, rowId, itemData);
+
+            // add to validation
+            addValidationFields.call(this, $row);
+
+            // emit data change
+            this.sandbox.emit(EVENT_CHANGED);
+
+
             return $row;
+        },
+
+        addValidationFields = function($row) {
+            this.sandbox.form.addField(constants.formId, this.sandbox.dom.find(constants.quantityInput, $row));
+            this.sandbox.form.addField(constants.formId, this.sandbox.dom.find(constants.priceInput, $row));
+            this.sandbox.form.addField(constants.formId, this.sandbox.dom.find(constants.discountInput, $row));
+        },
+
+        removeValidtaionFields = function($row) {
+            this.sandbox.form.removeField(constants.formId, this.sandbox.dom.find(constants.quantityInput, $row));
+            this.sandbox.form.removeField(constants.formId, this.sandbox.dom.find(constants.priceInput, $row));
+            this.sandbox.form.removeField(constants.formId, this.sandbox.dom.find(constants.discountInput, $row));
         },
 
         /**
@@ -286,12 +394,20 @@ define([
          */
         renderHeader = function() {
             var rowData = this.sandbox.util.extend({}, rowDefaults, getHeaderData.call(this)),
-                rowTpl = this.sandbox.util.template(RowTpl, rowData);
+                rowTpl = this.sandbox.util.template(RowHeadTpl, rowData);
             this.sandbox.dom.append(this.$find(constants.listClass), rowTpl);
         },
 
         refreshItemsData = function() {
             this.sandbox.dom.data(this.$el, 'items', this.getItems());
+        },
+
+        initializeForm = function() {
+            var form = this.sandbox.form.create(constants.formId);
+            form.initialized.then(function() {
+                this.sandbox.form.addField(constants.formId, this.$find(constants.quantityInput));
+            }.bind(this));
+
         };
 
     return {
@@ -320,6 +436,7 @@ define([
         },
 
         render: function() {
+
             // init skeleton
             this.table = this.sandbox.util.template(FormTpl, this.options.data);
             this.html(this.table);
@@ -329,6 +446,9 @@ define([
 
             // render items
             renderItems.call(this, this.options.data);
+
+            // init form
+            initializeForm.call(this);
         },
 
         /**

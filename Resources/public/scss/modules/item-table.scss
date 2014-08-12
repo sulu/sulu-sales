@@ -1,3 +1,7 @@
+body {
+    counter-reset: rowcount;
+}
+
 .item-table-list {
     list-style: none;
     padding: 0;
@@ -17,8 +21,20 @@
     }
 }
 
+
 .item-table-row {
     height: 50px;
+
+    // show row number (but not for first row)
+    &:not(:first-child) {
+        .row-number {
+            &:before {
+                counter-increment: rowcount;
+                content: counter(rowcount);
+            }
+        }
+    }
+
     .span {
         height: 100%;
     }
