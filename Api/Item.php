@@ -10,6 +10,7 @@ use Sulu\Component\Rest\ApiWrapper;
 use Hateoas\Configuration\Annotation\Relation;
 use JMS\Serializer\Annotation\SerializedName;
 use DateTime;
+use Sulu\Component\Security\UserInterface;
 
 /**
  * The item class which will be exported to the API
@@ -122,10 +123,10 @@ class Item extends ApiWrapper
     /**
      * Set changer
      *
-     * @param \Sulu\Bundle\SecurityBundle\Entity\User $changer
+     * @param UserInterface $changer
      * @return Item
      */
-    public function setChanger(\Sulu\Bundle\SecurityBundle\Entity\User $changer = null)
+    public function setChanger(UserInterface $changer = null)
     {
         $this->entity->setChanger($changer);
 
@@ -135,7 +136,7 @@ class Item extends ApiWrapper
     /**
      * Get changer
      *
-     * @return \Sulu\Bundle\SecurityBundle\Entity\User
+     * @return UserInterface
      * @VirtualProperty
      * @SerializedName("changer")
      */
@@ -147,10 +148,10 @@ class Item extends ApiWrapper
     /**
      * Set creator
      *
-     * @param \Sulu\Bundle\SecurityBundle\Entity\User $creator
+     * @param UserInterface $creator
      * @return Item
      */
-    public function setCreator(\Sulu\Bundle\SecurityBundle\Entity\User $creator = null)
+    public function setCreator(UserInterface $creator = null)
     {
         $this->entity->setCreator($creator);
 
@@ -160,7 +161,7 @@ class Item extends ApiWrapper
     /**
      * Get creator
      *
-     * @return \Sulu\Bundle\SecurityBundle\Entity\User
+     * @return UserInterface
      * @VirtualProperty
      * @SerializedName("creator")
      */
