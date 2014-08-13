@@ -53,11 +53,13 @@ define([
             name: '',
             number: '',
             quantity: '',
-            quantityUnit: '',
+            quantityUnit: 'pc',
             price: '',
             discount: '',
             overallPrice: '',
-            currency: 'EUR'
+            currency: 'EUR',
+            useProductsPrice: false,
+            tax: 0
         },
 
         eventNamespace = 'sulu.item-table.',
@@ -74,13 +76,13 @@ define([
         getHeaderData = function() {
             return {
                 rowClass: 'header',
-                name: this.sandbox.translate('Artikel'),
-                number: this.sandbox.translate('Art.Nr'),
-                quantity: this.sandbox.translate('Menge'),
-                quantityUnit: this.sandbox.translate('Einheit'),
-                price: this.sandbox.translate('Preis'),
-                discount: this.sandbox.translate('Rabatt(%)'),
-                overallPrice: this.sandbox.translate('Positionswert')
+                name: this.sandbox.translate('salescore.item.product'),
+                number: this.sandbox.translate('salescore.item.number'),
+                quantity: this.sandbox.translate('salescore.item.quantity'),
+                quantityUnit: this.sandbox.translate('salescore.item.unit'),
+                price: this.sandbox.translate('salescore.item.price'),
+                discount: this.sandbox.translate('salescore.item.discount'),
+                overallPrice: this.sandbox.translate('salescore.item.overallValue')
             };
         },
 
@@ -183,9 +185,21 @@ define([
                 rowId = this.sandbox.dom.attr($row, 'id'),
                 itemData = {};
 
+            // show loader
+            this.sandbox.start([
+                {
+                    name: 'loader@husky',
+                    options: {
+                        el: this.sandbox.dom.find(constants.productSearchClass,$row),
+                        size: '15px'
+                    }
+                }
+            ]);
+
             // load product details
             this.sandbox.util.load(constants.productUrl + product.id)
                 .then(function(response) {
+//                    this.sandbox.dom.stop()
                     // set item to product
                     itemData = setItemByProduct.call(this, response);
                     updateItemRow.call(this, rowId, itemData);
@@ -277,7 +291,7 @@ define([
             removeItemData.call(this, rowId);
 
             // remove validation
-            removeValidtaionFields($row);
+            removeValidtaionFields.call(this, $row);
 
             this.sandbox.emit(EVENT_CHANGED);
         },
@@ -358,7 +372,7 @@ define([
          */
         rerenderItems = function(items) {
             this.items = [];
-            this.sandbox.dom.emtpy(this.table);
+            this.sandbox.dom.empty(this.table);
             renderItems.call(this, items);
         },
 
@@ -382,11 +396,15 @@ define([
         },
 
         setItemByProduct = function(productData) {
-            return {
-                name: productData.name,
-                number: productData.number,
-                product: productData
-            };
+            // merge with row defaults
+            return this.sandbox.util.extend({}, rowDefaults,
+                {
+                    name: productData.name,
+                    number: productData.number,
+                    product: productData
+                }
+            );
+
         },
 
         /**
@@ -437,8 +455,16 @@ define([
 
         render: function() {
 
+            // add translations for template
+            var templateData = this.sandbox.util.extend({},
+                {
+                    addText: this.sandbox.translate('salescore.item.add')
+                },
+                this.options.data
+            );
+
             // init skeleton
-            this.table = this.sandbox.util.template(FormTpl, this.options.data);
+            this.table = this.sandbox.util.template(FormTpl, templateData);
             this.html(this.table);
 
             // render header

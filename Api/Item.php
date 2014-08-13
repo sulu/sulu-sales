@@ -325,7 +325,7 @@ class Item extends ApiWrapper
      */
     public function getDiscount()
     {
-        return $this->entity->getPrice();
+        return $this->entity->getDiscount();
     }
 
     /**

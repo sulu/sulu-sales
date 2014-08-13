@@ -1,14 +1,14 @@
-/* line 1, ../scss/modules/item-table.scss */
+/* line 5, ../scss/modules/item-table.scss */
 body {
   counter-reset: rowcount;
 }
 
-/* line 5, ../scss/modules/item-table.scss */
+/* line 9, ../scss/modules/item-table.scss */
 .item-table-list {
   list-style: none;
   padding: 0;
 }
-/* line 9, ../scss/modules/item-table.scss */
+/* line 13, ../scss/modules/item-table.scss */
 .item-table-list .header {
   border-bottom: 2px solid #ccc;
   height: 50px;
@@ -18,43 +18,66 @@ body {
   font-size: 14px;
   padding: 8px 10px;
 }
-/* line 18, ../scss/modules/item-table.scss */
+/* line 22, ../scss/modules/item-table.scss */
 .item-table-list .header .input-field {
   display: none;
 }
 
-/* line 25, ../scss/modules/item-table.scss */
+/* line 29, ../scss/modules/item-table.scss */
+.husky-validate-error *:not(.husky-validate-error) > .husky-validate:not(label) {
+  border: 1px solid #ccc;
+}
+
+/* line 34, ../scss/modules/item-table.scss */
 .item-table-row {
   height: 50px;
 }
-/* line 31, ../scss/modules/item-table.scss */
+/* line 40, ../scss/modules/item-table.scss */
 .item-table-row:not(:first-child) .row-number:before {
   counter-increment: rowcount;
   content: counter(rowcount);
 }
-/* line 38, ../scss/modules/item-table.scss */
+/* line 47, ../scss/modules/item-table.scss */
 .item-table-row .span {
   height: 100%;
 }
-/* line 43, ../scss/modules/item-table.scss */
+/* line 52, ../scss/modules/item-table.scss */
 .item-table-row.new .product-search {
   display: block;
 }
-/* line 49, ../scss/modules/item-table.scss */
+/* line 58, ../scss/modules/item-table.scss */
 .item-table-row .item-name {
   min-width: 170px;
 }
-/* line 53, ../scss/modules/item-table.scss */
+/* line 62, ../scss/modules/item-table.scss */
 .item-table-row .product-search {
   margin: 0;
   display: none;
 }
-/* line 59, ../scss/modules/item-table.scss */
+/* line 68, ../scss/modules/item-table.scss */
 .item-table-row > * {
   padding: 0 10px;
 }
+/* line 72, ../scss/modules/item-table.scss */
+.item-table-row:last-child {
+  border-bottom: 2px solid #ccc;
+}
 
-/* line 65, ../scss/modules/item-table.scss */
+/* line 78, ../scss/modules/item-table.scss */
 .item-remove a, .item-remove a:visited, .item-remove a:active {
   color: black;
+}
+
+/* line 83, ../scss/modules/item-table.scss */
+.item-add {
+  margin-top: 20px;
+}
+/* line 85, ../scss/modules/item-table.scss */
+.item-add a:hover, .item-add a:visited {
+  color: black;
+}
+/* line 93, ../scss/modules/item-table.scss */
+.item-add .add-row i {
+  font-size: 18px;
+  margin-right: 10px;
 }
