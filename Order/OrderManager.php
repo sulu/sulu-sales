@@ -394,7 +394,6 @@ class OrderManager
         if (array_key_exists($dataKey, $data) && array_key_exists('id', $data[$dataKey])) {
             $contactId = $data[$dataKey]['id'];
             /** @var Contact $contact */
-//            $contact = $this->contactRepository->find($contactId); // TODO: import contact repository
             $contact = $this->em->getRepository(self::$contactEntityName)->find($contactId);
             if (!$contact) {
                 throw new OrderDependencyNotFoundException(self::$contactEntityName, $contactId);
@@ -561,6 +560,7 @@ class OrderManager
 
     private function processItems($data, Order $order, $locale, $userId)
     {
+        $return = true;
         try {
             if ($this->checkIfSet('items', $data)) {
                 // items has to be an array
@@ -570,33 +570,34 @@ class OrderManager
 
                 $items = $data['items'];
 
-                $get = function($item) {
+                $get = function ($item){
                     return $item->getId();
                 };
 
-                $delete = function ($item) use ($order) {
+                $delete = function ($item) use ($order){
+                    $entity = $item->getEntity();
                     // remove from order
-                    $order->removeItem($item);
+                    $order->removeItem($entity);
                     // delete item
-                    $this->em->remove($item);
+                    $this->em->remove($entity);
                 };
 
-                $update = function ($item, $matchedEntry) use ($locale, $userId, $order) {
+                $update = function ($item, $matchedEntry) use ($locale, $userId, $order){
                     $itemEntity = $this->itemManager->save($matchedEntry, $locale, $userId, $item);
                     return $itemEntity ? true : false;
                 };
 
-                $add = function ($itemData) use ($locale, $userId, $order) {
+                $add = function ($itemData) use ($locale, $userId, $order){
                     $item = $this->itemManager->save($itemData, $locale, $userId);
                     return $order->addItem($item->getEntity());
                 };
 
                 $result = $this->listRestHelper->processSubEntities($order->getItems(), $items, $get, $add, $update, $delete);
 
-                return $result;
             }
         } catch (Exception $e) {
             throw new OrderException('Error while creating items: ' . $e->getMessage());
         }
+        return $result;
     }
 }

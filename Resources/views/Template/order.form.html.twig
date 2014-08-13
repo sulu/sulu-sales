@@ -76,7 +76,7 @@
         <div class="grid-row">
             <div class="grid-col-6">
                 <div class="form-group">
-                    <label for="tax-free" class="required"><%=translate('salesorder.orders.taxFree')%></label>
+                    <label for="tax-free"><%=translate('salesorder.orders.taxFree')%></label>
 
                     <div>
                         <div class="custom-checkbox">
@@ -178,12 +178,12 @@
             </div>
         </div>
     </div>
-    <div >
+    <div>
         <div id="order-items"
              data-aura-component="item-table@sulusalescore"
+             data-form="true"
              data-type="itemTable"
-             data-mapper-property="items"
-             data-validation-required="true">
+             data-mapper-property="items">
         </div>
     </div>
 </form>
