@@ -17,8 +17,9 @@
         <span>
             <input class="input-field form-element"
                    data-validation-required="true"
-                   data-validation-min-length="1"
                    value="<%= quantity %>"
+                   data-type="decimal"
+                   data-validation-min="0.0"
             <%= disabled %>/>
         </span>
     </td>
@@ -30,19 +31,25 @@
             <input class="price input-field form-element"
                    data-validation-required="true"
                    value="<%= price %>"
+                   data-type="decimal"
+                   data-validation-min="0.0"
             <%= disabled %>/>
         </span>
     </td>
     <td class="item-discount">
         <span>
             <input class="discount input-field form-element"
-                   data-validation-required="true"
                    value="<%= discount %>"
+                   data-type="decimal"
+                   data-validation-max="100"
+                   data-validation-min="0.0"
             <%= disabled %>/>
         </span>
     </td>
-    <td class="item-overallPrice">
-        <%= overallPrice %>
+    <td class="item-overall-price">
+        <span class="overall-price">
+            <%= overallPrice %>
+        </span>
     </td>
     <td class="item-remove">
         <a href="#"><i class="fa fa-times remove-row"></i></a>

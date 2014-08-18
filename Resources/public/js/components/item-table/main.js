@@ -39,7 +39,9 @@ define([
             priceRowClass: '.item-price',
             priceInput: '.item-price input',
             discountRowClass: '.item-discount',
-            discountInput: '.item-discount input'
+            discountInput: '.item-discount input',
+            globalPriceTableClass: '.global-price-table',
+            overallEmptyString: '-'
         },
 
         /**
@@ -55,20 +57,36 @@ define([
             quantity: '',
             quantityUnit: 'pc',
             price: '',
-            discount: '',
+            discount: null,
             overallPrice: '',
             currency: 'EUR',
             useProductsPrice: false,
             tax: 0
         },
 
+        templates = {
+            priceRow: function(title, value) {
+                return [
+                    '<tr>',
+                    '   <td>',
+                    title,
+                    '   </td>',
+                    '   <td>',
+                    value,
+                    '   </td>',
+                    '</tr>'
+                ].join('');
+            }
+        },
+
+    // event namespace
         eventNamespace = 'sulu.item-table.',
 
         /**
          * raised when an item is changed
          * @event sulu.item-table.changed
          */
-        EVENT_CHANGED =  eventNamespace + 'changed',
+        EVENT_CHANGED = eventNamespace + 'changed',
 
         /**
          * data that is shown in header
@@ -125,8 +143,10 @@ define([
             refreshItemsData.call(this);
 
             //TODO update rows overall price
+            updateOverallPrice.call(this, rowId);
 
             //TODO update overall price
+            updateGlobalPrice.call(this);
 
             this.sandbox.emit(EVENT_CHANGED);
         },
@@ -142,8 +162,10 @@ define([
             refreshItemsData.call(this);
 
             //TODO update rows overall price
+            updateOverallPrice.call(this, rowId);
 
             //TODO update overall price
+            updateGlobalPrice.call(this);
 
             this.sandbox.emit(EVENT_CHANGED);
         },
@@ -159,12 +181,19 @@ define([
             refreshItemsData.call(this);
 
             //TODO update rows overall price
+            updateOverallPrice.call(this, rowId);
 
             //TODO update overall price
+            updateGlobalPrice.call(this);
 
             this.sandbox.emit(EVENT_CHANGED);
         },
 
+        /**
+         * returns an object containing a row's ID and jquery element
+         * @param event
+         * @returns {{row: *, id: *}}
+         */
         getRowData = function(event) {
             var $row = this.sandbox.dom.closest(event.target, '.item-table-row'),
                 rowId = this.sandbox.dom.attr($row, 'id');
@@ -172,6 +201,124 @@ define([
                 row: $row,
                 id: rowId
             };
+        },
+
+        /**
+         *
+         * @param rowId
+         */
+        updateOverallPrice = function(rowId) {
+            var $row = this.$find('#' + rowId),
+                item = this.items[rowId],
+                priceCol = this.sandbox.dom.find('.item-overall-price span', $row);
+
+            this.sandbox.dom.html(priceCol, getOverallPriceString.call(this, item));
+
+        },
+
+        /**
+         * updates row with global prices
+         */
+        updateGlobalPrice = function() {
+            var tax, item, price, taxPrice,
+                $table,
+                taxCategory = {},
+                netPrice = 0,
+                globalPrice = 0;
+
+            for (var i in this.items) {
+                item = this.items[i];
+                price = parseFloat(getOverallPrice.call(this, item));
+                taxPrice = 0;
+
+                if (!!item.tax && item.tax > 0 && item.tax <= 100) {
+                    tax = parseFloat(item.tax);
+                    taxPrice = (price / 100) * tax;
+                    // tax group
+                    taxCategory[tax] = !taxCategory[tax] ? taxPrice : taxCategory[tax] + taxPrice;
+                }
+
+                // sum up prices
+                // net
+                netPrice += price;
+                // overall
+                globalPrice += price + taxPrice;
+            }
+
+            // visualize
+            $table = this.$find(constants.globalPriceTableClass);
+            this.sandbox.dom.html($table, '');
+
+            // TODO: add translations
+            // add net price
+            addPriceRow.call(this, $table, 'NettoPreis', getFormatedPriceCurrencyString.call(this, netPrice));
+
+            // add row for every tax group
+            for (var i in taxCategory) {
+                addPriceRow.call(this, $table, 'Ust.(' + i + '%)', getFormatedPriceCurrencyString.call(this, taxCategory[i]));
+            }
+
+            addPriceRow.call(this, $table, 'Gesamtpreis', getFormatedPriceCurrencyString.call(this, globalPrice));
+        },
+
+        addPriceRow = function($table, title, value) {
+            var $row = this.sandbox.dom.createElement(templates.priceRow.call(this, title, value));
+            this.sandbox.dom.append($table, $row);
+        },
+
+        /**
+         * returns formated overallPrice + currency as string (based on item)
+         * @param item
+         * @param mode
+         * @returns {string}
+         */
+        getOverallPriceString = function(item, mode) {
+            return getFormatedPriceCurrencyString.call(this,
+                getOverallPrice.call(this, item, mode),
+                getCurrency.call(this, item));
+        },
+
+        /**
+         * returns formated overallprice + currency as string (based on value)
+         * @param value
+         * @param currency
+         * @returns {string}
+         */
+        getFormatedPriceCurrencyString = function(value, currency) {
+            currency = !!currency ? currency : rowDefaults.currency;
+            return this.sandbox.numberFormat(value, "n") + ' ' + currency;
+        },
+
+        /**
+         * returns the overall price
+         * @param item
+         * @param mode
+         * @returns number
+         */
+        getOverallPrice = function(item, mode) {
+            var value = 0;
+            if (!mode || mode === 'default') {
+                if (!!item.price && !!item.quantity) {
+
+                    value = (item.price * item.quantity);
+
+                    // discount
+                    if (!!item.discount && item.discount > 0 && item.discount <= 100) {
+                        value -= (value / 100) * item.discount;
+                    }
+                }
+            }
+
+            return value;
+        },
+
+        /**
+         * returns items currency; if not set, default-currency
+         * @param item
+         * @returns string
+         */
+        getCurrency = function(item) {
+            return !!item.currency ? item.currency : rowDefaults.currency;
         },
 
         /**
@@ -190,7 +337,7 @@ define([
                 {
                     name: 'loader@husky',
                     options: {
-                        el: this.sandbox.dom.find(constants.productSearchClass,$row),
+                        el: this.sandbox.dom.find(constants.productSearchClass, $row),
                         size: '15px'
                     }
                 }
@@ -199,7 +346,6 @@ define([
             // load product details
             this.sandbox.util.load(constants.productUrl + product.id)
                 .then(function(response) {
-//                    this.sandbox.dom.stop()
                     // set item to product
                     itemData = setItemByProduct.call(this, response);
                     updateItemRow.call(this, rowId, itemData);
@@ -293,6 +439,9 @@ define([
             // remove validation
             removeValidtaionFields.call(this, $row);
 
+            // refresh global price
+            updateGlobalPrice.call(this);
+
             this.sandbox.emit(EVENT_CHANGED);
         },
 
@@ -308,7 +457,10 @@ define([
                     rowId: constants.rowIdPrefix + this.rowCount,
                     rowNumber: this.rowCount
                 }),
-                rowTpl = this.sandbox.util.template(RowTpl, data),
+                rowTpl, $row;
+
+            data.overallPrice = getOverallPriceString.call(this, data);
+            rowTpl = this.sandbox.util.template(RowTpl, data),
                 $row = this.sandbox.dom.createElement(rowTpl);
             return $row;
         },
@@ -330,7 +482,8 @@ define([
         updateItemRow = function(rowId, itemData) {
             var $row = createItemRow.call(this, itemData, false);
             this.sandbox.dom.replaceWith(this.$find('#' + rowId), $row);
-            // add to data
+
+            // add item to data
             addItemData.call(this, rowId, itemData);
 
             // add to validation
@@ -339,16 +492,23 @@ define([
             // emit data change
             this.sandbox.emit(EVENT_CHANGED);
 
-
             return $row;
         },
 
+        /**
+         * add validation to row
+         * @param $row
+         */
         addValidationFields = function($row) {
             this.sandbox.form.addField(constants.formId, this.sandbox.dom.find(constants.quantityInput, $row));
             this.sandbox.form.addField(constants.formId, this.sandbox.dom.find(constants.priceInput, $row));
             this.sandbox.form.addField(constants.formId, this.sandbox.dom.find(constants.discountInput, $row));
         },
 
+        /**
+         * remove validation from row
+         * @param $row
+         */
         removeValidtaionFields = function($row) {
             this.sandbox.form.removeField(constants.formId, this.sandbox.dom.find(constants.quantityInput, $row));
             this.sandbox.form.removeField(constants.formId, this.sandbox.dom.find(constants.priceInput, $row));
@@ -395,6 +555,11 @@ define([
             refreshItemsData.call(this);
         },
 
+        /**
+         * sets an item, based on product
+         * @param productData
+         * @returns {*}
+         */
         setItemByProduct = function(productData) {
             // merge with row defaults
             return this.sandbox.util.extend({}, rowDefaults,
@@ -416,16 +581,18 @@ define([
             this.sandbox.dom.append(this.$find(constants.listClass), rowTpl);
         },
 
+        /**
+         * sets components data-items to current items
+         */
         refreshItemsData = function() {
             this.sandbox.dom.data(this.$el, 'items', this.getItems());
         },
 
+        /**
+         * initialize husky-validation
+         */
         initializeForm = function() {
-            var form = this.sandbox.form.create(constants.formId);
-            form.initialized.then(function() {
-                this.sandbox.form.addField(constants.formId, this.$find(constants.quantityInput));
-            }.bind(this));
-
+            this.sandbox.form.create(constants.formId);
         };
 
     return {
@@ -475,6 +642,9 @@ define([
 
             // init form
             initializeForm.call(this);
+
+            // set global price
+            updateGlobalPrice.call(this);
         },
 
         /**
@@ -490,4 +660,5 @@ define([
             return items;
         }
     };
-});
+})
+;

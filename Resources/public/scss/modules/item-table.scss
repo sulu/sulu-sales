@@ -2,6 +2,8 @@
     border-bottom: 2px solid #ccc;
 }
 
+$rowPadding : 0 10px;
+
 body {
     counter-reset: rowcount;
 }
@@ -66,7 +68,7 @@ body {
 
     // add padding to each row element
     > * {
-        padding: 0 10px;
+        padding: $rowPadding;
     }
 
     &:last-child {
@@ -93,6 +95,31 @@ body {
         i {
             font-size: 18px;
             margin-right: 10px;
+        }
+    }
+}
+
+.item-overall-price {
+    text-align: right;
+}
+
+// global price
+.global-price-container {
+    padding-top: 15px;
+    position: relative;
+
+    .global-price-table {
+        width: initial;
+        position: absolute;
+        right: 31px;
+        text-align: right;
+
+        td {
+            padding: $rowPadding;
+        }
+
+        tr:last-child {
+            font-weight: bold;
         }
     }
 }
