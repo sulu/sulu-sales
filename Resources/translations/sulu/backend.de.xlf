@@ -42,6 +42,18 @@
                 <source>navigation.item.add</source>
                 <target>Weitere Positionseingabe</target>
             </trans-unit>
+            <trans-unit id="a50accg2ac221350142c0b4720e29a11" resname="salescore.item.net-price">
+                <source>salescore.item.net-price</source>
+                <target>Nettopreis</target>
+            </trans-unit>
+            <trans-unit id="a50accg2ac221350142c0b4720e29a12" resname="salescore.item.overall-price">
+                <source>salescore.item.overall-price</source>
+                <target>Gesamtpreis</target>
+            </trans-unit>
+            <trans-unit id="a50accg2ac221350142c0b4720e29a13" resname="salescore.item.vat">
+                <source>salescore.item.vat</source>
+                <target>Ust</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>

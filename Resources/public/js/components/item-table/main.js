@@ -251,14 +251,14 @@ define([
 
             // TODO: add translations
             // add net price
-            addPriceRow.call(this, $table, 'NettoPreis', getFormatedPriceCurrencyString.call(this, netPrice));
+            addPriceRow.call(this, $table, this.sandbox.translate('salescore.item.net-price'), getFormatedPriceCurrencyString.call(this, netPrice));
 
             // add row for every tax group
             for (var i in taxCategory) {
-                addPriceRow.call(this, $table, 'Ust.(' + i + '%)', getFormatedPriceCurrencyString.call(this, taxCategory[i]));
+                addPriceRow.call(this, $table, this.sandbox.translate('salescore.item.vat')+'.(' + i + '%)', getFormatedPriceCurrencyString.call(this, taxCategory[i]));
             }
 
-            addPriceRow.call(this, $table, 'Gesamtpreis', getFormatedPriceCurrencyString.call(this, globalPrice));
+            addPriceRow.call(this, $table, this.sandbox.translate('salescore.item.overall-price'), getFormatedPriceCurrencyString.call(this, globalPrice));
         },
 
         addPriceRow = function($table, title, value) {
