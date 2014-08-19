@@ -32,7 +32,10 @@
         "symfony/monolog-bundle": "2.4.*",
         "phpunit/phpunit": "3.7.*",
         "sulu/test-bundle": "dev-develop",
-        "sulu/tag-bundle": "dev-develop"
+        "sulu/website-bundle": "dev-develop",
+        "sulu/tag-bundle": "dev-develop",
+        "sulu/category-bundle": "dev-develop",
+        "sulu/media-bundle": "dev-develop"
     },
     "autoload": {
         "psr-0": {

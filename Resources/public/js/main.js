@@ -10,7 +10,7 @@
 require.config({
     paths: {
         sulusalescore: '../../sulusalescore/js',
-        "type/itemTable": '../../sulusalescore/js/components/item-table/item-table-type'
+        'type/itemTable': '../../sulusalescore/js/components/item-table/item-table-type'
     }
 });
 

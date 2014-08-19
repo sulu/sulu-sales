@@ -161,10 +161,10 @@ define([
             this.items[rowId].price = this.sandbox.dom.val(event.target);
             refreshItemsData.call(this);
 
-            //TODO update rows overall price
+            // update rows overall price
             updateOverallPrice.call(this, rowId);
 
-            //TODO update overall price
+            // update overall price
             updateGlobalPrice.call(this);
 
             this.sandbox.emit(EVENT_CHANGED);
@@ -180,10 +180,10 @@ define([
             this.items[rowId].discount = this.sandbox.dom.val(event.target);
             refreshItemsData.call(this);
 
-            //TODO update rows overall price
+            // update rows overall price
             updateOverallPrice.call(this, rowId);
 
-            //TODO update overall price
+            // update overall price
             updateGlobalPrice.call(this);
 
             this.sandbox.emit(EVENT_CHANGED);
@@ -210,9 +210,9 @@ define([
         updateOverallPrice = function(rowId) {
             var $row = this.$find('#' + rowId),
                 item = this.items[rowId],
-                priceCol = this.sandbox.dom.find('.item-overall-price span', $row);
+                $priceCol = this.sandbox.dom.find('.item-overall-price span', $row);
 
-            this.sandbox.dom.html(priceCol, getOverallPriceString.call(this, item));
+            this.sandbox.dom.html($priceCol, getOverallPriceString.call(this, item));
 
         },
 
@@ -249,7 +249,6 @@ define([
             $table = this.$find(constants.globalPriceTableClass);
             this.sandbox.dom.html($table, '');
 
-            // TODO: add translations
             // add net price
             addPriceRow.call(this, $table, this.sandbox.translate('salescore.item.net-price'), getFormatedPriceCurrencyString.call(this, netPrice));
 
