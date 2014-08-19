@@ -26,7 +26,44 @@ define([], function() {
 
         setHeaderToolbar = function() {
             this.sandbox.emit('sulu.header.set-toolbar', {
-                template: 'default'
+                template: [
+                    {
+                        id: 'save-button',
+                        icon: 'floppy-o',
+                        iconSize: 'large',
+                        class: 'highlight',
+                        position: 1,
+                        group: 'left',
+                        disabled: true,
+                        callback: function() {
+                            this.sandbox.emit('sulu.header.toolbar.save');
+                        }.bind(this)
+                    },
+                    {
+                        icon: 'gear',
+                        iconSize: 'large',
+                        group: 'left',
+                        id: 'options-button',
+                        position: 30,
+                        items: [
+                            {
+                                title: this.sandbox.translate('toolbar.delete'),
+                                callback: function() {
+                                    this.sandbox.emit('sulu.header.toolbar.delete');
+                                }.bind(this)
+                            },
+                            {
+                                divider: true
+                            },
+                            {
+                                title: this.sandbox.translate('salesorder.order.confirm'),
+                                callback: function() {
+                                    this.sandbox.emit('salesorder.order.confirm');
+                                }.bind(this)
+                            }
+                        ]
+                    }
+                ]
             });
         },
 
@@ -231,41 +268,40 @@ define([], function() {
                     this.sandbox.logger.error(textStatus, error);
                 }.bind(this));
         };
-    return (function() {
-        return {
+    return {
 
-            view: true,
+        view: true,
 
-            layout: {
+        layout: {
 //                sidebar: {
 //                    width: 'fixed',
 //                    cssClasses: 'sidebar-padding-50'
 //                }
-            },
+        },
 
-            templates: ['/admin/order/template/order/form'],
+        templates: ['/admin/order/template/order/form'],
 
-            initialize: function() {
-                this.saved = true;
-                this.formId = form;
-                this.accountId = null;
-                this.contactId = null;
+        initialize: function() {
+            this.saved = true;
+            this.formId = form;
+            this.accountId = null;
+            this.contactId = null;
 
-                this.dfdAllFieldsInitialized = this.sandbox.data.deferred();
-                this.dfdAutoCompleteInitialized = this.sandbox.data.deferred();
-                this.dfdDesiredDeliveryDate = this.sandbox.data.deferred();
+            this.dfdAllFieldsInitialized = this.sandbox.data.deferred();
+            this.dfdAutoCompleteInitialized = this.sandbox.data.deferred();
+            this.dfdDesiredDeliveryDate = this.sandbox.data.deferred();
 
-                // define when all fields are initialized
-                this.sandbox.data.when(this.dfdDesiredDeliveryDate, this.dfdAutoCompleteInitialized).then(function() {
-                    this.dfdAllFieldsInitialized.resolve();
-                }.bind(this));
+            // define when all fields are initialized
+            this.sandbox.data.when(this.dfdDesiredDeliveryDate, this.dfdAutoCompleteInitialized).then(function() {
+                this.dfdAllFieldsInitialized.resolve();
+            }.bind(this));
 
-                setTitle.call(this);
+            setTitle.call(this);
 
-                this.render();
+            this.render();
 
-                setHeaderToolbar.call(this);
-                this.listenForChange();
+            setHeaderToolbar.call(this);
+            this.listenForChange();
 
 //                if (!!this.options.data && !!this.options.data.id) {
 //                    this.initSidebar(
@@ -274,85 +310,84 @@ define([], function() {
 //                    );
 //                }
 
-                this.setHeaderBar(true);
-            },
+            this.setHeaderBar(true);
+        },
 
-            initSidebar: function(url, id) {
-                this.sandbox.emit('sulu.sidebar.set-widget', url + id);
-            },
+        initSidebar: function(url, id) {
+            this.sandbox.emit('sulu.sidebar.set-widget', url + id);
+        },
 
-            render: function() {
-                this.sandbox.dom.html(this.$el, this.renderTemplate(this.templates[0]));
+        render: function() {
+            this.sandbox.dom.html(this.$el, this.renderTemplate(this.templates[0]));
 
-                var data = this.options.data,
-                    id = data.id ? data.id : 'new';
+            var data = this.options.data,
+                id = data.id ? data.id : 'new';
 
-                this.contactInstanceName = 'customerContact' + id;
-                this.accountInstanceName = 'customerAccount' + id;
+            this.contactInstanceName = 'customerContact' + id;
+            this.accountInstanceName = 'customerAccount' + id;
 
-                // initialize form
-                initForm.call(this, data);
+            // initialize form
+            initForm.call(this, data);
 
-                // bind events
-                bindCustomEvents.call(this);
-            },
+            // bind events
+            bindCustomEvents.call(this);
+        },
 
-            submit: function() {
-                this.sandbox.logger.log('save Model');
+        submit: function() {
+            this.sandbox.logger.log('save Model');
 
-                if (this.sandbox.form.validate(form)) {
-                    var data = this.sandbox.form.getData(form);
+            if (this.sandbox.form.validate(form)) {
+                var data = this.sandbox.form.getData(form);
 
-                    if (data.id === '') {
-                        delete data.id;
-                    }
-
-                    // FIXME auto complete in mapper
-                    // only get id, if auto-complete is not empty:
-                    data.account = {
-                        id: this.sandbox.dom.attr('#' + this.accountInstanceName, 'data-id')
-                    };
-
-                    this.sandbox.logger.log('log data', data);
-                    this.sandbox.emit('sulu.salesorder.order.save', data);
+                if (data.id === '') {
+                    delete data.id;
                 }
-            },
 
-            // @var Bool saved - defines if saved state should be shown
-            setHeaderBar: function(saved) {
-                if (saved !== this.saved) {
-                    var type = (!!this.options.data && !!this.options.data.id) ? 'edit' : 'add';
-                    this.sandbox.emit('sulu.header.toolbar.state.change', type, saved, true);
-                }
-                this.saved = saved;
-            },
+                // FIXME auto complete in mapper
+                // only get id, if auto-complete is not empty:
+                data.account = {
+                    id: this.sandbox.dom.attr('#' + this.accountInstanceName, 'data-id')
+                };
 
-            // event listens for changes in form
-            listenForChange: function() {
-                // listen for change after TAGS and BIRTHDAY-field have been set
-                this.sandbox.data.when(this.dfdAllFieldsInitialized).then(function() {
-
-                    // when input changes
-                    this.sandbox.dom.on(form, 'change', changeHandler.bind(this),
-                            '.changeListener select, ' +
-                            '.changeListener input, ' +
-                            '.changeListener .husky-select, ' +
-                            '.changeListener textarea');
-
-                    // on keyup
-                    this.sandbox.dom.on(form, 'keyup', changeHandler.bind(this),
-                            '.changeListener select, ' +
-                            '.changeListener input, ' +
-                            '.changeListener textarea');
-
-                    // change in item-table
-                    this.sandbox.on('sulu.item-table.changed', changeHandler.bind(this));
-
-                    // TODO: use this for resetting account
-//                    this.sandbox.dom.on(constants.accountInputId+' input', 'changed', accountChangedListener.bind(this));
-                }.bind(this));
-
+                this.sandbox.logger.log('log data', data);
+                this.sandbox.emit('sulu.salesorder.order.save', data);
             }
-        };
-    })();
+        },
+
+        // @var Bool saved - defines if saved state should be shown
+        setHeaderBar: function(saved) {
+            if (saved !== this.saved) {
+                var type = (!!this.options.data && !!this.options.data.id) ? 'edit' : 'add';
+                this.sandbox.emit('sulu.header.toolbar.state.change', type, saved, true);
+            }
+            this.saved = saved;
+        },
+
+        // event listens for changes in form
+        listenForChange: function() {
+            // listen for change after TAGS and BIRTHDAY-field have been set
+            this.sandbox.data.when(this.dfdAllFieldsInitialized).then(function() {
+
+                // when input changes
+                this.sandbox.dom.on(form, 'change', changeHandler.bind(this),
+                        '.changeListener select, ' +
+                        '.changeListener input, ' +
+                        '.changeListener .husky-select, ' +
+                        '.changeListener textarea');
+
+                // on keyup
+                this.sandbox.dom.on(form, 'keyup', changeHandler.bind(this),
+                        '.changeListener select, ' +
+                        '.changeListener input, ' +
+                        '.changeListener textarea');
+
+                // change in item-table
+                this.sandbox.on('sulu.item-table.changed', changeHandler.bind(this));
+
+                // TODO: use this for resetting account
+//                    this.sandbox.dom.on(constants.accountInputId+' input', 'changed', accountChangedListener.bind(this));
+            }.bind(this));
+
+        }
+    };
 });

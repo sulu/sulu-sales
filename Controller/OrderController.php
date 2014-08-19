@@ -188,6 +188,10 @@ class OrderController extends RestController implements ClassResourceInterface
         return $this->handleView($view);
     }
 
+    public function confirmAction() {
+
+    }
+
     /**
      * Delete an order with the given id.
      *
