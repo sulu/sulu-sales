@@ -142,10 +142,10 @@ define([
             this.items[rowId].quantity = this.sandbox.dom.val(event.target);
             refreshItemsData.call(this);
 
-            //TODO update rows overall price
+            // update rows overall price
             updateOverallPrice.call(this, rowId);
 
-            //TODO update overall price
+            // update overall price
             updateGlobalPrice.call(this);
 
             this.sandbox.emit(EVENT_CHANGED);
@@ -254,7 +254,7 @@ define([
 
             // add row for every tax group
             for (var i in taxCategory) {
-                addPriceRow.call(this, $table, this.sandbox.translate('salescore.item.vat')+'.(' + i + '%)', getFormatedPriceCurrencyString.call(this, taxCategory[i]));
+                addPriceRow.call(this, $table, this.sandbox.translate('salescore.item.vat') + '.(' + i + '%)', getFormatedPriceCurrencyString.call(this, taxCategory[i]));
             }
 
             addPriceRow.call(this, $table, this.sandbox.translate('salescore.item.overall-price'), getFormatedPriceCurrencyString.call(this, globalPrice));
