@@ -285,7 +285,7 @@ class OrderManager
     private function initializeFieldDescriptors($locale)
     {
         $this->fieldDescriptors['id'] = new DoctrineFieldDescriptor('id', 'id', self::$orderEntityName, 'public.id', array(), true);
-        $this->fieldDescriptors['number'] = new DoctrineFieldDescriptor('number', 'number', self::$orderEntityName, 'order.orders.number', array(), false, true);
+        $this->fieldDescriptors['number'] = new DoctrineFieldDescriptor('number', 'number', self::$orderEntityName, 'salesorder.orders.number', array(), false, true);
 
         // TODO: get customer from order-address
 
@@ -294,6 +294,26 @@ class OrderManager
                     self::$orderAddressEntityName,
                     self::$orderEntityName . '.invoiceAddress'
                 )
+        );
+
+        $this->fieldDescriptors['account'] = new DoctrineConcatenationFieldDescriptor(
+            array(
+                new DoctrineFieldDescriptor(
+                    'accountName',
+                    'account',
+                    self::$orderAddressEntityName,
+                    'contact.contacts.contact',
+                    $contactJoin
+                )
+            ),
+            'account',
+            'salesorder.orders.account',
+            ' ',
+            false,
+            false,
+            '',
+            '',
+            '160px'
         );
 
         $this->fieldDescriptors['contact'] = new DoctrineConcatenationFieldDescriptor(
@@ -314,7 +334,7 @@ class OrderManager
                 )
             ),
             'contact',
-            'order.orders.contact',
+            'salesorder.orders.contact',
             ' ',
             false,
             false,
@@ -327,7 +347,7 @@ class OrderManager
             'name',
             'status',
             self::$orderStatusTranslationEntityName,
-            'order.orders.status',
+            'salesorder.orders.status',
             array(
                 self::$orderStatusEntityName => new DoctrineJoinDescriptor(
                         self::$orderStatusEntityName,
