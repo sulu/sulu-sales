@@ -228,6 +228,19 @@ class OrderControllerTest extends DatabaseTestCase
             self::$em->getClassMetadata('Sulu\Bundle\TagBundle\Entity\Tag'),
             self::$em->getClassMetadata('Sulu\Bundle\ContactBundle\Entity\TermsOfPayment'),
             self::$em->getClassMetadata('Sulu\Bundle\ContactBundle\Entity\TermsOfDelivery'),
+            self::$em->getClassMetadata('Sulu\Bundle\MediaBundle\Entity\Collection'),
+            self::$em->getClassMetadata('Sulu\Bundle\MediaBundle\Entity\CollectionType'),
+            self::$em->getClassMetadata('Sulu\Bundle\MediaBundle\Entity\CollectionMeta'),
+            self::$em->getClassMetadata('Sulu\Bundle\MediaBundle\Entity\Media'),
+            self::$em->getClassMetadata('Sulu\Bundle\MediaBundle\Entity\MediaType'),
+            self::$em->getClassMetadata('Sulu\Bundle\MediaBundle\Entity\File'),
+            self::$em->getClassMetadata('Sulu\Bundle\MediaBundle\Entity\FileVersion'),
+            self::$em->getClassMetadata('Sulu\Bundle\MediaBundle\Entity\FileVersionMeta'),
+            self::$em->getClassMetadata('Sulu\Bundle\MediaBundle\Entity\FileVersionContentLanguage'),
+            self::$em->getClassMetadata('Sulu\Bundle\MediaBundle\Entity\FileVersionPublishLanguage'),
+            self::$em->getClassMetadata('Sulu\Bundle\CategoryBundle\Entity\Category'),
+            self::$em->getClassMetadata('Sulu\Bundle\CategoryBundle\Entity\CategoryMeta'),
+            self::$em->getClassMetadata('Sulu\Bundle\CategoryBundle\Entity\CategoryTranslation')
         );
 
         self::$tool->dropSchema(self::$entities);
@@ -262,6 +275,8 @@ class OrderControllerTest extends DatabaseTestCase
         $this->address->setZip('12345');
         $this->address->setCountry($country);
         $this->address->setPostboxNumber('Box2');
+        $this->address->setPostboxPostcode('postboxCity');
+        $this->address->setPostboxCity('postboxCode');
         $this->address->setAddressType($addressType);
         // address
         $this->address2 = new Address();
@@ -554,11 +569,24 @@ class OrderControllerTest extends DatabaseTestCase
                     'id' => 1
                 ),
                 'paymentAddress' => array(
-                    'id' => 1
+                    'street' => 'Sample-Street',
+                    'number' => '12',
+                    'addition' => 'Entrance 2',
+                    'city' => 'Sample-City',
+                    'state' => 'State',
+                    'zip' => '12345',
+                    'country' => 'Country',
+                    'postboxNumber' => 'Box2',
+                    'postboxCity' => 'postboxCity',
+                    'postboxCode' => 'postboxCode'
                 ),
                 'deliveryAddress' => array(
-                    'id' => 2
-                )
+                    'street' => 'Street',
+                    'number' => '2',
+                    'city' => 'Utopia',
+                    'zip' => '1',
+                    'country' => 'Country'
+                ),
             )
         );
         $this->assertEquals(200, $this->client->getResponse()->getStatusCode());

@@ -54,6 +54,10 @@
                 <source>salesorder.orders.invoiceAddress</source>
                 <target>Rechnungsadr.</target>
             </trans-unit>
+            <trans-unit id="a50accg2ac181350142c0b4720e29f14" resname="salesorder.orders.addAddress">
+                <source>salesorder.orders.addAddress</source>
+                <target>Adresse hinzufügen</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>

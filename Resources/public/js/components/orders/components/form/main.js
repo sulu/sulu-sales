@@ -15,11 +15,11 @@ define([], function() {
 
         constants = {
             accountContactsUrl: '/admin/api/accounts/<%= id %>/contacts?flat=true',
-            accountAddressesUrl: '/admin/api/accounts/<%= id %>/addresses?flat=true',
+            accountAddressesUrl: '/admin/api/accounts/<%= id %>/addresses',
             accountUrl: '/admin/api/accounts?searchFields=name&flat=true&fields=id,name',
             accountInputId: '#account-input',
-            deliveryAddressInstanceName: 'delivery-address-select',
-            paymentAddressInstanceName: 'payment-address-select',
+            deliveryAddressInstanceName: 'delivery-address',
+            paymentAddressInstanceName: 'payment-address',
             contactSelectId: '#contact-select',
             itemTableId: '#order-items'
         },
@@ -161,14 +161,13 @@ define([], function() {
         /**
          * init address select
          * @param data
-         * @param selectInstanceName
+         * @param instanceName
          * @param preselectedElements
          */
-        initAddressSelect = function(data, selectInstanceName, preselectedElements) {
+        initAddressSelect = function(data, instanceName, preselectedElements) {
 
             preselectedElements = preselectedElements || [];
-
-            this.sandbox.emit('husky.select.' + selectInstanceName + '.update', data, preselectedElements);
+            this.sandbox.emit('sulu.editable-data-row.'+ instanceName+ '.data.update', data, preselectedElements);
         },
 
         /**
