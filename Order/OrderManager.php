@@ -67,10 +67,6 @@ class OrderManager
      */
     private $userRepository;
 
-    /**
-     * @var RestHelperInterface
-     */
-    private $doctrineRestHelper;
 
     /**
      * @var RestHelperInterface
@@ -88,16 +84,14 @@ class OrderManager
         OrderRepository $orderRepository,
         UserRepositoryInterface $userRepository,
         ItemManager $itemManager,
-        RestHelperInterface $restHelper,
-        RestHelperInterface $doctrineRestHelper
+        RestHelperInterface $restHelper
     )
     {
         $this->orderRepository = $orderRepository;
         $this->userRepository = $userRepository;
         $this->em = $em;
         $this->itemManager = $itemManager;
-        $this->listRestHelper = $restHelper;
-        $this->doctrineRestHelper = $doctrineRestHelper;
+        $this->restHelper = $restHelper;
     }
 
     /**
@@ -580,7 +574,7 @@ class OrderManager
 
     private function processItems($data, Order $order, $locale, $userId)
     {
-        $return = true;
+        $result = true;
         try {
             if ($this->checkIfSet('items', $data)) {
                 // items has to be an array
@@ -612,7 +606,7 @@ class OrderManager
                     return $order->addItem($item->getEntity());
                 };
 
-                $result = $this->listRestHelper->processSubEntities($order->getItems(), $items, $get, $add, $update, $delete);
+                $result = $this->restHelper->processSubEntities($order->getItems(), $items, $get, $add, $update, $delete);
 
             }
         } catch (Exception $e) {
