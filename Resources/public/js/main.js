@@ -10,7 +10,8 @@
 require.config({
     paths: {
         sulusalescore: '../../sulusalescore/js',
-        "type/itemTable": '../../sulusalescore/js/components/item-table/item-table-type'
+        "type/itemTable": '../../sulusalescore/js/components/item-table/item-table-type',
+        'type/editableDataRow': '../../sulusalescore/js/components/editable-data-row/editable-data-row-type'
     }
 });
 
