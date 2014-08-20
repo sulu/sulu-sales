@@ -596,7 +596,6 @@ define([
 
     return {
         initialize: function() {
-
             // load defaults
             this.options = this.sandbox.util.extend({}, defaults, this.options);
 
