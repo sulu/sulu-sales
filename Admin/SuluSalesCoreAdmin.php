@@ -31,4 +31,11 @@ class SuluSalesCoreAdmin extends Admin
         return array();
     }
 
+    /**
+     * {@inheritdoc}
+     */
+    public function getJsBundleName()
+    {
+        return 'sulusalescore';
+    }
 }

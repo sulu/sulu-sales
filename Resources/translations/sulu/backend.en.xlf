@@ -2,13 +2,57 @@
 <xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
     <file source-language="en" datatype="plaintext" original="file.ext">
         <body>
-            <trans-unit id="a50accg2ac221350142c0b4720e29ff1" resname="navigation.sales">
+            <trans-unit id="a50accg2ac221350142c0b4720e29ab1" resname="navigation.sales">
                 <source>navigation.sales</source>
                 <target>Sales</target>
             </trans-unit>
-            <trans-unit id="a50accg2ac221350142c0b4720e29ff2" resname="navigation.sales.order">
+            <trans-unit id="a50accg2ac221350142c0b4720e29ab2" resname="navigation.sales.order">
                 <source>navigation.sales.order</source>
                 <target>Orders</target>
+            </trans-unit>
+            <trans-unit id="a50accg2ac221350142c0b4720e29ab3" resname="salescore.item.product">
+                <source>navigation.item.product</source>
+                <target>Article</target>
+            </trans-unit>
+            <trans-unit id="a50accg2ac221350142c0b4720e29ab4" resname="salescore.item.number">
+                <source>navigation.item.number</source>
+                <target>Art.Nr</target>
+            </trans-unit>
+            <trans-unit id="a50accg2ac221350142c0b4720e29ab5" resname="salescore.item.quantity">
+                <source>navigation.item.quantity</source>
+                <target>Quantity</target>
+            </trans-unit>
+            <trans-unit id="a50accg2ac221350142c0b4720e29ab6" resname="salescore.item.unit">
+                <source>navigation.item.unit</source>
+                <target>Unit</target>
+            </trans-unit>
+            <trans-unit id="a50accg2ac221350142c0b4720e29ab7" resname="salescore.item.price">
+                <source>navigation.item.price</source>
+                <target>Price</target>
+            </trans-unit>
+            <trans-unit id="a50accg2ac221350142c0b4720e29ab8" resname="salescore.item.discount">
+                <source>navigation.item.discount</source>
+                <target>Discount [%]</target>
+            </trans-unit>
+            <trans-unit id="a50accg2ac221350142c0b4720e29ab9" resname="salescore.item.overallValue">
+                <source>navigation.item.overallValue</source>
+                <target>Overall-value</target>
+            </trans-unit>
+            <trans-unit id="a50accg2ac221350142c0b4720e29a10" resname="salescore.item.add">
+                <source>navigation.item.add</source>
+                <target>Add Item</target>
+            </trans-unit>
+            <trans-unit id="a50accg2ac221350142c0b4720e29a11" resname="salescore.item.net-price">
+                <source>salescore.item.net-price</source>
+                <target>Net-price</target>
+            </trans-unit>
+            <trans-unit id="a50accg2ac221350142c0b4720e29a12" resname="salescore.item.overall-price">
+                <source>salescore.item.overall-price</source>
+                <target>Total price</target>
+            </trans-unit>
+            <trans-unit id="a50accg2ac221350142c0b4720e29a13" resname="salescore.item.vat">
+                <source>salescore.item.vat</source>
+                <target>Vat</target>
             </trans-unit>
         </body>
     </file>

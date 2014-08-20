@@ -93,8 +93,8 @@ class ItemManager
             $item->setUseProductsPrice(false);
             $item->setQuantityUnit($this->getProperty($data, 'quantityUnit', null));
             $item->setTax($this->getProperty($data, 'tax', $item->getTax()));
-            $item->setPrice($this->getProperty($data, 'price', $item->getPrice()));
         }
+        $item->setPrice($this->getProperty($data, 'price', $item->getPrice()));
 
         // set item data
         $item->setQuantity($this->getProperty($data, 'quantity', null));

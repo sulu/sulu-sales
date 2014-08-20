@@ -22,7 +22,8 @@ class Item extends ApiWrapper
      * @param Entity $item The item to wrap
      * @param string $locale The locale of this item
      */
-    public function __construct(Entity $item, $locale) {
+    public function __construct(Entity $item, $locale)
+    {
         $this->entity = $item;
         $this->locale = $locale;
     }
@@ -142,7 +143,11 @@ class Item extends ApiWrapper
      */
     public function getChanger()
     {
-        return $this->entity->getChanger();
+        // just return id
+        $changer = $this->entity->getChanger();
+        return !$changer ? null : array(
+            'id' => $changer->getId()
+        );
     }
 
     /**
@@ -167,7 +172,11 @@ class Item extends ApiWrapper
      */
     public function getCreator()
     {
-        return $this->entity->getCreator();
+        // just return id
+        $creator = $this->entity->getCreator();
+        return !$creator ? null : array(
+            'id' => $creator->getId()
+        );
     }
 
     /**
@@ -234,7 +243,6 @@ class Item extends ApiWrapper
     {
         return $this->entity->getQuantityUnit();
     }
-
 
     /**
      * @param bool
@@ -317,7 +325,7 @@ class Item extends ApiWrapper
      */
     public function getDiscount()
     {
-        return $this->entity->getPrice();
+        return $this->entity->getDiscount();
     }
 
     /**

@@ -1,0 +1,125 @@
+@mixin border-bottom {
+    border-bottom: 2px solid #ccc;
+}
+
+$rowPadding : 0 10px;
+
+body {
+    counter-reset: rowcount;
+}
+
+.item-table-list {
+    list-style: none;
+    padding: 0;
+
+    .header {
+        @include border-bottom;
+        height: 50px;
+        padding-top: 10px;
+        border-color: #ccc;
+        vertical-align: bottom;
+        font-size: 14px;
+        padding: 8px 10px;
+
+        .input-field {
+            display: none;
+        }
+    }
+}
+
+// overwrite
+.husky-validate-error *:not(.husky-validate-error) > .husky-validate:not(label) {
+    border: 1px solid #ccc;
+}
+
+
+.item-table-row {
+    height: 50px;
+
+    // show row number (but not for first row)
+    &:not(:first-child) {
+        .row-number {
+            &:before {
+                counter-increment: rowcount;
+                content: counter(rowcount);
+            }
+        }
+    }
+
+    .span {
+        height: 100%;
+    }
+
+    &.new {
+        .product-search {
+            display: block;
+        }
+    }
+
+    // column specifics
+    .item-name {
+        min-width: 170px;
+    }
+
+    .product-search {
+        margin: 0;
+        display: none;
+    }
+
+    // add padding to each row element
+    > * {
+        padding: $rowPadding;
+    }
+
+    &:last-child {
+        @include border-bottom;
+    }
+}
+
+.item-remove {
+    a, a:visited, a:active {
+        color: black;
+    }
+}
+
+.item-add {
+    a {
+        &:hover, &:visited {
+            color: black;
+        }
+    }
+
+    margin-top: 20px;
+
+    .add-row {
+        i {
+            font-size: 18px;
+            margin-right: 10px;
+        }
+    }
+}
+
+.item-overall-price {
+    text-align: right;
+}
+
+// global price
+.global-price-container {
+    padding-top: 15px;
+    position: relative;
+
+    .global-price-table {
+        width: initial;
+        position: absolute;
+        right: 31px;
+        text-align: right;
+
+        td {
+            padding: $rowPadding;
+        }
+
+        tr:last-child {
+            font-weight: bold;
+        }
+    }
+}

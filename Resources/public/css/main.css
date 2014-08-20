@@ -1,0 +1,109 @@
+/* line 7, ../scss/modules/item-table.scss */
+body {
+  counter-reset: rowcount;
+}
+
+/* line 11, ../scss/modules/item-table.scss */
+.item-table-list {
+  list-style: none;
+  padding: 0;
+}
+/* line 15, ../scss/modules/item-table.scss */
+.item-table-list .header {
+  border-bottom: 2px solid #ccc;
+  height: 50px;
+  padding-top: 10px;
+  border-color: #ccc;
+  vertical-align: bottom;
+  font-size: 14px;
+  padding: 8px 10px;
+}
+/* line 24, ../scss/modules/item-table.scss */
+.item-table-list .header .input-field {
+  display: none;
+}
+
+/* line 31, ../scss/modules/item-table.scss */
+.husky-validate-error *:not(.husky-validate-error) > .husky-validate:not(label) {
+  border: 1px solid #ccc;
+}
+
+/* line 36, ../scss/modules/item-table.scss */
+.item-table-row {
+  height: 50px;
+}
+/* line 42, ../scss/modules/item-table.scss */
+.item-table-row:not(:first-child) .row-number:before {
+  counter-increment: rowcount;
+  content: counter(rowcount);
+}
+/* line 49, ../scss/modules/item-table.scss */
+.item-table-row .span {
+  height: 100%;
+}
+/* line 54, ../scss/modules/item-table.scss */
+.item-table-row.new .product-search {
+  display: block;
+}
+/* line 60, ../scss/modules/item-table.scss */
+.item-table-row .item-name {
+  min-width: 170px;
+}
+/* line 64, ../scss/modules/item-table.scss */
+.item-table-row .product-search {
+  margin: 0;
+  display: none;
+}
+/* line 70, ../scss/modules/item-table.scss */
+.item-table-row > * {
+  padding: 0 10px;
+}
+/* line 74, ../scss/modules/item-table.scss */
+.item-table-row:last-child {
+  border-bottom: 2px solid #ccc;
+}
+
+/* line 80, ../scss/modules/item-table.scss */
+.item-remove a, .item-remove a:visited, .item-remove a:active {
+  color: black;
+}
+
+/* line 85, ../scss/modules/item-table.scss */
+.item-add {
+  margin-top: 20px;
+}
+/* line 87, ../scss/modules/item-table.scss */
+.item-add a:hover, .item-add a:visited {
+  color: black;
+}
+/* line 95, ../scss/modules/item-table.scss */
+.item-add .add-row i {
+  font-size: 18px;
+  margin-right: 10px;
+}
+
+/* line 102, ../scss/modules/item-table.scss */
+.item-overall-price {
+  text-align: right;
+}
+
+/* line 107, ../scss/modules/item-table.scss */
+.global-price-container {
+  padding-top: 15px;
+  position: relative;
+}
+/* line 111, ../scss/modules/item-table.scss */
+.global-price-container .global-price-table {
+  width: initial;
+  position: absolute;
+  right: 31px;
+  text-align: right;
+}
+/* line 117, ../scss/modules/item-table.scss */
+.global-price-container .global-price-table td {
+  padding: 0 10px;
+}
+/* line 121, ../scss/modules/item-table.scss */
+.global-price-container .global-price-table tr:last-child {
+  font-weight: bold;
+}
