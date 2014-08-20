@@ -33,7 +33,14 @@
         "symfony/monolog-bundle": "2.4.*",
         "phpunit/phpunit": "3.7.*",
         "sulu/test-bundle": "dev-develop",
-        "sulu/tag-bundle": "dev-develop"
+        "sulu/tag-bundle": "dev-develop",
+        "sulu/website-bundle": "dev-develop",
+        "sulu/category-bundle": "dev-develop",
+        "sulu/media-bundle": "dev-develop",
+
+        "symfony-cmf/routing-bundle": "1.2.*@dev",
+        "symfony-cmf/routing": "1.2.*@dev",
+        "liip/theme-bundle": "1.0.*@dev"
     },
     "autoload": {
         "psr-0": {

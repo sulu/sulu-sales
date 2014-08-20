@@ -20,7 +20,8 @@ define([], function() {
             accountInputId: '#account-input',
             deliveryAddressInstanceName: 'delivery-address-select',
             paymentAddressInstanceName: 'payment-address-select',
-            contactSelectId: '#contact-select'
+            contactSelectId: '#contact-select',
+            itemTableId: '#order-items'
         },
 
         setHeaderToolbar = function() {
@@ -103,9 +104,11 @@ define([], function() {
             }.bind(this));
         },
 
+        /**
+         * start components form components
+         * @param data
+         */
         startFormComponents = function(data) {
-
-            this.sandbox.start(form);
 
             // TODO: init desired delivery date
             this.dfdDesiredDeliveryDate.resolve();
@@ -133,10 +136,19 @@ define([], function() {
             ]);
         },
 
+        /**
+         * returns id of currently set account
+         * @returns string
+         */
         getAccountId = function() {
             return this.sandbox.dom.attr(constants.accountInputId, 'data-id');
         },
 
+        /**
+         * init contact select
+         * @param data
+         * @param preselectedElements
+         */
         initContactSelect = function(data, preselectedElements) {
 
             preselectedElements = preselectedElements || [];
@@ -144,6 +156,12 @@ define([], function() {
             this.sandbox.emit('husky.select.contact-select.update', data, preselectedElements);
         },
 
+        /**
+         * init address select
+         * @param data
+         * @param selectInstanceName
+         * @param preselectedElements
+         */
         initAddressSelect = function(data, selectInstanceName, preselectedElements) {
 
             preselectedElements = preselectedElements || [];
@@ -151,6 +169,10 @@ define([], function() {
             this.sandbox.emit('husky.select.' + selectInstanceName + '.update', data, preselectedElements);
         },
 
+        /**
+         * called when account auto-complete is changed
+         * @param event
+         */
         accountChangedListener = function(event) {
             var id = event.id || null;
 
@@ -169,6 +191,19 @@ define([], function() {
             }
         },
 
+        /**
+         * called when headerbar should be saveable
+         * @param event
+         */
+        changeHandler = function(event) {
+            this.setHeaderBar(false);
+        },
+
+        /**
+         * sets dependent selects based on currently selected account
+         * @param id
+         * @param orderData
+         */
         initSelectsByAccountId = function(id, orderData) {
             var data, preselect;
             this.sandbox.util.load(this.sandbox.util.template(constants.accountContactsUrl, {id: id}))
@@ -238,6 +273,9 @@ define([], function() {
 //                }
 
                 this.setHeaderBar(true);
+
+                // bind events
+                bindCustomEvents.call(this);
             },
 
             initSidebar: function(url, id) {
@@ -245,19 +283,18 @@ define([], function() {
             },
 
             render: function() {
-                this.sandbox.dom.html(this.$el, this.renderTemplate(this.templates[0]));
+
+                this.html(this.renderTemplate(this.templates[0]));
 
                 var data = this.options.data,
                     id = data.id ? data.id : 'new';
 
-                this.contactInstanceName = 'customerContact' + id;
                 this.accountInstanceName = 'customerAccount' + id;
 
                 // initialize form
                 initForm.call(this, data);
 
-                // bind events
-                bindCustomEvents.call(this);
+
             },
 
             submit: function() {
@@ -295,19 +332,21 @@ define([], function() {
                 // listen for change after TAGS and BIRTHDAY-field have been set
                 this.sandbox.data.when(this.dfdAllFieldsInitialized).then(function() {
 
-                    this.sandbox.dom.on(form, 'change', function() {
-                            this.setHeaderBar(false);
-                        }.bind(this),
+                    // when input changes
+                    this.sandbox.dom.on(form, 'change', changeHandler.bind(this),
+                            '.changeListener select, ' +
+                            '.changeListener input, ' +
+                            '.changeListener .husky-select, ' +
+                            '.changeListener textarea');
+
+                    // on keyup
+                    this.sandbox.dom.on(form, 'keyup', changeHandler.bind(this),
                             '.changeListener select, ' +
                             '.changeListener input, ' +
                             '.changeListener textarea');
 
-                    this.sandbox.dom.on(form, 'keyup', function() {
-                            this.setHeaderBar(false);
-                        }.bind(this),
-                            '.changeListener select, ' +
-                            '.changeListener input, ' +
-                            '.changeListener textarea');
+                    // change in item-table
+                    this.sandbox.on('sulu.item-table.changed', changeHandler.bind(this));
 
                     // TODO: use this for resetting account
 //                    this.sandbox.dom.on(constants.accountInputId+' input', 'changed', accountChangedListener.bind(this));
