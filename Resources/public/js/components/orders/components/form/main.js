@@ -184,8 +184,10 @@ define([], function() {
                     initSelectsByAccountId.call(this, id);
                 } else {
                     initContactSelect.call(this, []);
-                    initAddressSelect.call(this, [], constants.deliveryAddressInstanceName);
-                    initAddressSelect.call(this, [], constants.paymentAddressInstanceName);
+
+                     // TODO init new component
+//                    initAddressSelect.call(this, [], constants.deliveryAddressInstanceName);
+//                    initAddressSelect.call(this, [], constants.paymentAddressInstanceName);
                 }
             }
         },
@@ -219,10 +221,11 @@ define([], function() {
             this.sandbox.util.load(this.sandbox.util.template(constants.accountAddressesUrl, {id: id}))
                 .then(function(response) {
                     data = response._embedded.addresses;
-                    preselect = !!orderData && orderData.deliveryAddress ? [orderData.deliveryAddress.address.id] : null;
-                    initAddressSelect.call(this, data, constants.deliveryAddressInstanceName, preselect);
-                    preselect = !!orderData && orderData.invoiceAddress ? [orderData.invoiceAddress.address.id] : null;
-                    initAddressSelect.call(this, data, constants.paymentAddressInstanceName, preselect);
+
+                    // TODO init new component
+
+                    initAddressSelect.call(this, data, constants.deliveryAddressInstanceName, []);
+                    initAddressSelect.call(this, data, constants.paymentAddressInstanceName, []);
                 }.bind(this))
                 .fail(function(textStatus, error) {
                     this.sandbox.logger.error(textStatus, error);
