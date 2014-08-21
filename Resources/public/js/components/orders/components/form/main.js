@@ -110,6 +110,8 @@ define([], function() {
          */
         startFormComponents = function(data) {
 
+            this.sandbox.start(form);
+
             // TODO: init desired delivery date
             this.dfdDesiredDeliveryDate.resolve();
 
@@ -286,7 +288,7 @@ define([], function() {
 
             render: function() {
 
-                this.html(this.renderTemplate(this.templates[0]));
+                this.sandbox.dom.html(this.$el, this.renderTemplate(this.templates[0]));
 
                 var data = this.options.data,
                     id = data.id ? data.id : 'new';
