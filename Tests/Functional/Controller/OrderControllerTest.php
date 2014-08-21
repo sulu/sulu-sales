@@ -582,9 +582,9 @@ class OrderControllerTest extends DatabaseTestCase
                     'state' => 'State',
                     'zip' => '12345',
                     'country' => 'Country',
-                    'postboxNumber' => 'Box2',
+                    'postboxNumber' => 'postboxNumber',
                     'postboxCity' => 'postboxCity',
-                    'postboxCode' => 'postboxCode'
+                    'postboxPostcode' => 'postboxPostcode'
                 ),
                 'deliveryAddress' => array(
                     'street' => 'Street',
@@ -632,10 +632,23 @@ class OrderControllerTest extends DatabaseTestCase
                 'id' => 1
             ),
             'paymentAddress' => array(
-                'id' => 1
+                'street' => 'Sample-Street',
+                'number' => '12',
+                'addition' => 'Entrance 2',
+                'city' => 'Sample-City',
+                'state' => 'State',
+                'zip' => '12345',
+                'country' => 'Country',
+                'postboxNumber' => 'postboxNumber',
+                'postboxCity' => 'postboxCity',
+                'postboxPostcode' => 'postboxPostcode'
             ),
             'deliveryAddress' => array(
-                'id' => 2
+                'street' => 'Street',
+                'number' => '2',
+                'city' => 'Utopia',
+                'zip' => '1',
+                'country' => 'Country'
             ),
             'termsOfDelivery' => array(
                 'id' => 1
@@ -671,10 +684,23 @@ class OrderControllerTest extends DatabaseTestCase
                 'id' => 1
             ),
             'paymentAddress' => array(
-                'id' => 1
+                'street' => 'Sample-Street',
+                'number' => '12',
+                'addition' => 'Entrance 2',
+                'city' => 'Sample-City',
+                'state' => 'State',
+                'zip' => '12345',
+                'country' => 'Country',
+                'postboxNumber' => 'postboxNumber',
+                'postboxCity' => 'postboxCity',
+                'postboxPostcode' => 'postboxPostcode'
             ),
             'deliveryAddress' => array(
-                'id' => 2
+                'street' => 'Street',
+                'number' => '2',
+                'city' => 'Utopia',
+                'zip' => '1',
+                'country' => 'Country'
             ),
             'items' => array(
                 array(
