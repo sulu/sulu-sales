@@ -27,7 +27,6 @@
             <argument type="service" id="sulu_security.user_repository" />
             <argument type="service" id="sulu_sales_core.item_manager" />
             <argument type="service" id="sulu_core.rest_helper" strict="false"/>
-            <argument type="service" id="sulu_core.doctrine_rest_helper" strict="false"/>
         </service>
         <service id="sulu_sales_order.order_listener" class="%sulu_sales_order.order_listener.class%">
             <tag name="doctrine.event_listener" event="postPersist" method="postPersist"/>
