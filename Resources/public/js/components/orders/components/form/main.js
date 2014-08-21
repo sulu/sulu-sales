@@ -162,12 +162,10 @@ define([], function() {
          * init address select
          * @param data
          * @param instanceName
-         * @param preselectedElements
+         * @param preselectedElement
          */
-        initAddressSelect = function(data, instanceName, preselectedElements) {
-
-            preselectedElements = preselectedElements || [];
-            this.sandbox.emit('sulu.editable-data-row.'+ instanceName+ '.data.update', data, preselectedElements);
+        initAddressSelect = function(data, instanceName, preselectedElement) {
+            this.sandbox.emit('sulu.editable-data-row.'+ instanceName+ '.data.update', data, preselectedElement);
         },
 
         /**
@@ -224,19 +222,56 @@ define([], function() {
                 .then(function(response) {
                     data = response._embedded.addresses;
 
-                    // find preselect entries for select in overlay
-                    var deliveryAddress = this.findAddressWherePropertyIs('deliveryAddress', true),
-                        paymentAddress = this.findAddressWherePropertyIs('paymentAddress', true);
-
-                    // when an address is already selected the this address will be used to fill out form
+                    // when an address is already selected, the selected address should be used
                     // otherwise the first delivery / payment address found will be used
-                    initAddressSelect.call(this, data, constants.deliveryAddressInstanceName, []);
-                    initAddressSelect.call(this, data, constants.paymentAddressInstanceName, []);
+                    if (!orderData || !orderData.delivery) {
+                        preselect = findAddressWherePropertyIs.call(this, data, 'deliveryAddress', true);
+                    }
+                    initAddressSelect.call(this, data, constants.deliveryAddressInstanceName, flattenAddress.call(this, preselect));
+                    preselect = null;
+
+                    if (!orderData || !orderData.paymentAddress) {
+                        preselect = findAddressWherePropertyIs.call(this, data, 'billingAddress', true);
+                    }
+                    initAddressSelect.call(this, data, constants.paymentAddressInstanceName, flattenAddress.call(this, preselect));
+
                 }.bind(this))
                 .fail(function(textStatus, error) {
                     this.sandbox.logger.error(textStatus, error);
                 }.bind(this));
+        },
+
+        /**
+         * Flattens an address object
+         * @param address
+         * @returns {*}
+         */
+        flattenAddress = function(address) {
+            if (!!address && !!address.country && !!address.country.name) {
+                address.country = address.country.name;
+            }
+            return address;
+        },
+
+        /**
+         * Find an address where a specific property with a specific value is set
+         * @param addresses
+         * @param propertyName
+         * @param propertyValue
+         */
+        findAddressWherePropertyIs = function(addresses, propertyName, propertyValue){
+            var address = null;
+            if (!!addresses && addresses.length > 0) {
+                this.sandbox.util.each(addresses, function(index, adr) {
+                    if (adr.hasOwnProperty(propertyName) && adr[propertyName] === propertyValue) {
+                        address = adr;
+                        return false;
+                    }
+                }.bind(this));
+            }
+            return address;
         };
+
     return (function() {
         return {
 
