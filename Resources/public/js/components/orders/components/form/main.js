@@ -383,6 +383,9 @@ define([], function() {
 //                }
 
             this.setHeaderBar(true);
+
+            // bind events
+            bindCustomEvents.call(this);
         },
 
         initSidebar: function(url, id) {
@@ -390,19 +393,17 @@ define([], function() {
         },
 
         render: function() {
+
             this.sandbox.dom.html(this.$el, this.renderTemplate(this.templates[0]));
 
             var data = this.options.data,
                 id = data.id ? data.id : 'new';
 
-            this.contactInstanceName = 'customerContact' + id;
             this.accountInstanceName = 'customerAccount' + id;
 
             // initialize form
             initForm.call(this, data);
 
-            // bind events
-            bindCustomEvents.call(this);
         },
 
         submit: function() {
