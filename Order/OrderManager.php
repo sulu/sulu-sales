@@ -371,8 +371,8 @@ class OrderManager
     {
         // check if contact and status are set
         $this->checkDataSet($data, 'contact', $isNew) && $this->checkDataSet($data['contact'], 'id', $isNew);
-        $this->checkDataSet($data, 'deliveryAddress', $isNew) && $this->checkDataSet($data['deliveryAddress'], 'id', $isNew);
-        $this->checkDataSet($data, 'paymentAddress', $isNew) && $this->checkDataSet($data['paymentAddress'], 'id', $isNew);
+        $this->checkDataSet($data, 'deliveryAddress', $isNew);
+        $this->checkDataSet($data, 'paymentAddress', $isNew);
     }
 
     /**

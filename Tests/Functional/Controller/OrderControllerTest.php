@@ -207,6 +207,8 @@ class OrderControllerTest extends DatabaseTestCase
             self::$em->getClassMetadata('Sulu\Bundle\ContactBundle\Entity\AccountCategory'),
             self::$em->getClassMetadata('Sulu\Bundle\ContactBundle\Entity\Activity'),
             self::$em->getClassMetadata('Sulu\Bundle\ContactBundle\Entity\ActivityStatus'),
+            self::$em->getClassMetadata('Sulu\Bundle\ContactBundle\Entity\ActivityPriority'),
+            self::$em->getClassMetadata('Sulu\Bundle\ContactBundle\Entity\ActivityType'),
             self::$em->getClassMetadata('Sulu\Bundle\ContactBundle\Entity\Address'),
             self::$em->getClassMetadata('Sulu\Bundle\ContactBundle\Entity\AddressType'),
             self::$em->getClassMetadata('Sulu\Bundle\ContactBundle\Entity\BankAccount'),
@@ -274,9 +276,9 @@ class OrderControllerTest extends DatabaseTestCase
         $this->address->setState('State');
         $this->address->setZip('12345');
         $this->address->setCountry($country);
-        $this->address->setPostboxNumber('Box2');
-        $this->address->setPostboxPostcode('postboxCity');
-        $this->address->setPostboxCity('postboxCode');
+        $this->address->setPostboxNumber('postboxNumber');
+        $this->address->setPostboxPostcode('postboxPostcode');
+        $this->address->setPostboxCity('postboxCity');
         $this->address->setAddressType($addressType);
         // address
         $this->address2 = new Address();
@@ -503,9 +505,9 @@ class OrderControllerTest extends DatabaseTestCase
         $this->assertEquals('12345', $response->deliveryAddress->zip);
         $this->assertEquals('State', $response->deliveryAddress->state);
         $this->assertEquals('Country', $response->deliveryAddress->country);
-        $this->assertEquals('Box2', $response->deliveryAddress->postboxPostcode);
-        $this->assertEquals('Box2', $response->deliveryAddress->postboxNumber);
-        $this->assertEquals('Box2', $response->deliveryAddress->postboxCity);
+        $this->assertEquals('postboxPostcode', $response->deliveryAddress->postboxPostcode);
+        $this->assertEquals('postboxNumber', $response->deliveryAddress->postboxNumber);
+        $this->assertEquals('postboxCity', $response->deliveryAddress->postboxCity);
         $this->assertEquals('uid-123', $response->deliveryAddress->uid);
         $this->assertEquals('+43 123 / 456 789', $response->deliveryAddress->phone);
         $this->assertEquals('+43 123 / 456', $response->deliveryAddress->phoneMobile);
