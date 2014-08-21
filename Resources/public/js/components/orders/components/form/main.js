@@ -329,7 +329,9 @@ define([], function() {
             render: function() {
 
                 this.sandbox.dom.html(this.$el, this.renderTemplate(this.templates[0], {
-                    'addressOverlayTemplate': this.renderTemplate('/admin/order/template/order/address.form')
+                    'addressOverlayTemplate': this.renderTemplate('/admin/order/template/order/address.form', {
+                        translate: this.sandbox.translate
+                    })
                 }));
 
                 var data = this.options.data,

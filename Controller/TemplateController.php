@@ -30,7 +30,7 @@ class TemplateController extends RestController
     public function orderAddressFormAction()
     {
         return $this->render(
-            'SuluSalesOrderBundle:Template:order.address.form.html.twig'
+            'SuluSalesOrderBundle:Template:order.address.form.html'
         );
     }
 
