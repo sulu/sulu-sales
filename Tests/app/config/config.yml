@@ -1,3 +1,6 @@
+imports:
+    - { resource: security.yml }
+
 framework:
     secret: secret
     router: { resource: "%kernel.root_dir%/config/routing.xml" }
@@ -16,6 +19,9 @@ doctrine:
     orm:
         auto_generate_proxy_classes: %kernel.debug%
         auto_mapping: true
+        resolve_target_entities:
+            Sulu\Component\Security\UserInterface: Sulu\Bundle\TestBundle\Entity\TestUser
+            Sulu\Bundle\ProductBundle\Entity\ProductInterface: Sulu\Bundle\ProductBundle\Entity\Product
 
 monolog:
     handlers:
@@ -30,8 +36,37 @@ monolog:
 
 sulu_admin:
     name: SULU 2.0
-            
+
+sulu_core:
+    phpcr:
+        backend:
+            type: jackrabbit
+            url: http://localhost:8080/server/
+        workspace: test
+        username: admin
+        password: admin
+    webspace:
+        ~
+    content:
+        templates:
+            paths:
+                app:
+                    path: "%kernel.root_dir%/../Resources/templates"
+                    internal: false
+                content:
+                    path: "%kernel.root_dir%/../../vendor/sulu/content-bundle/Sulu/Bundle/ContentBundle/Content/Templates"
+                    internal: true
+
+liip_theme:
+    themes: ['default']
+    active_theme: 'default'
+
 parameters:
     # Just a dirty hack to get the jms serializer bundle correctly working
     # schmittjoh/JMSSerializerBundle#270 (comment)
     jms_serializer.cache_naming_strategy.class: JMS\Serializer\Naming\IdenticalPropertyNamingStrategy
+
+stof_doctrine_extensions:
+    orm:
+        default:
+            tree: true

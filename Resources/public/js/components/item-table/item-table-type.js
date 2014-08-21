@@ -29,14 +29,13 @@ define([
                     }
 
                     if (typeof data === 'object') {
-                        this.$el.data({
-                            'items': data
-                        }).trigger('data-changed');
+                        App.dom.data(this.$el, 'items', data);
+                        App.dom.trigger(this.$el, 'data-changed');
                     }
                 },
 
                 getValue: function() {
-                    return this.$el.data('items');
+                    return App.dom.data(this.$el, 'items');
                 },
 
                 needsValidation: function() {

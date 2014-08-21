@@ -162,19 +162,19 @@ class ItemManager
     public function findAllByLocale($locale, $filter = array())
     {
         if (empty($filter)) {
-            $item = $this->itemRepository->findAllByLocale($locale);
+            $items = $this->itemRepository->findAllByLocale($locale);
         } else {
-            $item = $this->itemRepository->findByLocaleAndFilter($locale, $filter);
+            $items = $this->itemRepository->findByLocaleAndFilter($locale, $filter);
         }
 
         array_walk(
-            $item,
+            $items,
             function (&$item) use ($locale){
                 $item = new Item($item, $locale);
             }
         );
 
-        return $item;
+        return $items;
     }
 
     /**
@@ -190,7 +190,6 @@ class ItemManager
         } else {
             $this->checkDataSet($data, 'name', $isNew);
         }
-        $this->checkDataSet($data, 'name', $isNew);
         $this->checkDataSet($data, 'quantity', $isNew);
         $this->checkDataSet($data, 'quantityUnit', $isNew);
     }
