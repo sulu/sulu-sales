@@ -13,38 +13,33 @@
  *
  * @param {Object} [options] Configuration object
  * @param {String} [options.instanceName] instance name of the component and its subcomponents
- * @param {String} [options.noDataSelectedLabel] translation key when no data is available
- * @param {String} [options.fields] structure wich defines blocks with used fields and their delimitor - example below:
+ * @param {String} [options.dataFormat] structure wich defines blocks with used fields and their delimitor - example below:
  *
  *{
  *   "blocks":[
  *      {
  *         "fields":[
- *            [
  *               {
  *                  "name":"street",
- *                  "delimitor":" "
+ *                  "delimiter":" "
  *               },
  *               {
  *                  "name":"number"
  *               }
- *            ]
  *         ],
- *         "delimitor":", "
+ *         "delimiter":", "
  *      },
  *      {
  *         "fields":[
- *            [
  *               {
  *                  "name":"zip",
- *                  "delimitor":""
+ *                  "delimiter":""
  *               },
  *               {
  *                  "name":"city"
  *               }
- *            ]
  *         ],
- *         "delimitor":", "
+ *         "delimiter":", "
  *      }
  *   ]
  *}
@@ -57,7 +52,6 @@ define([], function() {
 
     var defaults = {
             instanceName: 'undefined',
-            noDataSelectedLabel: 'salesorder.orders.addAddress',
             fields: null,
             defaultProperty: null
         },
@@ -112,34 +106,64 @@ define([], function() {
         /**
          * Renders the single row with the data according to the fields param or a replacement when no data is given
          */
-        renderRow = function(data){
+        renderRow = function(data) {
             var $row,
-                noSelectionTranslation,
-                $element;
+                $block;
 
-            if(!!data){
-
-                $row  = this.sandbox.dom.createElement(templates.rowTemplate());
-            this.sandbox.util.each(this.fields, function(index, field){
-                if(!!field && !!data.hasOwnProperty(field) && data[field] !== ''){
-                    $element = this.sandbox.dom.createElement(templates.rowElementTemplate(data[field]+ '&nbsp;'));
-                    this.sandbox.dom.append($row, $element);
-                }
-            }.bind(this));
-            } else {
-                noSelectionTranslation = this.sandbox.translate(this.options.noDataSelectedLabel);
-                $row = this.sandbox.dom.createElement(templates.rowTemplate(noSelectionTranslation));
+            if (!!data) {
+                $row = this.sandbox.dom.createElement(templates.rowTemplate());
+                this.sandbox.util.each(this.dataFormat.blocks, function(index, block) {
+                    $block = processBlock.call(this, block, data);
+                    if(!!$block) {
+                        this.sandbox.dom.append($row, $block);
+                    }
+                }.bind(this));
             }
-
             this.sandbox.dom.append(this.$el, $row);
         },
 
-        findDataToDisplay = function(){
-            var data;
+        /**
+         * Processes a block which contains an array of fields and can have his own delimiter
+         * @param block
+         * @returns {*}
+         */
+        processBlock = function(block, data) {
+            var $block, $field;
+            if (!!block && this.sandbox.util.typeOf(block) === 'object' && block.hasOwnProperty('fields')) {
 
-//            if(!!this.defaultProperty && this.)
+                $block = this.sandbox.dom.createElement(templates.rowElementTemplate(''));
 
-            return data;
+                this.sandbox.util.each(block.fields, function(index, field) {
+                    $field = processField.call(this, field, data);
+                    if (!!$field) {
+                        this.sandbox.dom.append($block, $field);
+                    }
+                }.bind(this));
+
+                if(block.hasOwnProperty('delimiter')){
+                    this.sandbox.dom.append($block, block.delimiter);
+                }
+            }
+            return $block;
+        },
+
+        /**
+         * Processes a field of the structure passed to define the structure of the displayed data
+         * @param field
+         * @param data
+         * @returns {*}
+         */
+        processField = function(field, data){
+            var $field, fieldText;
+
+            if (!!field && this.sandbox.util.typeOf(field) === 'object' && field.hasOwnProperty('name')) {
+                fieldText = data[field.name];
+                if (!!field.hasOwnProperty('delimiter')) {
+                    fieldText += field.delimiter;
+                }
+                $field = this.sandbox.dom.createElement(templates.rowElementTemplate(fieldText));
+            }
+            return $field;
         };
 
 
@@ -152,11 +176,11 @@ define([], function() {
 
             this.selectedData = this.options.value;
             this.data = null;
-            this.fields = this.options.fields.split(',');
+            this.dataFormat = this.options.dataFormat;
             this.defaultProperty = this.options.defaultProperty;
 
-            if(!this.fields && this.sandbox.util.typeOf(this.fields) !== 'array'){
-                this.sandbox.logger.error('Value of this.fields in editable-data-row '+this.instanceName+' is no array!');
+            if(!this.dataFormat && this.sandbox.util.typeOf(this.dataFormat) !== 'object'){
+                this.sandbox.logger.error('Value of this.fields in editable-data-row '+this.instanceName+' is no object!');
                 return;
             }
 
