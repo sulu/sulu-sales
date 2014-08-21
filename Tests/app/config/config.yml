@@ -1,6 +1,6 @@
 framework:
     secret: secret
-    router: { resource: "%kernel.root_dir%/config/routing.yml" }
+    router: { resource: "%kernel.root_dir%/config/routing.xml" }
     templating: { engines: ['twig'] }
     test: ~
     session:
@@ -11,16 +11,6 @@ framework:
 fos_rest:
     routing_loader:
         default_format: json
-
-doctrine:
-    dbal:
-        host: localhost
-        dbname: sulu_test
-        user: root
-        password:
-    orm:
-        auto_generate_proxy_classes: %kernel.debug%
-        auto_mapping: true
 
 monolog:
     handlers:
