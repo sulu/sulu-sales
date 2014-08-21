@@ -13,7 +13,9 @@
  *
  * @param {Object} [options] Configuration object
  * @param {String} [options.instanceName] instance name of the component and its subcomponents
- * @param {String} [options.dataFormat] structure wich defines blocks with used fields and their delimitor - example below:
+ * @param {String} [options.overlayTemplate] template for the overlay
+ * @param {String} [options.overlayTitle] translation key for the overlay title
+ * @param {String} [options.dataFormat] structure which defines blocks with used fields and their delimiter - example below:
  *
  *{
  *   "blocks":[
@@ -53,22 +55,28 @@ define([], function() {
     var defaults = {
             instanceName: 'undefined',
             fields: null,
-            defaultProperty: null
+            defaultProperty: null,
+            overlayTemplate: null,
+            overlayTitle: ''
+
         },
 
         constants = {
             rowClass: 'editable-row',
-            rowClassSelector: '.editable-row'
+            rowClassSelector: '.editable-row',
+
+            overlayContainerClass: 'edit-data-overlay',
+            overlayContainerClassSelector: '.edit-data-overlay'
         },
 
         templates = {
 
             rowTemplate: function(value) {
-                return ['<span class="block pointer ', constants.rowClass ,'">',value,'</span>'].join('');
+                return ['<span class="block pointer ', constants.rowClass , '">', value, '</span>'].join('');
             },
 
             rowElementTemplate: function(value) {
-                return ['<span>',value,'</span>'].join('');
+                return ['<span>', value, '</span>'].join('');
             }
         },
 
@@ -78,7 +86,7 @@ define([], function() {
          * raised when an item is changed
          * @event sulu.editable-data-row.instanceName.initialized
          */
-        EVENT_INITIALIZED = function(){
+        EVENT_INITIALIZED = function() {
             this.sandbox.emit(eventNamespace + this.options.instanceName + '.initialized');
         },
 
@@ -87,11 +95,12 @@ define([], function() {
          */
         bindCustomEvents = function() {
 
-            this.sandbox.on('sulu.editable-data-row.'+this.options.instanceName+'.data.update', function(data, preselected){
+            // triggered when new data is available
+            this.sandbox.on('sulu.editable-data-row.' + this.options.instanceName + '.data.update', function(data, preselected) {
                 this.selectedData = preselected;
                 this.data = data;
 
-                if(!!preselected) {
+                if (!!preselected) {
                     renderRow.call(this, preselected);
                 }
             }.bind(this));
@@ -103,8 +112,8 @@ define([], function() {
         bindDomEvents = function() {
 
             // click handler to trigger overlay
-            this.sandbox.dom.on(this.$el, 'click', function(){
-                this.sandbox.logger.warn("clicked editable row!");
+            this.sandbox.dom.on(this.$el, 'click', function() {
+                initOverlay.call(this);
             }.bind(this), constants.rowClassSelector);
         },
 
@@ -124,7 +133,7 @@ define([], function() {
                 $row = this.sandbox.dom.createElement(templates.rowTemplate());
                 this.sandbox.util.each(this.dataFormat.blocks, function(index, block) {
                     $block = processBlock.call(this, block, data);
-                    if(!!$block) {
+                    if (!!$block) {
                         this.sandbox.dom.append($row, $block);
                     }
                 }.bind(this));
@@ -152,7 +161,7 @@ define([], function() {
                     }
                 }.bind(this));
 
-                if(block.hasOwnProperty('delimiter') && !!addedField){
+                if (block.hasOwnProperty('delimiter') && !!addedField) {
                     this.sandbox.dom.append($block, block.delimiter);
                 }
             }
@@ -165,7 +174,7 @@ define([], function() {
          * @param data
          * @returns {*}
          */
-        processField = function(field, data){
+        processField = function(field, data) {
             var $field, fieldText;
 
             if (!!field && this.sandbox.util.typeOf(field) === 'object' &&
@@ -178,8 +187,40 @@ define([], function() {
                 $field = this.sandbox.dom.createElement(templates.rowElementTemplate(fieldText));
             }
             return $field;
-        };
+        },
 
+        /**
+         * Inits the overlay with a specific template
+         */
+        initOverlay = function(){
+
+            var $overlay, overlayContent;
+
+            // stop overlay if its still running
+            this.sandbox.stop(this.sandbox.dom.find(this.$el, constants.overlayContainerClassSelector));
+
+            $overlay = this.sandbox.dom.createElement('<div class="'+constants.overlayContainerClass+'"></div>');
+            this.sandbox.dom.append(this.$el, $overlay);
+
+            overlayContent = this.sandbox.util.template(this.options.overlayTemplate, this.data);
+
+            this.sandbox.start([
+                {
+                    name: 'overlay@husky',
+                    options: {
+                        el: $overlay,
+                        title: this.sandbox.translate(this.options.overlayTitle),
+                        openOnStart: true,
+                        removeOnClose: true,
+                        skin: 'wide',
+                        instanceName: 'editable-data-overlay',
+                        data: overlayContent,
+                        okCallback: '',
+                        closeCallback: ''
+                    }
+                }
+            ]);
+        };
 
     return {
 
@@ -192,12 +233,13 @@ define([], function() {
             this.data = null;
             this.dataFormat = this.options.dataFormat;
 
-            if(!this.dataFormat && this.sandbox.util.typeOf(this.dataFormat) !== 'object'){
-                this.sandbox.logger.error('Value of this.fields in editable-data-row '+this.instanceName+' is no object!');
+            if (!this.dataFormat && this.sandbox.util.typeOf(this.dataFormat) !== 'object') {
+                this.sandbox.logger.error('Value of this.fields in editable-data-row ' + this.instanceName + ' is no object!');
                 return;
             }
 
-            if(!!this.selectedData){
+            // render only when selectedData is set (e.g. via datamapper)
+            if (!!this.selectedData) {
                 this.render();
             }
 
@@ -209,8 +251,6 @@ define([], function() {
 
             // TODO
 
-//            1. Laden der Daten via Datamapper
-//            2. Darstellen des Einzeilers
 //            3. Klick-Event zum Öffnen des Overlays
 //            4. Darstellen des übergebenen Formulars
 //            5. Aktuell ausgewählter Eintrag wird in Formular eingetragen
