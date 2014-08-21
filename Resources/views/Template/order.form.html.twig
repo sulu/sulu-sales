@@ -191,10 +191,7 @@
 {% block data %}
     <script type="text/javascript">
         (function() {
-            {#var systemUser = {#}
-            {#'email': {{ systemUser|json_encode()|raw }}#}
-            {#};#}
-            {#App.emit('sulu.salesorder.set-system-user', systemUser);#}
+            App.emit('sulu.salesorder.set-order-status', {{ orderStatus |json_encode()|raw }});
         })();
     </script>
 {% endblock %}

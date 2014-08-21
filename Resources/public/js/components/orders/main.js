@@ -35,6 +35,8 @@ define([
             // delete order
             this.sandbox.on('sulu.salesorder.order.delete', this.delOrder.bind(this));
 
+            this.sandbox.on('sulu.salesorder.order.confirm', this.confirmOrder.bind(this));
+
             // save the current package
             this.sandbox.on('sulu.salesorder.order.save', this.saveOrder.bind(this));
 
@@ -65,6 +67,31 @@ define([
 //                this.sandbox.emit('sulu.router.navigate', 'contacts/contacts/edit:' + id + '/details');
 //                this.sandbox.emit('husky.navigation.select-item','contacts/contacts');
 //            }.bind(this), '#main-contact');
+        },
+
+        /**
+         * confirm an order
+         */
+        confirmOrder: function() {
+            this.convertStatus('confirm');
+        },
+
+        /**
+         * convert status of an order
+         * @param statusString
+         */
+        convertStatus: function(statusString) {
+            // set action
+            this.order.set({
+                action: statusString
+            });
+
+            this.order.save(null, {
+                type: 'post',
+                success: function(response) {
+                    console.log('successfully changed status');
+                }
+            });
         },
 
         loadOrder: function(id) {

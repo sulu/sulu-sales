@@ -24,9 +24,14 @@ define([], function() {
             itemTableId: '#order-items'
         },
 
+        /**
+         * set header toolbar based on current order status
+         * @param editable
+         */
         setHeaderToolbar = function() {
-            this.sandbox.emit('sulu.header.set-toolbar', {
-                template: [
+
+            var orderStatus,
+                toolbarItems = [
                     {
                         id: 'save-button',
                         icon: 'floppy-o',
@@ -38,36 +43,103 @@ define([], function() {
                         callback: function() {
                             this.sandbox.emit('sulu.header.toolbar.save');
                         }.bind(this)
-                    },
-                    {
-                        icon: 'gear',
-                        iconSize: 'large',
-                        group: 'left',
-                        id: 'options-button',
-                        position: 30,
-                        items: [
-                            {
-                                title: this.sandbox.translate('toolbar.delete'),
-                                callback: function() {
-                                    this.sandbox.emit('sulu.header.toolbar.delete');
-                                }.bind(this)
-                            },
-                            {
-                                divider: true
-                            },
-                            {
-                                title: this.sandbox.translate('salesorder.order.confirm'),
-                                callback: function() {
-                                    this.sandbox.emit('salesorder.order.confirm');
-                                }.bind(this)
-                            }
-                        ]
                     }
-                ]
+                ],
+                settings = {
+                    icon: 'gear',
+                    iconSize: 'large',
+                    group: 'left',
+                    id: 'options-button',
+                    position: 30,
+                    items: [
+                        {
+                            title: this.sandbox.translate('toolbar.delete'),
+                            callback: function() {
+                                this.sandbox.emit('sulu.header.toolbar.delete');
+                            }.bind(this)
+                        }
+                    ]
+                },
+                workflow = {
+                    icon: 'hand-o-left',
+                    iconSize: 'large',
+                    group: 'left',
+                    id: 'workflow',
+                    position: 40,
+                    items: []
+                };
+
+            // show settings template is order already saved
+            if (this.options.data.id) {
+
+                orderStatus = getOrderStatus.call(this);
+
+                // if order has a status add extra information
+                // TODO: show menu based on current status
+                if (orderStatus !== 2) {
+                    workflow.items.push(
+                        {
+                            title: this.sandbox.translate('salesorder.order.confirm'),
+                            callback: confirmOrder.bind(this)
+                        }
+                    );
+                }
+
+                toolbarItems.push(settings);
+                toolbarItems.push(workflow);
+            }
+            // show toolbar
+            this.sandbox.emit('sulu.header.set-toolbar', {
+                template: toolbarItems
             });
         },
 
+        /**
+         * c
+         * @param force - do not check for unsaved data
+         */
+        confirmOrder = function(force) {
+
+            // check if unsaved data
+            if (!this.saved && !force) {
+                // show dialog
+                this.sandbox.emit('sulu.overlay.show-warning',
+                    'sulu.overlay.be-careful',
+                    'sulu.overlay.unsaved-changes',
+                    null,
+                    function() {
+                        confirmOrder.call(this, true);
+                    }.bind(this)
+                );
+                return;
+            }
+
+            // check if status is at least created
+
+            this.sandbox.emit('sulu.salesorder.order.confirm');
+        },
+
+        /**
+         * get status of current order
+         * @returns
+         */
+        getOrderStatus = function() {
+            return (!!this.options.data && !!this.options.data.status) ?
+                this.options.data.status : null;
+        },
+
+        /**
+         * set order statuses
+         * @param statuses
+         */
+        setOrderStatuses = function(statuses) {
+            this.options.orderStatuses = statuses;
+        },
+
         bindCustomEvents = function() {
+
+            this.sandbox.on('sulu.salesorder.set-order-status', setOrderStatuses.bind(this));
+
             // delete contact
             this.sandbox.on('sulu.header.toolbar.delete', function() {
                 this.sandbox.emit('sulu.salesorder.order.delete', this.options.data.id);
@@ -300,7 +372,7 @@ define([], function() {
 
             this.render();
 
-            setHeaderToolbar.call(this);
+            setHeaderToolbar.call(this, getOrderStatus.call(this));
             this.listenForChange();
 
 //                if (!!this.options.data && !!this.options.data.id) {
