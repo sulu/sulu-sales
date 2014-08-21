@@ -58,7 +58,7 @@ define([], function() {
 
         constants = {
             rowClass: 'editable-row',
-            rowClassSelector: 'editable-row'
+            rowClassSelector: '.editable-row'
         },
 
         templates = {
@@ -88,7 +88,12 @@ define([], function() {
         bindCustomEvents = function() {
 
             this.sandbox.on('sulu.editable-data-row.'+this.options.instanceName+'.data.update', function(data, preselected){
-                // TODO update select
+                this.selectedData = preselected;
+                this.data = data;
+
+                if(!!preselected) {
+                    renderRow.call(this, preselected);
+                }
             }.bind(this));
         },
 
@@ -108,7 +113,12 @@ define([], function() {
          */
         renderRow = function(data) {
             var $row,
+                $oldRow,
                 $block;
+
+            // remove old row when rendering is triggered not for the first time
+            $oldRow = this.sandbox.dom.find(constants.rowClassSelector, this.$el);
+            this.sandbox.dom.remove($oldRow);
 
             if (!!data) {
                 $row = this.sandbox.dom.createElement(templates.rowTemplate());
@@ -125,10 +135,11 @@ define([], function() {
         /**
          * Processes a block which contains an array of fields and can have his own delimiter
          * @param block
+         * @param data
          * @returns {*}
          */
         processBlock = function(block, data) {
-            var $block, $field;
+            var $block, $field, addedField = false;
             if (!!block && this.sandbox.util.typeOf(block) === 'object' && block.hasOwnProperty('fields')) {
 
                 $block = this.sandbox.dom.createElement(templates.rowElementTemplate(''));
@@ -137,10 +148,11 @@ define([], function() {
                     $field = processField.call(this, field, data);
                     if (!!$field) {
                         this.sandbox.dom.append($block, $field);
+                        addedField = true;
                     }
                 }.bind(this));
 
-                if(block.hasOwnProperty('delimiter')){
+                if(block.hasOwnProperty('delimiter') && !!addedField){
                     this.sandbox.dom.append($block, block.delimiter);
                 }
             }
@@ -156,7 +168,9 @@ define([], function() {
         processField = function(field, data){
             var $field, fieldText;
 
-            if (!!field && this.sandbox.util.typeOf(field) === 'object' && field.hasOwnProperty('name')) {
+            if (!!field && this.sandbox.util.typeOf(field) === 'object' &&
+                field.hasOwnProperty('name') && !!data[field.name] || data[field.name] === 0
+                ) {
                 fieldText = data[field.name];
                 if (!!field.hasOwnProperty('delimiter')) {
                     fieldText += field.delimiter;
@@ -177,15 +191,15 @@ define([], function() {
             this.selectedData = this.options.value;
             this.data = null;
             this.dataFormat = this.options.dataFormat;
-            this.defaultProperty = this.options.defaultProperty;
 
             if(!this.dataFormat && this.sandbox.util.typeOf(this.dataFormat) !== 'object'){
                 this.sandbox.logger.error('Value of this.fields in editable-data-row '+this.instanceName+' is no object!');
                 return;
             }
 
-            // render component
-            this.render();
+            if(!!this.selectedData){
+                this.render();
+            }
 
             // event listener
             bindCustomEvents.call(this);
