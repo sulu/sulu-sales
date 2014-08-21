@@ -221,16 +221,17 @@ define([], function() {
             this.sandbox.util.load(this.sandbox.util.template(constants.accountAddressesUrl, {id: id}))
                 .then(function(response) {
                     data = response._embedded.addresses;
+                    preselect = null;
 
                     // when an address is already selected, the selected address should be used
                     // otherwise the first delivery / payment address found will be used
-                    if (!orderData || !orderData.delivery) {
+                    if (!orderData || !orderData.deliveryAddress) {
                         preselect = findAddressWherePropertyIs.call(this, data, 'deliveryAddress', true);
                     }
                     initAddressSelect.call(this, data, constants.deliveryAddressInstanceName, flattenAddress.call(this, preselect));
                     preselect = null;
 
-                    if (!orderData || !orderData.paymentAddress) {
+                    if (!orderData || !orderData.invoiceAddress) {
                         preselect = findAddressWherePropertyIs.call(this, data, 'billingAddress', true);
                     }
                     initAddressSelect.call(this, data, constants.paymentAddressInstanceName, flattenAddress.call(this, preselect));
@@ -284,7 +285,7 @@ define([], function() {
 //                }
             },
 
-            templates: ['/admin/order/template/order/form'],
+            templates: ['/admin/order/template/order/form', '/admin/order/template/order/address.form'],
 
             initialize: function() {
                 this.saved = true;
@@ -327,7 +328,9 @@ define([], function() {
 
             render: function() {
 
-                this.sandbox.dom.html(this.$el, this.renderTemplate(this.templates[0]));
+                this.sandbox.dom.html(this.$el, this.renderTemplate(this.templates[0], {
+                    'addressOverlayTemplate': this.renderTemplate('/admin/order/template/order/address.form')
+                }));
 
                 var data = this.options.data,
                     id = data.id ? data.id : 'new';

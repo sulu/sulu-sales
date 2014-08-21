@@ -54,9 +54,9 @@
                 <source>salesorder.orders.invoiceAddress</source>
                 <target>Invoice Addr.</target>
             </trans-unit>
-            <trans-unit id="a50accg2ac181350142c0b4720e29f14" resname="salesorder.orders.addAddress">
-                <source>salesorder.orders.addAddress</source>
-                <target>Add address</target>
+            <trans-unit id="a50accg2ac181350142c0b4720e29f14" resname="salesorder.orders.addressOverlayTitle">
+                <source>salesorder.orders.addressOverlayTitle</source>
+                <target>Assigne or add an address</target>
             </trans-unit>
         </body>
     </file>
