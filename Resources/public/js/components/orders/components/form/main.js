@@ -224,8 +224,12 @@ define([], function() {
                 .then(function(response) {
                     data = response._embedded.addresses;
 
-                    // TODO init new component
+                    // find preselect entries for select in overlay
+                    var deliveryAddress = this.findAddressWherePropertyIs('deliveryAddress', true),
+                        paymentAddress = this.findAddressWherePropertyIs('paymentAddress', true);
 
+                    // when an address is already selected the this address will be used to fill out form
+                    // otherwise the first delivery / payment address found will be used
                     initAddressSelect.call(this, data, constants.deliveryAddressInstanceName, []);
                     initAddressSelect.call(this, data, constants.paymentAddressInstanceName, []);
                 }.bind(this))

@@ -104,9 +104,8 @@
                              data-form="true"
                              data-mapper-property="deliveryAddress"
                              data-validation-required="true"
-                             data-aura-no-address-label="<%=translate('salesorder.orders.addAddress')%>"
                              data-aura-instance-name="delivery-address"
-                             data-aura-fields="[block:{ fields:[ {name:street, delimitor: ' '},{name: number}], delimitor: ', '},{zip,city},{country}]"
+                             data-aura-data-format='{"blocks":[{"fields":[{"name":"street","delimiter":" "},{"name":"number"}],"delimiter":", "},{"fields":[{"name":"zip","delimiter":" "},{"name":"city"}],"delimiter":", "},{"fields":[{"name":"country"}]}]}'
                              data-type="editableDataRow">
                         </div>
                     </div>
@@ -123,9 +122,8 @@
                              data-form="true"
                              data-mapper-property="paymentAddress"
                              data-validation-required="true"
-                             data-aura-no-address-label="<%=translate('salesorder.orders.addAddress')%>"
                              data-aura-instance-name="payment-address"
-                             data-aura-fields="street,number,addition,zip,city,state,country,postboxCity,postboxNumber,postboxPostcode"
+                             data-aura-data-format='{"blocks":[{"fields":[{"name":"street","delimiter":" "},{"name":"number"}],"delimiter":", "},{"fields":[{"name":"zip","delimiter":" "},{"name":"city"}],"delimiter":", "},{"fields":[{"name":"country"}]}]}'
                              data-type="editableDataRow">
                         </div>
                     </div>
