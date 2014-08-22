@@ -3,12 +3,26 @@ body {
   counter-reset: rowcount;
 }
 
-/* line 11, ../scss/modules/item-table.scss */
+/* line 14, ../scss/modules/item-table.scss */
+#item-table-form.disabled .add-row,
+#item-table-form.disabled .item-remove {
+  display: none;
+}
+/* line 17, ../scss/modules/item-table.scss */
+#item-table-form.disabled .global-price-table {
+  right: 0;
+}
+/* line 21, ../scss/modules/item-table.scss */
+#item-table-form.disabled input {
+  background-color: transparent;
+}
+
+/* line 27, ../scss/modules/item-table.scss */
 .item-table-list {
   list-style: none;
   padding: 0;
 }
-/* line 15, ../scss/modules/item-table.scss */
+/* line 31, ../scss/modules/item-table.scss */
 .item-table-list .header {
   border-bottom: 2px solid #cccccc;
   height: 50px;
@@ -18,97 +32,97 @@ body {
   font-size: 14px;
   padding: 8px 10px;
 }
-/* line 24, ../scss/modules/item-table.scss */
+/* line 40, ../scss/modules/item-table.scss */
 .item-table-list .header .input-field {
   display: none;
 }
 
-/* line 31, ../scss/modules/item-table.scss */
+/* line 47, ../scss/modules/item-table.scss */
 .husky-validate-error *:not(.husky-validate-error) > .husky-validate:not(label) {
   border: 1px solid #ccc;
 }
 
-/* line 36, ../scss/modules/item-table.scss */
+/* line 51, ../scss/modules/item-table.scss */
 .item-table-row {
   height: 50px;
   border-bottom: 1px solid #cccccc;
 }
-/* line 43, ../scss/modules/item-table.scss */
+/* line 58, ../scss/modules/item-table.scss */
 .item-table-row:not(:first-child) .row-number:before {
   counter-increment: rowcount;
   content: counter(rowcount);
 }
-/* line 50, ../scss/modules/item-table.scss */
-.item-table-row .span {
-  height: 100%;
+/* line 69, ../scss/modules/item-table.scss */
+.item-table-row:last-child {
+  border-bottom: 2px solid #cccccc;
 }
-/* line 55, ../scss/modules/item-table.scss */
+/* line 75, ../scss/modules/item-table.scss */
 .item-table-row.new .product-search {
   display: block;
 }
-/* line 61, ../scss/modules/item-table.scss */
+/* line 80, ../scss/modules/item-table.scss */
+.item-table-row .span {
+  height: 100%;
+}
+/* line 85, ../scss/modules/item-table.scss */
 .item-table-row .item-name {
   min-width: 170px;
 }
-/* line 65, ../scss/modules/item-table.scss */
+/* line 89, ../scss/modules/item-table.scss */
 .item-table-row .product-search {
   margin: 0;
   display: none;
 }
-/* line 71, ../scss/modules/item-table.scss */
+/* line 95, ../scss/modules/item-table.scss */
 .item-table-row > * {
   padding: 0 10px;
 }
-/* line 75, ../scss/modules/item-table.scss */
-.item-table-row:last-child {
-  border-bottom: 2px solid #cccccc;
-}
 
-/* line 81, ../scss/modules/item-table.scss */
+/* line 101, ../scss/modules/item-table.scss */
 .item-remove a, .item-remove a:visited, .item-remove a:active {
   color: black;
 }
 
-/* line 86, ../scss/modules/item-table.scss */
+/* line 106, ../scss/modules/item-table.scss */
 .item-add {
   margin-top: 20px;
 }
-/* line 88, ../scss/modules/item-table.scss */
+/* line 108, ../scss/modules/item-table.scss */
 .item-add a:hover, .item-add a:visited {
   color: black;
 }
-/* line 96, ../scss/modules/item-table.scss */
+/* line 116, ../scss/modules/item-table.scss */
 .item-add .add-row i {
   font-size: 18px;
   margin-right: 10px;
 }
 
-/* line 103, ../scss/modules/item-table.scss */
+/* line 123, ../scss/modules/item-table.scss */
 .item-overall-price {
   text-align: right;
 }
 
-/* line 108, ../scss/modules/item-table.scss */
+/* line 128, ../scss/modules/item-table.scss */
 .global-price-container {
   padding-top: 15px;
   position: relative;
 }
-/* line 112, ../scss/modules/item-table.scss */
+/* line 132, ../scss/modules/item-table.scss */
 .global-price-container .global-price-table {
   width: initial;
   position: absolute;
   right: 31px;
   text-align: right;
 }
-/* line 118, ../scss/modules/item-table.scss */
+/* line 138, ../scss/modules/item-table.scss */
 .global-price-container .global-price-table td {
   padding: 0 10px;
 }
-/* line 122, ../scss/modules/item-table.scss */
+/* line 142, ../scss/modules/item-table.scss */
 .global-price-container .global-price-table tr {
   height: 30px;
 }
-/* line 124, ../scss/modules/item-table.scss */
+/* line 144, ../scss/modules/item-table.scss */
 .global-price-container .global-price-table tr:last-child {
   font-weight: bold;
   border-top: 1px solid #ccc;

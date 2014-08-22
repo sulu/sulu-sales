@@ -13,6 +13,7 @@
  *
  * @param {Object} [options] Configuration object
  * @param {Array}  [options.data] array of data [string, object]
+ * @param {Bool}  [options.editable] defines if component is editable
  */
 define([
     'text!sulusalescore/components/item-table/item.form.html',
@@ -23,7 +24,8 @@ define([
     'use strict';
 
     var defaults = {
-            data: []
+            data: [],
+            editable: true
         },
 
         constants = {
@@ -249,15 +251,17 @@ define([
             $table = this.$find(constants.globalPriceTableClass);
             this.sandbox.dom.html($table, '');
 
-            // add net price
-            addPriceRow.call(this, $table, this.sandbox.translate('salescore.item.net-price'), getFormatedPriceCurrencyString.call(this, netPrice));
+            if (Object.keys(this.items).length > 0) {
+                // add net price
+                addPriceRow.call(this, $table, this.sandbox.translate('salescore.item.net-price'), getFormatedPriceCurrencyString.call(this, netPrice));
 
-            // add row for every tax group
-            for (var i in taxCategory) {
-                addPriceRow.call(this, $table, this.sandbox.translate('salescore.item.vat') + '.(' + i + '%)', getFormatedPriceCurrencyString.call(this, taxCategory[i]));
+                // add row for every tax group
+                for (var i in taxCategory) {
+                    addPriceRow.call(this, $table, this.sandbox.translate('salescore.item.vat') + '.(' + i + '%)', getFormatedPriceCurrencyString.call(this, taxCategory[i]));
+                }
+
+                addPriceRow.call(this, $table, this.sandbox.translate('salescore.item.overall-price'), getFormatedPriceCurrencyString.call(this, globalPrice));
             }
-
-            addPriceRow.call(this, $table, this.sandbox.translate('salescore.item.overall-price'), getFormatedPriceCurrencyString.call(this, globalPrice));
         },
 
         addPriceRow = function($table, title, value) {
@@ -454,7 +458,8 @@ define([
 
             var data = this.sandbox.util.extend({}, rowDefaults, itemData, {
                     rowId: constants.rowIdPrefix + this.rowCount,
-                    rowNumber: this.rowCount
+                    rowNumber: this.rowCount,
+                    isEditable: this.options.editable
                 }),
                 rowTpl, $row;
 
@@ -604,6 +609,8 @@ define([
             this.rowCount = 0;
             this.table = null;
 
+            this.isEmpty = this.items.length
+
             // if data is not set, check if it's set in elements DATA
             var dataItems = this.sandbox.dom.data(this.$el, 'items');
             if (this.options.data.length === 0 && !!dataItems && dataItems.length > 0) {
@@ -623,7 +630,8 @@ define([
             // add translations for template
             var templateData = this.sandbox.util.extend({},
                 {
-                    addText: this.sandbox.translate('salescore.item.add')
+                    addText: this.sandbox.translate('salescore.item.add'),
+                    isEditable: this.options.editable
                 },
                 this.options.data
             );
@@ -658,5 +666,4 @@ define([
             return items;
         }
     };
-})
-;
+});
