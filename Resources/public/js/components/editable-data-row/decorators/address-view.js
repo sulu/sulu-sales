@@ -69,6 +69,30 @@ define(['text!sulusalescore/components/editable-data-row/templates/address.form.
             this.sandbox.on('husky.overlay.'+this.context.options.instanceName+'.opened', function(){
                 initOverlayForm.call(this);
             }.bind(this));
+
+            this.sandbox.on('husky.select.'+this.options.instanceName+'.select.selected.item', function (id){
+
+                var adr = getAddressById.call(this, id);
+                setFormData.call(this, adr);
+
+            }.bind(this));
+        },
+
+        /**
+         * returns address by id
+         * @param id
+         */
+        getAddressById = function(id){
+            var address = null;
+
+            this.sandbox.util.each(this.context.data, function(index,adr){
+                if(adr.id.toString() === id){
+                    address = adr;
+                    return false;
+                }
+            }.bind(this));
+
+            return address;
         },
 
         /**
@@ -82,7 +106,7 @@ define(['text!sulusalescore/components/editable-data-row/templates/address.form.
                     name: 'select@husky',
                     options: {
                         el: this.options.selectSelector,
-                        instanceName: this.options.instanceName,
+                        instanceName: this.options.instanceName+'.select',
                         valueName: 'fullAddress',
                         data: selectData
                     }
@@ -102,7 +126,7 @@ define(['text!sulusalescore/components/editable-data-row/templates/address.form.
 
             this.formObject.initialized.then(function() {
                 if(!!this.context.selectedData) {
-                    setFormData.call(this, $form, this.context.selectedData);
+                    setFormData.call(this, this.context.selectedData);
                 }
             }.bind(this));
         },
@@ -112,7 +136,7 @@ define(['text!sulusalescore/components/editable-data-row/templates/address.form.
          * @param $form
          * @param data
          */
-        setFormData = function($form, data){
+        setFormData = function(data){
             this.sandbox.form.setData(this.formObject, data).fail(function(error) {
                 this.sandbox.logger.error("An error occured when setting data!", error);
             }.bind(this));
