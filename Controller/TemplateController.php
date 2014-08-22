@@ -24,17 +24,6 @@ class TemplateController extends RestController
     }
 
     /**
-     * Returns Template for the address form
-     * @return \Symfony\Component\HttpFoundation\Response
-     */
-    public function orderAddressFormAction()
-    {
-        return $this->render(
-            'SuluSalesOrderBundle:Template:order.address.form.html'
-        );
-    }
-
-    /**
      * Returns Template for list
      * @return \Symfony\Component\HttpFoundation\Response
      */

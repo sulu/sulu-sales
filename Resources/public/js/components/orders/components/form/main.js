@@ -226,56 +226,18 @@ define([], function() {
                     if (!orderData || !orderData.deliveryAddress) {
                         preselect = findAddressWherePropertyIs.call(this, data, 'deliveryAddress', true);
                     }
-                    initAddressSelect.call(this, flattenAddresses.call(this,data), constants.deliveryAddressInstanceName, flattenAddresses.call(this, preselect));
+                    initAddressSelect.call(this, data, constants.deliveryAddressInstanceName, preselect);
                     preselect = null;
 
                     if (!orderData || !orderData.invoiceAddress) {
                         preselect = findAddressWherePropertyIs.call(this, data, 'billingAddress', true);
                     }
-                    initAddressSelect.call(this, flattenAddresses.call(this,data), constants.paymentAddressInstanceName, flattenAddresses.call(this, preselect));
+                    initAddressSelect.call(this, data, constants.paymentAddressInstanceName, preselect);
 
                 }.bind(this))
                 .fail(function(textStatus, error) {
                     this.sandbox.logger.error(textStatus, error);
                 }.bind(this));
-        },
-
-        /**
-         * Flattens an address object or an array of addresses
-         * @param data
-         * @returns {*}
-         */
-        flattenAddresses = function(data) {
-
-            if(!!data && this.sandbox.util.typeOf(data) === 'array'){
-                this.sandbox.util.foreach(data, function(address){
-                    if (!!address && !!address.country && !!address.country.name) {
-                        address.country = address.country.name;
-                    }
-
-                    address.fullAddress = buildAddressString.call(this, address);
-
-                }.bind(this));
-            } else {
-                if (!!data && !!data.country && !!data.country.name) {
-                    data.country = data.country.name;
-                }
-            }
-            return data;
-        },
-
-        /**
-         * Concats the values of an address
-         * @param address
-         */
-        buildAddressString = function(address){
-            var str = address.street;
-            str+= !!str.length && !!address.number ? ' '+address.number : address.number;
-            str+= !!str.length && !!address.zip ? ', '+address.zip : '';
-            str+= !!str.length && !!address.city ? ' '+address.city : address.city;
-            str+= !!str.length && !!address.country ? ', '+address.country : address.country;
-
-            return str;
         },
 
         /**
@@ -309,7 +271,7 @@ define([], function() {
 //                }
             },
 
-            templates: ['/admin/order/template/order/form', '/admin/order/template/order/address.form'],
+            templates: ['/admin/order/template/order/form'],
 
             initialize: function() {
                 this.saved = true;
@@ -352,11 +314,7 @@ define([], function() {
 
             render: function() {
 
-                this.sandbox.dom.html(this.$el, this.renderTemplate(this.templates[0], {
-                    'addressOverlayTemplate': this.renderTemplate('/admin/order/template/order/address.form', {
-                        translate: this.sandbox.translate
-                    })
-                }));
+                this.sandbox.dom.html(this.$el, this.renderTemplate(this.templates[0]));
 
                 var data = this.options.data,
                     id = data.id ? data.id : 'new';

@@ -102,13 +102,10 @@
                         <div id="delivery-address"
                              data-aura-component="editable-data-row@sulusalescore"
                              data-form="true"
+                             data-aura-view="address"
                              data-mapper-property="deliveryAddress"
                              data-validation-required="true"
                              data-aura-instance-name="delivery-address"
-                             data-aura-data-format='{"blocks":[{"fields":[{"name":"street","delimiter":" "},{"name":"number"}],"delimiter":", "},{"fields":[{"name":"zip","delimiter":" "},{"name":"city"}],"delimiter":", "},{"fields":[{"name":"country"}]}]}'
-                             data-aura-overlay-template='<%= addressOverlayTemplate %>'
-                             data-aura-overlay-title="salesorder.orders.addressOverlayTitle"
-                             data-aura-select-selector="#address-select"
                              data-type="editableDataRow">
                         </div>
                     </div>
@@ -124,12 +121,9 @@
                              data-aura-component="editable-data-row@sulusalescore"
                              data-form="true"
                              data-mapper-property="invoiceAddress"
+                             data-aura-view="address"
                              data-validation-required="true"
-                             data-aura-instance-name="invoice-address"
-                             data-aura-data-format='{"blocks":[{"fields":[{"name":"street","delimiter":" "},{"name":"number"}],"delimiter":", "},{"fields":[{"name":"zip","delimiter":" "},{"name":"city"}],"delimiter":", "},{"fields":[{"name":"country"}]}]}'
-                             data-aura-overlay-template='<%= addressOverlayTemplate %>'
-                             data-aura-overlay-title="salesorder.orders.addressOverlayTitle"
-                             data-aura-select-selector="#address-select"
+                             data-aura-instance-name="payment-address"
                              data-type="editableDataRow">
                         </div>
                     </div>
