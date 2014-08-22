@@ -19,7 +19,7 @@ define([], function() {
             accountUrl: '/admin/api/accounts?searchFields=name&flat=true&fields=id,name',
             accountInputId: '#account-input',
             deliveryAddressInstanceName: 'delivery-address',
-            paymentAddressInstanceName: 'payment-address',
+            paymentAddressInstanceName: 'invoice-address',
             contactSelectId: '#contact-select',
             itemTableId: '#order-items'
         },
@@ -64,6 +64,14 @@ define([], function() {
             }, this);
 
             this.sandbox.on('husky.auto-complete.' + this.accountInstanceName + '.select', accountChangedListener.bind(this));
+
+            this.sandbox.on('sulu.editable-data-row.delivery-address.initialized', function(){
+                this.dfdDeliveryAddressInitialized.resolve();
+            }.bind(this));
+
+            this.sandbox.on('sulu.editable-data-row.invoice-address.initialized', function(){
+                this.dfdInvoiceAddressInitialized.resolve();
+            }.bind(this));
         },
 
         /**
@@ -226,13 +234,19 @@ define([], function() {
                     if (!orderData || !orderData.deliveryAddress) {
                         preselect = findAddressWherePropertyIs.call(this, data, 'deliveryAddress', true);
                     }
-                    initAddressSelect.call(this, data, constants.deliveryAddressInstanceName, preselect);
+                    this.sandbox.data.when(this.dfdDeliveryAddressInitialized).then(function(){
+                        initAddressSelect.call(this, data, constants.deliveryAddressInstanceName, preselect);
+                    }.bind(this));
+
                     preselect = null;
 
                     if (!orderData || !orderData.invoiceAddress) {
                         preselect = findAddressWherePropertyIs.call(this, data, 'billingAddress', true);
                     }
-                    initAddressSelect.call(this, data, constants.paymentAddressInstanceName, preselect);
+
+                    this.sandbox.data.when(this.dfdInvoiceAddressInitialized).then(function(){
+                        initAddressSelect.call(this, data, constants.paymentAddressInstanceName, preselect);
+                    }.bind(this));
 
                 }.bind(this))
                 .fail(function(textStatus, error) {
@@ -282,6 +296,9 @@ define([], function() {
                 this.dfdAllFieldsInitialized = this.sandbox.data.deferred();
                 this.dfdAutoCompleteInitialized = this.sandbox.data.deferred();
                 this.dfdDesiredDeliveryDate = this.sandbox.data.deferred();
+
+                this.dfdInvoiceAddressInitialized = this.sandbox.data.deferred();
+                this.dfdDeliveryAddressInitialized = this.sandbox.data.deferred();
 
                 // define when all fields are initialized
                 this.sandbox.data.when(this.dfdDesiredDeliveryDate, this.dfdAutoCompleteInitialized).then(function() {
