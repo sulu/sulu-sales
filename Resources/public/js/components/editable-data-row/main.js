@@ -13,75 +13,28 @@
  *
  * @param {Object} [options] Configuration object
  * @param {String} [options.instanceName] instance name of the component and its subcomponents
- * @param {String} [options.overlayTemplate] template for the overlay
- * @param {String} [options.overlayTitle] translation key for the overlay title
- * @param {String} [options.dataFormat] structure which defines blocks with used fields and their delimiter - example below:
- *
- *{
- *   "blocks":[
- *      {
- *         "fields":[
- *               {
- *                  "name":"street",
- *                  "delimiter":" "
- *               },
- *               {
- *                  "name":"number"
- *               }
- *         ],
- *         "delimiter":", "
- *      },
- *      {
- *         "fields":[
- *               {
- *                  "name":"zip",
- *                  "delimiter":""
- *               },
- *               {
- *                  "name":"city"
- *               }
- *         ],
- *         "delimiter":", "
- *      }
- *   ]
- *}
- *
- * @param {String} [options.defaultProperty] property which is used to decide default displayed data
- *
- * Templates: The template for the overlay form has to use the editable-data-overlay-form class
+ * @param {String} [options.view] view name
+ * @param {Object} [options.viewOptions] options for the view
  */
-define([], function() {
+define(['sulusalescore/components/editable-data-row/decorators/address-view'], function(AddressView) {
 
     'use strict';
 
     var defaults = {
-            instanceName: 'undefined',
-            fields: null,
-            defaultProperty: null,
-            overlayTemplate: null,
-            overlayTitle: '',
-            selectSelector: 'address-select'
+            view: 'address',
+            viewOptions: {},
+            instanceName: 'undefined'
+        },
+
+        decorators = {
+           address: AddressView
         },
 
         constants = {
-            rowClass: 'editable-row',
-            rowClassSelector: '.editable-row',
-
             overlayContainerClass: 'edit-data-overlay',
             overlayContainerClassSelector: '.edit-data-overlay',
 
             overlayFormSelector: 'editable-data-overlay-form'
-        },
-
-        templates = {
-
-            rowTemplate: function(value) {
-                return ['<span class="block pointer ', constants.rowClass , '">', value, '</span>'].join('');
-            },
-
-            rowElementTemplate: function(value) {
-                return ['<span>', value, '</span>'].join('');
-            }
         },
 
         eventNamespace = 'sulu.editable-data-row.',
@@ -105,9 +58,26 @@ define([], function() {
                 this.data = data;
 
                 if (!!preselected) {
-                    renderRow.call(this, preselected);
+                    this.view.render();
                 }
             }.bind(this));
+
+            this.sandbox.on('sulu.editable-data-row.' + this.options.instanceName + '.overlay.initialize',
+                function(data) {
+
+                    if(!data.overlayTemplate){
+                        this.sandbox.logger.error('No template for overlay defined!');
+                    }
+
+                    if((typeof data.okCallback === 'function' || !data.okCallback) &&
+                        (typeof data.closeCallback === 'function' || !data.closeCallback)){
+                        initOverlay.call(this, data.overlayTemplate, data.overlayTitle, data.overlayOkCallback, data.overlayCloseCallback);
+                    } else {
+                        this.sandbox.logger.error('Editable-Data-Row: Invalid callbacks for overlay!');
+                    }
+
+                }.bind(this)
+            );
 
             // trigger init of form when overlay is open
             this.sandbox.on('husky.overlay.'+this.options.instanceName+'.opened', function(){
@@ -116,112 +86,29 @@ define([], function() {
         },
 
         /**
-         * bind dom events
-         */
-        bindDomEvents = function() {
-
-            // click handler to trigger overlay
-            this.sandbox.dom.on(this.$el, 'click', function() {
-                initOverlay.call(this);
-            }.bind(this), constants.rowClassSelector);
-        },
-
-        /**
-         * Renders the single row with the data according to the fields param or a replacement when no data is given
-         */
-        renderRow = function(data) {
-            var $row,
-                $oldRow,
-                $block;
-
-            // remove old row when rendering is triggered not for the first time
-            $oldRow = this.sandbox.dom.find(constants.rowClassSelector, this.$el);
-            this.sandbox.dom.remove($oldRow);
-
-            if (!!data) {
-                $row = this.sandbox.dom.createElement(templates.rowTemplate());
-                this.sandbox.util.each(this.dataFormat.blocks, function(index, block) {
-                    $block = processBlock.call(this, block, data);
-                    if (!!$block) {
-                        this.sandbox.dom.append($row, $block);
-                    }
-                }.bind(this));
-            }
-            this.sandbox.dom.append(this.$el, $row);
-        },
-
-        /**
-         * Processes a block which contains an array of fields and can have his own delimiter
-         * @param block
-         * @param data
-         * @returns {*}
-         */
-        processBlock = function(block, data) {
-            var $block, $field, addedField = false;
-            if (!!block && this.sandbox.util.typeOf(block) === 'object' && block.hasOwnProperty('fields')) {
-
-                $block = this.sandbox.dom.createElement(templates.rowElementTemplate(''));
-
-                this.sandbox.util.each(block.fields, function(index, field) {
-                    $field = processField.call(this, field, data);
-                    if (!!$field) {
-                        this.sandbox.dom.append($block, $field);
-                        addedField = true;
-                    }
-                }.bind(this));
-
-                if (block.hasOwnProperty('delimiter') && !!addedField) {
-                    this.sandbox.dom.append($block, block.delimiter);
-                }
-            }
-            return $block;
-        },
-
-        /**
-         * Processes a field of the structure passed to define the structure of the displayed data
-         * @param field
-         * @param data
-         * @returns {*}
-         */
-        processField = function(field, data) {
-            var $field, fieldText;
-
-            if (!!field && this.sandbox.util.typeOf(field) === 'object' &&
-                field.hasOwnProperty('name') && !!data[field.name] || data[field.name] === 0
-                ) {
-                fieldText = data[field.name];
-                if (!!field.hasOwnProperty('delimiter')) {
-                    fieldText += field.delimiter;
-                }
-                $field = this.sandbox.dom.createElement(templates.rowElementTemplate(fieldText));
-            }
-            return $field;
-        },
-
-        /**
          * Inits the overlay with a specific template
          */
-        initOverlay = function(){
+        initOverlay = function(template, title, okCallback, closeCallback){
             var $overlay, overlayContent;
 
             $overlay = this.sandbox.dom.createElement('<div class="'+constants.overlayContainerClass+'"></div>');
             this.sandbox.dom.append(this.$el, $overlay);
 
-            overlayContent = this.sandbox.util.template(this.options.overlayTemplate, this.data);
+            overlayContent = this.sandbox.util.template(template, this.data);
 
             this.sandbox.start([
                 {
                     name: 'overlay@husky',
                     options: {
                         el: $overlay,
-                        title: this.sandbox.translate(this.options.overlayTitle),
+                        title: this.sandbox.translate(title),
                         openOnStart: true,
                         removeOnClose: true,
                         skin: 'wide',
                         instanceName: this.options.instanceName,
                         data: overlayContent,
-                        okCallback: '',
-                        closeCallback: ''
+                        okCallback: okCallback(),
+                        closeCallback: closeCallback()
                     }
                 }
             ]);
@@ -242,6 +129,18 @@ define([], function() {
                     }
                 }
             ]);
+        },
+
+        /**
+         * Validates a view
+         * @param view
+         */
+        isViewValid = function(view) {
+            if(typeof view.initialize === 'function' &&
+                typeof view.render === 'function') {
+                return true;
+            }
+            return false;
         };
 
     return {
@@ -255,19 +154,26 @@ define([], function() {
             this.data = null;
             this.dataFormat = this.options.dataFormat;
 
-            if (!this.dataFormat && this.sandbox.util.typeOf(this.dataFormat) !== 'object') {
-                this.sandbox.logger.error('Value of this.fields in editable-data-row ' + this.instanceName + ' is no object!');
-                return;
-            }
+            // make a copy of the decorators for each editable-data-row instance
+            // if you directly access the decorators variable the datagrid-context in the decorators will be overwritten
+            this.decorators = this.sandbox.util.extend(true, {}, decorators);
+            this.viewId = this.options.view;
+            this.view = this.decorators[this.viewId];
 
-            // render only when selectedData is set (e.g. via datamapper)
-            if (!!this.selectedData) {
-                this.render();
+            if(!!this.view && !!isViewValid.call(this, this.view)){
+                this.options.viewOptions.instanceName = this.options.instanceName;
+                this.view.initialize(this, this.options.viewOptions);
+            } else {
+                this.sandbox.logger.error("Editable-Data-Row: View is not valid!");
+                return;
             }
 
             // event listener
             bindCustomEvents.call(this);
-            bindDomEvents.call(this);
+
+            if(!!this.selectedData){
+                this.render();
+            }
 
             EVENT_INITIALIZED.call(this);
 
@@ -286,8 +192,8 @@ define([], function() {
 
         },
 
-        render: function() {
-            renderRow.call(this, this.selectedData);
+        render: function(){
+            this.view.render();
         }
     };
 });
