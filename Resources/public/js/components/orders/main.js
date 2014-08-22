@@ -36,6 +36,7 @@ define([
             this.sandbox.on('sulu.salesorder.order.delete', this.delOrder.bind(this));
 
             this.sandbox.on('sulu.salesorder.order.confirm', this.confirmOrder.bind(this));
+            this.sandbox.on('sulu.salesorder.order.edit', this.editOrder.bind(this));
 
             // save the current package
             this.sandbox.on('sulu.salesorder.order.save', this.saveOrder.bind(this));
@@ -77,6 +78,13 @@ define([
         },
 
         /**
+         * edit an order, which is already confirmed
+         */
+        editOrder: function() {
+            this.convertStatus('edit');
+        },
+
+        /**
          * convert status of an order
          * @param statusString
          */
@@ -89,7 +97,7 @@ define([
             this.order.save(null, {
                 type: 'post',
                 success: function(response) {
-                    console.log('successfully changed status');
+                    console.log('successfully changed status', response);
                 }
             });
         },

@@ -30,7 +30,7 @@ define([], function() {
          */
         setHeaderToolbar = function() {
 
-            var orderStatus,
+            var orderStatus, orderStatusId,
                 toolbarItems = [
                     {
                         id: 'save-button',
@@ -67,26 +67,40 @@ define([], function() {
                     id: 'workflow',
                     position: 40,
                     items: []
+                },
+                workflowItems = {
+                    confirm: {
+                        title: this.sandbox.translate('salesorder.order.confirm'),
+                        callback: confirmOrder.bind(this)
+                    },
+                    edit: {
+                        title: this.sandbox.translate('salesorder.order.edit'),
+                        callback: editOrder.bind(this)
+                    }
                 };
 
             // show settings template is order already saved
             if (this.options.data.id) {
 
                 orderStatus = getOrderStatus.call(this);
+                orderStatusId = !!orderStatus ? orderStatus.id : null;
 
-                // if order has a status add extra information
-                // TODO: show menu based on current status
-                if (orderStatus !== 2) {
-                    workflow.items.push(
-                        {
-                            title: this.sandbox.translate('salesorder.order.confirm'),
-                            callback: confirmOrder.bind(this)
-                        }
-                    );
+                // define workflow based on orderStatus
+                // TODO: get statuses from backend
+                if (orderStatusId === 1) {
+                    workflow.items.push(workflowItems.confirm);
+                } else if (orderStatusId=== 3) {
+                    workflow.items.push(workflowItems.edit);
                 }
 
-                toolbarItems.push(settings);
-                toolbarItems.push(workflow);
+                // add settings items
+                if (settings.items.length > 0) {
+                    toolbarItems.push(settings);
+                }
+                // add workflow items
+                if (workflow.items.length > 0) {
+                    toolbarItems.push(workflow);
+                }
             }
             // show toolbar
             this.sandbox.emit('sulu.header.set-toolbar', {
@@ -95,28 +109,46 @@ define([], function() {
         },
 
         /**
-         * c
-         * @param force - do not check for unsaved data
+         * confirm an order, checks for unsaved data and shows a warning
          */
-        confirmOrder = function(force) {
+        confirmOrder = function() {
+            checkForUnsavedData.call(this, function() {
+                this.sandbox.emit('sulu.salesorder.order.confirm');
+            });
+        },
+
+        /**
+         * edit an order, checks for unsaved data and shows a warning
+         */
+        editOrder = function() {
+            checkForUnsavedData.call(this, function() {
+                this.sandbox.emit('sulu.salesorder.order.edit');
+            });
+        },
+
+        /**
+         * checks for unsaved data. if unsaved, a dialog is shown, else immediately proceed
+         * @param callback - called when no unsaved data, or warning was confirmed
+         */
+        checkForUnsavedData = function(callback) {
+            if (typeof callback !== 'function') {
+                return;
+            }
 
             // check if unsaved data
-            if (!this.saved && !force) {
+            if (!this.saved) {
                 // show dialog
                 this.sandbox.emit('sulu.overlay.show-warning',
                     'sulu.overlay.be-careful',
                     'sulu.overlay.unsaved-changes',
                     null,
-                    function() {
-                        confirmOrder.call(this, true);
-                    }.bind(this)
+                    callback.bind(this)
                 );
-                return;
             }
-
-            // check if status is at least created
-
-            this.sandbox.emit('sulu.salesorder.order.confirm');
+            // otherwise proceed
+            else {
+                callback.bind(this);
+            }
         },
 
         /**
@@ -154,7 +186,7 @@ define([], function() {
             // contact saved
             this.sandbox.on('sulu.salesorder.order.saved', function(data) {
                 this.options.data = data;
-                this.setHeaderBar(true);
+                setSaved.call(this, true);
             }, this);
 
             // contact save
@@ -179,7 +211,7 @@ define([], function() {
          * Sets the title to the username
          * default title as fallback
          */
-        setTitle = function() {
+        setHeaderTitle = function() {
             var title = this.sandbox.translate('salesorder.order'),
                 breadcrumb = [
                     {title: 'navigation.sales'},
@@ -193,6 +225,18 @@ define([], function() {
 
             this.sandbox.emit('sulu.header.set-title', title);
             this.sandbox.emit('sulu.header.set-breadcrumb', breadcrumb);
+        },
+
+        /**
+         * set saved
+         * @param {Bool} saved Defines if saved state should be shown
+         */
+        setSaved = function(saved) {
+            if (saved !== this.saved) {
+                var type = (!!this.options.data && !!this.options.data.id) ? 'edit' : 'add';
+                this.sandbox.emit('sulu.header.toolbar.state.change', type, saved, true);
+            }
+            this.saved = saved;
         },
 
         initForm = function(data) {
@@ -306,8 +350,8 @@ define([], function() {
          * called when headerbar should be saveable
          * @param event
          */
-        changeHandler = function(event) {
-            this.setHeaderBar(false);
+        changeHandler = function() {
+            setSaved.call(this, false);
         },
 
         /**
@@ -368,24 +412,34 @@ define([], function() {
                 this.dfdAllFieldsInitialized.resolve();
             }.bind(this));
 
-            setTitle.call(this);
 
+            // current id
+            var id = this.options.data.id ? this.options.data.id : 'new';
+
+            this.accountInstanceName = 'customerAccount' + id;
+
+
+            // bind events
+            bindCustomEvents.call(this);
+
+            // set header
+            setHeaderTitle.call(this);
+            setHeaderToolbar.call(this);
+            setSaved.call(this, true);
+
+            // render form
             this.render();
 
-            setHeaderToolbar.call(this, getOrderStatus.call(this));
+            // listen for changes in form
             this.listenForChange();
 
+            // initialize sidebar
 //                if (!!this.options.data && !!this.options.data.id) {
 //                    this.initSidebar(
 //                        '/admin/widget-groups/contact-detail?contact=',
 //                        this.options.data.id
 //                    );
 //                }
-
-            this.setHeaderBar(true);
-
-            // bind events
-            bindCustomEvents.call(this);
         },
 
         initSidebar: function(url, id) {
@@ -396,14 +450,10 @@ define([], function() {
 
             this.sandbox.dom.html(this.$el, this.renderTemplate(this.templates[0]));
 
-            var data = this.options.data,
-                id = data.id ? data.id : 'new';
-
-            this.accountInstanceName = 'customerAccount' + id;
+            var data = this.options.data;
 
             // initialize form
             initForm.call(this, data);
-
         },
 
         submit: function() {
@@ -425,15 +475,6 @@ define([], function() {
                 this.sandbox.logger.log('log data', data);
                 this.sandbox.emit('sulu.salesorder.order.save', data);
             }
-        },
-
-        // @var Bool saved - defines if saved state should be shown
-        setHeaderBar: function(saved) {
-            if (saved !== this.saved) {
-                var type = (!!this.options.data && !!this.options.data.id) ? 'edit' : 'add';
-                this.sandbox.emit('sulu.header.toolbar.state.change', type, saved, true);
-            }
-            this.saved = saved;
         },
 
         // event listens for changes in form

@@ -58,6 +58,10 @@
                 <source>salesorder.orders.confirm</source>
                 <target>Auftrag bestätigen</target>
             </trans-unit>
+            <trans-unit id="a50accg2ac181350142c0b4720e29f15" resname="salesorder.orders.edit
+                <source>salesorder.orders.edit</source>
+                <target>Auftrag bearbeiten</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>

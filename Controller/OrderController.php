@@ -217,6 +217,11 @@ class OrderController extends RestController implements ClassResourceInterface
 
                     $em->flush();
                     break;
+                case 'edit':
+                    $this->getManager()->convertStatus($order, OrderStatus::STATUS_CREATED);
+
+                    $em->flush();
+                    break;
                 default:
                     throw new RestException("Unrecognized action: " . $action);
 
