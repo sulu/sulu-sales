@@ -47,6 +47,8 @@
  *}
  *
  * @param {String} [options.defaultProperty] property which is used to decide default displayed data
+ *
+ * Templates: The template for the overlay form has to use the editable-data-overlay-form class
  */
 define([], function() {
 
@@ -57,8 +59,8 @@ define([], function() {
             fields: null,
             defaultProperty: null,
             overlayTemplate: null,
-            overlayTitle: ''
-
+            overlayTitle: '',
+            selectSelector: 'address-select'
         },
 
         constants = {
@@ -66,7 +68,9 @@ define([], function() {
             rowClassSelector: '.editable-row',
 
             overlayContainerClass: 'edit-data-overlay',
-            overlayContainerClassSelector: '.edit-data-overlay'
+            overlayContainerClassSelector: '.edit-data-overlay',
+
+            overlayFormSelector: 'editable-data-overlay-form'
         },
 
         templates = {
@@ -103,6 +107,11 @@ define([], function() {
                 if (!!preselected) {
                     renderRow.call(this, preselected);
                 }
+            }.bind(this));
+
+            // trigger init of form when overlay is open
+            this.sandbox.on('husky.overlay.'+this.options.instanceName+'.opened', function(){
+                initOverlayForm.call(this);
             }.bind(this));
         },
 
@@ -193,11 +202,7 @@ define([], function() {
          * Inits the overlay with a specific template
          */
         initOverlay = function(){
-
             var $overlay, overlayContent;
-
-            // stop overlay if its still running
-            this.sandbox.stop(this.sandbox.dom.find(this.$el, constants.overlayContainerClassSelector));
 
             $overlay = this.sandbox.dom.createElement('<div class="'+constants.overlayContainerClass+'"></div>');
             this.sandbox.dom.append(this.$el, $overlay);
@@ -213,10 +218,27 @@ define([], function() {
                         openOnStart: true,
                         removeOnClose: true,
                         skin: 'wide',
-                        instanceName: 'editable-data-overlay',
+                        instanceName: this.options.instanceName,
                         data: overlayContent,
                         okCallback: '',
                         closeCallback: ''
+                    }
+                }
+            ]);
+        },
+
+        /**
+         * starts the select component within the overlay and sets the data
+         */
+        initOverlayForm = function(){
+            this.sandbox.start([
+                {
+                    name: 'select@husky',
+                    options: {
+                        el: this.options.selectSelector,
+                        instanceName: this.options.instanceName,
+                        valueName: 'fullAddress',
+                        data: this.data
                     }
                 }
             ]);
