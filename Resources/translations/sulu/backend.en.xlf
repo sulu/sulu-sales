@@ -58,9 +58,13 @@
                 <source>salesorder.orders.confirm</source>
                 <target>Confirm order</target>
             </trans-unit>
-            <trans-unit id="a50accg2ac181350142c0b4720e29f15" resname="salesorder.orders.edit
+            <trans-unit id="a50accg2ac181350142c0b4720e29f15" resname="salesorder.orders.edit">
                 <source>salesorder.orders.edit</source>
                 <target>Edit order</target>
+            </trans-unit>
+            <trans-unit id="a50accg2ac181350142c0b4720e29f16" resname="salesorder.order.shipping.create">
+                <source>salesorder.order.shipping.create</source>
+                <target>Create an order</target>
             </trans-unit>
         </body>
     </file>

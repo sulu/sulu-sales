@@ -30,8 +30,7 @@ define([], function() {
          */
         setHeaderToolbar = function() {
 
-            var orderStatus, orderStatusId,
-                toolbarItems = [
+            var toolbarItems = [
                     {
                         id: 'save-button',
                         icon: 'floppy-o',
@@ -61,7 +60,7 @@ define([], function() {
                     ]
                 },
                 workflow = {
-                    icon: 'hand-o-left',
+                    icon: 'hand-o-right',
                     iconSize: 'large',
                     group: 'left',
                     id: 'workflow',
@@ -76,21 +75,31 @@ define([], function() {
                     edit: {
                         title: this.sandbox.translate('salesorder.order.edit'),
                         callback: editOrder.bind(this)
+                    },
+                    shipping: {
+                        title: this.sandbox.translate('salesorder.order.shipping.create'),
+                        callback: createShipping.bind(this)
+                    },
+                    divider: {
+                        divider: true
                     }
                 };
 
             // show settings template is order already saved
             if (this.options.data.id) {
 
-                orderStatus = getOrderStatus.call(this);
-                orderStatusId = !!orderStatus ? orderStatus.id : null;
-
                 // define workflow based on orderStatus
                 // TODO: get statuses from backend
-                if (orderStatusId === 1) {
+                if (this.orderStatusId === 1) {
                     workflow.items.push(workflowItems.confirm);
-                } else if (orderStatusId=== 3) {
+                } else if (this.orderStatusId === 3) {
                     workflow.items.push(workflowItems.edit);
+                }
+
+                // more than in cart
+                if (this.orderStatusId > 2) {
+                    workflow.items.push(workflowItems.divider);
+                    workflow.items.push(workflowItems.shipping);
                 }
 
                 // add settings items
@@ -127,6 +136,15 @@ define([], function() {
         },
 
         /**
+         * create a shipping, checks for unsaved data and shows a warning
+         */
+        createShipping = function() {
+            checkForUnsavedData.call(this, function() {
+                this.sandbox.emit('sulu.salesorder.shipping.create');
+            });
+        },
+
+        /**
          * checks for unsaved data. if unsaved, a dialog is shown, else immediately proceed
          * @param callback - called when no unsaved data, or warning was confirmed
          */
@@ -140,24 +158,23 @@ define([], function() {
                 // show dialog
                 this.sandbox.emit('sulu.overlay.show-warning',
                     'sulu.overlay.be-careful',
-                    'sulu.overlay.unsaved-changes',
+                    'sulu.overlay.unsaved-changes-confirm',
                     null,
                     callback.bind(this)
                 );
             }
             // otherwise proceed
             else {
-                callback.bind(this);
+                callback.call(this);
             }
         },
 
         /**
          * get status of current order
-         * @returns
          */
-        getOrderStatus = function() {
+        getOrderStatusId = function() {
             return (!!this.options.data && !!this.options.data.status) ?
-                this.options.data.status : null;
+                this.options.data.status.id : null;
         },
 
         /**
@@ -178,6 +195,9 @@ define([], function() {
             }, this);
 
             this.sandbox.on('husky.auto-complete.' + this.accountInstanceName + '.initialized', function() {
+                if (!this.isEditable) {
+                    this.sandbox.dom.attr(this.$find(constants.accountInputId + ' input'), 'disabled', 'disabled');
+                }
                 this.dfdAutoCompleteInitialized.resolve();
             }, this);
 
@@ -412,6 +432,13 @@ define([], function() {
                 this.dfdAllFieldsInitialized.resolve();
             }.bind(this));
 
+            this.orderStatusId = getOrderStatusId.call(this);
+
+            // set if form is editable
+            this.isEditable = true;
+            if (this.orderStatusId > 2) {
+                this.isEditable = false;
+            }
 
             // current id
             var id = this.options.data.id ? this.options.data.id : 'new';
@@ -448,7 +475,7 @@ define([], function() {
 
         render: function() {
 
-            this.sandbox.dom.html(this.$el, this.renderTemplate(this.templates[0]));
+            this.sandbox.dom.html(this.$el, this.renderTemplate(this.templates[0], {isEditable: this.isEditable}));
 
             var data = this.options.data;
 

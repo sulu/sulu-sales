@@ -35,6 +35,7 @@ define([
             // delete order
             this.sandbox.on('sulu.salesorder.order.delete', this.delOrder.bind(this));
 
+            // conversion events
             this.sandbox.on('sulu.salesorder.order.confirm', this.confirmOrder.bind(this));
             this.sandbox.on('sulu.salesorder.order.edit', this.editOrder.bind(this));
 
@@ -98,12 +99,14 @@ define([
                 type: 'post',
                 success: function(response) {
                     console.log('successfully changed status', response);
-                }
+                    this.loadOrder(this.order.id, true);
+                }.bind(this)
             });
         },
 
-        loadOrder: function(id) {
-            this.sandbox.emit('sulu.router.navigate', 'sales/orders/edit:' + id + '/details');
+        loadOrder: function(id, force) {
+            force = (force === true) ? true : false;
+            this.sandbox.emit('sulu.router.navigate', 'sales/orders/edit:' + id + '/details', true, false ,force);
         },
 
         // show confirmation and delete account
