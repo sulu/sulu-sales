@@ -54,12 +54,14 @@ define(['sulusalescore/components/editable-data-row/decorators/address-view'], f
 
             // triggered when new data is available
             this.sandbox.on('sulu.editable-data-row.' + this.options.instanceName + '.data.update', function(data, preselected) {
-                this.selectedData = preselected;
-                this.data = data;
 
                 if (!!preselected) {
-                    this.view.render();
+                    this.selectedData = preselected;
                 }
+
+                this.data = data;
+                this.view.render();
+
             }.bind(this));
 
             this.sandbox.on('sulu.editable-data-row.' + this.options.instanceName + '.overlay.initialize',
@@ -71,30 +73,36 @@ define(['sulusalescore/components/editable-data-row/decorators/address-view'], f
 
                     if((typeof data.okCallback === 'function' || !data.okCallback) &&
                         (typeof data.closeCallback === 'function' || !data.closeCallback)){
-                        initOverlay.call(this, data.overlayTemplate, data.overlayTitle, data.overlayOkCallback, data.overlayCloseCallback);
+                        initOverlay.call(this,
+                            data.overlayTemplate,
+                            data.overlayTitle,
+                            data.overlayOkCallback,
+                            data.overlayCloseCallback,
+                            data.overlayData
+                        );
                     } else {
                         this.sandbox.logger.error('Editable-Data-Row: Invalid callbacks for overlay!');
                     }
 
                 }.bind(this)
             );
-
-            // trigger init of form when overlay is open
-            this.sandbox.on('husky.overlay.'+this.options.instanceName+'.opened', function(){
-                initOverlayForm.call(this);
-            }.bind(this));
         },
 
         /**
          * Inits the overlay with a specific template
          */
-        initOverlay = function(template, title, okCallback, closeCallback){
-            var $overlay, overlayContent;
+        initOverlay = function(template, title, okCallback, closeCallback, data){
+            var $overlay, overlayContent, templateData;
 
             $overlay = this.sandbox.dom.createElement('<div class="'+constants.overlayContainerClass+'"></div>');
             this.sandbox.dom.append(this.$el, $overlay);
 
-            overlayContent = this.sandbox.util.template(template, this.data);
+            templateData = {
+                data: data,
+                translate: this.sandbox.translate
+            };
+
+            overlayContent = this.sandbox.util.template(template, templateData);
 
             this.sandbox.start([
                 {
@@ -107,25 +115,8 @@ define(['sulusalescore/components/editable-data-row/decorators/address-view'], f
                         skin: 'wide',
                         instanceName: this.options.instanceName,
                         data: overlayContent,
-                        okCallback: okCallback(),
-                        closeCallback: closeCallback()
-                    }
-                }
-            ]);
-        },
-
-        /**
-         * starts the select component within the overlay and sets the data
-         */
-        initOverlayForm = function(){
-            this.sandbox.start([
-                {
-                    name: 'select@husky',
-                    options: {
-                        el: this.options.selectSelector,
-                        instanceName: this.options.instanceName,
-                        valueName: 'fullAddress',
-                        data: this.data
+                        okCallback: !!okCallback ? okCallback.bind(this) : null,
+                        closeCallback: !!closeCallback ? closeCallback.bind(this): null
                     }
                 }
             ]);
@@ -152,7 +143,6 @@ define(['sulusalescore/components/editable-data-row/decorators/address-view'], f
 
             this.selectedData = this.options.value;
             this.data = null;
-            this.dataFormat = this.options.dataFormat;
 
             // make a copy of the decorators for each editable-data-row instance
             // if you directly access the decorators variable the datagrid-context in the decorators will be overwritten

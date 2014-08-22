@@ -32,14 +32,16 @@ define(['text!sulusalescore/components/editable-data-row/templates/address.form.
             defaultProperty: null,
             overlayTemplate: null,
             overlayTitle: '',
-            selectSelector: 'address-select'
+            selectSelector: '#address-select'
         },
 
         constants = {
             rowClass: 'editable-row',
             rowClassSelector: '.editable-row',
 
-            overlayTitle: 'salesorder.orders.addressOverlayTitle'
+            overlayTitle: 'salesorder.orders.addressOverlayTitle',
+
+            formSelector: '.editable-data-overlay-form'
         },
 
         templates = {
@@ -48,11 +50,11 @@ define(['text!sulusalescore/components/editable-data-row/templates/address.form.
             }
         },
 
-        eventNamespace = 'sulu.editable-data-row.addres-view.',
+        eventNamespace = 'sulu.editable-data-row.address-view.',
 
         /**
          * raised when an item is changed
-         * @event sulu.editable-data-row.instanceName.initialized
+         * @event sulu.editable-data-row.address-view.instanceName.initialized
          */
         EVENT_INITIALIZED = function() {
             this.sandbox.emit(eventNamespace + this.options.instanceName + '.initialized');
@@ -63,6 +65,57 @@ define(['text!sulusalescore/components/editable-data-row/templates/address.form.
          */
         bindCustomEvents = function() {
 
+            // trigger init of form when overlay is open
+            this.sandbox.on('husky.overlay.'+this.context.options.instanceName+'.opened', function(){
+                initOverlayForm.call(this);
+            }.bind(this));
+        },
+
+        /**
+         * starts the select component within the overlay and sets the data
+         */
+        initOverlayForm = function(){
+
+            var selectData = flattenAddresses.call(this, this.context.data);
+            this.sandbox.start([
+                {
+                    name: 'select@husky',
+                    options: {
+                        el: this.options.selectSelector,
+                        instanceName: this.options.instanceName,
+                        valueName: 'fullAddress',
+                        data: selectData
+                    }
+                }
+            ]);
+
+            startForm.call(this);
+        },
+
+        /**
+         * starts form
+         */
+        startForm = function(){
+            var $form = this.sandbox.dom.find(constants.formSelector, this.context.$el);
+
+            this.formObject = this.sandbox.form.create($form);
+
+            this.formObject.initialized.then(function() {
+                if(!!this.context.selectedData) {
+                    setFormData.call(this, $form, this.context.selectedData);
+                }
+            }.bind(this));
+        },
+
+        /**
+         * sets data on form
+         * @param $form
+         * @param data
+         */
+        setFormData = function($form, data){
+            this.sandbox.form.setData(this.formObject, data).fail(function(error) {
+                this.sandbox.logger.error("An error occured when setting data!", error);
+            }.bind(this));
         },
 
         /**
@@ -77,7 +130,8 @@ define(['text!sulusalescore/components/editable-data-row/templates/address.form.
                         overlayTemplate: AddressTemplate,
                         overlayTitle: constants.overlayTitle,
                         overlayOkCallback: null,
-                        overlayCloseCallback: null
+                        overlayCloseCallback: null,
+                        overlayData: this.context.data
                     }
                 );
             }.bind(this), constants.rowClassSelector);
@@ -130,7 +184,7 @@ define(['text!sulusalescore/components/editable-data-row/templates/address.form.
 
         /**
          * Returns the address according to the defined format
-         * @param data
+         * @param address
          * @returns {*}
          */
         getAddressString = function(address){
@@ -147,10 +201,6 @@ define(['text!sulusalescore/components/editable-data-row/templates/address.form.
     return {
 
         initialize: function(context, options) {
-
-
-//            data-aura-overlay-title="salesorder.orders.addressOverlayTitle"
-//            data-aura-select-selector="#address-select"
 
             this.context = context;
             this.sandbox = this.context.sandbox;
