@@ -58,6 +58,14 @@
                 <source>salesorder.orders.addressOverlayTitle</source>
                 <target>Adresse auswählen oder hinzufügen</target>
             </trans-unit>
+            <trans-unit id="a50accg2ac181350142c0b4720e29f15" resname="salesorder.orders.addressOverlayWarningTitle">
+                <source>salesorder.orders.addressOverlayWarningTitle</source>
+                <target>Hinweis</target>
+            </trans-unit>
+            <trans-unit id="a50accg2ac181350142c0b4720e29f16" resname="salesorder.orders.addressOverlayWarningMessage">
+                <source>salesorder.orders.addressOverlayWarningMessage</source>
+                <target>Diese Adresse wird nur für den aktuellen Auftrag übernommen!</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>
