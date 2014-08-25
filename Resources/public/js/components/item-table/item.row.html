@@ -1,4 +1,8 @@
-<% var disabled = rowClass === 'new' ? 'disabled' : '' ; %>
+<% var disabled = '';
+if (rowClass === 'new' || isEditable == 'false' || isEditable == false) {
+disabled =  'disabled';
+}
+%>
 
 <tr id="<%= rowId %>" class="item-table-row <%= rowClass %>" data-id="<%= id %>">
     <td class="row-number"></td>
