@@ -394,10 +394,12 @@ define([], function() {
             // load addresses of account
             this.sandbox.util.load(this.sandbox.util.template(constants.accountAddressesUrl, {id: id}))
                 .then(function(response) {
+
+                    // is already refactored in another branch
                     data = response._embedded.addresses;
-                    preselect = !!orderData && orderData.deliveryAddress ? [orderData.deliveryAddress.address.id] : null;
+                    preselect = !!orderData && orderData.deliveryAddress ? [orderData.deliveryAddress.address] : null;
                     initAddressSelect.call(this, data, constants.deliveryAddressInstanceName, preselect);
-                    preselect = !!orderData && orderData.invoiceAddress ? [orderData.invoiceAddress.address.id] : null;
+                    preselect = !!orderData && orderData.invoiceAddress ? [orderData.invoiceAddress.address] : null;
                     initAddressSelect.call(this, data, constants.paymentAddressInstanceName, preselect);
                 }.bind(this))
                 .fail(function(textStatus, error) {
@@ -444,7 +446,6 @@ define([], function() {
             var id = this.options.data.id ? this.options.data.id : 'new';
 
             this.accountInstanceName = 'customerAccount' + id;
-
 
             // bind events
             bindCustomEvents.call(this);

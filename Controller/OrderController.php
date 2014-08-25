@@ -31,6 +31,7 @@ use FOS\RestBundle\Controller\Annotations\Post;
 
 /**
  * Makes orders available through a REST API
+ *
  * @package Sulu\Bundle\Sales\OrderBundle\Controller
  */
 class OrderController extends RestController implements ClassResourceInterface
@@ -51,12 +52,14 @@ class OrderController extends RestController implements ClassResourceInterface
 
     /**
      * returns all fields that can be used by list
+     *
      * @param Request $request
      * @return \Symfony\Component\HttpFoundation\Response
      */
     public function fieldsAction(Request $request)
     {
         $locale = $this->getLocale($request);
+
         // default contacts list
         return $this->handleView($this->view(array_values($this->getManager()->getFieldDescriptors($locale)), 200));
     }
@@ -112,6 +115,7 @@ class OrderController extends RestController implements ClassResourceInterface
         }
 
         $view = $this->view($list, 200);
+
         return $this->handleView($view);
     }
 
@@ -127,7 +131,7 @@ class OrderController extends RestController implements ClassResourceInterface
         $locale = $this->getLocale($request);
         $view = $this->responseGetById(
             $id,
-            function ($id) use ($locale){
+            function ($id) use ($locale) {
                 /** @var Order $order */
                 $order = $this->getManager()->findByIdAndLocale($id, $locale);
 
@@ -205,13 +209,13 @@ class OrderController extends RestController implements ClassResourceInterface
      */
     public function postTriggerAction($id, Request $request)
     {
-        $action = $request->get('action');
+        $status = $request->get('action');
         $em = $this->getDoctrine()->getManager();
 
         try {
             $order = $this->getManager()->findByIdAndLocale($id, $this->getLocale($request));
 
-            switch ($action) {
+            switch ($status) {
                 case 'confirm':
                     $this->getManager()->convertStatus($order, OrderStatus::STATUS_CONFIRMED);
 
@@ -223,7 +227,7 @@ class OrderController extends RestController implements ClassResourceInterface
                     $em->flush();
                     break;
                 default:
-                    throw new RestException("Unrecognized action: " . $action);
+                    throw new RestException("Unrecognized status: " . $status);
 
             }
             $view = $this->view($order, 200);
@@ -246,7 +250,7 @@ class OrderController extends RestController implements ClassResourceInterface
     {
         $locale = $this->getLocale($request);
 
-        $delete = function ($id) use ($locale){
+        $delete = function ($id) use ($locale) {
             $this->getManager()->delete($id, $this->getUser()->getId());
         };
         $view = $this->responseDelete($id, $delete);
