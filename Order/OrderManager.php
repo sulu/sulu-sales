@@ -178,7 +178,7 @@ class OrderManager
 
         // set OrderAddress data
         $this->setOrderAddress($order->getDeliveryAddress(), $data['deliveryAddress'], $contact, $account);
-        $this->setOrderAddress($order->getInvoiceAddress(), $data['paymentAddress'], $contact, $account);
+        $this->setOrderAddress($order->getInvoiceAddress(), $data['invoiceAddress'], $contact, $account);
 
         // handle items
         if (!$this->processItems($data, $order, $locale, $userId)) {
@@ -366,7 +366,7 @@ class OrderManager
         // check if contact and status are set
         $this->checkDataSet($data, 'contact', $isNew) && $this->checkDataSet($data['contact'], 'id', $isNew);
         $this->checkDataSet($data, 'deliveryAddress', $isNew);
-        $this->checkDataSet($data, 'paymentAddress', $isNew);
+        $this->checkDataSet($data, 'invoiceAddress', $isNew);
     }
 
     /**

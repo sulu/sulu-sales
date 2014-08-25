@@ -72,6 +72,18 @@ define([], function() {
             this.sandbox.on('sulu.editable-data-row.invoice-address.initialized', function(){
                 this.dfdInvoiceAddressInitialized.resolve();
             }.bind(this));
+
+            this.sandbox.on('sulu.editable-data-row.address-view.delivery-address.changed', function(data){
+                this.options.data.deliveryAddress = data;
+                setFormData.call(this, this.options.data);
+                changeHandler.call(this);
+            }.bind(this));
+
+            this.sandbox.on('sulu.editable-data-row.address-view.invoice-address.changed', function(data){
+                this.options.data.invoiceAddress = data;
+                setFormData.call(this, this.options.data);
+                changeHandler.call(this);
+            }.bind(this));
         },
 
         /**
@@ -172,7 +184,7 @@ define([], function() {
          * @param instanceName
          * @param preselectedElement
          */
-        initAddressSelect = function(data, instanceName, preselectedElement) {
+        initAddressComponents = function(data, instanceName, preselectedElement) {
             this.sandbox.emit('sulu.editable-data-row.'+ instanceName+ '.data.update', data, preselectedElement);
         },
 
@@ -192,8 +204,8 @@ define([], function() {
                     initSelectsByAccountId.call(this, id);
                 } else {
                     initContactSelect.call(this, []);
-                    initAddressSelect.call(this, [], constants.deliveryAddressInstanceName);
-                    initAddressSelect.call(this, [], constants.paymentAddressInstanceName);
+                    initAddressComponents.call(this, [], constants.deliveryAddressInstanceName);
+                    initAddressComponents.call(this, [], constants.paymentAddressInstanceName);
                 }
             }
         },
@@ -202,7 +214,7 @@ define([], function() {
          * called when headerbar should be saveable
          * @param event
          */
-        changeHandler = function(event) {
+        changeHandler = function() {
             this.setHeaderBar(false);
         },
 
@@ -235,7 +247,9 @@ define([], function() {
                         preselect = findAddressWherePropertyIs.call(this, data, 'deliveryAddress', true);
                     }
                     this.sandbox.data.when(this.dfdDeliveryAddressInitialized).then(function(){
-                        initAddressSelect.call(this, data, constants.deliveryAddressInstanceName, preselect);
+                        initAddressComponents.call(this, data, constants.deliveryAddressInstanceName, preselect);
+                        this.options.data.deliveryAddress = preselect;
+                        setFormData.call(this, this.options.data);
                     }.bind(this));
 
                     preselect = null;
@@ -245,7 +259,9 @@ define([], function() {
                     }
 
                     this.sandbox.data.when(this.dfdInvoiceAddressInitialized).then(function(){
-                        initAddressSelect.call(this, data, constants.paymentAddressInstanceName, preselect);
+                        initAddressComponents.call(this, data, constants.paymentAddressInstanceName, preselect);
+                        this.options.data.invoiceAddress = preselect;
+                        setFormData.call(this, this.options.data);
                     }.bind(this));
 
                 }.bind(this))
