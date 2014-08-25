@@ -15,6 +15,7 @@
  * @param {String} [options.instanceName] instance name of the component and its subcomponents
  * @param {String} [options.view] view name
  * @param {Object} [options.viewOptions] options for the view
+ * @param {Object} [options.disabled] disables interaction by default
  */
 define(['sulusalescore/components/editable-data-row/decorators/address-view'], function(AddressView) {
 
@@ -23,11 +24,12 @@ define(['sulusalescore/components/editable-data-row/decorators/address-view'], f
     var defaults = {
             view: 'address',
             viewOptions: {},
-            instanceName: 'undefined'
+            instanceName: 'undefined',
+            disabled: false
         },
 
         decorators = {
-           address: AddressView
+            address: AddressView
         },
 
         constants = {
@@ -40,8 +42,8 @@ define(['sulusalescore/components/editable-data-row/decorators/address-view'], f
         eventNamespace = 'sulu.editable-data-row.',
 
         /**
-         * raised when an item is changed
-         * @event sulu.editable-data-row.instanceName.initialized
+         * raised when the instance is initialized
+         * @event sulu.editable-data-row.[instanceName].initialized
          */
         EVENT_INITIALIZED = function() {
             this.sandbox.emit(eventNamespace + this.options.instanceName + '.initialized');
@@ -51,50 +53,51 @@ define(['sulusalescore/components/editable-data-row/decorators/address-view'], f
          * bind custom events
          */
         bindCustomEvents = function() {
-
-            // triggered when new data is available
-            this.sandbox.on('sulu.editable-data-row.' + this.options.instanceName + '.data.update', function(data, preselected) {
-
-                if (!!preselected) {
-                    this.selectedData = preselected;
-                }
-
-                this.data = data;
-                this.view.render();
-
-            }.bind(this));
-
-            this.sandbox.on('sulu.editable-data-row.' + this.options.instanceName + '.overlay.initialize',
-                function(data) {
-
-                    if(!data.overlayTemplate){
-                        this.sandbox.logger.error('No template for overlay defined!');
+            if (!this.options.disabled) {
+                // triggered when new data is available
+                this.sandbox.on('sulu.editable-data-row.' + this.options.instanceName + '.data.update', function(data, preselected) {
+                    if (!!preselected) {
+                        this.selectedData = preselected;
                     }
 
-                    if((typeof data.okCallback === 'function' || !data.okCallback) &&
-                        (typeof data.closeCallback === 'function' || !data.closeCallback)){
-                        initOverlay.call(this,
-                            data.overlayTemplate,
-                            data.overlayTitle,
-                            data.overlayOkCallback,
-                            data.overlayCloseCallback,
-                            data.overlayData
-                        );
-                    } else {
-                        this.sandbox.logger.error('Editable-Data-Row: Invalid callbacks for overlay!');
-                    }
+                    this.data = data;
+                    this.view.render();
+                }.bind(this));
 
-                }.bind(this)
-            );
+                // initialize overlay with template, title, callbacks and data
+                this.sandbox.on('sulu.editable-data-row.' + this.options.instanceName + '.overlay.initialize',
+                    function(data) {
+                        if (!data.overlayTemplate) {
+                            this.sandbox.logger.error('No template for overlay defined!');
+                        }
+
+                        if ((typeof data.okCallback === 'function' || !data.okCallback) &&
+                            (typeof data.closeCallback === 'function' || !data.closeCallback)) {
+                            initOverlay.call(this,
+                                data.overlayTemplate,
+                                data.overlayTitle,
+                                data.overlayOkCallback,
+                                data.overlayCloseCallback,
+                                data.overlayData
+                            );
+                        } else {
+                            this.sandbox.logger.error('Editable-Data-Row: Invalid callbacks for overlay!');
+                        }
+                    }.bind(this)
+                );
+            }
         },
 
         /**
          * Inits the overlay with a specific template
          */
-        initOverlay = function(template, title, okCallback, closeCallback, data){
+        initOverlay = function(template, title, okCallback, closeCallback, data) {
             var $overlay, overlayContent, templateData;
 
-            $overlay = this.sandbox.dom.createElement('<div class="'+constants.overlayContainerClass+'"></div>');
+            // prevent multiple initialization of the overlay
+            this.sandbox.stop(this.sandbox.dom.find(constants.overlayContainerClassSelector, this.$el));
+
+            $overlay = this.sandbox.dom.createElement('<div class="' + constants.overlayContainerClass + '"></div>');
             this.sandbox.dom.append(this.$el, $overlay);
 
             templateData = {
@@ -111,12 +114,12 @@ define(['sulusalescore/components/editable-data-row/decorators/address-view'], f
                         el: $overlay,
                         title: this.sandbox.translate(title),
                         openOnStart: true,
-                        removeOnClose: true,
+                        removeOnClose: false,
                         skin: 'wide',
                         instanceName: this.options.instanceName,
                         data: overlayContent,
                         okCallback: !!okCallback ? okCallback.bind(this) : null,
-                        closeCallback: !!closeCallback ? closeCallback.bind(this): null
+                        closeCallback: !!closeCallback ? closeCallback.bind(this) : null
                     }
                 }
             ]);
@@ -127,7 +130,7 @@ define(['sulusalescore/components/editable-data-row/decorators/address-view'], f
          * @param view
          */
         isViewValid = function(view) {
-            if(typeof view.initialize === 'function' &&
+            if (typeof view.initialize === 'function' &&
                 typeof view.render === 'function') {
                 return true;
             }
@@ -150,7 +153,7 @@ define(['sulusalescore/components/editable-data-row/decorators/address-view'], f
             this.viewId = this.options.view;
             this.view = this.decorators[this.viewId];
 
-            if(!!this.view && !!isViewValid.call(this, this.view)){
+            if (!!this.view && !!isViewValid.call(this, this.view)) {
                 this.options.viewOptions.instanceName = this.options.instanceName;
                 this.view.initialize(this, this.options.viewOptions);
             } else {
@@ -161,7 +164,7 @@ define(['sulusalescore/components/editable-data-row/decorators/address-view'], f
             // event listener
             bindCustomEvents.call(this);
 
-            if(!!this.selectedData){
+            if (!!this.selectedData) {
                 this.render();
             }
 
@@ -182,7 +185,7 @@ define(['sulusalescore/components/editable-data-row/decorators/address-view'], f
 
         },
 
-        render: function(){
+        render: function() {
             this.view.render();
         }
     };

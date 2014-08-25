@@ -61,32 +61,86 @@ define(['text!sulusalescore/components/editable-data-row/templates/address.form.
         },
 
         /**
+         * raised when something is changed - should be used by subcomponents
+         * @event sulu.editable-data-row.[instanceName].changed
+         * @param data
+         */
+        CHANGED_EVENT = function(data) {
+            this.sandbox.emit(eventNamespace + this.options.instanceName + '.changed', data);
+        },
+
+        /**
          * bind custom events
          */
         bindCustomEvents = function() {
+            if (!this.context.disabled) {
+                // trigger init of form when overlay is open
+                this.sandbox.on('husky.overlay.' + this.context.options.instanceName + '.opened', function() {
+                    if (!this.openedDialog) {
+                        initOverlayForm.call(this);
+                    }
+                    this.openedDialog = false;
+                }.bind(this));
 
-            // trigger init of form when overlay is open
-            this.sandbox.on('husky.overlay.'+this.context.options.instanceName+'.opened', function(){
-                initOverlayForm.call(this);
-            }.bind(this));
+                this.sandbox.on('husky.overlay.' + this.options.instanceName + '.initialized', function() {
+                    this.openedDialog = false;
+                }.bind(this));
 
-            this.sandbox.on('husky.select.'+this.options.instanceName+'.select.selected.item', function (id){
+                // set data on form from selected address
+                this.sandbox.on('husky.select.' + this.options.instanceName + '.select.selected.item', function(id) {
+                    var adr = getAddressById.call(this, id);
+                    setFormData.call(this, adr);
+                }.bind(this));
+            }
+        },
 
-                var adr = getAddressById.call(this, id);
-                setFormData.call(this, adr);
+        /**
+         * @var ids - array of ids to delete
+         * @var callback - callback function returns true or false if data got deleted
+         */
+        showInformationDialog = function() {
 
-            }.bind(this));
+            // hide overlay
+            this.sandbox.emit('husky.overlay.' + this.context.options.instanceName + '.close');
+
+            // show dialog
+            this.sandbox.emit('sulu.overlay.show-warning',
+                'salesorder.orders.addressOverlayWarningTitle',
+                'salesorder.orders.addressOverlayWarningMessage',
+                handleDialogClick.bind(this, false),
+                handleDialogClick.bind(this, true)
+            );
+
+            this.openedDialog = true;
+        },
+
+        /**
+         * Handles closing of dialog
+         * @param accepted
+         */
+        handleDialogClick = function(accepted) {
+
+            if (!accepted) {
+                this.sandbox.emit('husky.overlay.' + this.context.options.instanceName + '.open');
+            } else {
+                var data = this.sandbox.form.getData(this.formObject, true);
+                // merge changed address data with old data
+                this.context.selectedData = this.sandbox.util.extend({}, this.context.selectedData, data);
+
+                CHANGED_EVENT.call(this, this.context.selectedData);
+                renderRow.call(this, this.context.selectedData);
+            }
         },
 
         /**
          * returns address by id
          * @param id
          */
-        getAddressById = function(id){
+        getAddressById = function(id) {
             var address = null;
 
-            this.sandbox.util.each(this.context.data, function(index,adr){
-                if(adr.id.toString() === id){
+            this.sandbox.util.each(this.context.data, function(index, adr) {
+                if (adr.id.toString() === id) {
                     address = adr;
                     return false;
                 }
@@ -98,17 +152,20 @@ define(['text!sulusalescore/components/editable-data-row/templates/address.form.
         /**
          * starts the select component within the overlay and sets the data
          */
-        initOverlayForm = function(){
+        initOverlayForm = function() {
 
-            var selectData = flattenAddresses.call(this, this.context.data);
+            var selectData = flattenAddresses.call(this, this.context.data),
+                $selectContainer = this.sandbox.dom.find(this.options.selectSelector, this.$el);
+
             this.sandbox.start([
                 {
                     name: 'select@husky',
                     options: {
-                        el: this.options.selectSelector,
-                        instanceName: this.options.instanceName+'.select',
+                        el: $selectContainer,
+                        instanceName: this.options.instanceName + '.select',
                         valueName: 'fullAddress',
-                        data: selectData
+                        data: selectData,
+                        defaultLabel: this.sandbox.translate('public.please-choose')
                     }
                 }
             ]);
@@ -119,13 +176,13 @@ define(['text!sulusalescore/components/editable-data-row/templates/address.form.
         /**
          * starts form
          */
-        startForm = function(){
+        startForm = function() {
             var $form = this.sandbox.dom.find(constants.formSelector, this.context.$el);
 
             this.formObject = this.sandbox.form.create($form);
 
             this.formObject.initialized.then(function() {
-                if(!!this.context.selectedData) {
+                if (!!this.context.selectedData) {
                     setFormData.call(this, this.context.selectedData);
                 }
             }.bind(this));
@@ -133,10 +190,9 @@ define(['text!sulusalescore/components/editable-data-row/templates/address.form.
 
         /**
          * sets data on form
-         * @param $form
          * @param data
          */
-        setFormData = function(data){
+        setFormData = function(data) {
             this.sandbox.form.setData(this.formObject, data).fail(function(error) {
                 this.sandbox.logger.error("An error occured when setting data!", error);
             }.bind(this));
@@ -153,7 +209,7 @@ define(['text!sulusalescore/components/editable-data-row/templates/address.form.
                     {
                         overlayTemplate: AddressTemplate,
                         overlayTitle: constants.overlayTitle,
-                        overlayOkCallback: null,
+                        overlayOkCallback: showInformationDialog.bind(this),
                         overlayCloseCallback: null,
                         overlayData: this.context.data
                     }
@@ -168,8 +224,8 @@ define(['text!sulusalescore/components/editable-data-row/templates/address.form.
          */
         flattenAddresses = function(data) {
 
-            if(!!data && this.sandbox.util.typeOf(data) === 'array'){
-                this.sandbox.util.foreach(data, function(address){
+            if (!!data && this.sandbox.util.typeOf(data) === 'array') {
+                this.sandbox.util.foreach(data, function(address) {
                     if (!!address && !!address.country && !!address.country.name) {
                         address.country = address.country.name;
                     }
@@ -211,13 +267,13 @@ define(['text!sulusalescore/components/editable-data-row/templates/address.form.
          * @param address
          * @returns {*}
          */
-        getAddressString = function(address){
+        getAddressString = function(address) {
             var str = address.street;
 
-            str+= !!str.length && !!address.number ? ' '+address.number : address.number;
-            str+= !!str.length && !!address.zip ? ', '+address.zip : '';
-            str+= !!str.length && !!address.city ? ' '+address.city : address.city;
-            str+= !!str.length && !!address.country ? ', '+address.country : address.country;
+            str += !!str.length && !!address.number ? ' ' + address.number : address.number;
+            str += !!str.length && !!address.zip ? ', ' + address.zip : '';
+            str += !!str.length && !!address.city ? ' ' + address.city : address.city;
+            str += !!str.length && !!address.country ? ', ' + address.country : address.country;
 
             return str;
         };
@@ -229,6 +285,7 @@ define(['text!sulusalescore/components/editable-data-row/templates/address.form.
             this.context = context;
             this.sandbox = this.context.sandbox;
             this.options = this.sandbox.util.extend({}, defaults, options);
+            this.openedDialog = false; // used to determine if form is accessed via dialog or not
 
             bindCustomEvents.call(this);
             bindDomEvents.call(this);
@@ -236,10 +293,14 @@ define(['text!sulusalescore/components/editable-data-row/templates/address.form.
             EVENT_INITIALIZED.call(this);
         },
 
-        render: function(){
+        render: function() {
             renderRow.call(this, this.context.selectedData);
         }
 
+
+        // TODO get data and save
+        // TODO disabled state for component
+        // TODO test change of account
 
     };
 });
