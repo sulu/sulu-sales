@@ -574,7 +574,7 @@ class OrderControllerTest extends DatabaseTestCase
                 'account' => array(
                     'id' => 1
                 ),
-                'paymentAddress' => array(
+                'invoiceAddress' => array(
                     'street' => 'Sample-Street',
                     'number' => '12',
                     'addition' => 'Entrance 2',
@@ -631,7 +631,7 @@ class OrderControllerTest extends DatabaseTestCase
             'contact' => array(
                 'id' => 1
             ),
-            'paymentAddress' => array(
+            'invoiceAddress' => array(
                 'street' => 'Sample-Street',
                 'number' => '12',
                 'addition' => 'Entrance 2',
@@ -683,7 +683,7 @@ class OrderControllerTest extends DatabaseTestCase
             'contact' => array(
                 'id' => 1
             ),
-            'paymentAddress' => array(
+            'invoiceAddress' => array(
                 'street' => 'Sample-Street',
                 'number' => '12',
                 'addition' => 'Entrance 2',
