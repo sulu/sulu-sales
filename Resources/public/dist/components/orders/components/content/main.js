@@ -1,0 +1,1 @@
+define(function(){"use strict";return{header:{tabs:{url:"/admin/order/navigation/order"},toolbar:{template:[]}}}});
