@@ -218,18 +218,16 @@ class OrderController extends RestController implements ClassResourceInterface
             switch ($status) {
                 case 'confirm':
                     $this->getManager()->convertStatus($order, OrderStatus::STATUS_CONFIRMED);
-
-                    $em->flush();
                     break;
                 case 'edit':
                     $this->getManager()->convertStatus($order, OrderStatus::STATUS_CREATED);
-
-                    $em->flush();
                     break;
                 default:
                     throw new RestException("Unrecognized status: " . $status);
 
             }
+
+            $em->flush();
             $view = $this->view($order, 200);
         } catch (OrderNotFoundException $exc) {
             $exception = new EntityNotFoundException($exc->getEntityName(), $exc->getId());
