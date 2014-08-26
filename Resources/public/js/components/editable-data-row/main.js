@@ -61,7 +61,7 @@ define(['sulusalescore/components/editable-data-row/decorators/address-view'], f
                     }
 
                     this.data = data;
-                    this.view.render();
+                    this.overlayView.render();
                 }.bind(this));
 
                 // initialize overlay with template, title, callbacks and data
@@ -130,11 +130,8 @@ define(['sulusalescore/components/editable-data-row/decorators/address-view'], f
          * @param view
          */
         isViewValid = function(view) {
-            if (typeof view.initialize === 'function' &&
-                typeof view.render === 'function') {
-                return true;
-            }
-            return false;
+            return !!(typeof view.initialize === 'function' &&
+                typeof view.render === 'function');
         };
 
     return {
@@ -148,20 +145,19 @@ define(['sulusalescore/components/editable-data-row/decorators/address-view'], f
             this.data = null;
 
             // make a copy of the decorators for each editable-data-row instance
-            // if you directly access the decorators variable the datagrid-context in the decorators will be overwritten
+            // if you directly access the decorators variable the editable-data-row-context in the decorators will be overwritten
             this.decorators = this.sandbox.util.extend(true, {}, decorators);
             this.viewId = this.options.view;
-            this.view = this.decorators[this.viewId];
+            this.overlayView = this.decorators[this.viewId];
 
-            if (!!this.view && !!isViewValid.call(this, this.view)) {
+            if (!!this.overlayView && !!isViewValid.call(this, this.overlayView)) {
                 this.options.viewOptions.instanceName = this.options.instanceName;
-                this.view.initialize(this, this.options.viewOptions);
+                this.overlayView.initialize(this, this.options.viewOptions);
             } else {
                 this.sandbox.logger.error("Editable-Data-Row: View is not valid!");
                 return;
             }
 
-            // event listener
             bindCustomEvents.call(this);
 
             if (!!this.selectedData) {
@@ -169,24 +165,10 @@ define(['sulusalescore/components/editable-data-row/decorators/address-view'], f
             }
 
             EVENT_INITIALIZED.call(this);
-
-            // TODO
-
-//            3. Klick-Event zum Öffnen des Overlays
-//            4. Darstellen des übergebenen Formulars
-//            5. Aktuell ausgewählter Eintrag wird in Formular eingetragen
-//            6. Beim Wechseln wird Formular aktualisiert
-//            7. Formularfelder können überschrieben werden
-//            8. Werte in Formularfeldern sind Rückgabewert
-//
-//            - Daten werden via Event aktualisiert
-//            - Warten für Select-Data via Event
-//            - Ausnahme wenn kein Event mit Daten geworfen
-
         },
 
         render: function() {
-            this.view.render();
+            this.overlayView.render();
         }
     };
 });
