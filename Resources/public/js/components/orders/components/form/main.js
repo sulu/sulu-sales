@@ -68,15 +68,15 @@ define([], function() {
                 },
                 workflowItems = {
                     confirm: {
-                        title: this.sandbox.translate('salesorder.order.confirm'),
+                        title: this.sandbox.translate('salesorder.orders.confirm'),
                         callback: confirmOrder.bind(this)
                     },
                     edit: {
-                        title: this.sandbox.translate('salesorder.order.edit'),
+                        title: this.sandbox.translate('salesorder.orders.edit'),
                         callback: editOrder.bind(this)
                     },
                     shipping: {
-                        title: this.sandbox.translate('salesorder.order.shipping.create'),
+                        title: this.sandbox.translate('salesorder.orders.shipping.create'),
                         callback: createShipping.bind(this)
                     },
                     divider: {
