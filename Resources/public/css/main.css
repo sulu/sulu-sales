@@ -127,3 +127,8 @@ body {
   font-weight: bold;
   border-top: 1px solid #ccc;
 }
+
+/* line 1, ../scss/modules/editable-data-row.scss */
+.disabled .editable-row {
+  cursor: auto !important;
+}

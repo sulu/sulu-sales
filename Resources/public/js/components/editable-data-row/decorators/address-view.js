@@ -45,7 +45,12 @@ define(['text!sulusalescore/components/editable-data-row/templates/address.form.
         },
 
         templates = {
-            rowTemplate: function(value) {
+            rowTemplate: function(value, disabled) {
+
+                if (!!disabled) {
+                    return ['<span class="block ', constants.rowClass , ' disabled">', value, '</span>'].join('');
+                }
+
                 return ['<span class="block pointer ', constants.rowClass , '">', value, '</span>'].join('');
             }
         },
@@ -257,7 +262,7 @@ define(['text!sulusalescore/components/editable-data-row/templates/address.form.
 
             if (!!data) {
                 address = flattenAddresses.call(this, data);
-                $row = this.sandbox.dom.createElement(templates.rowTemplate(address.fullAddress));
+                $row = this.sandbox.dom.createElement(templates.rowTemplate(address.fullAddress, this.context.options.disabled));
                 this.sandbox.dom.append(this.context.$el, $row);
             }
         },
