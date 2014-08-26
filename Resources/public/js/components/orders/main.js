@@ -35,6 +35,10 @@ define([
             // delete order
             this.sandbox.on('sulu.salesorder.order.delete', this.delOrder.bind(this));
 
+            // conversion events
+            this.sandbox.on('sulu.salesorder.order.confirm', this.confirmOrder.bind(this));
+            this.sandbox.on('sulu.salesorder.order.edit', this.editOrder.bind(this));
+
             // save the current package
             this.sandbox.on('sulu.salesorder.order.save', this.saveOrder.bind(this));
 
@@ -67,8 +71,42 @@ define([
 //            }.bind(this), '#main-contact');
         },
 
-        loadOrder: function(id) {
-            this.sandbox.emit('sulu.router.navigate', 'sales/orders/edit:' + id + '/details');
+        /**
+         * confirm an order
+         */
+        confirmOrder: function() {
+            this.convertStatus('confirm');
+        },
+
+        /**
+         * edit an order, which is already confirmed
+         */
+        editOrder: function() {
+            this.convertStatus('edit');
+        },
+
+        /**
+         * convert status of an order
+         * @param statusString
+         */
+        convertStatus: function(statusString) {
+            // set action
+            this.order.set({
+                action: statusString
+            });
+
+            this.order.save(null, {
+                type: 'post',
+                success: function(response) {
+                    console.log('successfully changed status', response);
+                    this.loadOrder(this.order.id, true);
+                }.bind(this)
+            });
+        },
+
+        loadOrder: function(id, force) {
+            force = (force === true) ? true : false;
+            this.sandbox.emit('sulu.router.navigate', 'sales/orders/edit:' + id + '/details', true, false ,force);
         },
 
         // show confirmation and delete account

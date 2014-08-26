@@ -66,6 +66,18 @@
                 <source>salesorder.orders.addressOverlayWarningMessage</source>
                 <target>The address will be used for this order only!</target>
             </trans-unit>
+            <trans-unit id="a50accg2ac181350142c0b4720e29f17" resname="salesorder.orders.confirm">
+                <source>salesorder.orders.confirm</source>
+                <target>Confirm order</target>
+            </trans-unit>
+            <trans-unit id="a50accg2ac181350142c0b4720e29f18" resname="salesorder.orders.edit">
+                <source>salesorder.orders.edit</source>
+                <target>Edit order</target>
+            </trans-unit>
+            <trans-unit id="a50accg2ac181350142c0b4720e29f19" resname="salesorder.order.shipping.create">
+                <source>salesorder.order.shipping.create</source>
+                <target>Create an order</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>

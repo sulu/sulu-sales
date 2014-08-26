@@ -1,5 +1,8 @@
+<% var disabled = isEditable ? '' : 'disabled' %>
+
+<link rel="stylesheet" type="text/css" href="/bundles/sulusalesorder/css/main.min.css"/>
 <link rel="stylesheet" type="text/css" href="/bundles/sulusalescore/css/main.min.css"/>
-<div class="order-form-container">
+<div class="order-form-container <%= disabled %>">
     <form id="order-form" class="form-horizontal">
         <input type="hidden" data-mapper-property="id"/>
 
@@ -9,14 +12,13 @@
                 <div class="grid-col-6">
                     <div class="form-group">
                         <label for="account-input" class="required"><%=translate('salesorder.orders.account')%></label>
-
                         <div id="account-input"></div>
                     </div>
                 </div>
                 <div class="grid-col-6">
                     <div class="form-group">
                         <label for="commission"><%=translate('salesorder.orders.commission')%></label>
-                        <input id="commission" class="form-element" type="text" data-mapper-property="commission"/>
+                        <input id="commission" class="form-element" type="text" data-mapper-property="commission" <%= disabled %>/>
                     </div>
                 </div>
             </div>
@@ -34,6 +36,7 @@
                              data-aura-multiple-select="false"
                              data-aura-default-label="<%=translate('dropdown.please-choose')%>"
                              data-aura-pre-selected-elements="[]"
+                             data-aura-disabled="<%= !isEditable %>"
                              data-validation-required="true"
                              data-type="husky-select"
                              data-mapper-property="contact"
@@ -43,7 +46,7 @@
                 <div class="grid-col-6">
                     <div class="form-group changeListener">
                         <label for="order-number"><%=translate('salesorder.orders.number')%></label>
-                        <input id="order-number" class="form-element" type="text" data-mapper-property="orderNumber"/>
+                        <input id="order-number" class="form-element" type="text" data-mapper-property="orderNumber" <%= disabled %>/>
                     </div>
                 </div>
 
@@ -61,6 +64,7 @@
                              data-aura-value-name="fullName"
                              data-aura-multiple-select="false"
                              data-aura-instance-name="responsible-contact-select"
+                             data-aura-disabled="<%= !isEditable %>"
                              data-type="husky-select"
                              data-mapper-property="responsibleContact"
                              data-validation-required="true"
@@ -72,7 +76,7 @@
                 <div class="grid-col-6">
                     <div class="form-group">
                         <label for="cost-centre"><%=translate('salesorder.orders.costCentre')%></label>
-                        <input id="cost-centre" class="form-element" type="text" data-mapper-property="costCentre"/>
+                        <input id="cost-centre" class="form-element" type="text" data-mapper-property="costCentre" <%= disabled %>/>
                     </div>
                 </div>
             </div>
@@ -85,7 +89,7 @@
                         <div>
                             <div class="custom-checkbox">
                                 <input class="form-element husky-validate" type="checkbox" id="tax-free"
-                                       data-mapper-property="taxfree">
+                                       data-mapper-property="taxfree" <%= disabled %>>
                                 <span class="icon"></span>
                             </div>
                         </div>
@@ -143,6 +147,7 @@
                              data-aura-multiple-select="false"
                              data-aura-instance-name="delivery-terms"
                              data-aura-pre-selected-elements="[]"
+                             data-aura-disabled="<%= !isEditable %>"
                              data-type="husky-select"
                              data-mapper-property="termsOfDelivery"
                              data-validation-required="false"
@@ -164,6 +169,7 @@
                              data-aura-multiple-select="false"
                              data-aura-instance-name="payment-terms"
                              data-aura-pre-selected-elements="[]"
+                             data-aura-disabled="<%= !isEditable %>"
                              data-type="husky-select"
                              data-mapper-property="termsOfPayment"
                              data-validation-required="false"
@@ -176,6 +182,7 @@
         <div class="changeListener">
             <div id="order-items"
                  data-aura-component="item-table@sulusalescore"
+                 data-aura-editable="<%= isEditable %>"
                  data-form="true"
                  data-type="itemTable"
                  data-mapper-property="items">
@@ -184,3 +191,10 @@
     </form>
 </div>
 
+{% block data %}
+    <script type="text/javascript">
+        (function() {
+            App.emit('sulu.salesorder.set-order-status', {{ orderStatus |json_encode()|raw }});
+        })();
+    </script>
+{% endblock %}

@@ -20,6 +20,7 @@ use Sulu\Bundle\Sales\CoreBundle\Item\ItemManager;
 use Sulu\Bundle\Sales\OrderBundle\Entity\OrderAddress;
 use Sulu\Bundle\Sales\OrderBundle\Entity\OrderRepository;
 use Sulu\Bundle\Sales\OrderBundle\Entity\Order as OrderEntity;
+use Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatus as OrderStatusEntity;
 use Sulu\Bundle\Sales\OrderBundle\Order\Exception\MissingOrderAttributeException;
 use Sulu\Bundle\Sales\OrderBundle\Order\Exception\OrderDependencyNotFoundException;
 use Sulu\Bundle\Sales\OrderBundle\Order\Exception\OrderException;
@@ -209,6 +210,29 @@ class OrderManager
 
         $this->em->remove($order);
         $this->em->flush();
+    }
+
+    public function convertStatus(Order $order, $statusId, $flush = false) {
+
+        // get current status
+        $currentStatus = $order->getStatus()->getEntity();
+
+        // get desired status
+        $statusEntity = $this->em
+            ->getRepository(self::$orderStatusEntityName)
+            ->find($statusId);
+        if (!$statusEntity) {
+            throw new EntityNotFoundException($statusEntity, $statusEntity);
+        }
+
+        // check if status has changed
+        if($currentStatus->getId() !== $statusId) {
+            if ($statusId === OrderStatusEntity::STATUS_CREATED) {
+                // TODO: re-edit - do some business logic
+            }
+
+            $order->setStatus($statusEntity);
+        }
     }
 
     /**

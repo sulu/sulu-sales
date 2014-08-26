@@ -9,9 +9,12 @@
  */
 
 namespace Sulu\Bundle\Sales\OrderBundle\Controller;
+
 use FOS\RestBundle\Routing\ClassResourceInterface;
 use Hateoas\Representation\CollectionRepresentation;
+
 use Sulu\Bundle\Sales\OrderBundle\Api\Order;
+use Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatus;
 use Sulu\Bundle\Sales\OrderBundle\Order\Exception\MissingOrderAttributeException;
 use Sulu\Bundle\Sales\OrderBundle\Order\Exception\OrderDependencyNotFoundException;
 use Sulu\Bundle\Sales\OrderBundle\Order\Exception\OrderException;
@@ -21,19 +24,25 @@ use Sulu\Component\Rest\Exception\EntityNotFoundException;
 use Sulu\Component\Rest\Exception\MissingArgumentException;
 use Sulu\Component\Rest\Exception\RestException;
 use Sulu\Component\Rest\ListBuilder\Doctrine\DoctrineListBuilderFactory;
+use Sulu\Component\Rest\ListBuilder\Doctrine\DoctrineListBuilder;
+use Sulu\Component\Rest\ListBuilder\Doctrine\FieldDescriptor\DoctrineFieldDescriptor;
+use Sulu\Component\Rest\ListBuilder\Doctrine\FieldDescriptor\DoctrineJoinDescriptor;
 use Sulu\Component\Rest\ListBuilder\ListRepresentation;
 use Sulu\Component\Rest\RestController;
 use Sulu\Component\Rest\RestHelperInterface;
 use Symfony\Component\HttpFoundation\Request;
+use FOS\RestBundle\Controller\Annotations\Post;
 
 /**
  * Makes orders available through a REST API
+ *
  * @package Sulu\Bundle\Sales\OrderBundle\Controller
  */
 class OrderController extends RestController implements ClassResourceInterface
 {
 
-    protected static $entityName = 'SuluSalesOrderBundle:Order';
+    protected static $orderEntityName = 'SuluSalesOrderBundle:Order';
+    protected static $orderStatusEntityName = 'SuluSalesOrderBundle:OrderStatus';
 
     protected static $entityKey = 'orders';
 
@@ -47,12 +56,14 @@ class OrderController extends RestController implements ClassResourceInterface
 
     /**
      * returns all fields that can be used by list
+     *
      * @param Request $request
      * @return \Symfony\Component\HttpFoundation\Response
      */
     public function fieldsAction(Request $request)
     {
         $locale = $this->getLocale($request);
+
         // default contacts list
         return $this->handleView($this->view(array_values($this->getManager()->getFieldDescriptors($locale)), 200));
     }
@@ -61,7 +72,8 @@ class OrderController extends RestController implements ClassResourceInterface
      * @param Request $request
      * @return mixed
      */
-    public function cgetAction(Request $request) {
+    public function cgetAction(Request $request)
+    {
         $filter = array();
 
         $locale = $this->getLocale($request);
@@ -78,13 +90,17 @@ class OrderController extends RestController implements ClassResourceInterface
             /** @var DoctrineListBuilderFactory $factory */
             $factory = $this->get('sulu_core.doctrine_list_builder_factory');
 
-            $listBuilder = $factory->create(self::$entityName);
+            /** @var DoctrineListBuilder $listBuilder */
+            $listBuilder = $factory->create(self::$orderEntityName);
 
             $restHelper->initializeListBuilder($listBuilder, $this->getManager()->getFieldDescriptors($locale));
 
             foreach ($filter as $key => $value) {
                 $listBuilder->where($this->getManager()->getFieldDescriptor($key), $value);
             }
+
+            // exclude in cart orders
+            $listBuilder->whereNot($this->getStatusFieldDescriptor(), OrderStatus::STATUS_IN_CART);
 
             $list = new ListRepresentation(
                 $listBuilder->execute(),
@@ -103,6 +119,7 @@ class OrderController extends RestController implements ClassResourceInterface
         }
 
         $view = $this->view($list, 200);
+
         return $this->handleView($view);
     }
 
@@ -149,7 +166,7 @@ class OrderController extends RestController implements ClassResourceInterface
             $exception = new EntityNotFoundException($exc->getEntityName(), $exc->getId());
             $view = $this->view($exception->toArray(), 400);
         } catch (MissingOrderAttributeException $exc) {
-            $exception = new MissingArgumentException(self::$entityName, $exc->getAttribute());
+            $exception = new MissingArgumentException(self::$orderEntityName, $exc->getAttribute());
             $view = $this->view($exception->toArray(), 400);
         }
 
@@ -181,11 +198,44 @@ class OrderController extends RestController implements ClassResourceInterface
             $exception = new EntityNotFoundException($exc->getEntityName(), $exc->getId());
             $view = $this->view($exception->toArray(), 400);
         } catch (MissingOrderAttributeException $exc) {
-            $exception = new MissingArgumentException(self::$entityName, $exc->getAttribute());
+            $exception = new MissingArgumentException(self::$orderEntityName, $exc->getAttribute());
             $view = $this->view($exception->toArray(), 400);
         } catch (OrderException $exc) {
             $exception = new RestException($exc->getMessage());
             $view = $this->view($exception->toArray(), 400);
+        }
+
+        return $this->handleView($view);
+    }
+
+    /**
+     * @Post("/orders/{id}")
+     */
+    public function postTriggerAction($id, Request $request)
+    {
+        $status = $request->get('action');
+        $em = $this->getDoctrine()->getManager();
+
+        try {
+            $order = $this->getManager()->findByIdAndLocale($id, $this->getLocale($request));
+
+            switch ($status) {
+                case 'confirm':
+                    $this->getManager()->convertStatus($order, OrderStatus::STATUS_CONFIRMED);
+                    break;
+                case 'edit':
+                    $this->getManager()->convertStatus($order, OrderStatus::STATUS_CREATED);
+                    break;
+                default:
+                    throw new RestException("Unrecognized status: " . $status);
+
+            }
+
+            $em->flush();
+            $view = $this->view($order, 200);
+        } catch (OrderNotFoundException $exc) {
+            $exception = new EntityNotFoundException($exc->getEntityName(), $exc->getId());
+            $view = $this->view($exception->toArray(), 404);
         }
 
         return $this->handleView($view);
@@ -208,6 +258,22 @@ class OrderController extends RestController implements ClassResourceInterface
         $view = $this->responseDelete($id, $delete);
 
         return $this->handleView($view);
+    }
+
+    private function getStatusFieldDescriptor()
+    {
+        return new DoctrineFieldDescriptor(
+            'id',
+            'status',
+            self::$orderStatusEntityName,
+            'salesorder.orders.status',
+            array(
+                self::$orderStatusEntityName => new DoctrineJoinDescriptor(
+                        self::$orderStatusEntityName,
+                        self::$orderEntityName . '.status'
+                    )
+            )
+        );
     }
 
 }

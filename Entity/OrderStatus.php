@@ -9,6 +9,14 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class OrderStatus
 {
+    const STATUS_CREATED = 1;
+
+    const STATUS_IN_CART = 2;
+
+    const STATUS_CONFIRMED = 3;
+
+    const STATUS_CLOSED = 4;
+
     /**
      * @var integer
      */
