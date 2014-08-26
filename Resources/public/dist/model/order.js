@@ -1,0 +1,1 @@
+define(["mvc/relationalmodel","mvc/hasmany","mvc/hasone"],function(a){"use strict";return a({urlRoot:"/admin/api/orders",defaults:function(){return{id:null,number:""}},relations:[]})});

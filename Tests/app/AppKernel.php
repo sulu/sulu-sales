@@ -31,6 +31,9 @@ class AppKernel extends Kernel
             new \Sulu\Bundle\Sales\OrderBundle\SuluSalesOrderBundle(),
             new \Sulu\Bundle\Sales\CoreBundle\SuluSalesCoreBundle(),
             new \Sulu\Bundle\WebsiteBundle\SuluWebsiteBundle(),
+            new \Sulu\Bundle\MediaBundle\SuluMediaBundle(),
+            new \Sulu\Bundle\CategoryBundle\SuluCategoryBundle(),
+
         );
 
         return $bundles;
@@ -38,6 +41,12 @@ class AppKernel extends Kernel
 
     public function registerContainerConfiguration(LoaderInterface $loader)
     {
-        $loader->load(__DIR__ . '/config/config.yml');
+        if (array_key_exists('APP_DB', $GLOBALS) &&
+            file_exists(__DIR__ . '/config/config.' . $GLOBALS['APP_DB'] . '.yml')
+        ) {
+            $loader->load(__DIR__ . '/config/config.' . $GLOBALS['APP_DB'] . '.yml');
+        } else {
+            $loader->load(__DIR__ . '/config/config.mysql.yml');
+        }
     }
 }

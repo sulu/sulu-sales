@@ -1,0 +1,9 @@
+.order-form-container {
+    &.disabled {
+        .husky-auto-complete input,
+        input {
+            background-color: transparent;
+        }
+    }
+}
+

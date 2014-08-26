@@ -2,6 +2,7 @@
 
 namespace Sulu\Bundle\Sales\OrderBundle\Controller;
 
+use Sulu\Bundle\Sales\OrderBundle\Api\OrderStatus;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sulu\Component\Rest\RestController;
 use Hateoas\Representation\CollectionRepresentation;
@@ -11,6 +12,7 @@ class TemplateController extends RestController
 
     static $termsOfPaymentEntityName = 'SuluContactBundle:TermsOfPayment';
     static $termsOfDeliveryEntityName = 'SuluContactBundle:TermsOfDelivery';
+    static $orderStatusEntityName = 'SuluSalesOrderBundle:OrderStatus';
 
     /**
      * Returns Template for list
@@ -34,7 +36,8 @@ class TemplateController extends RestController
             array(
                 'systemUser' => $this->getSystemUserArray(),
                 'termsOfPayment' => $this->getTermsArray(static::$termsOfPaymentEntityName),
-                'termsOfDelivery' => $this->getTermsArray(static::$termsOfDeliveryEntityName)
+                'termsOfDelivery' => $this->getTermsArray(static::$termsOfDeliveryEntityName),
+                'orderStatus' => $this->getOrderStatus()
             )
         );
     }
@@ -43,7 +46,8 @@ class TemplateController extends RestController
      * returns all sulu system users
      * @return array
      */
-    public function getSystemUserArray() {
+    public function getSystemUserArray()
+    {
         $repo = $this->get('sulu_security.user_repository');
         $users = $repo->getUserInSystem();
         $contacts = [];
@@ -63,7 +67,8 @@ class TemplateController extends RestController
      * @param $entityName
      * @return array
      */
-    public function getTermsArray($entityName) {
+    public function getTermsArray($entityName)
+    {
         $terms = $this->getDoctrine()->getRepository($entityName)->findAll();
         $termsArray = [];
 
@@ -76,4 +81,22 @@ class TemplateController extends RestController
         return $termsArray;
     }
 
+    /**
+     * returns array of order statuses
+     * @return array
+     */
+    public function getOrderStatus() {
+        $statuses = $this->getDoctrine()->getRepository(self::$orderStatusEntityName)->findAll();
+        $locale = $this->getUser()->getLocale();
+        $statusArray = [];
+
+        foreach ($statuses as $statusEntity) {
+            $status = new OrderStatus($statusEntity, $locale);
+            $statusArray[] = array(
+                'id' => $status->getId(),
+                'status' => $status->getStatus()
+            );
+        }
+        return $statusArray;
+    }
 }

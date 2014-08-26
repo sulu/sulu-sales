@@ -117,7 +117,7 @@ module.exports = function(grunt) {
     });
 
     grunt.registerTask('publish', [
-//        'compass:dev',
+        'compass:dev',
         'cssmin',
         'clean:public',
         'copy:public'
