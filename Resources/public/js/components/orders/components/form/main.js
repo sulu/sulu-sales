@@ -418,6 +418,11 @@ define([], function() {
                     // otherwise the first delivery / payment address found will be used
                     if (!orderData || !orderData.deliveryAddress) {
                         preselect = findAddressWherePropertyIs.call(this, data, 'deliveryAddress', true);
+
+                        // when no delivery address is found the first address will be used
+                        if(!preselect && data.length > 0) {
+                            preselect = data[0];
+                        }
                     }
                     this.sandbox.data.when(this.dfdDeliveryAddressInitialized).then(function() {
                         initAddressComponents.call(this, data, constants.deliveryAddressInstanceName, preselect);
@@ -429,6 +434,11 @@ define([], function() {
 
                     if (!orderData || !orderData.invoiceAddress) {
                         preselect = findAddressWherePropertyIs.call(this, data, 'billingAddress', true);
+
+                        // when no invoice address is found the first address will be used
+                        if(!preselect && data.length > 0) {
+                            preselect = data[0];
+                        }
                     }
 
                     this.sandbox.data.when(this.dfdInvoiceAddressInitialized).then(function() {
@@ -581,6 +591,12 @@ define([], function() {
 
                 // change in item-table
                 this.sandbox.on('sulu.item-table.changed', changeHandler.bind(this));
+
+                // listen on
+                this.sandbox.on('husky.select.contact-select.selected.item', changeHandler.bind(this));
+                this.sandbox.on('husky.select.responsible-contact-select.selected.item', changeHandler.bind(this));
+                this.sandbox.on('husky.select.delivery-terms.selected.item', changeHandler.bind(this));
+                this.sandbox.on('husky.select.payment-terms.selected.item', changeHandler.bind(this));
 
                 // TODO: use this for resetting account
 //                    this.sandbox.dom.on(constants.accountInputId+' input', 'changed', accountChangedListener.bind(this));
