@@ -110,6 +110,7 @@
                              data-mapper-property="deliveryAddress"
                              data-validation-required="true"
                              data-aura-instance-name="delivery-address"
+                             data-aura-disabled="<%= !isEditable %>"
                              data-type="editableDataRow">
                         </div>
                     </div>
@@ -128,6 +129,7 @@
                              data-aura-view="address"
                              data-validation-required="true"
                              data-aura-instance-name="invoice-address"
+                             data-aura-disabled="<%= !isEditable %>"
                              data-type="editableDataRow">
                         </div>
                     </div>
