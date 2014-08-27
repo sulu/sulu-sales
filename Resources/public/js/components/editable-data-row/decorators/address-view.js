@@ -81,6 +81,10 @@ define(['text!sulusalescore/components/editable-data-row/templates/address.form.
             if (!this.context.disabled) {
                 // trigger init of form when overlay is open
                 this.sandbox.on('husky.overlay.' + this.context.options.instanceName + '.opened', function() {
+
+                    // TODO: Handle empty values - not decided yet - issue #131
+                    // currently values will not be overwritten when no address is available
+
                     if (!this.openedDialog) {
                         initOverlayForm.call(this);
                     }
@@ -301,11 +305,5 @@ define(['text!sulusalescore/components/editable-data-row/templates/address.form.
         render: function() {
             renderRow.call(this, this.context.selectedData);
         }
-
-
-        // TODO get data and save
-        // TODO disabled state for component
-        // TODO test change of account
-
     };
 });
