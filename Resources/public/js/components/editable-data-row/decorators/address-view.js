@@ -91,7 +91,7 @@ define(['text!sulusalescore/components/editable-data-row/templates/address.form.
                     this.openedDialog = false;
                 }.bind(this));
 
-                this.sandbox.on('husky.overlay.' + this.options.instanceName + '.initialized', function() {
+                this.sandbox.on('husky.overlay.' + this.context.options.instanceName + '.initialized', function() {
                     this.openedDialog = false;
                 }.bind(this));
 
