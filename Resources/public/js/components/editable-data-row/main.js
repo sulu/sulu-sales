@@ -54,6 +54,7 @@ define(['sulusalescore/components/editable-data-row/decorators/address-view'], f
          */
         bindCustomEvents = function() {
             if (!this.options.disabled) {
+
                 // triggered when new data is available
                 this.sandbox.on('sulu.editable-data-row.' + this.options.instanceName + '.data.update', function(data, preselected) {
                     if (!!preselected) {
@@ -96,13 +97,15 @@ define(['sulusalescore/components/editable-data-row/decorators/address-view'], f
 
             // prevent multiple initialization of the overlay
             this.sandbox.stop(this.sandbox.dom.find(constants.overlayContainerClassSelector, this.$el));
+            this.sandbox.dom.remove(this.sandbox.dom.find(constants.overlayContainerClassSelector, this.$el));
 
             $overlay = this.sandbox.dom.createElement('<div class="' + constants.overlayContainerClass + '"></div>');
             this.sandbox.dom.append(this.$el, $overlay);
 
             templateData = {
                 data: data,
-                translate: this.sandbox.translate
+                translate: this.sandbox.translate,
+                instanceName: this.overlayView.options.instanceName
             };
 
             overlayContent = this.sandbox.util.template(template, templateData);

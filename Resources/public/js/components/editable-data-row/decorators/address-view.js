@@ -86,7 +86,7 @@ define(['text!sulusalescore/components/editable-data-row/templates/address.form.
                     // currently values will not be overwritten when no address is available
 
                     if (!this.openedDialog) {
-                        initOverlayForm.call(this);
+                        startForm.call(this);
                     }
                     this.openedDialog = false;
                 }.bind(this));
@@ -141,52 +141,13 @@ define(['text!sulusalescore/components/editable-data-row/templates/address.form.
             }
         },
 
-//        /**
-//         * returns address by id
-//         * @param id
-//         */
-//        getAddressById = function(id) {
-//            var address = null;
-//
-//            this.sandbox.util.each(this.context.data, function(index, adr) {
-//                if (adr.id.toString() === id) {
-//                    address = adr;
-//                    return false;
-//                }
-//            }.bind(this));
-//
-//            return address;
-//        },
-
-        /**
-         * starts the select component within the overlay and sets the data
-         */
-        initOverlayForm = function() {
-
-            var selectData = flattenAddresses.call(this, this.context.data),
-                $selectContainer = this.sandbox.dom.find(this.options.selectSelector, this.$el);
-
-            this.sandbox.start([
-                {
-                    name: 'select@husky',
-                    options: {
-                        el: $selectContainer,
-                        instanceName: this.options.instanceName + '.select',
-                        valueName: 'fullAddress',
-                        data: selectData,
-                        defaultLabel: this.sandbox.translate('public.please-choose')
-                    }
-                }
-            ]);
-
-            startForm.call(this);
-        },
-
         /**
          * starts form
          */
         startForm = function() {
             var $form = this.sandbox.dom.find(constants.formSelector, this.context.$el);
+
+            this.sandbox.start(this.sandbox.dom.find('.editable-data-overlay-container', this.$el));
 
             this.formObject = this.sandbox.form.create($form);
 
@@ -220,7 +181,7 @@ define(['text!sulusalescore/components/editable-data-row/templates/address.form.
                         overlayTitle: constants.overlayTitle,
                         overlayOkCallback: showInformationDialog.bind(this),
                         overlayCloseCallback: null,
-                        overlayData: this.context.data
+                        overlayData: flattenAddresses.call(this, this.context.data)
                     }
                 );
             }.bind(this), constants.rowClassSelector);

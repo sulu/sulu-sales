@@ -1,10 +1,17 @@
-<div id="editable-data-overlay-container" class="grid">
+<div class="editable-data-overlay-container grid">
 
     <div class="grid-row">
         <div class="form-group-vertical">
             <label for="address-select"><%=translate('public.address')%></label>
 
-            <div id="address-select"></div>
+            <div id="address-select"
+                 data-aura-component="select@husky"
+                 data-aura-default-label="<%=translate('public.please-choose')%>"
+                 data-aura-instance-name="<%=instanceName + '.select'%>"
+                 data-aura-data='<%= JSON.stringify(data) %>'
+                 data-aura-value-name="fullAddress">
+            </div>
+
         </div>
     </div>
 
