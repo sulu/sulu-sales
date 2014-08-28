@@ -173,6 +173,24 @@ define(['sulusalescore/components/editable-data-row/decorators/address-view'], f
             }
 
             this.overlayView.render();
+        },
+
+        /**
+         * returns data-element which has a property with a specific value
+         * @param propertyName
+         * @param propertyValue
+         */
+        getDataByPropertyAndValue: function(propertyName, propertyValue) {
+            var data = null;
+
+            this.sandbox.util.each(this.context.data, function(index, el) {
+                if (el[propertyName].toString() === propertyValue.toString()) {
+                    data = el;
+                    return false;
+                }
+            }.bind(this));
+
+            return data;
         }
     };
 });

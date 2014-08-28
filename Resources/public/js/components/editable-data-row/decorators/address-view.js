@@ -97,7 +97,7 @@ define(['text!sulusalescore/components/editable-data-row/templates/address.form.
 
                 // set data on form from selected address
                 this.sandbox.on('husky.select.' + this.options.instanceName + '.select.selected.item', function(id) {
-                    var adr = getAddressById.call(this, id);
+                    var adr = this.context.getDataByPropertyAndValue.call(this, 'id', id);
                     setFormData.call(this, adr);
                 }.bind(this));
             }
@@ -141,22 +141,22 @@ define(['text!sulusalescore/components/editable-data-row/templates/address.form.
             }
         },
 
-        /**
-         * returns address by id
-         * @param id
-         */
-        getAddressById = function(id) {
-            var address = null;
-
-            this.sandbox.util.each(this.context.data, function(index, adr) {
-                if (adr.id.toString() === id) {
-                    address = adr;
-                    return false;
-                }
-            }.bind(this));
-
-            return address;
-        },
+//        /**
+//         * returns address by id
+//         * @param id
+//         */
+//        getAddressById = function(id) {
+//            var address = null;
+//
+//            this.sandbox.util.each(this.context.data, function(index, adr) {
+//                if (adr.id.toString() === id) {
+//                    address = adr;
+//                    return false;
+//                }
+//            }.bind(this));
+//
+//            return address;
+//        },
 
         /**
          * starts the select component within the overlay and sets the data
