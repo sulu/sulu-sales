@@ -54,16 +54,28 @@
                 <source>salesorder.orders.invoiceAddress</source>
                 <target>Invoice Addr.</target>
             </trans-unit>
-            <trans-unit id="a50accg2ac181350142c0b4720e29f14" resname="salesorder.orders.confirm">
+            <trans-unit id="a50accg2ac181350142c0b4720e29f14" resname="salesorder.orders.addressOverlayTitle">
+                <source>salesorder.orders.addressOverlayTitle</source>
+                <target>Assigne or add an address</target>
+            </trans-unit>
+            <trans-unit id="a50accg2ac181350142c0b4720e29f15" resname="salesorder.orders.addressOverlayWarningTitle">
+                <source>salesorder.orders.addressOverlayWarningTitle</source>
+                <target>Attention</target>
+            </trans-unit>
+            <trans-unit id="a50accg2ac181350142c0b4720e29f16" resname="salesorder.orders.addressOverlayWarningMessage">
+                <source>salesorder.orders.addressOverlayWarningMessage</source>
+                <target>The address will be used for this order only!</target>
+            </trans-unit>
+            <trans-unit id="a50accg2ac181350142c0b4720e29f17" resname="salesorder.orders.confirm">
                 <source>salesorder.orders.confirm</source>
                 <target>Confirm order</target>
             </trans-unit>
-            <trans-unit id="a50accg2ac181350142c0b4720e29f15" resname="salesorder.orders.edit">
+            <trans-unit id="a50accg2ac181350142c0b4720e29f18" resname="salesorder.orders.edit">
                 <source>salesorder.orders.edit</source>
                 <target>Edit order</target>
             </trans-unit>
-            <trans-unit id="a50accg2ac181350142c0b4720e29f16" resname="salesorder.order.shipping.create">
-                <source>salesorder.order.shipping.create</source>
+            <trans-unit id="a50accg2ac181350142c0b4720e29f19" resname="salesorder.orders.shipping.create">
+                <source>salesorder.orders.shipping.create</source>
                 <target>Create an order</target>
             </trans-unit>
         </body>

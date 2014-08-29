@@ -15,18 +15,17 @@ define([], function() {
 
         constants = {
             accountContactsUrl: '/admin/api/accounts/<%= id %>/contacts?flat=true',
-            accountAddressesUrl: '/admin/api/accounts/<%= id %>/addresses?flat=true',
+            accountAddressesUrl: '/admin/api/accounts/<%= id %>/addresses',
             accountUrl: '/admin/api/accounts?searchFields=name&flat=true&fields=id,name',
             accountInputId: '#account-input',
-            deliveryAddressInstanceName: 'delivery-address-select',
-            paymentAddressInstanceName: 'payment-address-select',
+            deliveryAddressInstanceName: 'delivery-address',
+            paymentAddressInstanceName: 'invoice-address',
             contactSelectId: '#contact-select',
             itemTableId: '#order-items'
         },
 
         /**
          * set header toolbar based on current order status
-         * @param editable
          */
         setHeaderToolbar = function() {
 
@@ -69,15 +68,15 @@ define([], function() {
                 },
                 workflowItems = {
                     confirm: {
-                        title: this.sandbox.translate('salesorder.order.confirm'),
+                        title: this.sandbox.translate('salesorder.orders.confirm'),
                         callback: confirmOrder.bind(this)
                     },
                     edit: {
-                        title: this.sandbox.translate('salesorder.order.edit'),
+                        title: this.sandbox.translate('salesorder.orders.edit'),
                         callback: editOrder.bind(this)
                     },
                     shipping: {
-                        title: this.sandbox.translate('salesorder.order.shipping.create'),
+                        title: this.sandbox.translate('salesorder.orders.shipping.create'),
                         callback: createShipping.bind(this)
                     },
                     divider: {
@@ -225,6 +224,26 @@ define([], function() {
             }, this);
 
             this.sandbox.on('husky.auto-complete.' + this.accountInstanceName + '.select', accountChangedListener.bind(this));
+
+            this.sandbox.on('sulu.editable-data-row.delivery-address.initialized', function() {
+                this.dfdDeliveryAddressInitialized.resolve();
+            }.bind(this));
+
+            this.sandbox.on('sulu.editable-data-row.invoice-address.initialized', function() {
+                this.dfdInvoiceAddressInitialized.resolve();
+            }.bind(this));
+
+            this.sandbox.on('sulu.editable-data-row.address-view.delivery-address.changed', function(data) {
+                this.options.data.deliveryAddress = data;
+                setFormData.call(this, this.options.data);
+                changeHandler.call(this);
+            }.bind(this));
+
+            this.sandbox.on('sulu.editable-data-row.address-view.invoice-address.changed', function(data) {
+                this.options.data.invoiceAddress = data;
+                setFormData.call(this, this.options.data);
+                changeHandler.call(this);
+            }.bind(this));
         },
 
         /**
@@ -334,14 +353,11 @@ define([], function() {
         /**
          * init address select
          * @param data
-         * @param selectInstanceName
-         * @param preselectedElements
+         * @param instanceName
+         * @param preselectedElement
          */
-        initAddressSelect = function(data, selectInstanceName, preselectedElements) {
-
-            preselectedElements = preselectedElements || [];
-
-            this.sandbox.emit('husky.select.' + selectInstanceName + '.update', data, preselectedElements);
+        initAddressComponents = function(data, instanceName, preselectedElement) {
+            this.sandbox.emit('sulu.editable-data-row.' + instanceName + '.data.update', data, preselectedElement);
         },
 
         /**
@@ -360,15 +376,14 @@ define([], function() {
                     initSelectsByAccountId.call(this, id);
                 } else {
                     initContactSelect.call(this, []);
-                    initAddressSelect.call(this, [], constants.deliveryAddressInstanceName);
-                    initAddressSelect.call(this, [], constants.paymentAddressInstanceName);
+                    initAddressComponents.call(this, [], constants.deliveryAddressInstanceName);
+                    initAddressComponents.call(this, [], constants.paymentAddressInstanceName);
                 }
             }
         },
 
         /**
          * called when headerbar should be saveable
-         * @param event
          */
         changeHandler = function() {
             setSaved.call(this, false);
@@ -397,15 +412,66 @@ define([], function() {
 
                     // is already refactored in another branch
                     data = response._embedded.addresses;
-                    preselect = !!orderData && orderData.deliveryAddress ? [orderData.deliveryAddress.address] : null;
-                    initAddressSelect.call(this, data, constants.deliveryAddressInstanceName, preselect);
-                    preselect = !!orderData && orderData.invoiceAddress ? [orderData.invoiceAddress.address] : null;
-                    initAddressSelect.call(this, data, constants.paymentAddressInstanceName, preselect);
+                    preselect = null;
+
+                    // when an address is already selected, the selected address should be used
+                    // otherwise the first delivery / payment address found will be used
+                    if (!orderData || !orderData.deliveryAddress) {
+                        preselect = findAddressWherePropertyIs.call(this, data, 'deliveryAddress', true);
+
+                        // when no delivery address is found the first address will be used
+                        if(!preselect && data.length > 0) {
+                            preselect = data[0];
+                        }
+                    }
+                    this.sandbox.data.when(this.dfdDeliveryAddressInitialized).then(function() {
+                        initAddressComponents.call(this, data, constants.deliveryAddressInstanceName, preselect);
+                        this.options.data.deliveryAddress = preselect;
+                        setFormData.call(this, this.options.data);
+                    }.bind(this));
+
+                    preselect = null;
+
+                    if (!orderData || !orderData.invoiceAddress) {
+                        preselect = findAddressWherePropertyIs.call(this, data, 'billingAddress', true);
+
+                        // when no invoice address is found the first address will be used
+                        if(!preselect && data.length > 0) {
+                            preselect = data[0];
+                        }
+                    }
+
+                    this.sandbox.data.when(this.dfdInvoiceAddressInitialized).then(function() {
+                        initAddressComponents.call(this, data, constants.paymentAddressInstanceName, preselect);
+                        this.options.data.invoiceAddress = preselect;
+                        setFormData.call(this, this.options.data);
+                    }.bind(this));
+
                 }.bind(this))
                 .fail(function(textStatus, error) {
                     this.sandbox.logger.error(textStatus, error);
                 }.bind(this));
+        },
+
+        /**
+         * Find an address where a specific property with a specific value is set
+         * @param addresses
+         * @param propertyName
+         * @param propertyValue
+         */
+        findAddressWherePropertyIs = function(addresses, propertyName, propertyValue) {
+            var address = null;
+            if (!!addresses && addresses.length > 0) {
+                this.sandbox.util.each(addresses, function(index, adr) {
+                    if (adr.hasOwnProperty(propertyName) && adr[propertyName] === propertyValue) {
+                        address = adr;
+                        return false;
+                    }
+                }.bind(this));
+            }
+            return address;
         };
+
     return {
 
         view: true,
@@ -429,6 +495,9 @@ define([], function() {
             this.dfdAutoCompleteInitialized = this.sandbox.data.deferred();
             this.dfdDesiredDeliveryDate = this.sandbox.data.deferred();
 
+            this.dfdInvoiceAddressInitialized = this.sandbox.data.deferred();
+            this.dfdDeliveryAddressInitialized = this.sandbox.data.deferred();
+
             // define when all fields are initialized
             this.sandbox.data.when(this.dfdDesiredDeliveryDate, this.dfdAutoCompleteInitialized).then(function() {
                 this.dfdAllFieldsInitialized.resolve();
@@ -437,10 +506,7 @@ define([], function() {
             this.orderStatusId = getOrderStatusId.call(this);
 
             // set if form is editable
-            this.isEditable = true;
-            if (this.orderStatusId > 2) {
-                this.isEditable = false;
-            }
+            this.isEditable = this.orderStatusId <= 2;
 
             // current id
             var id = this.options.data.id ? this.options.data.id : 'new';
@@ -525,6 +591,12 @@ define([], function() {
 
                 // change in item-table
                 this.sandbox.on('sulu.item-table.changed', changeHandler.bind(this));
+
+                // listen on
+                this.sandbox.on('husky.select.contact-select.selected.item', changeHandler.bind(this));
+                this.sandbox.on('husky.select.responsible-contact-select.selected.item', changeHandler.bind(this));
+                this.sandbox.on('husky.select.delivery-terms.selected.item', changeHandler.bind(this));
+                this.sandbox.on('husky.select.payment-terms.selected.item', changeHandler.bind(this));
 
                 // TODO: use this for resetting account
 //                    this.sandbox.dom.on(constants.accountInputId+' input', 'changed', accountChangedListener.bind(this));

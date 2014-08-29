@@ -178,8 +178,8 @@ class OrderManager
         $order->setCustomerName($customerName);
 
         // set OrderAddress data
-        $this->setOrderAddress($order->getDeliveryAddress(), $data['deliveryAddress']['id'], $contact, $account);
-        $this->setOrderAddress($order->getInvoiceAddress(), $data['paymentAddress']['id'], $contact, $account);
+        $this->setOrderAddress($order->getDeliveryAddress(), $data['deliveryAddress'], $contact, $account);
+        $this->setOrderAddress($order->getInvoiceAddress(), $data['invoiceAddress'], $contact, $account);
 
         // handle items
         if (!$this->processItems($data, $order, $locale, $userId)) {
@@ -389,8 +389,8 @@ class OrderManager
     {
         // check if contact and status are set
         $this->checkDataSet($data, 'contact', $isNew) && $this->checkDataSet($data['contact'], 'id', $isNew);
-        $this->checkDataSet($data, 'deliveryAddress', $isNew) && $this->checkDataSet($data['deliveryAddress'], 'id', $isNew);
-        $this->checkDataSet($data, 'paymentAddress', $isNew) && $this->checkDataSet($data['paymentAddress'], 'id', $isNew);
+        $this->checkDataSet($data, 'deliveryAddress', $isNew);
+        $this->checkDataSet($data, 'invoiceAddress', $isNew);
     }
 
     /**
@@ -443,12 +443,12 @@ class OrderManager
 
     /**
      * @param OrderAddress $orderAddress
-     * @param $addressId
+     * @param $addressData
      * @param Contact $contact
      * @param Account $account
      * @throws OrderDependencyNotFoundException
      */
-    private function setOrderAddress(OrderAddress $orderAddress, $addressId, Contact $contact, Account $account = null)
+    private function setOrderAddress(OrderAddress $orderAddress, $addressData, Contact $contact, Account $account = null)
     {
         // check if address with id can be found
         // add contact data
@@ -469,32 +469,27 @@ class OrderManager
 
         // TODO: add phone
 
-        /** @var Address $address */
-        $address = $this->em->getRepository(self::$addressEntityName)->find($addressId);
-        if (!$address) {
-            throw new OrderDependencyNotFoundException(self::$addressEntityName, $addressId);
-        }
-        $this->copyAddressToOrderAddress($orderAddress, $address);
+        $this->setAddressDataForOrder($orderAddress, $addressData);
     }
 
     /**
      * copies address data to order address
      * @param OrderAddress $orderAddress
-     * @param Address $address
+     * @param $addressData
      */
-    private function copyAddressToOrderAddress(OrderAddress &$orderAddress, Address $address)
+    private function setAddressDataForOrder(OrderAddress &$orderAddress, $addressData)
     {
-        $orderAddress->setAddress($address);
-        $orderAddress->setStreet($address->getStreet());
-        $orderAddress->setNumber($address->getNumber());
-        $orderAddress->setAddition($address->getAddition());
-        $orderAddress->setCity($address->getCity());
-        $orderAddress->setZip($address->getZip());
-        $orderAddress->setState($address->getState());
-        $orderAddress->setCountry($address->getCountry()->getName());
-        // TODO: check whats really needed at postbox address
-//        $orderAddress->setBox(sprintf('%s %s %s', $address->getPostboxNumber(), $address->getPostboxPostcode(), $address->getPostboxCity()));
-        $orderAddress->setBox($address->getPostboxNumber());
+        $orderAddress->setStreet($this->getProperty($addressData,'street',''));
+        $orderAddress->setNumber($this->getProperty($addressData,'number',''));
+        $orderAddress->setAddition($this->getProperty($addressData,'addition',''));
+        $orderAddress->setCity($this->getProperty($addressData,'city',''));
+        $orderAddress->setZip($this->getProperty($addressData,'zip',''));
+        $orderAddress->setState($this->getProperty($addressData,'state',''));
+        $orderAddress->setCountry($this->getProperty($addressData,'country',''));
+
+        $orderAddress->setPostboxCity($this->getProperty($addressData,'postboxCity',''));
+        $orderAddress->setPostboxPostcode($this->getProperty($addressData,'postboxPostcode',''));
+        $orderAddress->setPostboxNumber($this->getProperty($addressData,'postboxNumber',''));
     }
 
     /**

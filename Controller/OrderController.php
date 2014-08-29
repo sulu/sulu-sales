@@ -12,6 +12,8 @@ namespace Sulu\Bundle\Sales\OrderBundle\Controller;
 
 use FOS\RestBundle\Routing\ClassResourceInterface;
 use Hateoas\Representation\CollectionRepresentation;
+
+use Sulu\Bundle\Sales\OrderBundle\Api\Order;
 use Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatus;
 use Sulu\Bundle\Sales\OrderBundle\Order\Exception\MissingOrderAttributeException;
 use Sulu\Bundle\Sales\OrderBundle\Order\Exception\OrderDependencyNotFoundException;
@@ -21,11 +23,13 @@ use Sulu\Bundle\Sales\OrderBundle\Order\OrderManager;
 use Sulu\Component\Rest\Exception\EntityNotFoundException;
 use Sulu\Component\Rest\Exception\MissingArgumentException;
 use Sulu\Component\Rest\Exception\RestException;
+use Sulu\Component\Rest\ListBuilder\Doctrine\DoctrineListBuilderFactory;
 use Sulu\Component\Rest\ListBuilder\Doctrine\DoctrineListBuilder;
 use Sulu\Component\Rest\ListBuilder\Doctrine\FieldDescriptor\DoctrineFieldDescriptor;
 use Sulu\Component\Rest\ListBuilder\Doctrine\FieldDescriptor\DoctrineJoinDescriptor;
 use Sulu\Component\Rest\ListBuilder\ListRepresentation;
 use Sulu\Component\Rest\RestController;
+use Sulu\Component\Rest\RestHelperInterface;
 use Symfony\Component\HttpFoundation\Request;
 use FOS\RestBundle\Controller\Annotations\Post;
 

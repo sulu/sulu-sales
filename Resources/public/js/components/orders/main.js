@@ -24,7 +24,6 @@ define([
                 this.renderList();
             } else if (this.options.display === 'form') {
                 this.renderForm().then(function() {
-//                    AccountsUtilHeader.setHeader.call(this, this.account, this.options.accountType);
                 }.bind(this));
             } else {
                 throw 'display type wrong';
@@ -33,7 +32,7 @@ define([
 
         bindCustomEvents: function() {
             // delete order
-            this.sandbox.on('sulu.salesorder.order.delete', this.delOrder.bind(this));
+            this.sandbox.on('sulu.salesorder.order.delete', this.showDeleteWarning.bind(this));
 
             // conversion events
             this.sandbox.on('sulu.salesorder.order.confirm', this.confirmOrder.bind(this));
@@ -98,34 +97,60 @@ define([
             this.order.save(null, {
                 type: 'post',
                 success: function(response) {
-                    console.log('successfully changed status', response);
+                    this.sandbox.logger.log('successfully changed status', response);
                     this.loadOrder(this.order.id, true);
                 }.bind(this)
             });
         },
 
         loadOrder: function(id, force) {
-            force = (force === true) ? true : false;
+            force = (force === true);
             this.sandbox.emit('sulu.router.navigate', 'sales/orders/edit:' + id + '/details', true, false ,force);
         },
 
-        // show confirmation and delete account
-        delOrder: function() {
-                this.sandbox.emit('sulu.header.toolbar.item.loading', 'options-button');
-
+        showDeleteWarning: function(ids){
             // show dialog
             this.sandbox.emit('sulu.overlay.show-warning',
                 'sulu.overlay.be-careful',
                 'sulu.overlay.delete-desc',
                 null,
-                function() {
-                    this.order.destroy({
-                        success: function() {
-                            this.sandbox.emit('sulu.router.navigate', 'sales/order');
-                        }.bind(this)
-                    });
-                }
+                this.delOrderHandler.bind(this, ids)
             );
+        },
+
+        // show confirmation and delete account
+        delOrderHandler: function(ids) {
+            this.sandbox.emit('sulu.header.toolbar.item.loading', 'options-button');
+
+            if (this.sandbox.util.typeOf(ids) === 'array') {
+                this.sandbox.util.foreach(ids, function(id) {
+                    this.delOrder(id, function() {
+                        this.sandbox.emit('husky.datagrid.record.remove', id);
+                    }.bind(this), null);
+                }.bind(this));
+            } else {
+                this.delOrder(ids, function() {
+                    this.sandbox.emit('sulu.router.navigate', 'sales/orders');
+                }.bind(this), null);
+            }
+        },
+
+        /**
+         * deletes an order
+         * @param id
+         * @param successCallback
+         * @param failCallback
+         */
+        delOrder: function(id, successCallback, failCallback){
+
+            successCallback = typeof(successCallback) === 'function' ? successCallback : null;
+            failCallback = typeof(failCallback) === 'function' ? failCallback : null;
+
+            this.order = Order.findOrCreate({id: id});
+            this.order.destroy({
+                success: successCallback,
+                fail: failCallback
+            });
         },
 
         showOrderList: function() {
@@ -153,7 +178,7 @@ define([
             });
         },
 
-        addOrder: function(data) {
+        addOrder: function() {
             this.sandbox.emit('sulu.router.navigate', 'sales/orders/add');
         },
 

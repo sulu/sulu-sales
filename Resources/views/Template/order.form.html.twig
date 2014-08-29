@@ -6,8 +6,9 @@
     <form id="order-form" class="form-horizontal">
         <input type="hidden" data-mapper-property="id"/>
 
-        <div class="changeListener grid-row">
-            <div class="grid-row small">
+        <div class="grid-row">
+
+            <div class="grid-row small changeListener">
                 <div class="grid-col-6">
                     <div class="form-group">
                         <label for="account-input" class="required"><%=translate('salesorder.orders.account')%></label>
@@ -21,7 +22,8 @@
                     </div>
                 </div>
             </div>
-            <div class="grid-row small">
+
+            <div class="grid-row small changeListener">
                 <div class="grid-col-6">
                     <div class="form-group">
                         <label for="contact-select" class="required"><%=translate('salesorder.orders.contact')%></label>
@@ -38,17 +40,19 @@
                              data-validation-required="true"
                              data-type="husky-select"
                              data-mapper-property="contact"
-                             data-form="true"/>
+                             data-form="true"></div>
                     </div>
                 </div>
                 <div class="grid-col-6">
-                    <div class="form-group">
+                    <div class="form-group changeListener">
                         <label for="order-number"><%=translate('salesorder.orders.number')%></label>
                         <input id="order-number" class="form-element" type="text" data-mapper-property="orderNumber" <%= disabled %>/>
                     </div>
                 </div>
+
             </div>
-            <div class="grid-row small">
+
+            <div class="grid-row small changeListener">
                 <div class="grid-col-6">
                     <div class="form-group">
                         <label for="responsible-contact-select" class="required"><%=translate('salesorder.orders.responsibleContact')%></label>
@@ -68,6 +72,7 @@
                         </div>
                     </div>
                 </div>
+
                 <div class="grid-col-6">
                     <div class="form-group">
                         <label for="cost-centre"><%=translate('salesorder.orders.costCentre')%></label>
@@ -75,7 +80,8 @@
                     </div>
                 </div>
             </div>
-            <div class="grid-row">
+
+            <div class="grid-row changeListener">
                 <div class="grid-col-6">
                     <div class="form-group">
                         <label for="tax-free"><%=translate('salesorder.orders.taxFree')%></label>
@@ -89,29 +95,23 @@
                         </div>
                     </div>
                 </div>
-                <div class="grid-col-6">
-                    <div class="form-group">
-                        {#<label for="cost-centre" class="required"><%=translate('salesorder.orders.number')%></label>#}
-                        {#<input id="cost-centre" class="form-element" type="text"/>#}
-                    </div>
-                </div>
+                <div class="grid-col-6"></div>
             </div>
 
             <div class="grid-row small">
                 <div class="grid-col-12">
                     <div class="form-group">
-                        <label for="delivery-address-select" class="required"><%=translate('address.delivery')%></label>
+                        <label for="delivery-address" class="required"><%=translate('address.delivery')%></label>
 
-                        <div id="delivery-address-select"
-                             data-aura-component="select@husky"
-                             data-aura-data="[]"
-                             data-aura-instance-name="delivery-address-select"
-                             data-aura-value-name="address"
-                             data-aura-default-label="<%=translate('dropdown.please-choose')%>"
-                             data-type="husky-select"
+                        <div id="delivery-address"
+                             data-aura-component="editable-data-row@sulusalescore"
+                             data-form="true"
+                             data-aura-view="address"
                              data-mapper-property="deliveryAddress"
                              data-validation-required="true"
-                             data-form="true">
+                             data-aura-instance-name="delivery-address"
+                             data-aura-disabled="<%= !isEditable %>"
+                             data-type="editableDataRow">
                         </div>
                     </div>
                 </div>
@@ -120,24 +120,23 @@
             <div class="grid-row small">
                 <div class="grid-col-12">
                     <div class="form-group">
-                        <label for="payment-address-select" class="required"><%=translate('address.invoice')%></label>
+                        <label for="invoice-address" class="required"><%=translate('address.invoice')%></label>
 
-                        <div id="payment-address-select"
-                             data-aura-component="select@husky"
-                             data-aura-data="[]"
-                             data-aura-instance-name="payment-address-select"
-                             data-aura-value-name="address"
-                             data-aura-default-label="<%=translate('dropdown.please-choose')%>"
-                             data-type="husky-select"
-                             data-mapper-property="paymentAddress"
+                        <div id="invoice-address"
+                             data-aura-component="editable-data-row@sulusalescore"
+                             data-form="true"
+                             data-mapper-property="invoiceAddress"
+                             data-aura-view="address"
                              data-validation-required="true"
-                             data-form="true">
+                             data-aura-instance-name="invoice-address"
+                             data-aura-disabled="<%= !isEditable %>"
+                             data-type="editableDataRow">
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="grid-row small">
+            <div class="grid-row small changeListener">
                 <div class="grid-col-12">
                     <div class="form-group">
                         <label for="delivery-terms-select"><%=translate('contact.termsOfDelivery')%></label>
@@ -159,7 +158,7 @@
                     </div>
                 </div>
             </div>
-            <div class="grid-row small">
+            <div class="grid-row small changeListener">
                 <div class="grid-col-12">
                     <div class="form-group">
                         <label for="delivery-terms-select"><%=translate('contact.termsOfPayment')%></label>
@@ -182,7 +181,7 @@
                 </div>
             </div>
         </div>
-        <div>
+        <div class="changeListener">
             <div id="order-items"
                  data-aura-component="item-table@sulusalescore"
                  data-aura-editable="<%= isEditable %>"
@@ -193,6 +192,7 @@
         </div>
     </form>
 </div>
+
 {% block data %}
     <script type="text/javascript">
         (function() {
@@ -200,4 +200,3 @@
         })();
     </script>
 {% endblock %}
-

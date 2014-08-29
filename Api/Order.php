@@ -3,10 +3,13 @@
 namespace Sulu\Bundle\Sales\OrderBundle\Api;
 
 use JMS\Serializer\Annotation\VirtualProperty;
+use Sulu\Bundle\ContactBundle\Entity\Account;
+use Sulu\Bundle\ContactBundle\Entity\Contact;
 use Sulu\Bundle\ContactBundle\Entity\TermsOfDelivery;
 use Sulu\Bundle\ContactBundle\Entity\TermsOfPayment;
 use Sulu\Bundle\Sales\CoreBundle\Api\Item;
-use Sulu\Bundle\Sales\OrderBundle\Entity\Order as Entity;
+use Sulu\Bundle\Sales\OrderBundle\Entity\Order as OrderEntity;
+use Sulu\Bundle\Sales\OrderBundle\Entity\OrderAddress as OrderAddressEntity;
 use Sulu\Component\Rest\ApiWrapper;
 use Hateoas\Configuration\Annotation\Relation;
 use JMS\Serializer\Annotation\SerializedName;
@@ -21,10 +24,10 @@ use DateTime;
 class Order extends ApiWrapper
 {
     /**
-     * @param Entity $order The order to wrap
+     * @param OrderEntity $order The order to wrap
      * @param string $locale The locale of this order
      */
-    public function __construct(Entity $order, $locale)
+    public function __construct(OrderEntity $order, $locale)
     {
         $this->entity = $order;
         $this->locale = $locale;
@@ -223,6 +226,8 @@ class Order extends ApiWrapper
                 'terms' => $terms->getTerms()
             );
         }
+
+        return null;
     }
 
     /**
@@ -252,6 +257,8 @@ class Order extends ApiWrapper
                 'terms' => $terms->getTerms()
             );
         }
+
+        return null;
     }
 
     /**
@@ -407,10 +414,10 @@ class Order extends ApiWrapper
     /**
      * Set account
      *
-     * @param \Sulu\Bundle\ContactBundle\Entity\Account $account
+     * @param Account $account
      * @return Order
      */
-    public function setAccount(\Sulu\Bundle\ContactBundle\Entity\Account $account = null)
+    public function setAccount(Account $account = null)
     {
         $this->entity->setAccount($account);
 
@@ -420,7 +427,7 @@ class Order extends ApiWrapper
     /**
      * Get account
      *
-     * @return \Sulu\Bundle\ContactBundle\Entity\Account
+     * @return Account
      * @VirtualProperty
      * @SerializedName("account")
      */
@@ -432,15 +439,17 @@ class Order extends ApiWrapper
                 'name' => $account->getName()
             );
         }
+
+        return null;
     }
 
     /**
      * Set contact
      *
-     * @param \Sulu\Bundle\ContactBundle\Entity\Contact $contact
+     * @param Contact $contact
      * @return Order
      */
-    public function setContact(\Sulu\Bundle\ContactBundle\Entity\Contact $contact = null)
+    public function setContact(Contact $contact = null)
     {
         $this->entity->setContact($contact);
 
@@ -450,7 +459,7 @@ class Order extends ApiWrapper
     /**
      * Get contact
      *
-     * @return \Sulu\Bundle\ContactBundle\Entity\Contact
+     * @return Contact
      * @VirtualProperty
      * @SerializedName("contact")
      */
@@ -462,15 +471,17 @@ class Order extends ApiWrapper
                 'fullName' => $contact->getFullName()
             );
         }
+
+        return null;
     }
 
     /**
      * Set responsibleContact
      *
-     * @param \Sulu\Bundle\ContactBundle\Entity\Contact $responsibleContact
+     * @param Contact $responsibleContact
      * @return Order
      */
-    public function setResponsibleContact(\Sulu\Bundle\ContactBundle\Entity\Contact $responsibleContact = null)
+    public function setResponsibleContact(Contact $responsibleContact = null)
     {
         $this->entity->setResponsibleContact($responsibleContact);
 
@@ -480,7 +491,7 @@ class Order extends ApiWrapper
     /**
      * Get responsibleContact
      *
-     * @return \Sulu\Bundle\ContactBundle\Entity\Contact
+     * @return Contact
      * @VirtualProperty
      * @SerializedName("responsibleContact")
      */
@@ -492,6 +503,8 @@ class Order extends ApiWrapper
                 'fullName' => $contact->getFullName()
             );
         }
+
+        return null;
     }
 
     /**
@@ -583,10 +596,10 @@ class Order extends ApiWrapper
     /**
      * Set deliveryAddress
      *
-     * @param \Sulu\Bundle\Sales\OrderBundle\Entity\OrderAddress $deliveryAddress
+     * @param OrderAddressEntity $deliveryAddress
      * @return Order
      */
-    public function setDeliveryAddress(\Sulu\Bundle\Sales\OrderBundle\Entity\OrderAddress $deliveryAddress = null)
+    public function setDeliveryAddress(OrderAddressEntity $deliveryAddress = null)
     {
         $this->entity->setDeliveryAddress($deliveryAddress);
 
@@ -596,7 +609,7 @@ class Order extends ApiWrapper
     /**
      * Get deliveryAddress
      *
-     * @return \Sulu\Bundle\Sales\OrderBundle\Entity\OrderAddress
+     * @return OrderAddressEntity
      * @VirtualProperty
      * @SerializedName("deliveryAddress")
      */
@@ -608,10 +621,10 @@ class Order extends ApiWrapper
     /**
      * Set invoiceAddress
      *
-     * @param \Sulu\Bundle\Sales\OrderBundle\Entity\OrderAddress $invoiceAddress
+     * @param OrderAddressEntity $invoiceAddress
      * @return Order
      */
-    public function setInvoiceAddress(\Sulu\Bundle\Sales\OrderBundle\Entity\OrderAddress $invoiceAddress = null)
+    public function setInvoiceAddress(OrderAddressEntity $invoiceAddress = null)
     {
         $this->entity->setInvoiceAddress($invoiceAddress);
 
@@ -621,7 +634,7 @@ class Order extends ApiWrapper
     /**
      * Get invoiceAddress
      *
-     * @return \Sulu\Bundle\Sales\OrderBundle\Entity\OrderAddress
+     * @return OrderAddressEntity
      * @VirtualProperty
      * @SerializedName("invoiceAddress")
      */

@@ -54,16 +54,28 @@
                 <source>salesorder.orders.invoiceAddress</source>
                 <target>Rechnungsadr.</target>
             </trans-unit>
-            <trans-unit id="a50accg2ac181350142c0b4720e29f14" resname="salesorder.orders.confirm">
+            <trans-unit id="a50accg2ac181350142c0b4720e29f14" resname="salesorder.orders.addressOverlayTitle">
+                <source>salesorder.orders.addressOverlayTitle</source>
+                <target>Adresse auswählen oder hinzufügen</target>
+            </trans-unit>
+            <trans-unit id="a50accg2ac181350142c0b4720e29f15" resname="salesorder.orders.addressOverlayWarningTitle">
+                <source>salesorder.orders.addressOverlayWarningTitle</source>
+                <target>Hinweis</target>
+            </trans-unit>
+            <trans-unit id="a50accg2ac181350142c0b4720e29f16" resname="salesorder.orders.addressOverlayWarningMessage">
+                <source>salesorder.orders.addressOverlayWarningMessage</source>
+                <target>Diese Adresse wird nur für den aktuellen Auftrag übernommen!</target>
+            </trans-unit>
+            <trans-unit id="a50accg2ac181350142c0b4720e29f17" resname="salesorder.orders.confirm">
                 <source>salesorder.orders.confirm</source>
                 <target>Auftrag bestätigen</target>
             </trans-unit>
-            <trans-unit id="a50accg2ac181350142c0b4720e29f15" resname="salesorder.orders.edit">
+            <trans-unit id="a50accg2ac181350142c0b4720e29f18" resname="salesorder.orders.edit">
                 <source>salesorder.orders.edit</source>
                 <target>Auftrag bearbeiten</target>
             </trans-unit>
-            <trans-unit id="a50accg2ac181350142c0b4720e29f16" resname="salesorder.order.shipping.create">
-                <source>salesorder.order.shipping.create</source>
+            <trans-unit id="a50accg2ac181350142c0b4720e29f19" resname="salesorder.orders.shipping.create">
+                <source>salesorder.orders.shipping.create</source>
                 <target>Lieferung erstellen</target>
             </trans-unit>
         </body>

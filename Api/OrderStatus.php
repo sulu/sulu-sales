@@ -4,6 +4,7 @@ namespace Sulu\Bundle\Sales\OrderBundle\Api;
 
 use JMS\Serializer\Annotation\VirtualProperty;
 use Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatus as Entity;
+use Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatusTranslation;
 use Sulu\Component\Rest\ApiWrapper;
 use JMS\Serializer\Annotation\SerializedName;
 

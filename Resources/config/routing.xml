@@ -10,6 +10,9 @@
     <route id="order_list" path="/template/order/list.html">
         <default key="_controller">SuluSalesOrderBundle:Template:orderList</default>
     </route>
+    <route id="order_address_form" path="/template/order/address.form.html">
+        <default key="_controller">SuluSalesOrderBundle:Template:orderAddressForm</default>
+    </route>
     <route id="order_form" path="/template/order/form.html">
         <default key="_controller">SuluSalesOrderBundle:Template:orderForm</default>
     </route>

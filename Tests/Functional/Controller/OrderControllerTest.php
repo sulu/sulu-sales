@@ -171,7 +171,7 @@ class OrderControllerTest extends DatabaseTestCase
 
     private function setUpSchema()
     {
-        self::$tool = new SchemaTool(self::$em);
+         self::$tool = new SchemaTool(self::$em);
 
         self::$entities = array(
             self::$em->getClassMetadata('Sulu\Bundle\TestBundle\Entity\TestUser'),
@@ -207,6 +207,8 @@ class OrderControllerTest extends DatabaseTestCase
             self::$em->getClassMetadata('Sulu\Bundle\ContactBundle\Entity\AccountCategory'),
             self::$em->getClassMetadata('Sulu\Bundle\ContactBundle\Entity\Activity'),
             self::$em->getClassMetadata('Sulu\Bundle\ContactBundle\Entity\ActivityStatus'),
+            self::$em->getClassMetadata('Sulu\Bundle\ContactBundle\Entity\ActivityPriority'),
+            self::$em->getClassMetadata('Sulu\Bundle\ContactBundle\Entity\ActivityType'),
             self::$em->getClassMetadata('Sulu\Bundle\ContactBundle\Entity\Address'),
             self::$em->getClassMetadata('Sulu\Bundle\ContactBundle\Entity\AddressType'),
             self::$em->getClassMetadata('Sulu\Bundle\ContactBundle\Entity\BankAccount'),
@@ -228,7 +230,6 @@ class OrderControllerTest extends DatabaseTestCase
             self::$em->getClassMetadata('Sulu\Bundle\TagBundle\Entity\Tag'),
             self::$em->getClassMetadata('Sulu\Bundle\ContactBundle\Entity\TermsOfPayment'),
             self::$em->getClassMetadata('Sulu\Bundle\ContactBundle\Entity\TermsOfDelivery'),
-
             self::$em->getClassMetadata('Sulu\Bundle\MediaBundle\Entity\Collection'),
             self::$em->getClassMetadata('Sulu\Bundle\MediaBundle\Entity\CollectionType'),
             self::$em->getClassMetadata('Sulu\Bundle\MediaBundle\Entity\CollectionMeta'),
@@ -252,7 +253,7 @@ class OrderControllerTest extends DatabaseTestCase
     {
         // account
         $this->account = new Account();
-        $this->account->setName('Company');
+         $this->account->setName('Company');
         $this->account->setCreated(new DateTime());
         $this->account->setChanged(new DateTime());
         $this->account->setType(Account::TYPE_BASIC);
@@ -275,7 +276,9 @@ class OrderControllerTest extends DatabaseTestCase
         $this->address->setState('State');
         $this->address->setZip('12345');
         $this->address->setCountry($country);
-        $this->address->setPostboxNumber('Box2');
+        $this->address->setPostboxNumber('postboxNumber');
+        $this->address->setPostboxPostcode('postboxPostcode');
+        $this->address->setPostboxCity('postboxCity');
         $this->address->setAddressType($addressType);
         // address
         $this->address2 = new Address();
@@ -329,12 +332,14 @@ class OrderControllerTest extends DatabaseTestCase
         $this->orderAddressDelivery->setZip($this->address->getZip());
         $this->orderAddressDelivery->setState($this->address->getState());
         $this->orderAddressDelivery->setCountry($this->address->getCountry()->getName());
-        $this->orderAddressDelivery->setBox($this->address->getPostboxNumber());
+        $this->orderAddressDelivery->setPostboxNumber($this->address->getPostboxNumber());
+        $this->orderAddressDelivery->setPostboxPostcode($this->address->getPostboxPostcode());
+        $this->orderAddressDelivery->setPostboxCity($this->address->getPostboxCity());
         $this->orderAddressDelivery->setAccountName($this->account->getName());
         $this->orderAddressDelivery->setUid($this->account->getUid());
         $this->orderAddressDelivery->setPhone($this->phone->getPhone());
         $this->orderAddressDelivery->setPhoneMobile('+43 123 / 456');
-        $this->orderAddressDelivery->setAddress($this->address);
+
         // clone address for invoice
         $this->orderAddressInvoice = clone $this->orderAddressDelivery;
         $this->orderAddressInvoice = clone $this->orderAddressDelivery;
@@ -500,7 +505,9 @@ class OrderControllerTest extends DatabaseTestCase
         $this->assertEquals('12345', $response->deliveryAddress->zip);
         $this->assertEquals('State', $response->deliveryAddress->state);
         $this->assertEquals('Country', $response->deliveryAddress->country);
-        $this->assertEquals('Box2', $response->deliveryAddress->box);
+        $this->assertEquals('postboxPostcode', $response->deliveryAddress->postboxPostcode);
+        $this->assertEquals('postboxNumber', $response->deliveryAddress->postboxNumber);
+        $this->assertEquals('postboxCity', $response->deliveryAddress->postboxCity);
         $this->assertEquals('uid-123', $response->deliveryAddress->uid);
         $this->assertEquals('+43 123 / 456 789', $response->deliveryAddress->phone);
         $this->assertEquals('+43 123 / 456', $response->deliveryAddress->phoneMobile);
@@ -567,12 +574,25 @@ class OrderControllerTest extends DatabaseTestCase
                 'account' => array(
                     'id' => 1
                 ),
-                'paymentAddress' => array(
-                    'id' => 1
+                'invoiceAddress' => array(
+                    'street' => 'Sample-Street',
+                    'number' => '12',
+                    'addition' => 'Entrance 2',
+                    'city' => 'Sample-City',
+                    'state' => 'State',
+                    'zip' => '12345',
+                    'country' => 'Country',
+                    'postboxNumber' => 'postboxNumber',
+                    'postboxCity' => 'postboxCity',
+                    'postboxPostcode' => 'postboxPostcode'
                 ),
                 'deliveryAddress' => array(
-                    'id' => 2
-                )
+                    'street' => 'Street',
+                    'number' => '2',
+                    'city' => 'Utopia',
+                    'zip' => '1',
+                    'country' => 'Country'
+                ),
             )
         );
         $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
@@ -611,11 +631,24 @@ class OrderControllerTest extends DatabaseTestCase
             'contact' => array(
                 'id' => 1
             ),
-            'paymentAddress' => array(
-                'id' => 1
+            'invoiceAddress' => array(
+                'street' => 'Sample-Street',
+                'number' => '12',
+                'addition' => 'Entrance 2',
+                'city' => 'Sample-City',
+                'state' => 'State',
+                'zip' => '12345',
+                'country' => 'Country',
+                'postboxNumber' => 'postboxNumber',
+                'postboxCity' => 'postboxCity',
+                'postboxPostcode' => 'postboxPostcode'
             ),
             'deliveryAddress' => array(
-                'id' => 2
+                'street' => 'Street',
+                'number' => '2',
+                'city' => 'Utopia',
+                'zip' => '1',
+                'country' => 'Country'
             ),
             'termsOfDelivery' => array(
                 'id' => 1
@@ -650,11 +683,24 @@ class OrderControllerTest extends DatabaseTestCase
             'contact' => array(
                 'id' => 1
             ),
-            'paymentAddress' => array(
-                'id' => 1
+            'invoiceAddress' => array(
+                'street' => 'Sample-Street',
+                'number' => '12',
+                'addition' => 'Entrance 2',
+                'city' => 'Sample-City',
+                'state' => 'State',
+                'zip' => '12345',
+                'country' => 'Country',
+                'postboxNumber' => 'postboxNumber',
+                'postboxCity' => 'postboxCity',
+                'postboxPostcode' => 'postboxPostcode'
             ),
             'deliveryAddress' => array(
-                'id' => 2
+                'street' => 'Street',
+                'number' => '2',
+                'city' => 'Utopia',
+                'zip' => '1',
+                'country' => 'Country'
             ),
             'items' => array(
                 array(
@@ -717,7 +763,9 @@ class OrderControllerTest extends DatabaseTestCase
         $this->assertEqualsIfExists($address->getCity(), $orderAddress, 'city');
         $this->assertEqualsIfExists($address->getZip(), $orderAddress, 'zip');
         $this->assertEqualsIfExists($address->getCountry()->getName(), $orderAddress, 'country');
-        $this->assertEqualsIfExists($address->getPostboxNumber(), $orderAddress, 'box');
+        $this->assertEqualsIfExists($address->getPostboxNumber(), $orderAddress, 'postboxNumber');
+        $this->assertEqualsIfExists($address->getPostboxCity(), $orderAddress, 'postboxCity');
+        $this->assertEqualsIfExists($address->getPostboxPostcode(), $orderAddress, 'postboxPostcode');
 
         // account
         if ($account) {

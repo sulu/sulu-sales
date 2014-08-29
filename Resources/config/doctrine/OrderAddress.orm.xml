@@ -17,15 +17,11 @@
         <field name="zip" type="string" column="zip" length="10" nullable="false"/>
         <field name="state" type="string" column="state" length="255" nullable="true"/>
         <field name="country" type="string" column="country" length="255" nullable="false"/>
-        <field name="box" type="string" column="box" length="255" nullable="true"/>
+        <field name="postboxCity" type="string" column="postboxCity" length="255" nullable="true"/>
+        <field name="postboxNumber" type="string" column="postboxNumber" length="255" nullable="true"/>
+        <field name="postboxPostcode" type="string" column="postboxPostcode" length="255" nullable="true"/>
         <field name="uid" type="string" column="uid" length="255" nullable="true"/>
         <field name="phone" type="string" column="phone" length="255" nullable="true"/>
         <field name="phoneMobile" type="string" column="phoneMobile" length="255" nullable="true"/>
-
-        <many-to-one field="address" target-entity="Sulu\Bundle\ContactBundle\Entity\Address">
-            <join-columns>
-                <join-column name="idAddresses" referenced-column-name="id" on-delete="SET NULL" nullable="true"/>
-            </join-columns>
-        </many-to-one>
     </entity>
 </doctrine-mapping>
