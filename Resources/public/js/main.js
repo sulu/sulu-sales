@@ -10,7 +10,9 @@
 require.config({
     paths: {
         sulusalescore: '../../sulusalescore/js',
+        'type/editableDataRow': '../../sulusalescore/js/components/editable-data-row/editable-data-row-type',
         'type/itemTable': '../../sulusalescore/js/components/item-table/item-table-type'
+
     }
 });
 
@@ -22,16 +24,7 @@ define({
 
         'use strict';
 
-        var sandbox = app.sandbox;
-
         app.components.addSource('sulusalescore', '/bundles/sulusalescore/js/components');
 
-        // Example: list all contacts
-        // sandbox.mvc.routes.push({
-        //     route: 'contacts/contacts',
-        //    callback: function(){
-        //         this.html('<div data-aura-component="contacts@sulucontact" data-aura-display="list"/>');
-        //     }
-        // });
     }
 });
