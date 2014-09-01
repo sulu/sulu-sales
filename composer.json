@@ -8,7 +8,7 @@
     "authors": [
         {
             "name": "Sulu Community",
-            "homepage": "https://github.com/massiveart/SuluSalesOrderBundle/contributors"
+            "homepage": "https://github.com/sulu-cmf/SuluSalesOrderBundle/contributors"
         }
     ],
     "require": {
