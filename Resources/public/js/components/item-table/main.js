@@ -535,8 +535,8 @@ define([
          * rerenders component
          */
         rerenderItems = function(items) {
-            this.items = [];
-            this.sandbox.dom.empty(this.table);
+            this.items = {};
+            this.sandbox.dom.empty(this.$find(constants.listClass));
             renderItems.call(this, items);
         },
 
