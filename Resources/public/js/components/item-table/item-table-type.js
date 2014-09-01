@@ -30,7 +30,9 @@ define([
 
                     if (typeof data === 'object') {
                         App.dom.data(this.$el, 'items', data);
-//                        App.dom.trigger(this.$el, 'data-changed', data);
+                        // FIXME: uncomment, when setData is only called once, otherwise this leads to reinitialization
+                        // of item-component multiple times
+                        // App.dom.trigger(this.$el, 'data-changed', data);
                     }
                 },
 
