@@ -1,0 +1,52 @@
+{
+    "name": "sulu/sales-shipping-bundle",
+    "type": "sulu-bundle",
+    "description": "Shipping Bundle of Sulu Sales",
+    "license": "MIT",
+    "keywords": ["sales","shipping"],
+    "version": "dev-develop",
+    "authors": [
+        {
+            "name": "Sulu Community",
+            "homepage": "https://github.com/sulu-cmf/SuluSalesShippingBundle/contributors"
+        }
+    ],
+    "require": {
+        "php": ">=5.4",
+        "doctrine/orm": ">=2.2.3,<2.4-dev",
+        "friendsofsymfony/rest-bundle": "dev-master",
+        "friendsofsymfony/http-cache": "@dev",
+        "jms/serializer-bundle": "@dev",
+        "stof/doctrine-extensions-bundle": "1.1.*@dev",
+        "willdurand/hateoas-bundle": "0.3.*",
+        "sulu/sulu": "dev-develop",
+        "sulu/admin-bundle": "dev-develop",
+        "sulu/product-bundle": "dev-develop",
+        "sulu/contact-bundle": "dev-develop",
+        "sulu/security-bundle": "dev-develop",
+        "sulu/sales-core-bundle": "dev-develop",
+        "sulu/sales-order-bundle": "dev-develop"
+    },
+    "require-dev": {
+        "sensio/framework-extra-bundle":  "~3.0",
+        "symfony/symfony": "2.5.*",
+        "doctrine/doctrine-bundle": "1.2.*",
+        "symfony/monolog-bundle": "2.4.*",
+        "phpunit/phpunit": "3.7.*",
+        "sulu/test-bundle": "dev-develop",
+        "sulu/tag-bundle": "dev-develop",
+        "sulu/website-bundle": "dev-develop",
+        "sulu/category-bundle": "dev-develop",
+        "sulu/media-bundle": "dev-develop",
+
+        "symfony-cmf/routing-bundle": "1.2.*@dev",
+        "symfony-cmf/routing": "1.2.*@dev",
+        "liip/theme-bundle": "1.0.*@dev"
+    },
+    "autoload": {
+        "psr-0": {
+            "Sulu\\Bundle\\Sales\\ShippingBundle": ""
+        }
+    },
+    "target-dir": "Sulu/Bundle/Sales/ShippingBundle"
+}
