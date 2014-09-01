@@ -16,12 +16,17 @@ use Sulu\Component\Rest\ListBuilder\Doctrine\FieldDescriptor\DoctrineConcatenati
 use Sulu\Component\Rest\ListBuilder\Doctrine\FieldDescriptor\DoctrineFieldDescriptor;
 use Sulu\Component\Rest\ListBuilder\Doctrine\FieldDescriptor\DoctrineJoinDescriptor;
 use Sulu\Component\Rest\RestHelperInterface;
-use Sulu\Component\Security\UserRepositoryInterface;
+
+use Sulu\Bundle\Sales\ShippingBundle\Entity\Shipping as ShippingEntity;
+use Sulu\Bundle\Sales\ShippingBundle\Api\Shipping;
 use DateTime;
 
 class ShippingManager
 {
-//    protected static $orderEntityName = 'SuluSalesOrderBundle:Order';
+    protected static $shippingEntityName = 'SuluSalesShippingBundle:Shipping';
+    protected static $orderEntityName = 'SuluSalesOrderBundle:Order';
+    protected static $userEntityName = 'SuluSecurityBundle:User';
+
 //    protected static $contactEntityName = 'SuluContactBundle:Contact';
 //    protected static $addressEntityName = 'SuluContactBundle:Address';
 //    protected static $accountEntityName = 'SuluContactBundle:Account';
@@ -31,82 +36,65 @@ class ShippingManager
 //    protected static $itemEntityName = 'SuluSalesCoreBundle:Item';
 //    protected static $termsOfDeliveryEntityName = 'SuluContactBundle:TermsOfDelivery';
 //    protected static $termsOfPaymentEntityName = 'SuluContactBundle:TermsOfPayment';
-//
-//    private $currentLocale;
-//
-//    /**
-//     * @var ObjectManager
-//     */
-//    private $em;
-//
-//    /**
-//     * @var ItemManager
-//     */
-//    private $itemManager;
-//
-//    /**
-//     * @var OrderRepository
-//     */
-//    private $orderRepository;
-//
-//    /**
-//     * @var UserRepositoryInterface
-//     */
-//    private $userRepository;
-//
-//
-//    /**
-//     * @var RestHelperInterface
-//     */
-//    private $restHelper;
-//
-//    /**
-//     * Describes the fields, which are handled by this controller
-//     * @var DoctrineFieldDescriptor[]
-//     */
-//    private $fieldDescriptors = array();
-//
-//    public function __construct(
-//        ObjectManager $em,
-//        OrderRepository $orderRepository,
-//        UserRepositoryInterface $userRepository,
-//        ItemManager $itemManager,
-//        RestHelperInterface $restHelper
-//    )
-//    {
-//        $this->orderRepository = $orderRepository;
-//        $this->userRepository = $userRepository;
-//        $this->em = $em;
-//        $this->itemManager = $itemManager;
-//        $this->restHelper = $restHelper;
-//    }
-//
-//    /**
-//     * @param array $data
-//     * @param $locale
-//     * @param $userId
-//     * @param null $id
-//     * @throws Exception\OrderNotFoundException
-//     * @throws Exception\OrderException
-//     * @return null|Order|\Sulu\Bundle\Sales\OrderBundle\Entity\Order
-//     */
-//    public function save(array $data, $locale, $userId, $id = null)
-//    {
-//        if ($id) {
-//            $order = $this->findByIdAndLocale($id, $locale);
-//
-//            if (!$order) {
-//                throw new OrderNotFoundException($id);
-//            }
-//        } else {
-//            $order = new Order(new OrderEntity(), $locale);
-//        }
-//
-//        // check for data
-//        $this->checkRequiredData($data, $id === null);
-//
-//        $user = $this->userRepository->findUserById($userId);
-//
+
+    private $currentLocale;
+
+    /**
+     * @var ObjectManager
+     */
+    private $em;
+
+    /**
+     * @var ItemManager
+     */
+    private $itemManager;
+
+    /**
+     * @var RestHelperInterface
+     */
+    private $restHelper;
+
+    /**
+     * Describes the fields, which are handled by this controller
+     * @var DoctrineFieldDescriptor[]
+     */
+    private $fieldDescriptors = array();
+
+    public function __construct(
+        ObjectManager $em,
+        ItemManager $itemManager,
+        RestHelperInterface $restHelper
+    )
+    {
+        $this->em = $em;
+        $this->itemManager = $itemManager;
+        $this->restHelper = $restHelper;
+    }
+
+    /**
+     * @param array $data
+     * @param $locale
+     * @param $userId
+     * @param null $id
+     * @return null|Order|\Sulu\Bundle\Sales\ShippingBundle\Entity\Shipping
+     */
+    public function save(array $data, $locale, $userId, $id = null)
+    {
+        if ($id) {
+            $shipping = $this->findByIdAndLocale($id, $locale);
+
+            if (!$shipping) {
+                throw new ShippingNotFoundException($id);
+            }
+        } else {
+            $shipping = new Shipping(new ShippingEntity(), $locale);
+        }
+
+        // check for data
+        $this->checkRequiredData($data, $id === null);
+
+        $user = $this->em->getRepository(self::$userEntityName)->findUserById($userId);
+
 //        $order->setOrderNumber($this->getProperty($data, 'orderNumber', $order->getOrderNumber()));
 //        $order->setCurrency($this->getProperty($data, 'currency', $order->getCurrency()));
 //        $order->setCostCentre($this->getProperty($data, 'costCentre', $order->getCostCentre()));
@@ -178,7 +166,7 @@ class ShippingManager
 //        $this->em->flush();
 //
 //        return $order;
-//    }
+    }
 //
 //    /**
 //     * deletes an order
@@ -365,20 +353,20 @@ class ShippingManager
 //            )
 //        );
 //    }
-//
-//    /**
-//     * check if necessary data is set
-//     * @param $data
-//     * @param $isNew
-//     */
-//    private function checkRequiredData($data, $isNew)
-//    {
-//        // check if contact and status are set
-//        $this->checkDataSet($data, 'contact', $isNew) && $this->checkDataSet($data['contact'], 'id', $isNew);
-//        $this->checkDataSet($data, 'deliveryAddress', $isNew);
-//        $this->checkDataSet($data, 'invoiceAddress', $isNew);
-//    }
-//
+
+    /**
+     * check if necessary data is set
+     * @param $data
+     * @param $isNew
+     */
+    private function checkRequiredData($data, $isNew)
+    {
+        $this->checkDataSet($data, 'order', $isNew) && $this->checkDataSet($data['order'], 'id', $isNew);
+        $this->checkDataSet($data, 'contact', $isNew) && $this->checkDataSet($data['contact'], 'id', $isNew);
+        $this->checkDataSet($data, 'deliveryAddress', $isNew);
+        $this->checkDataSet($data, 'invoiceAddress', $isNew);
+    }
+
 //    /**
 //     * checks data for attributes
 //     * @param array $data

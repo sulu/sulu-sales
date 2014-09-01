@@ -23,8 +23,6 @@
         </service>
         <service id="sulu_sales_shipping.shipping_manager" class="%sulu_sales_shipping.shipping_manager.class%">
             <argument type="service" id="doctrine.orm.entity_manager" />
-            <argument type="service" id="sulu_sales_shipping.shipping_repository" />
-            <argument type="service" id="sulu_security.user_repository" />
             <argument type="service" id="sulu_sales_core.item_manager" />
             <argument type="service" id="sulu_core.rest_helper" strict="false"/>
         </service>
