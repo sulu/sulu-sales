@@ -1,33 +1,137 @@
 <?php
 
-namespace Sulu\Bundle\Sales\ShippingBundle\Api;
+namespace Sulu\Bundle\Sales\ShippingBundle\Entity;
 
-use JMS\Serializer\Annotation\VirtualProperty;
-use Sulu\Bundle\Sales\CoreBundle\Api\Item;
-use Sulu\Bundle\Sales\OrderBundle\Api\Order;
-use Sulu\Component\Rest\ApiWrapper;
-use Hateoas\Configuration\Annotation\Relation;
-use JMS\Serializer\Annotation\SerializedName;
-use Sulu\Component\Security\UserInterface;
-use Sulu\Bundle\Sales\ShippingBundle\Entity\Shipping as ShippingEntity;
+use Doctrine\ORM\Mapping as ORM;
 
 /**
- * The Shipping class which will be 2exported to the API
- * @package Sulu\Bundle\Sales\ShippingBundle\Api
- * @Relation("self", href="expr('/api/admin/shippings/' ~ object.getId())")
+ * Shipping
  */
-class Shipping extends ApiWrapper
+class Shipping
 {
     /**
-     * @param ShippingEntity $shipping The shipping to wrap
-     * @param string $locale The locale of this shipping
+     * @var string
      */
-    public function __construct(ShippingEntity $shipping, $locale)
-    {
-        $this->entity = $shipping;
-        $this->locale = $locale;
-    }
+    private $number;
 
+    /**
+     * @var string
+     */
+    private $shippingNumber;
+
+    /**
+     * @var string
+     */
+    private $customerName;
+
+    /**
+     * @var string
+     */
+    private $termsOfDeliveryContent;
+
+    /**
+     * @var float
+     */
+    private $width;
+
+    /**
+     * @var float
+     */
+    private $height;
+
+    /**
+     * @var float
+     */
+    private $length;
+
+    /**
+     * @var float
+     */
+    private $weight;
+
+    /**
+     * @var string
+     */
+    private $trackingId;
+
+    /**
+     * @var string
+     */
+    private $trackingUrl;
+
+    /**
+     * @var string
+     */
+    private $commission;
+
+    /**
+     * @var string
+     */
+    private $note;
+
+    /**
+     * @var \DateTime
+     */
+    private $created;
+
+    /**
+     * @var \DateTime
+     */
+    private $changed;
+
+    /**
+     * @var \DateTime
+     */
+    private $expectedDeliveryDate;
+
+    /**
+     * @var integer
+     */
+    private $id;
+
+    /**
+     * @var \Sulu\Bundle\Sales\OrderBundle\Entity\OrderAddress
+     */
+    private $deliveryAddress;
+
+    /**
+     * @var \Doctrine\Common\Collections\Collection
+     */
+    private $shippingItems;
+
+    /**
+     * @var \Sulu\Bundle\Sales\ShippingBundle\Entity\ShippingStatus
+     */
+    private $status;
+
+    /**
+     * @var \Sulu\Bundle\ContactBundle\Entity\TermsOfDelivery
+     */
+    private $termsOfDelivery;
+
+    /**
+     * @var \Sulu\Bundle\Sales\OrderBundle\Entity\Order
+     */
+    private $order;
+
+    /**
+     * @var \Sulu\Bundle\SecurityBundle\Entity\User
+     */
+    private $changer;
+
+    /**
+     * @var \Sulu\Bundle\SecurityBundle\Entity\User
+     */
+    private $creator;
+
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->shippingItems = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+    
     /**
      * Set number
      *
@@ -36,19 +140,19 @@ class Shipping extends ApiWrapper
      */
     public function setNumber($number)
     {
-        $this->entity->setNumber($number);
-
+        $this->number = $number;
+    
         return $this;
     }
 
     /**
-     * @return string
-     * @VirtualProperty
-     * @SerializedName("number")
+     * Get number
+     *
+     * @return string 
      */
     public function getNumber()
     {
-        return $this->entity->getNumber();
+        return $this->number;
     }
 
     /**
@@ -59,21 +163,19 @@ class Shipping extends ApiWrapper
      */
     public function setShippingNumber($shippingNumber)
     {
-        $this->entity->setShippingNumber($shippingNumber);
-
+        $this->shippingNumber = $shippingNumber;
+    
         return $this;
     }
 
     /**
      * Get shippingNumber
      *
-     * @return string
-     * @VirtualProperty
-     * @SerializedName("shippingNumber")
+     * @return string 
      */
     public function getShippingNumber()
     {
-        return $this->entity->getShippingNumber();
+        return $this->shippingNumber;
     }
 
     /**
@@ -84,21 +186,19 @@ class Shipping extends ApiWrapper
      */
     public function setCustomerName($customerName)
     {
-        $this->entity->setCustomerName($customerName);
-
+        $this->customerName = $customerName;
+    
         return $this;
     }
 
     /**
      * Get customerName
      *
-     * @return string
-     * @VirtualProperty
-     * @SerializedName("customerName")
+     * @return string 
      */
     public function getCustomerName()
     {
-        return $this->entity->getCustomerName();
+        return $this->customerName;
     }
 
     /**
@@ -109,21 +209,19 @@ class Shipping extends ApiWrapper
      */
     public function setTermsOfDeliveryContent($termsOfDeliveryContent)
     {
-        $this->entity->setTermsOfDeliveryContent($termsOfDeliveryContent);
-
+        $this->termsOfDeliveryContent = $termsOfDeliveryContent;
+    
         return $this;
     }
 
     /**
      * Get termsOfDeliveryContent
      *
-     * @return string
-     * @VirtualProperty
-     * @SerializedName("termsOfDeliveryContent")
+     * @return string 
      */
     public function getTermsOfDeliveryContent()
     {
-        return $this->entity->getTermsOfDeliveryContent();
+        return $this->termsOfDeliveryContent;
     }
 
     /**
@@ -134,21 +232,19 @@ class Shipping extends ApiWrapper
      */
     public function setWidth($width)
     {
-        $this->entity->setWidth($width);
-
+        $this->width = $width;
+    
         return $this;
     }
 
     /**
      * Get width
      *
-     * @return float
-     * @VirtualProperty
-     * @SerializedName("width")
+     * @return float 
      */
     public function getWidth()
     {
-        return $this->entity->getWidth();
+        return $this->width;
     }
 
     /**
@@ -159,21 +255,19 @@ class Shipping extends ApiWrapper
      */
     public function setHeight($height)
     {
-        $this->entity->setHeight($height);
-
+        $this->height = $height;
+    
         return $this;
     }
 
     /**
      * Get height
      *
-     * @return float
-     * @VirtualProperty
-     * @SerializedName("height")
+     * @return float 
      */
     public function getHeight()
     {
-        return $this->entity->getHeight();
+        return $this->height;
     }
 
     /**
@@ -181,25 +275,22 @@ class Shipping extends ApiWrapper
      *
      * @param float $length
      * @return Shipping
-     *
      */
     public function setLength($length)
     {
-        $this->entity->setLength($length);
-
+        $this->length = $length;
+    
         return $this;
     }
 
     /**
      * Get length
      *
-     * @return float
-     * @VirtualProperty
-     * @SerializedName("length")
+     * @return float 
      */
     public function getLength()
     {
-        return $this->entity->getLength();
+        return $this->length;
     }
 
     /**
@@ -210,21 +301,19 @@ class Shipping extends ApiWrapper
      */
     public function setWeight($weight)
     {
-        $this->entity->setWeight($weight);
-
+        $this->weight = $weight;
+    
         return $this;
     }
 
     /**
      * Get weight
      *
-     * @return float
-     * @VirtualProperty
-     * @SerializedName("weight")
+     * @return float 
      */
     public function getWeight()
     {
-        return $this->entity->getWeight();
+        return $this->weight;
     }
 
     /**
@@ -235,21 +324,19 @@ class Shipping extends ApiWrapper
      */
     public function setTrackingId($trackingId)
     {
-        $this->entity->setTrackingId($trackingId);
-
+        $this->trackingId = $trackingId;
+    
         return $this;
     }
 
     /**
      * Get trackingId
      *
-     * @return string
-     * @VirtualProperty
-     * @SerializedName("trackingId")
+     * @return string 
      */
     public function getTrackingId()
     {
-        return $this->entity->getTrackingId();
+        return $this->trackingId;
     }
 
     /**
@@ -260,21 +347,19 @@ class Shipping extends ApiWrapper
      */
     public function setTrackingUrl($trackingUrl)
     {
-        $this->entity->setTrackingUrl($trackingUrl);
-
+        $this->trackingUrl = $trackingUrl;
+    
         return $this;
     }
 
     /**
      * Get trackingUrl
      *
-     * @return string
-     * @VirtualProperty
-     * @SerializedName("trackingUrl")
+     * @return string 
      */
     public function getTrackingUrl()
     {
-        return $this->entity->getTrackingUrl();
+        return $this->trackingUrl;
     }
 
     /**
@@ -285,21 +370,19 @@ class Shipping extends ApiWrapper
      */
     public function setCommission($commission)
     {
-        $this->entity->setCommission($commission);
-
+        $this->commission = $commission;
+    
         return $this;
     }
 
     /**
      * Get commission
      *
-     * @return string
-     * @VirtualProperty
-     * @SerializedName("commission")
+     * @return string 
      */
     public function getCommission()
     {
-        return $this->entity->getCommission();
+        return $this->commission;
     }
 
     /**
@@ -310,21 +393,19 @@ class Shipping extends ApiWrapper
      */
     public function setNote($note)
     {
-        $this->entity->setNote($note);
-
+        $this->note = $note;
+    
         return $this;
     }
 
     /**
      * Get note
      *
-     * @return string
-     * @VirtualProperty
-     * @SerializedName("note")
+     * @return string 
      */
     public function getNote()
     {
-        return $this->entity->getNote();
+        return $this->note;
     }
 
     /**
@@ -335,21 +416,19 @@ class Shipping extends ApiWrapper
      */
     public function setCreated($created)
     {
-        $this->entity->setCreated($created);
-
+        $this->created = $created;
+    
         return $this;
     }
 
     /**
      * Get created
      *
-     * @return \DateTime
-     * @VirtualProperty
-     * @SerializedName("created")
+     * @return \DateTime 
      */
     public function getCreated()
     {
-        return $this->entity->getCreated();
+        return $this->created;
     }
 
     /**
@@ -360,21 +439,19 @@ class Shipping extends ApiWrapper
      */
     public function setChanged($changed)
     {
-        $this->entity->setChanged($changed);
-
+        $this->changed = $changed;
+    
         return $this;
     }
 
     /**
      * Get changed
      *
-     * @return \DateTime
-     * @VirtualProperty
-     * @SerializedName("changed")
+     * @return \DateTime 
      */
     public function getChanged()
     {
-        return $this->entity->getChanged();
+        return $this->changed;
     }
 
     /**
@@ -385,33 +462,29 @@ class Shipping extends ApiWrapper
      */
     public function setExpectedDeliveryDate($expectedDeliveryDate)
     {
-        $this->entity->setExpectedDeliveryDate($expectedDeliveryDate);
-
+        $this->expectedDeliveryDate = $expectedDeliveryDate;
+    
         return $this;
     }
 
     /**
      * Get expectedDeliveryDate
      *
-     * @return \DateTime
-     * @VirtualProperty
-     * @SerializedName("expectedDeliveryDate")
+     * @return \DateTime 
      */
     public function getExpectedDeliveryDate()
     {
-        return $this->entity->getExpectedDeliveryDate();
+        return $this->expectedDeliveryDate;
     }
 
     /**
      * Get id
      *
-     * @return integer
-     * @VirtualProperty
-     * @SerializedName("id")
+     * @return integer 
      */
     public function getId()
     {
-        return $this->entity->getId();
+        return $this->id;
     }
 
     /**
@@ -422,21 +495,19 @@ class Shipping extends ApiWrapper
      */
     public function setDeliveryAddress(\Sulu\Bundle\Sales\OrderBundle\Entity\OrderAddress $deliveryAddress = null)
     {
-        $this->entity->setDeliveryAddress($deliveryAddress);
-
+        $this->deliveryAddress = $deliveryAddress;
+    
         return $this;
     }
 
     /**
      * Get deliveryAddress
      *
-     * @return \Sulu\Bundle\Sales\OrderBundle\Entity\OrderAddress
-     * @VirtualProperty
-     * @SerializedName("deliveryAddress")
+     * @return \Sulu\Bundle\Sales\OrderBundle\Entity\OrderAddress 
      */
     public function getDeliveryAddress()
     {
-        return $this->entity->getDeliveryAddress();
+        return $this->deliveryAddress;
     }
 
     /**
@@ -447,8 +518,8 @@ class Shipping extends ApiWrapper
      */
     public function addShippingItem(\Sulu\Bundle\Sales\ShippingBundle\Entity\ShippingItem $shippingItems)
     {
-        $this->entity->addShippingItem($shippingItems);
-
+        $this->shippingItems[] = $shippingItems;
+    
         return $this;
     }
 
@@ -459,24 +530,17 @@ class Shipping extends ApiWrapper
      */
     public function removeShippingItem(\Sulu\Bundle\Sales\ShippingBundle\Entity\ShippingItem $shippingItems)
     {
-        $this->entity->removeShippingItem($shippingItems);
+        $this->shippingItems->removeElement($shippingItems);
     }
 
     /**
      * Get shippingItems
      *
-     * @return Array
-     * @VirtualProperty
-     * @SerializedName("items")
+     * @return \Doctrine\Common\Collections\Collection 
      */
-    public function getItems()
+    public function getShippingItems()
     {
-        $items = array();
-        foreach ($this->entity->getShippingItems() as $shippingItem) {
-            $items[] = new ShippingItem($shippingItem, $this->locale);
-        }
-
-        return $items;
+        return $this->shippingItems;
     }
 
     /**
@@ -487,21 +551,19 @@ class Shipping extends ApiWrapper
      */
     public function setStatus(\Sulu\Bundle\Sales\ShippingBundle\Entity\ShippingStatus $status)
     {
-        $this->entity->setStatus($status);
-
+        $this->status = $status;
+    
         return $this;
     }
 
     /**
      * Get status
      *
-     * @return \Sulu\Bundle\Sales\ShippingBundle\Entity\ShippingStatus
-     * @VirtualProperty
-     * @SerializedName("status")
+     * @return \Sulu\Bundle\Sales\ShippingBundle\Entity\ShippingStatus 
      */
     public function getStatus()
     {
-        return new ShippingStatus($this->entity->getStatus(), $this->locale);
+        return $this->status;
     }
 
     /**
@@ -512,21 +574,19 @@ class Shipping extends ApiWrapper
      */
     public function setTermsOfDelivery(\Sulu\Bundle\ContactBundle\Entity\TermsOfDelivery $termsOfDelivery = null)
     {
-        $this->entity->setTermsOfDelivery($termsOfDelivery);
-
+        $this->termsOfDelivery = $termsOfDelivery;
+    
         return $this;
     }
 
     /**
      * Get termsOfDelivery
      *
-     * @return \Sulu\Bundle\ContactBundle\Entity\TermsOfDelivery
-     * @VirtualProperty
-     * @SerializedName("termsOfDelivery")
+     * @return \Sulu\Bundle\ContactBundle\Entity\TermsOfDelivery 
      */
     public function getTermsOfDelivery()
     {
-        return $this->entity->getTermsOfDelivery();
+        return $this->termsOfDelivery;
     }
 
     /**
@@ -537,21 +597,19 @@ class Shipping extends ApiWrapper
      */
     public function setOrder(\Sulu\Bundle\Sales\OrderBundle\Entity\Order $order = null)
     {
-        $this->entity->setOrder($order);
-
+        $this->order = $order;
+    
         return $this;
     }
 
     /**
      * Get order
      *
-     * @return \Sulu\Bundle\Sales\OrderBundle\Entity\Order
-     * @VirtualProperty
-     * @SerializedName("order")
+     * @return \Sulu\Bundle\Sales\OrderBundle\Entity\Order 
      */
     public function getOrder()
     {
-        return new Order($this->entity->getOrder(), $this->locale);
+        return $this->order;
     }
 
     /**
@@ -562,20 +620,19 @@ class Shipping extends ApiWrapper
      */
     public function setChanger(\Sulu\Bundle\SecurityBundle\Entity\User $changer = null)
     {
-        $this->entity->setChanger($changer);
-
+        $this->changer = $changer;
+    
         return $this;
     }
 
     /**
      * Get changer
      *
-     * @return \Sulu\Bundle\SecurityBundle\Entity\User
+     * @return \Sulu\Bundle\SecurityBundle\Entity\User 
      */
     public function getChanger()
     {
-        // TODO
-//        return $this->entity->changer;
+        return $this->changer;
     }
 
     /**
@@ -586,19 +643,18 @@ class Shipping extends ApiWrapper
      */
     public function setCreator(\Sulu\Bundle\SecurityBundle\Entity\User $creator = null)
     {
-        $this->entity->setCreator($creator);
-
+        $this->creator = $creator;
+    
         return $this;
     }
 
     /**
      * Get creator
      *
-     * @return \Sulu\Bundle\SecurityBundle\Entity\User
+     * @return \Sulu\Bundle\SecurityBundle\Entity\User 
      */
     public function getCreator()
     {
-        // TODO
-//        return $this->entity->creator;
+        return $this->creator;
     }
 }
