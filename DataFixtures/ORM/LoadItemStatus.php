@@ -11,6 +11,8 @@
 use Doctrine\Common\DataFixtures\AbstractFixture;
 use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
+use Sulu\Bundle\Sales\CoreBundle\Entity\ItemStatus;
+use Sulu\Bundle\Sales\CoreBundle\Entity\ItemStatusTranslation;
 
 class LoadItemStatus extends AbstractFixture implements OrderedFixtureInterface
 {
@@ -19,18 +21,33 @@ class LoadItemStatus extends AbstractFixture implements OrderedFixtureInterface
      */
     public function load(ObjectManager $manager)
     {
-//        $phoneType = new ;
-//        $phoneType->setId(1);
-//
-//        // force id = 1
-//        $metadata = $manager->getClassMetaData(get_class($phoneType));
-//        $metadata->setIdGeneratorType(\Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_NONE);
-//
-//        $phoneType->setName('phone.work');
-//        $manager->persist($phoneType);
-//
-//
-//        $manager->flush();
+        // force id = 1
+        $metadata = $manager->getClassMetaData(get_class(new ItemStatus()));
+        $metadata->setIdGeneratorType(\Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_NONE);
+
+        // created
+        $status = new ItemStatus();
+        $status->setId(1);
+        $this->createStatusTranslation($manager, $status, 'Created', 'en');
+        $this->createStatusTranslation($manager, $status, 'Erstellt', 'de');
+        $manager->persist($status);
+        $manager->flush();
+    }
+
+    /**
+     * @param $manager
+     * @param $status
+     * @param $translation
+     * @param $locale
+     * @return \Sulu\Bundle\Sales\CoreBundle\Entity\ItemStatusTranslation
+     */
+    private function createStatusTranslation($manager, $status, $translation, $locale) {
+        $statusTranslation = new ItemStatusTranslation();
+        $statusTranslation->setName($translation);
+        $statusTranslation->setLocale($locale);
+        $statusTranslation->setStatus($status);
+        $manager->persist($statusTranslation);
+        return $statusTranslation;
     }
 
     /**
@@ -38,6 +55,6 @@ class LoadItemStatus extends AbstractFixture implements OrderedFixtureInterface
      */
     public function getOrder()
     {
-        return 2;
+        return 1;
     }
 }

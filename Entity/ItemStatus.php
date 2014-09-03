@@ -44,6 +44,19 @@ class ItemStatus
     }
 
     /**
+     * Set Id
+     *
+     * @param $id
+     * @return $this
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
+
+        return $this;
+    }
+
+    /**
      * Add item
      *
      * @param \Sulu\Bundle\Sales\CoreBundle\Entity\Item $item
