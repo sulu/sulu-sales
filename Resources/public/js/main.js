@@ -27,7 +27,7 @@ define({
 
         // list all shippings
         sandbox.mvc.routes.push({
-            route: 'sales/shipping',
+            route: 'sales/shippings',
             callback: function() {
                 this.html('<div data-aura-component="shippings@sulusalesshipping" data-aura-display="list"/>');
             }
@@ -35,7 +35,7 @@ define({
 
         // show form for createing a new shipping
         sandbox.mvc.routes.push({
-            route: 'sales/shipping/add',
+            route: 'sales/shippings/add',
             callback: function() {
                 this.html(
                     '<div data-aura-component="shippings/components/content@sulusalesshipping" data-aura-display="content" data-aura-content="form" />'

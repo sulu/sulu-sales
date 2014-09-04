@@ -622,7 +622,6 @@ class ShippingControllerTest extends DatabaseTestCase
         $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
         $this->assertEquals(2, count($items));
 
-        // TODO: extend test
         $item = $items[0];
         $this->assertEquals('00001', $item->number);
 
@@ -639,7 +638,6 @@ class ShippingControllerTest extends DatabaseTestCase
         $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
         $this->assertEquals(2, count($items));
 
-        // TODO: extend test
         $item = $items[0];
         $this->assertEquals('00001', $item->number);
 
@@ -684,7 +682,6 @@ class ShippingControllerTest extends DatabaseTestCase
         $this->assertEquals('sh01', $response->shippingNumber);
         $this->assertEquals('2', $response->order->id);
 
-        // TODO: check order
         $this->compareDataWithAddress($data['deliveryAddress'], $response->deliveryAddress);
     }
 
@@ -740,9 +737,7 @@ class ShippingControllerTest extends DatabaseTestCase
         $this->assertEquals('sh00003', $response->shippingNumber);
         $this->assertEquals(ShippingStatus::STATUS_CREATED, $response->status->id);
 
-        // TODO: check address
         $this->compareDataWithAddress($data['deliveryAddress'], $response->deliveryAddress);
-
     }
 
 //    public function testPostItems()
@@ -817,16 +812,6 @@ class ShippingControllerTest extends DatabaseTestCase
 //        $this->client->request('GET', '/api/orders/1');
 //        $this->assertEquals('404', $this->client->getResponse()->getStatusCode());
 //    }
-
-    /**
-     * asserts equality if object's attribute exist
-     */
-    private function assertEqualsIfExists($firstValue, $secondObject, $value)
-    {
-        if ($firstValue !== null) {
-            $this->assertEquals($firstValue, $secondObject->$value);
-        }
-    }
 
     /**
      * asserts equality if object's attribute exist
