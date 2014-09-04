@@ -557,10 +557,10 @@ class Shipping extends ApiWrapper
     /**
      * Set changer
      *
-     * @param \Sulu\Bundle\SecurityBundle\Entity\User $changer
+     * @param UserInterface $changer
      * @return Shipping
      */
-    public function setChanger(\Sulu\Bundle\SecurityBundle\Entity\User $changer = null)
+    public function setChanger(UserInterface $changer = null)
     {
         $this->entity->setChanger($changer);
 
@@ -570,7 +570,7 @@ class Shipping extends ApiWrapper
     /**
      * Get changer
      *
-     * @return \Sulu\Bundle\SecurityBundle\Entity\User
+     * @return UserInterface
      */
     public function getChanger()
     {
@@ -581,10 +581,10 @@ class Shipping extends ApiWrapper
     /**
      * Set creator
      *
-     * @param \Sulu\Bundle\SecurityBundle\Entity\User $creator
+     * @param UserInterface $creator
      * @return Shipping
      */
-    public function setCreator(\Sulu\Bundle\SecurityBundle\Entity\User $creator = null)
+    public function setCreator(UserInterface $creator = null)
     {
         $this->entity->setCreator($creator);
 
@@ -594,7 +594,7 @@ class Shipping extends ApiWrapper
     /**
      * Get creator
      *
-     * @return \Sulu\Bundle\SecurityBundle\Entity\User
+     * @return UserInterface
      */
     public function getCreator()
     {

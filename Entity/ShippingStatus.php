@@ -9,6 +9,9 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class ShippingStatus
 {
+
+    const STATUS_CREATED = 1;
+
     /**
      * @var integer
      */

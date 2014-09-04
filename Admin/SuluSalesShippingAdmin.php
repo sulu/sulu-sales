@@ -28,7 +28,7 @@ class SuluSalesShippingAdmin extends Admin
         $section->addChild($sales);
 
         $shipping = new NavigationItem('navigation.sales.shipping');
-        $shipping->setAction('sales/shipping');
+        $shipping->setAction('sales/shippings');
         $sales->addChild($shipping);
 
         $rootNavigationItem->addChild($section);

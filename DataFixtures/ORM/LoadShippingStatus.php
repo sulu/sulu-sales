@@ -12,6 +12,7 @@ use Doctrine\Common\DataFixtures\AbstractFixture;
 use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
 use Sulu\Bundle\Sales\ShippingBundle\Entity\ShippingStatus;
+use Sulu\Bundle\Sales\ShippingBundle\Entity\ShippingStatusTranslation;
 
 class LoadShippingStatus extends AbstractFixture implements OrderedFixtureInterface
 {
@@ -20,20 +21,18 @@ class LoadShippingStatus extends AbstractFixture implements OrderedFixtureInterf
      */
     public function load(ObjectManager $manager)
     {
-//        // force id = 1
-//        $metadata = $manager->getClassMetaData(get_class(new ShippingStatus()));
-//        $metadata->setIdGeneratorType(\Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_NONE);
-//
-//        // created
-//        $status = new ShippingStatus();
-//        $status->setId(1);
-//        $this->createStatusTranslation($manager, $status, 'Created', 'en');
-//        $this->createStatusTranslation($manager, $status, 'Erstellt', 'de');
-//        $manager->persist($status);
-//
-//
-//
-//        $manager->flush();
+        // force id = 1
+        $metadata = $manager->getClassMetaData(get_class(new ShippingStatus()));
+        $metadata->setIdGeneratorType(\Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_NONE);
+
+        // created
+        $status = new ShippingStatus();
+        $status->setId(ShippingStatus::STATUS_CREATED);
+        $this->createStatusTranslation($manager, $status, 'Created', 'en');
+        $this->createStatusTranslation($manager, $status, 'Erstellt', 'de');
+        $manager->persist($status);
+
+        $manager->flush();
     }
 
     /**
@@ -41,15 +40,15 @@ class LoadShippingStatus extends AbstractFixture implements OrderedFixtureInterf
      */
     public function getOrder()
     {
-        return 2;
+        return 1;
     }
 
     private function createStatusTranslation($manager, $status, $translation, $locale) {
-//        $statusTranslation = new \Sulu\Bundle\Sales\OrderBundle\Entity\ShippingStatusTranslation();
-//        $statusTranslation->setName($translation);
-//        $statusTranslation->setLocale($locale);
-//        $statusTranslation->setStatus($status);
-//        $manager->persist($statusTranslation);
-//        return $statusTranslation;
+        $statusTranslation = new ShippingStatusTranslation();
+        $statusTranslation->setName($translation);
+        $statusTranslation->setLocale($locale);
+        $statusTranslation->setStatus($status);
+        $manager->persist($statusTranslation);
+        return $statusTranslation;
     }
 }

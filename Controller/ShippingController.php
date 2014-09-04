@@ -202,7 +202,7 @@ class ShippingController extends RestController implements ClassResourceInterfac
     }
 
 //    /**
-//     * @Post("/orders/{id}")
+//     * @Post("/shippings/{id}")
 //     */
 //    public function postTriggerAction($id, Request $request)
 //    {
