@@ -27,7 +27,7 @@ define({
 
         // list all shippings
         sandbox.mvc.routes.push({
-            route: 'sales/shippings',
+            route: 'sales/shipping',
             callback: function() {
                 this.html('<div data-aura-component="shippings@sulusalesshipping" data-aura-display="list"/>');
             }

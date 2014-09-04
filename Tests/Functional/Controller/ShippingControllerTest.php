@@ -45,7 +45,6 @@ use Sulu\Bundle\TestBundle\Entity\TestUser;
 use Sulu\Bundle\TestBundle\Testing\DatabaseTestCase;
 use Symfony\Component\HttpKernel\Client;
 
-
 class ShippingControllerTest extends DatabaseTestCase
 {
     /**
@@ -203,7 +202,7 @@ class ShippingControllerTest extends DatabaseTestCase
 
     private function setUpSchema()
     {
-         self::$tool = new SchemaTool(self::$em);
+        self::$tool = new SchemaTool(self::$em);
 
         self::$entities = array(
             self::$em->getClassMetadata('Sulu\Bundle\TestBundle\Entity\TestUser'),
@@ -650,119 +649,102 @@ class ShippingControllerTest extends DatabaseTestCase
 
     public function testPut()
     {
+        $data = array(
+            'shippingNumber' => 'sh01',
+            'order' => array(
+                'id' => 2
+            ),
+            'deliveryAddress' => array(
+                'firstName' => 'Jane',
+                'lastName' => 'Bloggs',
+                'accountName' => 'Sample-Company',
+                'uid' => 'uid123',
+                'street' => 'Sample-Street',
+                'number' => '12',
+                'addition' => 'Entrance 2',
+                'city' => 'Sample-City',
+                'state' => 'State',
+                'zip' => '12345',
+                'country' => 'Country',
+                'postboxNumber' => 'postboxNumber',
+                'postboxCity' => 'postboxCity',
+                'postboxPostcode' => 'postboxPostcode'
+            )
+        );
         $this->client->request(
             'PUT',
             '/api/shippings/1',
-            array(
-                'shippingNumber' => 'sh01',
-                'contact' => array(
-                    'id' => 2
-                ),
-                'account' => array(
-                    'id' => 1
-                ),
-                'order' => array(
-                    'id' => 1
-                ),
-                'deliveryAddress' => array(
-                    'street' => 'Sample-Street',
-                    'number' => '12',
-                    'addition' => 'Entrance 2',
-                    'city' => 'Sample-City',
-                    'state' => 'State',
-                    'zip' => '12345',
-                    'country' => 'Country',
-                    'postboxNumber' => 'postboxNumber',
-                    'postboxCity' => 'postboxCity',
-                    'postboxPostcode' => 'postboxPostcode'
-                ),
-                'deliveryAddress' => array(
-                    'street' => 'Street',
-                    'number' => '2',
-                    'city' => 'Utopia',
-                    'zip' => '1',
-                    'country' => 'Country'
-                ),
-            )
+            $data
         );
         $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
 
         $this->client->request('GET', '/api/shippings/1');
         $response = json_decode($this->client->getResponse()->getContent());
         $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
-        $this->assertEquals('sh01', $response->orderNumber);
+        $this->assertEquals('sh01', $response->shippingNumber);
+        $this->assertEquals('2', $response->order->id);
 
         // TODO: check order
+        $this->compareDataWithAddress($data['deliveryAddress'], $response->deliveryAddress);
+    }
 
-        $this->checkOrderAddress($response->deliveryAddress, $this->shippingAddress, $this->contact2, $this->account);
+    public function testPutNotExisting()
+    {
+        $this->client->request('PUT', '/api/shippings/666', array('number' => '123'));
+        $response = json_decode($this->client->getResponse()->getContent());
+
+        $this->assertEquals(404, $this->client->getResponse()->getStatusCode());
+
+        $this->assertEquals(
+            'Entity with the type "SuluSalesShippingBundle:Shipping" and the id "666" not found.',
+            $response->message
+        );
+    }
+
+    public function testPost()
+    {
+        $data = array(
+            'shippingNumber' => 'sh00003',
+            'deliveryAddress' => array(
+                'firstName' => 'Jane',
+                'lastName' => 'Bloggs',
+                'accountName' => 'Sample-Company',
+                'uid' => 'uid123',
+                'street' => 'Sample-Street',
+                'number' => '12',
+                'addition' => 'Entrance 2',
+                'city' => 'Sample-City',
+                'state' => 'State',
+                'zip' => '12345',
+                'country' => 'Country',
+                'postboxNumber' => 'postboxNumber',
+                'postboxCity' => 'postboxCity',
+                'postboxPostcode' => 'postboxPostcode'
+            ),
+            'order' => array(
+                'id' => 1
+            ),
+            'termsOfDelivery' => array(
+                'id' => 1
+            )
+        );
+
+        $this->client->request('POST', '/api/shippings', $data);
+        $response = json_decode($this->client->getResponse()->getContent());
+        $this->assertEquals('sh00003', $response->shippingNumber);
+
+        $this->client->request('GET', '/api/shippings/' . $response->id);
+        $response = json_decode($this->client->getResponse()->getContent());
+        $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
+
+        $this->assertEquals('sh00003', $response->shippingNumber);
+        $this->assertEquals(ShippingStatus::STATUS_CREATED, $response->status->id);
+
+        // TODO: check address
+        $this->compareDataWithAddress($data['deliveryAddress'], $response->deliveryAddress);
 
     }
-//
-//    public function testPutNotExisting()
-//    {
-//        $this->client->request('PUT', '/api/orders/666', array('number' => '123'));
-//        $response = json_decode($this->client->getResponse()->getContent());
-//
-//        $this->assertEquals(404, $this->client->getResponse()->getStatusCode());
-//
-//        $this->assertEquals(
-//            'Entity with the type "SuluSalesOrderBundle:Order" and the id "666" not found.',
-//            $response->message
-//        );
-//    }
-//
-//    public function testPost()
-//    {
-//        $data = array(
-//            'orderNumber' => 'NUMBER:0815',
-//            'supplierName' => $this->account->getName(),
-//            'account' => array(
-//                'id' => 1
-//            ),
-//            'contact' => array(
-//                'id' => 1
-//            ),
-//            'invoiceAddress' => array(
-//                'street' => 'Sample-Street',
-//                'number' => '12',
-//                'addition' => 'Entrance 2',
-//                'city' => 'Sample-City',
-//                'state' => 'State',
-//                'zip' => '12345',
-//                'country' => 'Country',
-//                'postboxNumber' => 'postboxNumber',
-//                'postboxCity' => 'postboxCity',
-//                'postboxPostcode' => 'postboxPostcode'
-//            ),
-//            'deliveryAddress' => array(
-//                'street' => 'Street',
-//                'number' => '2',
-//                'city' => 'Utopia',
-//                'zip' => '1',
-//                'country' => 'Country'
-//            ),
-//            'termsOfDelivery' => array(
-//                'id' => 1
-//            ),
-//            'termsOfPayment' => array(
-//                'id' => 1
-//            ),
-//        );
-//
-//        $this->client->request('POST', '/api/orders', $data);
-//        $response = json_decode($this->client->getResponse()->getContent());
-//
-//        $this->client->request('GET', '/api/orders/' . $response->id);
-//        $response = json_decode($this->client->getResponse()->getContent());
-//        $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
-//
-//        $this->assertEquals('NUMBER:0815', $response->orderNumber);
-//        $this->assertEquals('English-Order-Status-1', $response->status->status);
-//
-//        $this->checkOrderAddress($response->invoiceAddress, $this->address, $this->contact, $this->account);
-//        $this->checkOrderAddress($response->deliveryAddress, $this->address2, $this->contact, $this->account);
-//    }
-//
+
 //    public function testPostItems()
 //    {
 //        $data = array(
@@ -837,44 +819,46 @@ class ShippingControllerTest extends DatabaseTestCase
 //    }
 
     /**
-     * compares an order-address response with its origin entities
+     * asserts equality if object's attribute exist
      */
-    private function checkOrderAddress($orderAddress, Address $address, Contact $contact, Account $account = null) {
-        // contact
-        $this->assertEquals($contact->getFirstName(), $orderAddress->firstName);
-        $this->assertEquals($contact->getLastName(), $orderAddress->lastName);
-        if ($contact->getTitle() !== null) {
-            $this->assertEquals($contact->getTitle()->getTitle(), $orderAddress->title);
+    private function assertEqualsIfExists($firstValue, $secondObject, $value)
+    {
+        if ($firstValue !== null) {
+            $this->assertEquals($firstValue, $secondObject->$value);
         }
-
-        // address
-        $this->assertEqualsIfExists($address->getStreet(), $orderAddress, 'street');
-        $this->assertEqualsIfExists($address->getAddition(), $orderAddress, 'addition');
-        $this->assertEqualsIfExists($address->getNumber(), $orderAddress, 'number');
-        $this->assertEqualsIfExists($address->getCity(), $orderAddress, 'city');
-        $this->assertEqualsIfExists($address->getZip(), $orderAddress, 'zip');
-        $this->assertEqualsIfExists($address->getCountry()->getName(), $orderAddress, 'country');
-        $this->assertEqualsIfExists($address->getPostboxNumber(), $orderAddress, 'postboxNumber');
-        $this->assertEqualsIfExists($address->getPostboxCity(), $orderAddress, 'postboxCity');
-        $this->assertEqualsIfExists($address->getPostboxPostcode(), $orderAddress, 'postboxPostcode');
-
-        // account
-        if ($account) {
-            $this->assertEqualsIfExists($account->getName(), $orderAddress, 'accountName');
-            $this->assertEqualsIfExists($account->getUid(), $orderAddress, 'uid');
-        }
-
-        // TODO: check phone
-//        $this->assertEquals('+43 123 / 456 789', $orderAddress->phone);
-//        $this->assertEquals('+43 123 / 456', $orderAddress->phoneMobile);
     }
 
     /**
      * asserts equality if object's attribute exist
      */
-    private function assertEqualsIfExists($firstValue, $secondObject, $value) {
-        if ($firstValue !== null) {
-            $this->assertEquals($firstValue, $secondObject->$value);
+    private function assertEqualsArrayClass($firstValue, $secondObject, $value)
+    {
+        if ($firstValue !== null && array_key_exists($value, $firstValue)) {
+            $this->assertEquals($firstValue[$value], $secondObject->$value);
         }
+    }
+
+    /**
+     * @param $response
+     * @param $data
+     */
+    private function compareDataWithAddress($data, $response)
+    {
+        $this->assertEqualsArrayClass($data, $response, 'firstName');
+        $this->assertEqualsArrayClass($data, $response, 'lastName');
+        $this->assertEqualsArrayClass($data, $response, 'accountName');
+        $this->assertEqualsArrayClass($data, $response, 'title');
+        $this->assertEqualsArrayClass($data, $response, 'addition');
+        $this->assertEqualsArrayClass($data, $response, 'number');
+        $this->assertEqualsArrayClass($data, $response, 'city');
+        $this->assertEqualsArrayClass($data, $response, 'zip');
+        $this->assertEqualsArrayClass($data, $response, 'state');
+        $this->assertEqualsArrayClass($data, $response, 'country');
+//        $this->assertEqualsArrayClass($data, $response, 'postboxPostcode');
+//        $this->assertEqualsArrayClass($data, $response, 'postboxNumber');
+//        $this->assertEqualsArrayClass($data, $response, 'postboxCity');
+        $this->assertEqualsArrayClass($data, $response, 'uid');
+        $this->assertEqualsArrayClass($data, $response, 'phone');
+        $this->assertEqualsArrayClass($data, $response, 'phoneMobile');
     }
 }

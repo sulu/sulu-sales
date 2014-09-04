@@ -12,7 +12,13 @@ namespace Sulu\Bundle\Sales\ShippingBundle\Shipping;
 
 use Doctrine\Common\Persistence\ObjectManager;
 use Sulu\Bundle\Sales\CoreBundle\Item\ItemManager;
+use Sulu\Bundle\Sales\OrderBundle\Entity\OrderAddress;
+use Sulu\Bundle\Sales\ShippingBundle\Entity\ShippingStatus;
 use Sulu\Bundle\Sales\ShippingBundle\Shipping\Exception\MissingShippingAttributeException;
+use Sulu\Bundle\Sales\ShippingBundle\Shipping\Exception\ShippingDependencyNotFoundException;
+use Sulu\Bundle\Sales\ShippingBundle\Shipping\Exception\ShippingException;
+use Sulu\Bundle\Sales\ShippingBundle\Shipping\Exception\ShippingNotFoundException;
+use Sulu\Component\Rest\Exception\EntityNotFoundException;
 use Sulu\Component\Rest\ListBuilder\Doctrine\FieldDescriptor\DoctrineConcatenationFieldDescriptor;
 use Sulu\Component\Rest\ListBuilder\Doctrine\FieldDescriptor\DoctrineFieldDescriptor;
 use Sulu\Component\Rest\ListBuilder\Doctrine\FieldDescriptor\DoctrineJoinDescriptor;
@@ -21,22 +27,22 @@ use Sulu\Component\Rest\RestHelperInterface;
 use Sulu\Bundle\Sales\ShippingBundle\Entity\Shipping as ShippingEntity;
 use Sulu\Bundle\Sales\ShippingBundle\Api\Shipping;
 use DateTime;
+use Sulu\Component\Security\UserRepositoryInterface;
 
 class ShippingManager
 {
     protected static $shippingEntityName = 'SuluSalesShippingBundle:Shipping';
     protected static $orderEntityName = 'SuluSalesOrderBundle:Order';
-    protected static $userEntityName = 'SuluSecurityBundle:User';
     protected static $orderAddressEntityName = 'SuluSalesOrderBundle:OrderAddress';
     protected static $shippingStatusEntityName = 'SuluSalesShippingBundle:ShippingStatus';
     protected static $shippingStatusTranslationEntityName = 'SuluSalesShippingBundle:ShippingStatusTranslation';
 
+    protected static $itemEntityName = 'SuluSalesCoreBundle:Item';
+    protected static $termsOfDeliveryEntityName = 'SuluContactBundle:TermsOfDelivery';
+
 //    protected static $contactEntityName = 'SuluContactBundle:Contact';
 //    protected static $addressEntityName = 'SuluContactBundle:Address';
 //    protected static $accountEntityName = 'SuluContactBundle:Account';
-//    protected static $itemEntityName = 'SuluSalesCoreBundle:Item';
-//    protected static $termsOfDeliveryEntityName = 'SuluContactBundle:TermsOfDelivery';
-//    protected static $termsOfPaymentEntityName = 'SuluContactBundle:TermsOfPayment';
 
     /**
      * currently used locale
@@ -59,6 +65,11 @@ class ShippingManager
     private $restHelper;
 
     /**
+     * @var UserRepositoryInterface
+     */
+    private $userRepository;
+
+    /**
      * Describes the fields, which are handled by this controller
      * @var DoctrineFieldDescriptor[]
      */
@@ -66,11 +77,13 @@ class ShippingManager
 
     public function __construct(
         ObjectManager $em,
+        UserRepositoryInterface $userRepository,
         ItemManager $itemManager,
         RestHelperInterface $restHelper
     )
     {
         $this->em = $em;
+        $this->userRepository= $userRepository;
         $this->itemManager = $itemManager;
         $this->restHelper = $restHelper;
     }
@@ -80,7 +93,9 @@ class ShippingManager
      * @param $locale
      * @param $userId
      * @param null $id
-     * @return null|Order|\Sulu\Bundle\Sales\ShippingBundle\Entity\Shipping
+     * @return null|Shipping
+     * @throws Exception\ShippingException
+     * @throws ShippingNotFoundException
      */
     public function save(array $data, $locale, $userId, $id = null)
     {
@@ -97,122 +112,133 @@ class ShippingManager
         // check for data
         $this->checkRequiredData($data, $id === null);
 
-        $user = $this->em->getRepository(self::$userEntityName)->findUserById($userId);
+        $user = $this->userRepository->findUserById($userId);
 
-//        $order->setOrderNumber($this->getProperty($data, 'orderNumber', $order->getOrderNumber()));
-//        $order->setCurrency($this->getProperty($data, 'currency', $order->getCurrency()));
-//        $order->setCostCentre($this->getProperty($data, 'costCentre', $order->getCostCentre()));
-//        $order->setCommission($this->getProperty($data, 'commission', $order->getCommission()));
-//        $order->setTaxfree($this->getProperty($data, 'taxfree', $order->getTaxfree()));
-//
-//        if (($desiredDeliveryDate = $this->getProperty($data, 'desiredDeliveryDate', $order->getDesiredDeliveryDate())) !== null) {
-//            if (is_string($desiredDeliveryDate)) {
-//                $desiredDeliveryDate = new DateTime($data['desiredDeliveryDate']);
-//            }
-//            $order->setDesiredDeliveryDate($desiredDeliveryDate);
-//        }
-//
-//        $this->setTermsOfDelivery($data, $order);
-//        $this->setTermsOfPayment($data, $order);
-//
-//        $account = $this->setAccount($data, $order);
-//
-//        // TODO: check sessionID
-////        $order->setSessionId($this->getProperty($data, 'number', $order->getNumber()));
-//
-//        // add contact
-//        $contact = $this->addContactRelation($data, 'contact', function ($contact) use ($order){
-//            $order->setContact($contact);
-//        });
-//        // add contact
-//        $this->addContactRelation($data, 'responsibleContact', function ($contact) use ($order){
-//            $order->setResponsibleContact($contact);
-//        });
-//
-//        // create order (POST)
-//        if ($order->getId() == null) {
-//            $order->setCreated(new DateTime());
-//            $order->setCreator($user);
-//            $this->em->persist($order->getEntity());
-//
-//            // TODO: determine orders status
-//            // FIXME: currently the status with id=1 is taken
-//            $status = $this->em->getRepository(self::$orderStatusEntityName)->find(1);
-//            $order->setStatus($status);
-//
-//            // create OrderAddress
-//            $deliveryAddress = new OrderAddress();
-//            $invoiceAddress = new OrderAddress();
-//            // persist entities
-//            $this->em->persist($deliveryAddress);
-//            $this->em->persist($invoiceAddress);
-//            // assign to order
-//            $order->setDeliveryAddress($deliveryAddress);
-//            $order->setInvoiceAddress($invoiceAddress);
-//        }
-//
-//        // set customer name to account if set, otherwise to contact
-//        $customerName = $account !== null ? $account->getName() : $contact->getFullName();
-//        $order->setCustomerName($customerName);
-//
-//        // set OrderAddress data
-//        $this->setOrderAddress($order->getDeliveryAddress(), $data['deliveryAddress'], $contact, $account);
-//        $this->setOrderAddress($order->getInvoiceAddress(), $data['invoiceAddress'], $contact, $account);
-//
-//        // handle items
-//        if (!$this->processItems($data, $order, $locale, $userId)) {
-//            throw new OrderException('Error while processing items');
-//        }
-//
-//        $order->setChanged(new DateTime());
-//        $order->setChanger($user);
-//
-//        $this->em->flush();
-//
-//        return $order;
+        $shipping->setShippingNumber($this->getProperty($data, 'shippingNumber', $shipping->getShippingNumber()));
+        $shipping->setWidth($this->getProperty($data, 'width', $shipping->getWidth()));
+        $shipping->setHeight($this->getProperty($data, 'height', $shipping->getHeight()));
+        $shipping->setLength($this->getProperty($data, 'length', $shipping->getLength()));
+        $shipping->setWeight($this->getProperty($data, 'weight', $shipping->getWeight()));
+        $shipping->setCommission($this->getProperty($data, 'commission', $shipping->getCommission()));
+
+        $shipping->setTrackingId($this->getProperty($data, 'trackingId', $shipping->getTrackingId()));
+        $shipping->setTrackingUrl($this->getProperty($data, 'trackingUrl', $shipping->getTrackingUrl()));
+
+        $this->setShippingOrder($data, $shipping);
+
+        // TODO: check if empty string overrides note
+        $shipping->setNote($this->getProperty($data, 'note', $shipping->getNote()));
+
+        // set expected delivery date
+        if (($expectedDeliveryDate = $this->getProperty($data, 'expectedDeliveryDate', $shipping->getExpectedDeliveryDate())) !== null) {
+            if (is_string($expectedDeliveryDate)) {
+                $expectedDeliveryDate = new DateTime($data['expectedDeliveryDate']);
+            }
+            $shipping->setExpectedDeliveryDate($expectedDeliveryDate);
+        }
+
+        // set terms of delivery
+        $this->setTermsOfDelivery($data, $shipping);
+
+        // create shipping (POST)
+        if ($shipping->getId() == null) {
+            $shipping->setCreated(new DateTime());
+            $shipping->setCreator($user);
+            $this->em->persist($shipping->getEntity());
+
+            $status = $this->em->getRepository(self::$shippingStatusEntityName)->find(ShippingStatus::STATUS_CREATED);
+            $shipping->setStatus($status);
+
+            // create OrderAddress
+            $deliveryAddress = new OrderAddress();
+            // persist entities
+            $this->em->persist($deliveryAddress);
+            // assign
+            $shipping->setDeliveryAddress($deliveryAddress);
+        }
+
+        // set order address
+        $deliveryAddress = $shipping->getDeliveryAddress();
+        if (($addressData = $this->getProperty($data, 'deliveryAddress'))) {
+            $deliveryAddress->setStreet($this->getProperty($addressData, 'street', $deliveryAddress->getStreet()));
+            $deliveryAddress->setAddition($this->getProperty($addressData, 'addition', $deliveryAddress->getAddition()));
+            $deliveryAddress->setNumber($this->getProperty($addressData, 'number', $deliveryAddress->getNumber()));
+            $deliveryAddress->setCity($this->getProperty($addressData, 'city', $deliveryAddress->getCity()));
+            $deliveryAddress->setZip($this->getProperty($addressData, 'zip', $deliveryAddress->getZip()));
+            $deliveryAddress->setState($this->getProperty($addressData, 'state', $deliveryAddress->getState()));
+            $deliveryAddress->setCountry($this->getProperty($addressData, 'country', $deliveryAddress->getCountry()));
+            $deliveryAddress->setPostboxNumber($this->getProperty($addressData, 'boxNumber', $deliveryAddress->getPostboxNumber()));
+            $deliveryAddress->setPostboxCity($this->getProperty($addressData, 'boxCity', $deliveryAddress->getPostboxCity()));
+            $deliveryAddress->setPostboxPostcode($this->getProperty($addressData, 'boxZip', $deliveryAddress->getPostboxPostcode()));
+
+            $deliveryAddress->setTitle($this->getProperty($addressData, 'title', $deliveryAddress->getTitle()));
+            $deliveryAddress->setFirstName($this->getProperty($addressData, 'firstName', $deliveryAddress->getFirstName()));
+            $deliveryAddress->setLastName($this->getProperty($addressData, 'lastName', $deliveryAddress->getLastName()));
+            $deliveryAddress->setAccountName($this->getProperty($addressData, 'accountName', $deliveryAddress->getAccountName()));
+            $deliveryAddress->setUid($this->getProperty($addressData, 'uid', $deliveryAddress->getUid()));
+            $deliveryAddress->setPhone($this->getProperty($addressData, 'phone', $deliveryAddress->getPhone()));
+            $deliveryAddress->setPhoneMobile($this->getProperty($addressData, 'phoneMobile', $deliveryAddress->getPhoneMobile()));
+        }
+
+        // handle items
+        if (!$this->processItems($data, $shipping, $locale, $userId)) {
+            throw new ShippingException('Error while processing items');
+        }
+        $shipping->setChanged(new DateTime());
+        $shipping->setChanger($user);
+
+        $this->em->flush();
+
+        return $shipping;
     }
-//
-//    /**
-//     * deletes an order
-//     * @param $id
-//     * @throws Exception\OrderNotFoundException
-//     */
-//    public function delete($id)
-//    {
-//        // TODO: move order to an archive instead of remove it from database
-//        $order = $this->orderRepository->findById($id);
-//
-//        if (!$order) {
-//            throw new OrderNotFoundException($id);
-//        }
-//
-//        $this->em->remove($order);
-//        $this->em->flush();
-//    }
-//
-//    public function convertStatus(Order $order, $statusId, $flush = false) {
-//
-//        // get current status
-//        $currentStatus = $order->getStatus()->getEntity();
-//
-//        // get desired status
-//        $statusEntity = $this->em
-//            ->getRepository(self::$orderStatusEntityName)
-//            ->find($statusId);
-//        if (!$statusEntity) {
-//            throw new EntityNotFoundException($statusEntity, $statusEntity);
-//        }
-//
-//        // check if status has changed
-//        if($currentStatus->getId() !== $statusId) {
-//            if ($statusId === OrderStatusEntity::STATUS_CREATED) {
-//                // TODO: re-edit - do some business logic
-//            }
-//
-//            $order->setStatus($statusEntity);
-//        }
-//    }
-//
+
+    /**
+     * delete a shipping
+     * @param $id
+     * @throws Exception\ShippingNotFoundException
+     */
+    public function delete($id)
+    {
+        // TODO: move shipping to an archive instead of remove it from database
+        $shipping = $this->em->getRepository(self::$shippingEntityName)->findById($id);
+
+        if (!$shipping) {
+            throw new ShippingNotFoundException($id);
+        }
+
+        $this->em->remove($shipping);
+        $this->em->flush();
+    }
+
+    /**
+     * @param Shipping $shipping
+     * @param $statusId
+     * @param bool $flush
+     * @throws \Sulu\Component\Rest\Exception\EntityNotFoundException
+     */
+    public function convertStatus(Shipping $shipping, $statusId, $flush = false) {
+
+        // get current status
+        $currentStatus = $shipping->getStatus()->getEntity();
+
+        // get desired status
+        $statusEntity = $this->em
+            ->getRepository(self::$shippingStatusEntityName)
+            ->find($statusId);
+        if (!$statusEntity) {
+            throw new EntityNotFoundException(self::$shippingStatusEntityName, $statusEntity);
+        }
+
+        // check if status has changed
+        if($currentStatus->getId() !== $statusId) {
+            if ($statusId === ShippingStatus::STATUS_CREATED) {
+                // TODO: re-edit - do some business logic
+            }
+
+            $shipping->setStatus($statusEntity);
+        }
+    }
+
     /**
      * @param $locale
      * @return \Sulu\Component\Rest\ListBuilder\Doctrine\FieldDescriptor\DoctrineFieldDescriptor[]
@@ -364,7 +390,7 @@ class ShippingManager
     private function checkRequiredData($data, $isNew)
     {
         $this->checkDataSet($data, 'order', $isNew) && $this->checkDataSet($data['order'], 'id', $isNew);
-        $this->checkDataSet($data, 'contact', $isNew) && $this->checkDataSet($data['contact'], 'id', $isNew);
+//        $this->checkDataSet($data, 'contact', $isNew) && $this->checkDataSet($data['contact'], 'id', $isNew);
         $this->checkDataSet($data, 'deliveryAddress', $isNew);
     }
 
@@ -387,14 +413,6 @@ class ShippingManager
         return $keyExists;
     }
 
-//    private function checkIfSet($key, $data)
-//    {
-//        $keyExists = array_key_exists($key, $data);
-//
-//        return $keyExists && $data[$key] !== null && $data[$key] !== '';
-//    }
-
-
     /**
      * Returns the entry from the data with the given key, or the given default value, if the key does not exist
      * @param array $data
@@ -407,36 +425,62 @@ class ShippingManager
         return array_key_exists($key, $data) ? $data[$key] : $default;
     }
 
-//    /**
-//     * @param $data
-//     * @param Order $order
-//     * @return null|object
-//     * @throws Exception\MissingOrderAttributeException
-//     * @throws Exception\OrderDependencyNotFoundException
-//     */
-//    private function setTermsOfDelivery($data, Order $order)
-//    {
-//        // terms of delivery
-//        $termsOfDeliveryData = $this->getProperty($data, 'termsOfDelivery');
-//        if ($termsOfDeliveryData) {
-//            if (!array_key_exists('id', $termsOfDeliveryData)) {
-//                throw new MissingOrderAttributeException('termsOfDelivery.id');
-//            }
-//            // TODO: inject repository class
-//            $terms = $this->em->getRepository(self::$termsOfDeliveryEntityName)->find($termsOfDeliveryData['id']);
-//            if (!$terms) {
-//                throw new OrderDependencyNotFoundException(self::$termsOfDeliveryEntityName, $termsOfDeliveryData['id']);
-//            }
-//            $order->setTermsOfDelivery($terms);
-//            $order->setTermsOfDeliveryContent($terms->getTerms());
-//            return $terms;
-//        } else {
-//            $order->setTermsOfDelivery(null);
-//            $order->setTermsOfDeliveryContent(null);
-//        }
-//        return null;
-//    }
-//
+    /**
+     * @param $data
+     * @param Shipping $shipping
+     * @return null|object
+     * @throws Exception\ShippingDependencyNotFoundException
+     * @throws Exception\MissingShippingAttributeException
+     */
+    private function setTermsOfDelivery($data, Shipping $shipping)
+    {
+        // terms of delivery
+        $termsOfDeliveryData = $this->getProperty($data, 'termsOfDelivery');
+        if ($termsOfDeliveryData) {
+            if (!array_key_exists('id', $termsOfDeliveryData)) {
+                throw new MissingShippingAttributeException('termsOfDelivery.id');
+            }
+            // TODO: inject repository class
+            $terms = $this->em->getRepository(self::$termsOfDeliveryEntityName)->find($termsOfDeliveryData['id']);
+            if (!$terms) {
+                throw new ShippingDependencyNotFoundException(self::$termsOfDeliveryEntityName, $termsOfDeliveryData['id']);
+            }
+            $shipping->setTermsOfDelivery($terms);
+            $shipping->setTermsOfDeliveryContent($terms->getTerms());
+            return $terms;
+        } else {
+            $shipping->setTermsOfDelivery(null);
+            $shipping->setTermsOfDeliveryContent(null);
+        }
+        return null;
+    }
+
+    /**
+     * @param $data
+     * @param Shipping $shipping
+     * @throws Exception\ShippingDependencyNotFoundException
+     * @throws Exception\MissingShippingAttributeException
+     * @return null|object
+     */
+    private function setShippingOrder($data, Shipping $shipping)
+    {
+        $orderData = $this->getProperty($data, 'order');
+        if ($orderData) {
+            if (!array_key_exists('id', $orderData)) {
+                throw new MissingShippingAttributeException('order.id');
+            }
+            $order = $this->em->getRepository(self::$orderEntityName)->find($orderData['id']);
+            if (!$order) {
+                throw new ShippingDependencyNotFoundException(self::$orderEntityName, $orderData['id']);
+            }
+            $shipping->setOrder($order);
+            return $order;
+        } else {
+            $shipping->setOrder(null);
+        }
+        return null;
+    }
+
 //    /**
 //     * @param $data
 //     * @param Order $order
@@ -464,14 +508,14 @@ class ShippingManager
 //        return null;
 //    }
 
-//    private function processItems($data, Order $order, $locale, $userId)
-//    {
-//        $result = true;
+    private function processItems($data, Shipping $shipping, $locale, $userId)
+    {
+        $result = true;
 //        try {
 //            if ($this->checkIfSet('items', $data)) {
 //                // items has to be an array
 //                if (!is_array($data['items'])) {
-//                    throw new MissingOrderAttributeException('items arrray');
+//                    throw new MissingShippingAttributeException('items arrray');
 //                }
 //
 //                $items = $data['items'];
@@ -480,30 +524,30 @@ class ShippingManager
 //                    return $item->getId();
 //                };
 //
-//                $delete = function ($item) use ($order){
+//                $delete = function ($item) use ($shipping){
 //                    $entity = $item->getEntity();
 //                    // remove from order
-//                    $order->removeItem($entity);
+//                    $shipping->removeItem($entity);
 //                    // delete item
 //                    $this->em->remove($entity);
 //                };
 //
-//                $update = function ($item, $matchedEntry) use ($locale, $userId, $order){
+//                $update = function ($item, $matchedEntry) use ($locale, $userId, $shipping){
 //                    $itemEntity = $this->itemManager->save($matchedEntry, $locale, $userId, $item);
 //                    return $itemEntity ? true : false;
 //                };
 //
-//                $add = function ($itemData) use ($locale, $userId, $order){
+//                $add = function ($itemData) use ($locale, $userId, $shipping){
 //                    $item = $this->itemManager->save($itemData, $locale, $userId);
-//                    return $order->addItem($item->getEntity());
+//                    return $shipping->addItem($item->getEntity());
 //                };
 //
-//                $result = $this->restHelper->processSubEntities($order->getItems(), $items, $get, $add, $update, $delete);
+//                $result = $this->restHelper->processSubEntities($shipping->getItems(), $items, $get, $add, $update, $delete);
 //
 //            }
 //        } catch (Exception $e) {
 //            throw new OrderException('Error while creating items: ' . $e->getMessage());
 //        }
-//        return $result;
-//    }
+        return $result;
+    }
 }

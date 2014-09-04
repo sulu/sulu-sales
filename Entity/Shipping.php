@@ -3,6 +3,7 @@
 namespace Sulu\Bundle\Sales\ShippingBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Sulu\Component\Security\UserInterface;
 
 /**
  * Shipping
@@ -115,12 +116,12 @@ class Shipping
     private $order;
 
     /**
-     * @var \Sulu\Bundle\SecurityBundle\Entity\User
+     * @var UserInterface
      */
     private $changer;
 
     /**
-     * @var \Sulu\Bundle\SecurityBundle\Entity\User
+     * @var UserInterface
      */
     private $creator;
 
@@ -615,10 +616,10 @@ class Shipping
     /**
      * Set changer
      *
-     * @param \Sulu\Bundle\SecurityBundle\Entity\User $changer
+     * @param UserInterface $changer
      * @return Shipping
      */
-    public function setChanger(\Sulu\Bundle\SecurityBundle\Entity\User $changer = null)
+    public function setChanger(UserInterface $changer = null)
     {
         $this->changer = $changer;
     
@@ -628,7 +629,7 @@ class Shipping
     /**
      * Get changer
      *
-     * @return \Sulu\Bundle\SecurityBundle\Entity\User 
+     * @return UserInterface 
      */
     public function getChanger()
     {
@@ -638,10 +639,10 @@ class Shipping
     /**
      * Set creator
      *
-     * @param \Sulu\Bundle\SecurityBundle\Entity\User $creator
+     * @param UserInterface $creator
      * @return Shipping
      */
-    public function setCreator(\Sulu\Bundle\SecurityBundle\Entity\User $creator = null)
+    public function setCreator(UserInterface $creator = null)
     {
         $this->creator = $creator;
     
@@ -651,7 +652,7 @@ class Shipping
     /**
      * Get creator
      *
-     * @return \Sulu\Bundle\SecurityBundle\Entity\User 
+     * @return UserInterface 
      */
     public function getCreator()
     {
