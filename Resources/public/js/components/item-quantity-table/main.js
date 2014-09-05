@@ -16,9 +16,9 @@
  * @param {Bool}  [options.editable] defines if component is editable
  */
 define([
-    'text!sulusalescore/components/item-table/item.form.html',
-    'text!sulusalescore/components/item-table/item.row.html',
-    'text!sulusalescore/components/item-table/item.row-head.html'
+    'text!sulusalescore/components/item-quantity-table/item.form.html',
+    'text!sulusalescore/components/item-quantity-table/item.row.html',
+    'text!sulusalescore/components/item-quantity-table/item.row-head.html'
 ], function(FormTpl, RowTpl, RowHeadTpl) {
 
     'use strict';
@@ -51,19 +51,22 @@ define([
          */
         rowDefaults = {
             rowClass: null,
-            id: null,
             rowNumber: null,
             rowId: '',
-            name: '',
-            number: '',
-            quantity: '',
-            quantityUnit: 'pc',
-            price: '',
-            discount: null,
-            overallPrice: '',
-            currency: 'EUR',
-            useProductsPrice: false,
-            tax: 0
+            id: null,
+            item: {
+                id: null,
+                name: '',
+                number: '',
+                quantity: '',
+                quantityUnit: 'pc',
+                price: '',
+                discount: null,
+                overallPrice: '',
+                currency: 'EUR',
+                useProductsPrice: false,
+                tax: 0
+            }
         },
 
         templates = {
@@ -99,6 +102,7 @@ define([
                 name: this.sandbox.translate('salescore.item.product'),
                 number: this.sandbox.translate('salescore.item.number'),
                 quantity: this.sandbox.translate('salescore.item.quantity'),
+                quantityInput: this.sandbox.translate('salescore.item.quantity'),
                 quantityUnit: this.sandbox.translate('salescore.item.unit'),
                 price: this.sandbox.translate('salescore.item.price'),
                 discount: this.sandbox.translate('salescore.item.discount'),
@@ -129,66 +133,9 @@ define([
             }.bind(this));
 
             // input field listeners
-            this.sandbox.dom.on(this.$el, 'change', quantityChangedHandler.bind(this), constants.quantityInput);
-            this.sandbox.dom.on(this.$el, 'change', priceChangedHandler.bind(this), constants.priceInput);
-            this.sandbox.dom.on(this.$el, 'change', discountChangedHandler.bind(this), constants.discountInput);
-        },
-
-        /**
-         * triggered when quantity is changed
-         * @param event
-         */
-        quantityChangedHandler = function(event) {
-            var rowId = getRowData.call(this, event).id;
-            // update quantity
-            this.items[rowId].quantity = this.sandbox.dom.val(event.target);
-            refreshItemsData.call(this);
-
-            // update rows overall price
-            updateOverallPrice.call(this, rowId);
-
-            // update overall price
-            updateGlobalPrice.call(this);
-
-            this.sandbox.emit(EVENT_CHANGED);
-        },
-
-        /**
-         * triggered when price is changed
-         * @param event
-         */
-        priceChangedHandler = function(event) {
-            var rowId = getRowData.call(this, event).id;
-            // update price
-            this.items[rowId].price = this.sandbox.dom.val(event.target);
-            refreshItemsData.call(this);
-
-            // update rows overall price
-            updateOverallPrice.call(this, rowId);
-
-            // update overall price
-            updateGlobalPrice.call(this);
-
-            this.sandbox.emit(EVENT_CHANGED);
-        },
-
-        /**
-         * triggered when discount is changed
-         * @param event
-         */
-        discountChangedHandler = function(event) {
-            var rowId = getRowData.call(this, event).id;
-            // update discount
-            this.items[rowId].discount = this.sandbox.dom.val(event.target);
-            refreshItemsData.call(this);
-
-            // update rows overall price
-            updateOverallPrice.call(this, rowId);
-
-            // update overall price
-            updateGlobalPrice.call(this);
-
-            this.sandbox.emit(EVENT_CHANGED);
+//            this.sandbox.dom.on(this.$el, 'change', quantityChangedHandler.bind(this), constants.quantityInput);
+//            this.sandbox.dom.on(this.$el, 'change', priceChangedHandler.bind(this), constants.priceInput);
+//            this.sandbox.dom.on(this.$el, 'change', discountChangedHandler.bind(this), constants.discountInput);
         },
 
         /**
@@ -203,184 +150,6 @@ define([
                 row: $row,
                 id: rowId
             };
-        },
-
-        /**
-         *
-         * @param rowId
-         */
-        updateOverallPrice = function(rowId) {
-            var $row = this.$find('#' + rowId),
-                item = this.items[rowId],
-                $priceCol = this.sandbox.dom.find('.item-overall-price span', $row);
-
-            this.sandbox.dom.html($priceCol, getOverallPriceString.call(this, item));
-
-        },
-
-        /**
-         * updates row with global prices
-         */
-        updateGlobalPrice = function() {
-            var tax, item, price, taxPrice,
-                $table,
-                taxCategory = {},
-                netPrice = 0,
-                globalPrice = 0;
-
-            for (var i in this.items) {
-                item = this.items[i];
-                price = parseFloat(getOverallPrice.call(this, item));
-                taxPrice = 0;
-
-                if (!!item.tax && item.tax > 0 && item.tax <= 100) {
-                    tax = parseFloat(item.tax);
-                    taxPrice = (price / 100) * tax;
-                    // tax group
-                    taxCategory[tax] = !taxCategory[tax] ? taxPrice : taxCategory[tax] + taxPrice;
-                }
-
-                // sum up prices
-                // net
-                netPrice += price;
-                // overall
-                globalPrice += price + taxPrice;
-            }
-
-            // visualize
-            $table = this.$find(constants.globalPriceTableClass);
-            this.sandbox.dom.html($table, '');
-
-            if (Object.keys(this.items).length > 0) {
-                // add net price
-                addPriceRow.call(this, $table, this.sandbox.translate('salescore.item.net-price'), getFormatedPriceCurrencyString.call(this, netPrice));
-
-                // add row for every tax group
-                for (var i in taxCategory) {
-                    addPriceRow.call(this, $table, this.sandbox.translate('salescore.item.vat') + '.(' + i + '%)', getFormatedPriceCurrencyString.call(this, taxCategory[i]));
-                }
-
-                addPriceRow.call(this, $table, this.sandbox.translate('salescore.item.overall-price'), getFormatedPriceCurrencyString.call(this, globalPrice));
-            }
-        },
-
-        addPriceRow = function($table, title, value) {
-            var $row = this.sandbox.dom.createElement(templates.priceRow.call(this, title, value));
-            this.sandbox.dom.append($table, $row);
-        },
-
-        /**
-         * returns formated overallPrice + currency as string (based on item)
-         * @param item
-         * @param mode
-         * @returns {string}
-         */
-        getOverallPriceString = function(item, mode) {
-            return getFormatedPriceCurrencyString.call(this,
-                getOverallPrice.call(this, item, mode),
-                getCurrency.call(this, item));
-        },
-
-        /**
-         * returns formated overallprice + currency as string (based on value)
-         * @param value
-         * @param currency
-         * @returns {string}
-         */
-        getFormatedPriceCurrencyString = function(value, currency) {
-            currency = !!currency ? currency : rowDefaults.currency;
-            return this.sandbox.numberFormat(value, "n") + ' ' + currency;
-        },
-
-        /**
-         * returns the overall price
-         * @param item
-         * @param mode
-         * @returns number
-         */
-        getOverallPrice = function(item, mode) {
-            var value = 0;
-            if (!mode || mode === 'default') {
-                if (!!item.price && !!item.quantity) {
-
-                    value = (item.price * item.quantity);
-
-                    // discount
-                    if (!!item.discount && item.discount > 0 && item.discount <= 100) {
-                        value -= (value / 100) * item.discount;
-                    }
-                }
-            }
-
-            return value;
-        },
-
-        /**
-         * returns items currency; if not set, default-currency
-         * @param item
-         * @returns string
-         */
-        getCurrency = function(item) {
-            return !!item.currency ? item.currency : rowDefaults.currency;
-        },
-
-        /**
-         * called when a product gets selected in auto-complete
-         * @param product
-         * @param event
-         */
-        productSelected = function(product, event) {
-
-            var $row = this.sandbox.dom.closest(event.currentTarget, constants.rowClass),
-                rowId = this.sandbox.dom.attr($row, 'id'),
-                itemData = {};
-
-            // show loader
-            this.sandbox.start([
-                {
-                    name: 'loader@husky',
-                    options: {
-                        el: this.sandbox.dom.find(constants.productSearchClass, $row),
-                        size: '15px'
-                    }
-                }
-            ]);
-
-            // load product details
-            this.sandbox.util.load(constants.productUrl + product.id)
-                .then(function(response) {
-                    // set item to product
-                    itemData = setItemByProduct.call(this, response);
-                    updateItemRow.call(this, rowId, itemData);
-                }.bind(this))
-                .fail(function(request, message, error) {
-                    this.sandbox.logger.warn(request, message, error);
-                }.bind(this));
-        },
-
-        /**
-         * TODO: move to template when mapper type is implemented
-         * initializes the product's auto-complete
-         * @param $row
-         */
-        initProductSearch = function($row) {
-            // initialize auto-complete when adding a new Item
-            this.sandbox.start([
-                {
-                    name: 'auto-complete@husky',
-                    options: {
-                        el: this.sandbox.dom.find(constants.productSearchClass, $row),
-                        remoteUrl: constants.productsUrl,
-                        resultKey: 'products',
-                        getParameter: 'search',
-                        value: '',
-                        instanceName: 'products',
-                        valueKey: 'name',
-                        noNewValues: true,
-                        selectCallback: productSelected.bind(this)
-                    }
-                }
-            ]);
         },
 
         /**
@@ -440,7 +209,7 @@ define([
             removeItemData.call(this, rowId);
 
             // remove validation
-            removeValidationFields.call(this, $row);
+            removeValidtaionFields.call(this, $row);
 
             // refresh global price
             updateGlobalPrice.call(this);
@@ -463,7 +232,6 @@ define([
                 }),
                 rowTpl, $row;
 
-            data.overallPrice = getOverallPriceString.call(this, data);
             rowTpl = this.sandbox.util.template(RowTpl, data),
                 $row = this.sandbox.dom.createElement(rowTpl);
             return $row;
@@ -513,7 +281,7 @@ define([
          * remove validation from row
          * @param $row
          */
-        removeValidationFields = function($row) {
+        removeValidtaionFields = function($row) {
             this.sandbox.form.removeField(constants.formId, this.sandbox.dom.find(constants.quantityInput, $row));
             this.sandbox.form.removeField(constants.formId, this.sandbox.dom.find(constants.priceInput, $row));
             this.sandbox.form.removeField(constants.formId, this.sandbox.dom.find(constants.discountInput, $row));
@@ -557,23 +325,6 @@ define([
             }
             // refresh items data attribute
             refreshItemsData.call(this);
-        },
-
-        /**
-         * sets an item, based on product
-         * @param productData
-         * @returns {*}
-         */
-        setItemByProduct = function(productData) {
-            // merge with row defaults
-            return this.sandbox.util.extend({}, rowDefaults,
-                {
-                    name: productData.name,
-                    number: productData.number,
-                    product: productData
-                }
-            );
-
         },
 
         /**
@@ -648,9 +399,6 @@ define([
 
             // init form
             initializeForm.call(this);
-
-            // set global price
-            updateGlobalPrice.call(this);
         },
 
         /**

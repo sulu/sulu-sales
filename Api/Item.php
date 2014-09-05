@@ -494,7 +494,10 @@ class Item extends ApiWrapper
     public function getProduct()
     {
         if ($this->getEntity()->getProduct()) {
-            return new Product($this->entity->getProduct(), $this->locale);
+            return array(
+                'id' => $this->entity->getProduct()->getId()
+            );
+//            return new Product($this->entity->getProduct(), $this->locale);
         }
         return null;
     }

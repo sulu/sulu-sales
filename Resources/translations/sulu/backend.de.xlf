@@ -54,6 +54,14 @@
                 <source>salescore.item.vat</source>
                 <target>Ust</target>
             </trans-unit>
+            <trans-unit id="a50accg2ac221350142c0b4720e29a14" resname="salescore.customer">
+                <source>salescore.customer</source>
+                <target>Kunde</target>
+            </trans-unit>
+            <trans-unit id="a50accg2ac221350142c0b4720e29a15" resname="salescore.contact">
+                <source>salescore.contact</source>
+                <target>Ansprechpartner</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>
