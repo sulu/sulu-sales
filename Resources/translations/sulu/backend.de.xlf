@@ -6,6 +6,22 @@
                 <source>salesshipping.shippings.title</source>
                 <target>Lieferungen</target>
             </trans-unit>
+            <trans-unit id="550accg2ac181350142c0b4720e29ff2" resname="salesshipping.shippings.number">
+                <source>salesshipping.shippings.number</source>
+                <target>Liefernummer</target>
+            </trans-unit>
+            <trans-unit id="550accg2ac181350142c0b4720e29ff3" resname="salesshipping.shippings.confirm">
+                <source>salesshipping.shippings.confirm</source>
+                <target>Lieferschein erstellen</target>
+            </trans-unit>
+            <trans-unit id="550accg2ac181350142c0b4720e29ff4" resname="salesshipping.shippings.edit">
+                <source>salesshipping.shippings.edit</source>
+                <target>Lieferung bearbeiten</target>
+            </trans-unit>
+            <trans-unit id="550accg2ac181350142c0b4720e29ff5" resname="salesshipping.shipping">
+                <source>salesshipping.shipping</source>
+                <target>Lieferung</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>

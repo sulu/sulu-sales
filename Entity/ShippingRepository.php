@@ -88,6 +88,59 @@ class ShippingRepository extends EntityRepository
     }
 
     /**
+     * Finds a shipping by Order
+     * @param $id
+     * @param $locale
+     * @return Shipping|null
+     */
+    public function findByOrder($id, $locale)
+    {
+        try {
+            $qb = $this->getShippingQuery($locale);
+            $qb->andWhere('shipping.id = :shippingId');
+            $qb->setParameter('shippingId', $id);
+
+            return $qb->getQuery()->getSingleResult();
+        } catch (NoResultException $exc) {
+            return null;
+        }
+    }
+
+//    public function countShippedItemsByItemId($itemId) {
+//        try {
+//            $qb = $this->createQueryBuilder('shipping')
+//                ->select('sum(shipping.quantity)')
+//                ->leftJoin('shipping.order', 'order')
+//                ->leftJoin('order.item', 'item', 'WITH', 'item.id = :itemId')
+//                ->setParameter('itemId', $itemId)
+////                ->where('shipping.status != :excludeStatus')
+//    //            ->setParameter('excludeStatus', ShippingStatus::STATUS_CREATED)
+//            ;
+//            return $qb->getQuery()->getResult();
+//        } catch (NoResultException $exc) {
+//            return null;
+//        }
+//    }
+
+    public function getShippedItemsByOrderId($orderId) {
+        try {
+            $qb = $this->createQueryBuilder('shipping')
+                ->select('partial shipping.{id}, partial o.{id}, partial items.{id}, partial shippingItems.{id}, sum(shippingItems.quantity) AS shipped')
+                ->leftJoin('shipping.order', 'o', 'WITH', 'o.id = :orderId')
+                ->join('o.items', 'items')
+                ->leftJoin('shipping.shippingItems', 'shippingItems', 'WITH', 'items = shippingItems.item')
+                ->setParameter('orderId', $orderId)
+                ->groupBy('items.id')
+//                ->where('shipping.status != :excludeStatus')
+//                ->setParameter('excludeStatus', ShippingStatus::STATUS_CREATED)
+            ;
+            return $qb->getQuery()->getScalarResult();
+        } catch (NoResultException $exc) {
+            return null;
+        }
+    }
+
+    /**
      * Returns query for shippings
      * @param string $locale The locale to load
      * @return \Doctrine\ORM\QueryBuilder

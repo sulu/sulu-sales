@@ -7,6 +7,7 @@ use Sulu\Bundle\Sales\CoreBundle\Api\Item;
 use Sulu\Component\Rest\ApiWrapper;
 use JMS\Serializer\Annotation\SerializedName;
 use Sulu\Bundle\Sales\ShippingBundle\Entity\ShippingItem as ShippingItemEntity;
+use JMS\Serializer\Annotation\Exclude;
 
 /**
  * Describes an item of a shipping
@@ -14,6 +15,11 @@ use Sulu\Bundle\Sales\ShippingBundle\Entity\ShippingItem as ShippingItemEntity;
  */
 class ShippingItem extends ApiWrapper
 {
+    /**
+     * quantity that has already been shipped in other shippings
+     */
+    private $shippedItems;
+
     /**
      * @param ShippingItemEntity $entity
      * @param string $locale
@@ -129,5 +135,25 @@ class ShippingItem extends ApiWrapper
     public function getItem()
     {
         return new Item($this->entity->getItem(), $this->locale);
+    }
+
+    /**
+     * @param $numShippedItems
+     * @return $this
+     */
+    public function setShippedItems($numShippedItems)
+    {
+        $this->shippedItems = $numShippedItems;
+
+        return $this;
+    }
+
+    /**
+     * @return shippedItems*
+     * @VirtualProperty
+     * @SerializedName("shippedItems")
+     */
+    public function getShippedItems() {
+        return $this->shippedItems;
     }
 }

@@ -267,8 +267,20 @@ class ShippingManager
     {
         $shipping = $this->em->getRepository(self::$shippingEntityName)->findByIdAndLocale($id, $locale);
 
+
         if ($shipping) {
-            return new Shipping($shipping, $locale);
+            $apiShippings= new Shipping($shipping, $locale);
+
+            // set currently shipped items (sum of all shippings for that item)
+            $shippingCounts = $this->em->getRepository(self::$shippingEntityName)->getShippedItemsByOrderId($shipping->getOrder()->getId());
+            foreach ($shippingCounts as $shippingCount) {
+                foreach($apiShippings->getItems() as $apiItem) {
+                    if ($shippingCount['items_id'] === $apiItem->getEntity()->getItem()->getId()) {
+                        $apiItem->setShippedItems($shippingCount['shipped']);
+                    }
+                }
+            }
+            return $apiShippings;
         } else {
             return null;
         }
@@ -303,7 +315,7 @@ class ShippingManager
     private function initializeFieldDescriptors($locale)
     {
         $this->fieldDescriptors['id'] = new DoctrineFieldDescriptor('id', 'id', self::$shippingEntityName, 'public.id', array(), true);
-        $this->fieldDescriptors['number'] = new DoctrineFieldDescriptor('number', 'number', self::$shippingEntityName, 'salesorder.orders.number', array(), false, true);
+        $this->fieldDescriptors['number'] = new DoctrineFieldDescriptor('number', 'number', self::$shippingEntityName, 'salesshipping.shippings.number', array(), false, true);
 
         $contactJoin = array(
             self::$orderAddressEntityName => new DoctrineJoinDescriptor(
@@ -323,7 +335,7 @@ class ShippingManager
                 )
             ),
             'account',
-            'salesorder.orders.account',
+            'salesshippings.orders.account',
             ' ',
             false,
             false,

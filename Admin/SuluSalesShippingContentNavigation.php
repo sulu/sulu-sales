@@ -24,7 +24,7 @@ class SuluSalesShippingContentNavigation extends ContentNavigation
 
         /* CONTACTS */
         // details
-        $overview = new ContentNavigationItem('public.overview');
+        $overview = new ContentNavigationItem('public.details');
         $overview->setAction('overview');
         $overview->setGroups(array('shipping'));
         $overview->setComponent('shippings@sulusalesshipping');

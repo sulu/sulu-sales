@@ -10,6 +10,7 @@ use Hateoas\Configuration\Annotation\Relation;
 use JMS\Serializer\Annotation\SerializedName;
 use Sulu\Component\Security\UserInterface;
 use Sulu\Bundle\Sales\ShippingBundle\Entity\Shipping as ShippingEntity;
+use JMS\Serializer\Annotation\Exclude;
 
 /**
  * The Shipping class which will be 2exported to the API
@@ -18,6 +19,10 @@ use Sulu\Bundle\Sales\ShippingBundle\Entity\Shipping as ShippingEntity;
  */
 class Shipping extends ApiWrapper
 {
+    /**
+     * @Exclude
+     */
+    private $shippingItems;
     /**
      * @param ShippingEntity $shipping The shipping to wrap
      * @param string $locale The locale of this shipping
@@ -471,12 +476,14 @@ class Shipping extends ApiWrapper
      */
     public function getItems()
     {
-        $items = array();
-        foreach ($this->entity->getShippingItems() as $shippingItem) {
-            $items[] = new ShippingItem($shippingItem, $this->locale);
+        if (!$this->shippingItems) {
+            $this->shippingItems = array();
+            foreach ($this->entity->getShippingItems() as $shippingItem) {
+                $this->shippingItems[] = new ShippingItem($shippingItem, $this->locale);
+            }
         }
 
-        return $items;
+        return $this->shippingItems;
     }
 
     /**

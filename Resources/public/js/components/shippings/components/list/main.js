@@ -46,10 +46,11 @@ define(function() {
 //            }
         },
 
+
+
         header: {
             title: 'salesshipping.shippings.title',
             noBack: true,
-
             breadcrumb: [
                 {title: 'navigation.sales'},
                 {title: 'salesshipping.shippings.title'}
@@ -67,11 +68,12 @@ define(function() {
             this.sandbox.dom.html(this.$el, this.renderTemplate('/admin/shipping/template/shipping/list'));
 
             // init list-toolbar and datagrid
-            this.sandbox.sulu.initListToolbarAndList.call(this, 'contactsFields', '/admin/api/shippings/fields',
+            this.sandbox.sulu.initListToolbarAndList.call(this, 'shippingsFields', '/admin/api/shippings/fields',
                 {
                     el: this.$find('#list-toolbar-container'),
                     instanceName: 'shippings',
-                    inHeader: true
+                    inHeader: true,
+                    template: []
                 },
                 {
                     el: this.sandbox.dom.find('#shippings-list', this.$el),
@@ -87,7 +89,7 @@ define(function() {
                                     column: 'number',
                                     align: 'left',
                                     callback: function(id) {
-                                        this.sandbox.emit('sulu.salesshipping.shippings.load', id);
+                                        this.sandbox.emit('sulu.salesshipping.shipping.load', id);
                                     }.bind(this)
                                 }
                             ],
