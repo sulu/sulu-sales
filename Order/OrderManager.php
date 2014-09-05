@@ -287,12 +287,14 @@ class OrderManager
             $order = $this->orderRepository->findByLocaleAndFilter($locale, $filter);
         }
 
-        array_walk(
-            $order,
-            function (&$order) use ($locale){
-                $order = new Order($order, $locale);
-            }
-        );
+        if ($order) {
+            array_walk(
+                $order,
+                function (&$order) use ($locale){
+                    $order = new Order($order, $locale);
+                }
+            );
+        }
 
         return $order;
     }
@@ -448,7 +450,7 @@ class OrderManager
      * @param Account $account
      * @throws OrderDependencyNotFoundException
      */
-    private function setOrderAddress(OrderAddress $orderAddress, $addressData, Contact $contact, Account $account = null)
+    private function setOrderAddress(OrderAddress $orderAddress, $addressData, $contact, $account = null)
     {
         // check if address with id can be found
         // add contact data
@@ -628,7 +630,7 @@ class OrderManager
                 $result = $this->restHelper->processSubEntities($order->getItems(), $items, $get, $add, $update, $delete);
 
             }
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             throw new OrderException('Error while creating items: ' . $e->getMessage());
         }
         return $result;

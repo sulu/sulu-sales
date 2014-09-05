@@ -218,6 +218,9 @@ class OrderController extends RestController implements ClassResourceInterface
 
         try {
             $order = $this->getManager()->findByIdAndLocale($id, $this->getLocale($request));
+            if (!$order) {
+                throw new OrderNotFoundException($id);
+            }
 
             switch ($status) {
                 case 'confirm':
@@ -228,7 +231,6 @@ class OrderController extends RestController implements ClassResourceInterface
                     break;
                 default:
                     throw new RestException("Unrecognized status: " . $status);
-
             }
 
             $em->flush();

@@ -35,8 +35,8 @@ class TemplateController extends RestController
             'SuluSalesOrderBundle:Template:order.form.html.twig',
             array(
                 'systemUser' => $this->getSystemUserArray(),
-                'termsOfPayment' => $this->getTermsArray(static::$termsOfPaymentEntityName),
-                'termsOfDelivery' => $this->getTermsArray(static::$termsOfDeliveryEntityName),
+                'termsOfPayment' => $this->getTermsArray(self::$termsOfPaymentEntityName),
+                'termsOfDelivery' => $this->getTermsArray(self::$termsOfDeliveryEntityName),
                 'orderStatus' => $this->getOrderStatus()
             )
         );

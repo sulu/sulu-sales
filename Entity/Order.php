@@ -134,7 +134,6 @@ class Order
 
     /**
      * @var UserInterface
-     * @Exclude
      */
     private $changer;
 

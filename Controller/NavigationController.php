@@ -30,11 +30,13 @@ class NavigationController extends Controller
      */
     public function orderAction()
     {
+        $data = array();
         /** @var ContentNavigation $contentNavigation */
         if ($this->has(self::SERVICE_NAME)) {
             $contentNavigation = $this->get(self::SERVICE_NAME);
+            $data = $contentNavigation->toArray('order');
         }
 
-        return new Response(json_encode($contentNavigation->toArray('order')));
+        return new Response(json_encode($data));
     }
 }
