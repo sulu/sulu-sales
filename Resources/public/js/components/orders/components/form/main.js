@@ -20,8 +20,7 @@ define([], function() {
             accountInputId: '#account-input',
             deliveryAddressInstanceName: 'delivery-address',
             paymentAddressInstanceName: 'invoice-address',
-            contactSelectId: '#contact-select',
-            itemTableId: '#order-items'
+            contactSelectId: '#contact-select'
         },
 
         /**
