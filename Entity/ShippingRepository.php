@@ -106,22 +106,6 @@ class ShippingRepository extends EntityRepository
         }
     }
 
-//    public function countShippedItemsByItemId($itemId) {
-//        try {
-//            $qb = $this->createQueryBuilder('shipping')
-//                ->select('sum(shipping.quantity)')
-//                ->leftJoin('shipping.order', 'order')
-//                ->leftJoin('order.item', 'item', 'WITH', 'item.id = :itemId')
-//                ->setParameter('itemId', $itemId)
-////                ->where('shipping.status != :excludeStatus')
-//    //            ->setParameter('excludeStatus', ShippingStatus::STATUS_CREATED)
-//            ;
-//            return $qb->getQuery()->getResult();
-//        } catch (NoResultException $exc) {
-//            return null;
-//        }
-//    }
-
     public function getShippedItemsByOrderId($orderId) {
         try {
             $qb = $this->createQueryBuilder('shipping')
@@ -131,8 +115,8 @@ class ShippingRepository extends EntityRepository
                 ->leftJoin('shipping.shippingItems', 'shippingItems', 'WITH', 'items = shippingItems.item')
                 ->setParameter('orderId', $orderId)
                 ->groupBy('items.id')
-//                ->where('shipping.status != :excludeStatus')
-//                ->setParameter('excludeStatus', ShippingStatus::STATUS_CREATED)
+                ->where('shipping.status != :excludeStatus')
+                ->setParameter('excludeStatus', ShippingStatus::STATUS_CREATED)
             ;
             return $qb->getQuery()->getScalarResult();
         } catch (NoResultException $exc) {

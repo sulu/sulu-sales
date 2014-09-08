@@ -608,4 +608,12 @@ class Shipping extends ApiWrapper
         // TODO
 //        return $this->entity->creator;
     }
+
+    /**
+     * returns the entities locale
+     * @return string
+     */
+    public function getLocale() {
+        return $this->locale;
+    }
 }

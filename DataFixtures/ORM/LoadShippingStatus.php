@@ -29,7 +29,19 @@ class LoadShippingStatus extends AbstractFixture implements OrderedFixtureInterf
         $status = new ShippingStatus();
         $status->setId(ShippingStatus::STATUS_CREATED);
         $this->createStatusTranslation($manager, $status, 'Created', 'en');
-        $this->createStatusTranslation($manager, $status, 'Erstellt', 'de');
+        $this->createStatusTranslation($manager, $status, 'Erfasst', 'de');
+        $manager->persist($status);
+
+        $status = new ShippingStatus();
+        $status->setId(ShippingStatus::STATUS_DELIVERY_NOTE);
+        $this->createStatusTranslation($manager, $status, 'Delivery note created', 'en');
+        $this->createStatusTranslation($manager, $status, 'Lieferschein erstellt', 'de');
+        $manager->persist($status);
+
+        $status = new ShippingStatus();
+        $status->setId(ShippingStatus::STATUS_SHIPPED);
+        $this->createStatusTranslation($manager, $status, 'Shipped', 'en');
+        $this->createStatusTranslation($manager, $status, 'Versandt', 'de');
         $manager->persist($status);
 
         $manager->flush();

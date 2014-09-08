@@ -10,7 +10,14 @@
 
 namespace Sulu\Bundle\Sales\ShippingBundle\Shipping;
 
+use DateTime;
 use Doctrine\Common\Persistence\ObjectManager;
+use Sulu\Component\Rest\Exception\EntityNotFoundException;
+use Sulu\Component\Rest\ListBuilder\Doctrine\FieldDescriptor\DoctrineConcatenationFieldDescriptor;
+use Sulu\Component\Rest\ListBuilder\Doctrine\FieldDescriptor\DoctrineFieldDescriptor;
+use Sulu\Component\Rest\ListBuilder\Doctrine\FieldDescriptor\DoctrineJoinDescriptor;
+use Sulu\Component\Rest\RestHelperInterface;
+use Sulu\Component\Security\UserRepositoryInterface;
 use Sulu\Bundle\Sales\CoreBundle\Item\ItemManager;
 use Sulu\Bundle\Sales\OrderBundle\Entity\OrderAddress;
 use Sulu\Bundle\Sales\ShippingBundle\Entity\ShippingStatus;
@@ -18,16 +25,10 @@ use Sulu\Bundle\Sales\ShippingBundle\Shipping\Exception\MissingShippingAttribute
 use Sulu\Bundle\Sales\ShippingBundle\Shipping\Exception\ShippingDependencyNotFoundException;
 use Sulu\Bundle\Sales\ShippingBundle\Shipping\Exception\ShippingException;
 use Sulu\Bundle\Sales\ShippingBundle\Shipping\Exception\ShippingNotFoundException;
-use Sulu\Component\Rest\Exception\EntityNotFoundException;
-use Sulu\Component\Rest\ListBuilder\Doctrine\FieldDescriptor\DoctrineConcatenationFieldDescriptor;
-use Sulu\Component\Rest\ListBuilder\Doctrine\FieldDescriptor\DoctrineFieldDescriptor;
-use Sulu\Component\Rest\ListBuilder\Doctrine\FieldDescriptor\DoctrineJoinDescriptor;
-use Sulu\Component\Rest\RestHelperInterface;
-
 use Sulu\Bundle\Sales\ShippingBundle\Entity\Shipping as ShippingEntity;
+use Sulu\Bundle\Sales\ShippingBundle\Api\ShippingItem;
+use Sulu\Bundle\Sales\ShippingBundle\Entity\ShippingItem as ShippingItemEntity;
 use Sulu\Bundle\Sales\ShippingBundle\Api\Shipping;
-use DateTime;
-use Sulu\Component\Security\UserRepositoryInterface;
 
 class ShippingManager
 {
@@ -79,7 +80,7 @@ class ShippingManager
     )
     {
         $this->em = $em;
-        $this->userRepository= $userRepository;
+        $this->userRepository = $userRepository;
         $this->itemManager = $itemManager;
         $this->restHelper = $restHelper;
     }
@@ -212,7 +213,8 @@ class ShippingManager
      * @param bool $flush
      * @throws \Sulu\Component\Rest\Exception\EntityNotFoundException
      */
-    public function convertStatus(Shipping $shipping, $statusId, $flush = false) {
+    public function convertStatus(Shipping $shipping, $statusId, $flush = false)
+    {
 
         // get current status
         $currentStatus = $shipping->getStatus()->getEntity();
@@ -226,7 +228,7 @@ class ShippingManager
         }
 
         // check if status has changed
-        if($currentStatus->getId() !== $statusId) {
+        if ($currentStatus->getId() !== $statusId) {
             if ($statusId === ShippingStatus::STATUS_CREATED) {
                 // TODO: re-edit - do some business logic
             }
@@ -267,14 +269,13 @@ class ShippingManager
     {
         $shipping = $this->em->getRepository(self::$shippingEntityName)->findByIdAndLocale($id, $locale);
 
-
         if ($shipping) {
-            $apiShippings= new Shipping($shipping, $locale);
+            $apiShippings = new Shipping($shipping, $locale);
 
             // set currently shipped items (sum of all shippings for that item)
             $shippingCounts = $this->em->getRepository(self::$shippingEntityName)->getShippedItemsByOrderId($shipping->getOrder()->getId());
             foreach ($shippingCounts as $shippingCount) {
-                foreach($apiShippings->getItems() as $apiItem) {
+                foreach ($apiShippings->getItems() as $apiItem) {
                     if ($shippingCount['items_id'] === $apiItem->getEntity()->getItem()->getId()) {
                         $apiItem->setShippedItems($shippingCount['shipped']);
                     }
@@ -430,7 +431,7 @@ class ShippingManager
      */
     private function getProperty(array $data, $key, $default = null)
     {
-        return array_key_exists($key, $data) ? $data[$key] : $default;
+        return array_key_exists($key, $data) && $data[$key] !== null ? $data[$key] : $default;
     }
 
     /**
@@ -489,73 +490,92 @@ class ShippingManager
         return null;
     }
 
-//    /**
-//     * @param $data
-//     * @param Order $order
-//     * @return null|object
-//     * @throws Exception\MissingOrderAttributeException
-//     * @throws Exception\OrderDependencyNotFoundException
-//     */
-//    private function setAccount($data, Order $order)
-//    {
-//        $accountData = $this->getProperty($data, 'account');
-//        if ($accountData) {
-//            if (!array_key_exists('id', $accountData)) {
-//                throw new MissingOrderAttributeException('account.id');
-//            }
-//            // TODO: inject repository class
-//            $account = $this->em->getRepository(self::$accountEntityName)->find($accountData['id']);
-//            if (!$account) {
-//                throw new OrderDependencyNotFoundException(self::$accountEntityName, $accountData['id']);
-//            }
-//            $order->setAccount($account);
-//            return $account;
-//        } else {
-//            $order->setAccount(null);
-//        }
-//        return null;
-//    }
-
     private function processItems($data, Shipping $shipping, $locale, $userId)
     {
         $result = true;
-//        try {
-//            if ($this->checkIfSet('items', $data)) {
-//                // items has to be an array
-//                if (!is_array($data['items'])) {
-//                    throw new MissingShippingAttributeException('items arrray');
-//                }
-//
-//                $items = $data['items'];
-//
-//                $get = function ($item){
-//                    return $item->getId();
-//                };
-//
-//                $delete = function ($item) use ($shipping){
-//                    $entity = $item->getEntity();
-//                    // remove from order
-//                    $shipping->removeItem($entity);
-//                    // delete item
-//                    $this->em->remove($entity);
-//                };
-//
-//                $update = function ($item, $matchedEntry) use ($locale, $userId, $shipping){
-//                    $itemEntity = $this->itemManager->save($matchedEntry, $locale, $userId, $item);
-//                    return $itemEntity ? true : false;
-//                };
-//
-//                $add = function ($itemData) use ($locale, $userId, $shipping){
-//                    $item = $this->itemManager->save($itemData, $locale, $userId);
-//                    return $shipping->addItem($item->getEntity());
-//                };
-//
-//                $result = $this->restHelper->processSubEntities($shipping->getItems(), $items, $get, $add, $update, $delete);
-//
-//            }
-//        } catch (Exception $e) {
-//            throw new OrderException('Error while creating items: ' . $e->getMessage());
-//        }
+        try {
+            if ($this->checkDataSet($data,'items', false)) {
+                // items has to be an array
+                if (!is_array($data['items'])) {
+                    throw new MissingShippingAttributeException('items array');
+                }
+
+                $items = $data['items'];
+
+                $get = function ($item){
+                    return $item->getId();
+                };
+
+                $delete = function ($item) use ($shipping){
+                    $entity = $item->getEntity();
+                    // remove from order
+                    $shipping->removeShippingItem($entity);
+                    // delete item
+                    $this->em->remove($entity);
+                };
+
+                $update = function ($item, $matchedEntry) use ($locale){
+                    $shippingItem = $this->saveShippingItem($matchedEntry, $item->getEntity());
+
+                    return $shippingItem ? true : false;
+                };
+
+                $add = function ($itemData) use ($locale, $shipping){
+                    $shippingItem = $this->saveShippingItem($itemData);
+                    $shippingItem->setShipping($shipping->getEntity());
+                    return $shipping->addShippingItem($shippingItem, null, $locale);
+                };
+
+                $result = $this->restHelper->processSubEntities($shipping->getItems(), $items, $get, $add, $update, $delete);
+            }
+        } catch (Exception $e) {
+            throw new OrderException('Error while creating items: ' . $e->getMessage());
+        }
         return $result;
+    }
+
+    /**
+     * @param $data
+     * @param null $shippingItem
+     * @return null|ShippingItemEntity
+     */
+    private function saveShippingItem($data, $shippingItem = null)
+    {
+        // check if shipping is set
+        if (!$shippingItem) {
+            $shippingItem = $this->createShippingItemEntity($data);
+        }
+
+        $shippingItem->setNote($this->getProperty($data, 'note', $shippingItem->getNote()));
+        $shippingItem->setQuantity($this->getProperty($data, 'quantity', 0));
+
+        return $shippingItem;
+    }
+
+    /**
+     * creates a ShippingItem Entity by a given (shipping-)data array
+     * @param $data
+     * @return ShippingItemEntity
+     * @throws Exception\ShippingDependencyNotFoundException
+     * @throws Exception\MissingShippingAttributeException
+     */
+    private function createShippingItemEntity($data)
+    {
+        // check if necessary item data is set
+        if (array_key_exists('item', $data) && array_key_exists('id', $data['item'])) {
+            $itemId = $data['item']['id'];
+            $item = $this->itemManager->findEntityById($itemId);
+            if (!$item) {
+                throw new ShippingDependencyNotFoundException('SuluSalesCoreBundle:Items', $itemId);
+            }
+
+            $shippingItem = new ShippingItemEntity();
+            $shippingItem->setItem($item);
+            $this->em->persist($shippingItem);
+        } else {
+            throw new MissingShippingAttributeException('ShippingItems.item.id');
+        }
+
+        return $shippingItem;
     }
 }

@@ -187,9 +187,9 @@ define([], function() {
             }, this);
 
             // TODO expected deliverydate
-//            this.sandbox.on('husky.input.expected-delivery-date.initialized', function() {
-//                this.dfdExpectedDeliveryDate.resolve();
-//            }, this);
+            this.sandbox.on('husky.input.expected-delivery-date.initialized', function() {
+                this.dfdExpectedDeliveryDate.resolve();
+            }, this);
 
             this.sandbox.on('sulu.editable-data-row.delivery-address.initialized', function() {
                 this.dfdDeliveryAddressInitialized.resolve();
@@ -335,8 +335,6 @@ define([], function() {
             this.dfdExpectedDeliveryDate = this.sandbox.data.deferred();
             this.dfdInvoiceAddressInitialized = this.sandbox.data.deferred();
             this.dfdDeliveryAddressInitialized = this.sandbox.data.deferred();
-            // TODO
-            this.dfdExpectedDeliveryDate.resolve();
 
             // define when all fields are initialized
             this.sandbox.data.when(this.dfdExpectedDeliveryDate).then(function() {
@@ -376,10 +374,9 @@ define([], function() {
         },
 
         render: function() {
-
-            this.sandbox.dom.html(this.$el, this.renderTemplate(this.templates[0], {isEditable: this.isEditable}));
-
             var data = this.options.data;
+
+            this.sandbox.dom.html(this.$el, this.renderTemplate(this.templates[0], this.sandbox.util.extend({}, data, {isEditable: this.isEditable})));
 
             // initialize form
             initForm.call(this, data);
@@ -394,12 +391,6 @@ define([], function() {
                 if (data.id === '') {
                     delete data.id;
                 }
-
-//                // FIXME auto complete in mapper
-//                // only get id, if auto-complete is not empty:
-//                data.account = {
-//                    id: this.sandbox.dom.attr('#' + this.accountInstanceName, 'data-id')
-//                };
 
                 this.sandbox.logger.log('log data', data);
                 this.sandbox.emit('sulu.salesshipping.shipping.save', data);
@@ -428,10 +419,7 @@ define([], function() {
                 this.sandbox.on('sulu.item-table.changed', changeHandler.bind(this));
 
 //                // listen on
-//                this.sandbox.on('husky.select.contact-select.selected.item', changeHandler.bind(this));
-//                this.sandbox.on('husky.select.responsible-contact-select.selected.item', changeHandler.bind(this));
-//                this.sandbox.on('husky.select.delivery-terms.selected.item', changeHandler.bind(this));
-//                this.sandbox.on('husky.select.payment-terms.selected.item', changeHandler.bind(this));
+                this.sandbox.on('husky.select.delivery-terms.selected.item', changeHandler.bind(this));
             }.bind(this));
 
         }

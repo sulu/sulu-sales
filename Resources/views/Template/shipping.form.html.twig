@@ -50,7 +50,7 @@
                              data-aura-component="input@husky"
                              data-aura-datepicker-options='{"startDate":"<%= new Date() %>"}'
                              data-aura-skin="date"
-                             data-aura-instance-name="expected-delivery"
+                             data-aura-instance-name="expected-delivery-date"
                              data-aura-input-id="expected-delivery-date-input"
                              data-aura-input-name="expected-delivery-date"
                              data-mapper-property="expectedDeliveryDate">
@@ -105,6 +105,7 @@
             <div id="shipping-items"
                  data-aura-component="item-quantity-table@sulusalescore"
                  data-aura-editable="<%= isEditable %>"
+                 data-aura-items-data='<%= JSON.stringify(order.items) %>'
                  data-form="true"
                  data-type="itemTable"
                  data-mapper-property="items">
