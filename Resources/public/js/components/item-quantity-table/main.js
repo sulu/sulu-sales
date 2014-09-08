@@ -13,7 +13,11 @@
  *
  * @param {Object} [options] Configuration object
  * @param {Array}  [options.data] array of data [string, object]
- * @param {Bool}  [options.editable] defines if component is editable
+ * @param {Bool}  [options.isEditable] defines if component is editable
+ * @param {Bool}  [options.canAddRemove] defines if remove and add rows are processed
+ * @param {Bool}  [options.showFinishedItems] defines if a completely processed item should be shown
+ * @param {Object} [options.translations] Translations to set to template
+ * @param {String}  [options.processedQuantityValueName] name of data-field  that shows the processed quantity
  */
 define([
     'text!sulusalescore/components/item-quantity-table/item.form.html',
@@ -25,7 +29,12 @@ define([
 
     var defaults = {
             data: [],
-            editable: true
+            itemsData: [],
+            processedQuantityValueName: 'shippedItems',
+            canAddRemove: false,
+            showFinishedItems: false,
+            isEditable: true,
+            translations: {}
         },
 
         constants = {
@@ -33,17 +42,9 @@ define([
             listClass: '.item-table-list',
             productSearchClass: '.product-search',
             rowIdPrefix: 'item-table-row-',
-            productsUrl: '/admin/api/products?flat=true&searchFields=number,name&fields=id,name,number',
-            productUrl: '/admin/api/products/',
             rowClass: '.item-table-row',
             quantityRowClass: '.item-quantity',
-            quantityInput: '.item-quantity input',
-            priceRowClass: '.item-price',
-            priceInput: '.item-price input',
-            discountRowClass: '.item-discount',
-            discountInput: '.item-discount input',
-            globalPriceTableClass: '.global-price-table',
-            overallEmptyString: '-'
+            quantityInput: '.quantity-input input'
         },
 
         /**
@@ -66,25 +67,12 @@ define([
                 currency: 'EUR',
                 useProductsPrice: false,
                 tax: 0
-            }
+            },
+            processedQuantity: null,
+            quantity: null
         },
 
-        templates = {
-            priceRow: function(title, value) {
-                return [
-                    '<tr>',
-                    '   <td>',
-                    title,
-                    '   </td>',
-                    '   <td>',
-                    value,
-                    '   </td>',
-                    '</tr>'
-                ].join('');
-            }
-        },
-
-    // event namespace
+        // event namespace
         eventNamespace = 'sulu.item-table.',
 
         /**
@@ -106,7 +94,8 @@ define([
                 quantityUnit: this.sandbox.translate('salescore.item.unit'),
                 price: this.sandbox.translate('salescore.item.price'),
                 discount: this.sandbox.translate('salescore.item.discount'),
-                overallPrice: this.sandbox.translate('salescore.item.overallValue')
+                overallPrice: this.sandbox.translate('salescore.item.overall-value'),
+                processedQuantity: this.sandbox.translate('salescore.item.processed-quantity')
             };
         },
 
@@ -133,9 +122,20 @@ define([
             }.bind(this));
 
             // input field listeners
-//            this.sandbox.dom.on(this.$el, 'change', quantityChangedHandler.bind(this), constants.quantityInput);
-//            this.sandbox.dom.on(this.$el, 'change', priceChangedHandler.bind(this), constants.priceInput);
-//            this.sandbox.dom.on(this.$el, 'change', discountChangedHandler.bind(this), constants.discountInput);
+            this.sandbox.dom.on(this.$el, 'change', quantityChangedHandler.bind(this), constants.quantityInput);
+        },
+
+        /**
+         * triggered when quantity is changed
+         * @param event
+         */
+        quantityChangedHandler = function(event) {
+            var rowId = getRowData.call(this, event).id;
+            // update quantity
+            this.items[rowId].quantity = this.sandbox.dom.val(event.target);
+            refreshItemsData.call(this);
+
+            this.sandbox.emit(EVENT_CHANGED);
         },
 
         /**
@@ -211,9 +211,6 @@ define([
             // remove validation
             removeValidtaionFields.call(this, $row);
 
-            // refresh global price
-            updateGlobalPrice.call(this);
-
             this.sandbox.emit(EVENT_CHANGED);
         },
 
@@ -221,16 +218,31 @@ define([
          * creates and returns a new row element
          */
         createItemRow = function(itemData, increaseCount) {
+            var data, rowTpl, $row,
+                processed = 0;
+
             if (increaseCount !== false) {
                 this.rowCount++;
             }
 
-            var data = this.sandbox.util.extend({}, rowDefaults, itemData, {
+            // get processed
+            if (itemData.hasOwnProperty(this.options.processedQuantityValueName)) {
+                processed = itemData[this.options.processedQuantityValueName];
+            }
+            // do not show completely processed items
+            if (this.options.showFinishedItems) {
+                if (data.quantity - processed < 1) {
+                    return;
+                }
+            }
+
+            data = this.sandbox.util.extend({}, rowDefaults, itemData, {
                     rowId: constants.rowIdPrefix + this.rowCount,
                     rowNumber: this.rowCount,
-                    isEditable: this.options.editable
-                }),
-                rowTpl, $row;
+                    isEditable: this.options.isEditable,
+                    canAddRemove: this.options.canAddRemove,
+                    processedQuantity: processed
+                });
 
             rowTpl = this.sandbox.util.template(RowTpl, data),
                 $row = this.sandbox.dom.createElement(rowTpl);
@@ -331,7 +343,9 @@ define([
          * renders table head
          */
         renderHeader = function() {
-            var rowData = this.sandbox.util.extend({}, rowDefaults, getHeaderData.call(this)),
+            var rowData = this.sandbox.util.extend({
+                    canAddRemove: this.options.canAddRemove
+                }, rowDefaults, getHeaderData.call(this)),
                 rowTpl = this.sandbox.util.template(RowHeadTpl, rowData);
             this.sandbox.dom.append(this.$find(constants.listClass), rowTpl);
         },
@@ -343,6 +357,44 @@ define([
             this.sandbox.dom.data(this.$el, 'items', this.getItems());
         },
 
+        getProcessedByItemId = function(id) {
+            var i, item;
+            for (i in this.options.data) {
+                item = this.options.data[i].item;
+                if (item.id === id) {
+                    return this.options.data[i];
+                }
+            }
+            return null;
+        },
+
+        /**
+         * redefines this.options.data
+         * creates a new processed item for every item defined in this.options.dataItems
+         * and assigns items to it
+         *
+         * @returns {Array}
+         */
+        assignItemsToProcessed = function() {
+            // add items to shipping items
+            var i, processed, item,
+                dataProcessed = [];
+
+            // for every item find a processed item or create a new one
+            for (i in this.options.itemsData) {
+                item = this.options.itemsData[i];
+                processed = getProcessedByItemId.call(this, item.id);
+                // if no processed item was found, create a new one
+                if (!processed) {
+                    processed = this.sandbox.util.extend({}, rowDefaults, {item: item});
+                }
+                dataProcessed.push(processed);
+            }
+
+            this.options.data = dataProcessed;
+            return dataProcessed;
+        },
+
         /**
          * initialize husky-validation
          */
@@ -352,6 +404,7 @@ define([
 
     return {
         initialize: function() {
+            var dataItems, dataProcessed, i, processed, item;
             // load defaults
             this.options = this.sandbox.util.extend({}, defaults, this.options);
 
@@ -363,10 +416,13 @@ define([
             this.isEmpty = this.items.length
 
             // if data is not set, check if it's set in elements DATA
-            var dataItems = this.sandbox.dom.data(this.$el, 'items');
+            dataItems = this.sandbox.dom.data(this.$el, 'items');
             if (this.options.data.length === 0 && !!dataItems && dataItems.length > 0) {
                 this.options.data = dataItems;
             }
+
+            // completes data
+            assignItemsToProcessed.call(this);
 
             // render component
             this.render();
@@ -374,6 +430,8 @@ define([
             // event listener
             bindCustomEvents.call(this);
             bindDomEvents.call(this);
+
+            refreshItemsData.call(this);
         },
 
         render: function() {
@@ -382,7 +440,8 @@ define([
             var templateData = this.sandbox.util.extend({},
                 {
                     addText: this.sandbox.translate('salescore.item.add'),
-                    isEditable: this.options.editable
+                    isEditable: this.options.isEditable,
+                    canAddRemove: this.options.canAddRemove
                 },
                 this.options.data
             );

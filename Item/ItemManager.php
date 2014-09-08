@@ -155,6 +155,22 @@ class ItemManager
     }
 
     /**
+     * Finds an item entity by id
+     * @param $id
+     * @return null|Item
+     */
+    public function findEntityById($id)
+    {
+        $item = $this->itemRepository->find($id);
+
+        if ($item) {
+            return $item;
+        } else {
+            return null;
+        }
+    }
+
+    /**
      * @param $locale
      * @param array $filter
      * @return mixed

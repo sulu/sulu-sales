@@ -11,6 +11,9 @@
         <span><%= quantity %></span>
     </td>
     <td class="item-quantity">
+        <span><%= processedQuantity %></span>
+    </td>
+    <td class="item-quantity">
         <span><%= quantityInput %></span>
     </td>
     <td class="item-quantity-unit">
@@ -18,6 +21,8 @@
     <td class="settings">
     </td>
     </td>
+    <% if (canAddRemove === true) { %>
     <td class="item-remove">
     </td>
+    <% } %>
 </tr>

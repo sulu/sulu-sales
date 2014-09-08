@@ -102,7 +102,7 @@ define([
                 quantityUnit: this.sandbox.translate('salescore.item.unit'),
                 price: this.sandbox.translate('salescore.item.price'),
                 discount: this.sandbox.translate('salescore.item.discount'),
-                overallPrice: this.sandbox.translate('salescore.item.overallValue')
+                overallPrice: this.sandbox.translate('salescore.item.overall-value')
             };
         },
 
@@ -609,7 +609,7 @@ define([
             this.rowCount = 0;
             this.table = null;
 
-            this.isEmpty = this.items.length
+            this.isEmpty = this.items.length;
 
             // if data is not set, check if it's set in elements DATA
             var dataItems = this.sandbox.dom.data(this.$el, 'items');

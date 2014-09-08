@@ -34,9 +34,9 @@
                 <source>navigation.item.discount</source>
                 <target>Discount [%]</target>
             </trans-unit>
-            <trans-unit id="a50accg2ac221350142c0b4720e29ab9" resname="salescore.item.overallValue">
-                <source>navigation.item.overallValue</source>
-                <target>Overall-value</target>
+            <trans-unit id="a50accg2ac221350142c0b4720e29ab9" resname="salescore.item.overall-value">
+                <source>navigation.item.overall-value</source>
+                <target>Total value</target>
             </trans-unit>
             <trans-unit id="a50accg2ac221350142c0b4720e29a10" resname="salescore.item.add">
                 <source>navigation.item.add</source>
@@ -61,6 +61,14 @@
             <trans-unit id="a50accg2ac221350142c0b4720e29a15" resname="salescore.contact">
                 <source>salescore.contact</source>
                 <target>Contact</target>
+            </trans-unit>
+            <trans-unit id="a50accg2ac221350142c0b4720e29a16" resname="salescore.item.available-quantity">
+                <source>salescore.item.available-quantity</source>
+                <target>Available</target>
+            </trans-unit>
+            <trans-unit id="a50accg2ac221350142c0b4720e29a17" resname="salescore.item.order-quantity">
+                <source>salescore.item.order-quantity</source>
+                <target>Orderquantity</target>
             </trans-unit>
         </body>
     </file>

@@ -17,12 +17,15 @@ disabled =  'disabled';
     <td class="item-quantity">
         <span><%= item.quantity %></span>
     </td>
-    <td class="item-quantity">
+    <td class="item-processed-quantity">
+        <span><%= processedQuantity %></span>
+    </td>
+    <td class="quantity-input">
         <span>
             <input class="input-field form-element"
-                   data-validation-required="true"
                    value="<%= quantity %>"
                    data-type="decimal"
+                   data-validation-max="<% print( (parseFloat(item.quantity) - parseFloat(processedQuantity)).toFixed(1)) %>"
                    data-validation-min="0.0"
             <%= quantity %>/>
         </span>
@@ -33,7 +36,9 @@ disabled =  'disabled';
     <td class="settings">
         <i class="fa fa-list"/>
     </td>
+    <% if (canAddRemove === true) { %>
     <td class="item-remove">
         <a href="#"><i class="fa fa-times remove-row"></i></a>
     </td>
+    <% } %>
 </tr>
