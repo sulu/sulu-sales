@@ -8,8 +8,10 @@
  */
 
 define([
-    'sulusalesshipping/model/shipping'
-], function(Shipping) {
+    'sulusalesshipping/model/shipping',
+    'sulusalesorder/model/order',
+    'sulusalesorder/util/header'
+], function(Shipping, Order, OrderHeaderUtil) {
 
     'use strict';
 
@@ -19,11 +21,22 @@ define([
             this.bindCustomEvents();
             this.bindSidebarEvents();
             this.shipping = null;
+            this.order = null;
 
             if (this.options.display === 'list') {
                 this.renderList();
             } else if (this.options.display === 'form') {
                 this.renderForm().then(function() {
+//                    {
+//                        breadcrumbAddition : [
+//                            {title: 'salesshipping.shippings.title', event: 'salesshipping.order.shipping.list'},
+//                        ],
+//                            breadcrumbOrderEvent: 'salesshipping.order.load'
+//                    }
+                }.bind(this));
+            } else if (this.options.display === 'orderList') {
+                this.renderOrderList().then(function() {
+                    OrderHeaderUtil.setHeader.call(this, this.order);
                 }.bind(this));
             } else {
                 throw 'display type wrong';
@@ -104,7 +117,7 @@ define([
             });
         },
 
-        loadAction: function(id, force) {
+        loadAction: function(id, orderId, force) {
             force = (force === true);
             this.sandbox.emit('sulu.router.navigate', 'sales/shippings/edit:' + id + '/details', true, false, force);
         },
@@ -196,20 +209,23 @@ define([
             ]);
         },
 
-        renderForm: function() {
-            // load data and show form
-            this.shipping = new Shipping();
-
-            var $form = this.sandbox.dom.createElement('<div id="shipping-form-container"/>'),
-                dfd = this.sandbox.data.deferred();
-            this.html($form);
-
+        renderOrderList: function() {
+            var dfd = this.sandbox.data.deferred();
             if (!!this.options.id) {
-                this.shipping = new Shipping({id: this.options.id});
-                this.shipping.fetch({
+                this.order = Order.findOrCreate({id: this.options.id});
+
+                this.order.fetch({
                     success: function(model) {
+                        var $list = this.sandbox.dom.createElement('<div id="order-shippings-list-container"/>');
+                        this.html($list);
                         this.sandbox.start([
-                            {name: 'shippings/components/form@sulusalesshipping', options: { el: $form, data: model.toJSON()}}
+                            {
+                                name: 'orders/components/shippings-list@sulusalesshipping',
+                                options: {
+                                    el: $list,
+                                    data: this.order
+                                }
+                            }
                         ]);
                         dfd.resolve();
                     }.bind(this),
@@ -218,13 +234,53 @@ define([
                         dfd.reject();
                     }.bind(this)
                 });
-            } else {
-                this.sandbox.start([
-                    {name: 'shippings/components/form@sulusalesshipping', options: { el: $form, data: this.shipping.toJSON()}}
-                ]);
-                dfd.resolve();
             }
             return dfd.promise();
+        },
+
+        renderForm: function() {
+            // load data and show form
+            this.shipping = new Shipping();
+
+            var dfd = this.sandbox.data.deferred();
+
+            // shipping exists
+            if (!!this.options.id) {
+                this.shipping = new Shipping({id: this.options.id});
+                this.shipping.fetch({
+                    success: this.startFormCallback.bind(this, dfd),
+                    error: this.errorCallback.bind(this, dfd)
+                });
+
+            // order id is set
+            } else if (!!this.options.orderId) {
+                this.order = Order.findOrCreate({id: this.options.orderId});
+
+                this.order.fetch({
+                    success: function(order) {
+                        this.order = order;
+                        this.shipping.set({order: order});
+                        this.startFormCallback(dfd, this.shipping);
+                    }.bind(this),
+                    error: this.errorCallback.bind(this, dfd)
+                });
+            }
+            return dfd.promise();
+        },
+
+        startFormCallback: function(dfd, shipping) {
+            var $form = this.sandbox.dom.createElement('<div id="shipping-form-container"/>')
+            this.html($form);
+
+            this.sandbox.start([
+                {name: 'shippings/components/form@sulusalesshipping', options: { el: $form, data: shipping.toJSON()}}
+            ]);
+            dfd.resolve();
+        },
+
+        errorCallback: function(dfd) {
+            this.sandbox.logger.log("error while fetching shipping");
+            dfd.reject();
         }
     };
 });

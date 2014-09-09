@@ -58,6 +58,11 @@ class ShippingRepository extends EntityRepository
                         $qb->andWhere('status.id = :' . $key);
                         $qb->setParameter($key, $value);
                         break;
+                    case 'orderId':
+                        $qb->leftJoin('shipping.order', 'o');
+                        $qb->andWhere('o.id = :' . $key);
+                        $qb->setParameter($key, $value);
+                        break;
                 }
             }
 
@@ -106,7 +111,12 @@ class ShippingRepository extends EntityRepository
         }
     }
 
-    public function getShippedItemsByOrderId($orderId) {
+    /**
+     * returns sum of items that are assigned to a shipping which is not in status 'created'
+     * @param $orderId
+     * @return array|null
+     */
+    public function getSumOfShippedItemsByOrderId($orderId) {
         try {
             $qb = $this->createQueryBuilder('shipping')
                 ->select('partial shipping.{id}, partial o.{id}, partial items.{id}, partial shippingItems.{id}, sum(shippingItems.quantity) AS shipped')

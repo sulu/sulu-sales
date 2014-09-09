@@ -72,6 +72,13 @@ class ShippingManager
      */
     private $fieldDescriptors = array();
 
+    /**
+     * Describes the order fields, which are handled by this controller
+     * @var DoctrineFieldDescriptor[]
+     */
+    private $orderFieldDescriptors = array();
+
+    /** constructor */
     public function __construct(
         ObjectManager $em,
         UserRepositoryInterface $userRepository,
@@ -239,24 +246,39 @@ class ShippingManager
 
     /**
      * @param $locale
+     * @param $context
      * @return \Sulu\Component\Rest\ListBuilder\Doctrine\FieldDescriptor\DoctrineFieldDescriptor[]
      */
-    public function getFieldDescriptors($locale)
+    public function getFieldDescriptors($locale, $context = null)
     {
         if ($locale !== $this->currentLocale) {
             $this->initializeFieldDescriptors($locale);
         }
-        return $this->fieldDescriptors;
+        $descriptors = $this->fieldDescriptors;
+
+        // do not show order number when in order context
+        if ($context === 'order') {
+            unset($descriptors['orderNumber']);
+        }
+
+        return $descriptors;
     }
 
     /**
      * returns a specific field descriptor by key
      * @param $key
+     * @throws Exception\ShippingException
      * @return DoctrineFieldDescriptor
      */
     public function getFieldDescriptor($key)
     {
-        return $this->fieldDescriptors[$key];
+        if (array_key_exists($key, $this->fieldDescriptors)) {
+            return $this->fieldDescriptors[$key];
+        } else if (array_key_exists($key, $this->orderFieldDescriptors)) {
+            return $this->orderFieldDescriptors[$key];
+        } else {
+            throw new ShippingException('field descriptor with key '.$key.' could not be found');
+        }
     }
 
     /**
@@ -273,7 +295,7 @@ class ShippingManager
             $apiShippings = new Shipping($shipping, $locale);
 
             // set currently shipped items (sum of all shippings for that item)
-            $shippingCounts = $this->em->getRepository(self::$shippingEntityName)->getShippedItemsByOrderId($shipping->getOrder()->getId());
+            $shippingCounts = $this->em->getRepository(self::$shippingEntityName)->getSumOfShippedItemsByOrderId($shipping->getOrder()->getId());
             foreach ($shippingCounts as $shippingCount) {
                 foreach ($apiShippings->getItems() as $apiItem) {
                     if ($shippingCount['items_id'] === $apiItem->getEntity()->getItem()->getId()) {
@@ -315,6 +337,8 @@ class ShippingManager
      */
     private function initializeFieldDescriptors($locale)
     {
+        $this->initializeOrderFieldDescriptors($locale);
+
         $this->fieldDescriptors['id'] = new DoctrineFieldDescriptor('id', 'id', self::$shippingEntityName, 'public.id', array(), true);
         $this->fieldDescriptors['number'] = new DoctrineFieldDescriptor('number', 'number', self::$shippingEntityName, 'salesshipping.shippings.number', array(), false, true);
 
@@ -376,7 +400,7 @@ class ShippingManager
             'name',
             'status',
             self::$shippingStatusTranslationEntityName,
-            'salesorder.orders.status',
+            'salescore.status',
             array(
                 self::$shippingStatusEntityName => new DoctrineJoinDescriptor(
                         self::$shippingStatusEntityName,
@@ -389,6 +413,35 @@ class ShippingManager
                     )
             )
         );
+
+        $this->fieldDescriptors['orderNumber'] = $this->orderFieldDescriptors['orderNumber'];
+
+
+    }
+
+    private function initializeOrderFieldDescriptors($locale) {
+
+        $orderJoin = array(
+            self::$orderEntityName => new DoctrineJoinDescriptor(
+                    self::$orderEntityName,
+                    self::$shippingEntityName . '.order'
+                )
+        );
+
+        $this->orderFieldDescriptors['orderNumber'] = new DoctrineFieldDescriptor(
+            'number',
+            'orderNumber',
+            self::$orderEntityName,
+            'salesorder.orders.number',
+            $orderJoin
+        );
+        $this->orderFieldDescriptors['orderId'] = new DoctrineFieldDescriptor(
+            'id',
+            'orderId',
+            self::$orderEntityName,
+            'public.id',
+            $orderJoin
+        );
     }
 
     /**
@@ -399,7 +452,6 @@ class ShippingManager
     private function checkRequiredData($data, $isNew)
     {
         $this->checkDataSet($data, 'order', $isNew) && $this->checkDataSet($data['order'], 'id', $isNew);
-//        $this->checkDataSet($data, 'contact', $isNew) && $this->checkDataSet($data['contact'], 'id', $isNew);
         $this->checkDataSet($data, 'deliveryAddress', $isNew);
     }
 

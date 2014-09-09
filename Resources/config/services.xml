@@ -24,7 +24,7 @@
         </service>
 
         <service id="sulu_sales_shipping.admin.order_content_navigation" class="%sulu_sales_shipping.admin.order_content_navigation.class%">
-            <tag name="sulu_sales_order.admin.content_navigation"/>
+            <tag name="sulu.sales_order.content_navigation"/>
         </service>
 
         <service id="sulu_sales_shipping.shipping_manager" class="%sulu_sales_shipping.shipping_manager.class%">

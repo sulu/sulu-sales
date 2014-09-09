@@ -9,9 +9,9 @@
 
 define([
     'mvc/relationalmodel',
-    'mvc/hasmany',
-    'mvc/hasone'
-], function(RelationalModel) {
+    'mvc/hasone',
+    'sulusalesorder/model/order'
+], function(RelationalModel, HasOne, Order) {
 
     'use strict';
     
@@ -23,6 +23,12 @@ define([
                 number: ''
 
             };
-        }, relations: []
+        }, relations: [
+            {
+                type: HasOne,
+                key: 'order',
+                relatedModel: Order
+            }
+        ]
     });
 });

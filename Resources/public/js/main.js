@@ -33,7 +33,7 @@ define({
             }
         });
 
-        // show form for createing a new shipping
+        // show form for creating a new shipping
         sandbox.mvc.routes.push({
             route: 'sales/shippings/add',
             callback: function() {
@@ -49,6 +49,18 @@ define({
             callback: function(id, content) {
                 this.html(
                     '<div data-aura-component="shippings/components/content@sulusalesshipping" data-aura-display="content" data-aura-content="' + content + '" data-aura-id="' + id + '"/>'
+                );
+            }
+        });
+
+        /** orders */
+
+        // show form for creating a new shipping
+        sandbox.mvc.routes.push({
+            route: 'sales/orders/edit::id/shippings/add',
+            callback: function(id) {
+                this.html(
+                    '<div data-aura-component="shippings/components/content@sulusalesshipping" data-aura-display="content" data-aura-content="form" data-aura-order-id="' + id + '"/>'
                 );
             }
         });

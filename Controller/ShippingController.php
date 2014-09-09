@@ -14,6 +14,7 @@ use FOS\RestBundle\Routing\ClassResourceInterface;
 use Hateoas\Representation\CollectionRepresentation;
 use Sulu\Bundle\Sales\ShippingBundle\Shipping\Exception\MissingShippingAttributeException;
 use Sulu\Bundle\Sales\ShippingBundle\Shipping\Exception\ShippingDependencyNotFoundException;
+use Sulu\Bundle\Sales\ShippingBundle\Shipping\Exception\ShippingException;
 use Sulu\Bundle\Sales\ShippingBundle\Shipping\ShippingManager;
 use Sulu\Component\Rest\Exception\EntityNotFoundException;
 use Sulu\Component\Rest\Exception\MissingArgumentException;
@@ -60,8 +61,16 @@ class ShippingController extends RestController implements ClassResourceInterfac
     {
         $locale = $this->getLocale($request);
 
+        $context = $request->get('context');
+
+        if ($context === 'order') {
+            $descriptors = array_values($this->getManager()->getFieldDescriptors($locale, $context));
+        } else {
+            $descriptors = array_values($this->getManager()->getFieldDescriptors($locale));
+        }
+
         // default contacts list
-        return $this->handleView($this->view(array_values($this->getManager()->getFieldDescriptors($locale)), 200));
+        return $this->handleView( $this->view($descriptors), 200);
     }
 
     /**
@@ -70,48 +79,57 @@ class ShippingController extends RestController implements ClassResourceInterfac
      */
     public function cgetAction(Request $request)
     {
-        $filter = array();
+        try {
+            $filter = array();
 
-        $locale = $this->getLocale($request);
+            $locale = $this->getLocale($request);
 
-        $status = $request->get('status');
-        if ($status) {
-            $filter['status'] = $status;
-        }
-
-        if ($request->get('flat') == 'true') {
-            /** @var RestHelperInterface $restHelper */
-            $restHelper = $this->get('sulu_core.doctrine_rest_helper');
-
-            /** @var DoctrineListBuilderFactory $factory */
-            $factory = $this->get('sulu_core.doctrine_list_builder_factory');
-
-            /** @var DoctrineListBuilder $listBuilder */
-            $listBuilder = $factory->create(self::$shippingEntityName);
-
-            $restHelper->initializeListBuilder($listBuilder, $this->getManager()->getFieldDescriptors($locale));
-
-            foreach ($filter as $key => $value) {
-                $listBuilder->where($this->getManager()->getFieldDescriptor($key), $value);
+            $status = $request->get('status');
+            $orderId= $request->get('orderId');
+            if ($status) {
+                $filter['status'] = $status;
+            }
+            if ($orderId) {
+                $filter['orderId'] = $orderId;
             }
 
-            $list = new ListRepresentation(
-                $listBuilder->execute(),
-                self::$entityKey,
-                'get_shippings',
-                $request->query->all(),
-                $listBuilder->getCurrentPage(),
-                $listBuilder->getLimit(),
-                $listBuilder->count()
-            );
-        } else {
-            $list = new CollectionRepresentation(
-                $this->getManager()->findAllByLocale($this->getLocale($request), $filter),
-                self::$entityKey
-            );
-        }
+            if ($request->get('flat') == 'true') {
+                /** @var RestHelperInterface $restHelper */
+                $restHelper = $this->get('sulu_core.doctrine_rest_helper');
 
-        $view = $this->view($list, 200);
+                /** @var DoctrineListBuilderFactory $factory */
+                $factory = $this->get('sulu_core.doctrine_list_builder_factory');
+
+                /** @var DoctrineListBuilder $listBuilder */
+                $listBuilder = $factory->create(self::$shippingEntityName);
+
+                $restHelper->initializeListBuilder($listBuilder, $this->getManager()->getFieldDescriptors($locale));
+
+                foreach ($filter as $key => $value) {
+                    $listBuilder->where($this->getManager()->getFieldDescriptor($key), $value);
+                }
+
+                $list = new ListRepresentation(
+                    $listBuilder->execute(),
+                    self::$entityKey,
+                    'get_shippings',
+                    $request->query->all(),
+                    $listBuilder->getCurrentPage(),
+                    $listBuilder->getLimit(),
+                    $listBuilder->count()
+                );
+            } else {
+                $list = new CollectionRepresentation(
+                    $this->getManager()->findAllByLocale($this->getLocale($request), $filter),
+                    self::$entityKey
+                );
+            }
+
+            $view = $this->view($list, 200);
+        } catch(ShippingException $ex) {
+            $rex = new RestException($ex->getMessage());
+            $view = $this->view($rex->toArray(), 400);
+        }
 
         return $this->handleView($view);
     }

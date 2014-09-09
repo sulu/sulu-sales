@@ -12,9 +12,9 @@ class OrderContentNavigationExtension implements ContentNavigationInterface
     public function __construct()
     {
         $permissions = new ContentNavigationItem('salesshipping.shippings.title');
-        $permissions->setAction('Shippings');
-        $permissions->setComponent('shippings@sulusecurity');
-        $permissions->setComponentOptions(array('display'=>'form'));
+        $permissions->setAction('shippings');
+        $permissions->setComponent('shippings@sulusalesshipping');
+        $permissions->setComponentOptions(array('display'=>'orderList'));
         $permissions->setDisplay(array('edit'));
         $permissions->setGroups(array('order'));
 
