@@ -246,26 +246,6 @@ define([], function() {
         },
 
         /**
-         * Sets the title to the username
-         * default title as fallback
-         */
-        setHeaderTitle = function() {
-            var title = this.sandbox.translate('salesorder.order'),
-                breadcrumb = [
-                    {title: 'navigation.sales'},
-                    {title: 'salesorder.orders.title', event: 'sulu.salesorder.orders.list'}
-                ];
-
-            if (!!this.options.data && !!this.options.data.number) {
-                title += ' #' + this.options.data.number;
-                breadcrumb.push({title: '#' + this.options.data.number});
-            }
-
-            this.sandbox.emit('sulu.header.set-title', title);
-            this.sandbox.emit('sulu.header.set-breadcrumb', breadcrumb);
-        },
-
-        /**
          * set saved
          * @param {Bool} saved Defines if saved state should be shown
          */
@@ -516,7 +496,6 @@ define([], function() {
             bindCustomEvents.call(this);
 
             // set header
-            setHeaderTitle.call(this);
             setHeaderToolbar.call(this);
             setSaved.call(this, true);
 
