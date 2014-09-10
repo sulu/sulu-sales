@@ -497,7 +497,6 @@ class Item extends ApiWrapper
             return array(
                 'id' => $this->entity->getProduct()->getId()
             );
-//            return new Product($this->entity->getProduct(), $this->locale);
         }
         return null;
     }
