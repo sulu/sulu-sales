@@ -70,6 +70,22 @@
                 <source>salescore.item.order-quantity</source>
                 <target>Auftragsmenge</target>
             </trans-unit>
+            <trans-unit id="a50accg2ac221350142c0b4720e29a18" resname="salescore.account">
+                <source>salescore.account</source>
+                <target>Kunde</target>
+            </trans-unit>
+            <trans-unit id="a50accg2ac221350142c0b4720e29a19" resname="salescore.contact">
+                <source>salescore.contact</source>
+                <target>Ansprechpartner</target>
+            </trans-unit>
+            <trans-unit id="a50accg2ac221350142c0b4720e29a20" resname="salescore.status">
+                <source>salescore.status</source>
+                <target>Status</target>
+            </trans-unit>
+            <trans-unit id="a50accg2ac221350142c0b4720e29a21" resname="salescore.item.processed-quantity">
+                <source>salescore.item.processed-quantity</source>
+                <target>Bearb. Menge</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>

@@ -18,6 +18,8 @@
  * @param {Bool}  [options.showFinishedItems] defines if a completely processed item should be shown
  * @param {Object} [options.translations] Translations to set to template
  * @param {String}  [options.processedQuantityValueName] name of data-field  that shows the processed quantity
+ * @param {Object}  [options.processedItems] key value pair of sum items that already have been processed
+ *                                           (f.e. count of already shipped items of an order)
  */
 define([
     'text!sulusalescore/components/item-quantity-table/item.form.html',
@@ -31,8 +33,9 @@ define([
             data: [],
             itemsData: [],
             processedQuantityValueName: 'shippedItems',
+            processedItems: null,
             canAddRemove: false,
-            showFinishedItems: false,
+            showFinishedItems: true,
             isEditable: true,
             translations: {}
         },
@@ -218,20 +221,24 @@ define([
          * creates and returns a new row element
          */
         createItemRow = function(itemData, increaseCount) {
-            var data, rowTpl, $row,
+            var data, rowTpl, $row, id,
                 processed = 0;
 
             if (increaseCount !== false) {
                 this.rowCount++;
             }
 
-            // get processed
-            if (itemData.hasOwnProperty(this.options.processedQuantityValueName)) {
+
+            // get sum of already processed items
+            if (!!this.options.processedItems) {
+                id = itemData.item.id;
+                processed = this.options.processedItems[id];
+            } else if (itemData.hasOwnProperty(this.options.processedQuantityValueName)) {
                 processed = itemData[this.options.processedQuantityValueName];
             }
-            // do not show completely processed items
-            if (this.options.showFinishedItems) {
-                if (data.quantity - processed < 1) {
+            // do not show completely processed items (if they are not processed in this entity)
+            if (!this.options.showFinishedItems && itemData.quantity === 0) {
+                if (itemData.quantity - processed < 1) {
                     return;
                 }
             }

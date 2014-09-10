@@ -27,7 +27,7 @@ disabled =  'disabled';
                    data-type="decimal"
                    data-validation-max="<% print( (parseFloat(item.quantity) - parseFloat(processedQuantity)).toFixed(1)) %>"
                    data-validation-min="0.0"
-            <%= quantity %>/>
+            <%= quantity %> <%= disabled %>/>
         </span>
     </td>
     <td class="item-quantity-unit">
