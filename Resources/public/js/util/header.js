@@ -62,5 +62,22 @@ define([], function() {
             // sets headline and breadcrumb
             setHeadlinesAndBreadCrumb.call(this, order, options);
         },
+
+        /**
+         * will create the url string for an order
+         * @param [id] if defined, 'edit:id' will be added to the url string
+         * @param [postfix] adds an url postfix
+         * @returns {string}
+         */
+        getUrl: function(id, postfix) {
+            var url = 'sales/orders';
+            if (!!id) {
+                 url += '/edit:' + id;
+            }
+            if (!!postfix){
+                url += '/' + postfix;
+            }
+            return url;
+        }
     };
 });

@@ -14,10 +14,6 @@ define([
 
     'use strict';
 
-    var getOrdersEditUrl = function(id, postfix) {
-        return 'sales/orders/edit:' + id + '/' + postfix;
-    };
-
     return {
 
         initialize: function() {
@@ -96,7 +92,7 @@ define([
          * create a new shipping for an order
          */
         createOrderShipping: function() {
-            this.sandbox.emit('sulu.router.navigate', getOrdersEditUrl.call(this, this.options.id, 'shippings/add'), true, false);
+            this.sandbox.emit('sulu.router.navigate', HeaderUtil.getUrl.call(this, this.options.id, 'shippings/add'), true, false);
         },
 
         /**
@@ -120,7 +116,7 @@ define([
 
         loadOrder: function(id, force) {
             force = (force === true);
-            this.sandbox.emit('sulu.router.navigate', getOrdersEditUrl.call(this, id, 'details'), true, false, force);
+            this.sandbox.emit('sulu.router.navigate', HeaderUtil.getUrl.call(this, id, 'details'), true, false, force);
         },
 
         showDeleteWarning: function(ids) {
