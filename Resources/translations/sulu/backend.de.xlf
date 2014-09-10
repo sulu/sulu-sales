@@ -22,6 +22,14 @@
                 <source>salesshipping.shipping</source>
                 <target>Lieferung</target>
             </trans-unit>
+            <trans-unit id="550accg2ac181350142c0b4720e29ff6" resname="salesshipping.shippings.desired-delivery-date">
+                <source>salesshipping.shippings.desired-delivery-date</source>
+                <target>Gew. Lieferdatum</target>
+            </trans-unit>
+            <trans-unit id="550accg2ac181350142c0b4720e29ff7" resname="salesshipping.shippings.expected-delivery-date">
+                <source>salesshipping.shippings.expected-delivery-date</source>
+                <target>Vorauss. Lieferdatum</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>

@@ -88,7 +88,7 @@ define([
          * confirm a shipping
          */
         confirmAction: function() {
-            this.convertStatus('confirm');
+            this.convertStatus('deliverynote');
         },
 
         /**
@@ -117,12 +117,12 @@ define([
             });
         },
 
-        loadAction: function(id, orderId, force) {
+        loadAction: function(id, force) {
             force = (force === true);
             this.sandbox.emit('sulu.router.navigate', 'sales/shippings/edit:' + id + '/details', true, false, force);
         },
 
-        showDeleteWarning: function(ids){
+        showDeleteWarning: function(ids) {
             // show dialog
             this.sandbox.emit('sulu.overlay.show-warning',
                 'sulu.overlay.be-careful',
@@ -155,7 +155,7 @@ define([
          * @param successCallback
          * @param failCallback
          */
-        deleteAction: function(id, successCallback, failCallback){
+        deleteAction: function(id, successCallback, failCallback) {
 
             successCallback = typeof(successCallback) === 'function' ? successCallback : null;
             failCallback = typeof(failCallback) === 'function' ? failCallback : null;
@@ -192,8 +192,13 @@ define([
             });
         },
 
-        addAction: function() {
-            this.sandbox.emit('sulu.router.navigate', 'sales/shippings/add');
+        addAction: function(orderId) {
+            // if orderid is defined, create orderspecific shipping
+            if (!!orderId) {
+                this.sandbox.emit('sulu.router.navigate', OrderHeaderUtil.getUrl.call(this, orderId, 'shippings/add'));
+            } else {
+                this.sandbox.emit('sulu.router.navigate', 'sales/shippings/add');
+            }
         },
 
         renderList: function() {
@@ -248,32 +253,55 @@ define([
             if (!!this.options.id) {
                 this.shipping = new Shipping({id: this.options.id});
                 this.shipping.fetch({
-                    success: this.startFormCallback.bind(this, dfd),
+                    success: function(shippingData) {
+                        this.startForm(dfd, shippingData, null);
+                    }.bind(this),
                     error: this.errorCallback.bind(this, dfd)
                 });
 
-            // order id is set
+                // order id is set
             } else if (!!this.options.orderId) {
                 this.order = Order.findOrCreate({id: this.options.orderId});
+                this.shipping = this.shipping.set({order: this.order});
+
+                var shippedOrderItems = null,
+                    dfdOrder = this.sandbox.data.deferred(),
+                    dfdShipped = this.sandbox.data.deferred();
 
                 this.order.fetch({
                     success: function(order) {
                         this.order = order;
                         this.shipping.set({order: order});
-                        this.startFormCallback(dfd, this.shipping);
+                        dfdOrder.resolve();
                     }.bind(this),
                     error: this.errorCallback.bind(this, dfd)
                 });
+
+                this.sandbox.util.load('/admin/api/shippings/shippedorderitems?orderId=' + this.options.orderId).then(function(shippedOrderItemsData) {
+                    shippedOrderItems = shippedOrderItemsData;
+                    dfdShipped.resolve();
+                }.bind(this));
+
+                this.sandbox.data.when(dfdOrder, dfdShipped).then(function() {
+                    this.startForm(dfd, this.shipping, shippedOrderItems);
+                }.bind(this));
             }
             return dfd.promise();
         },
 
-        startFormCallback: function(dfd, shipping) {
+        startForm: function(dfd, shipping, shippedOrderItems) {
             var $form = this.sandbox.dom.createElement('<div id="shipping-form-container"/>')
             this.html($form);
 
             this.sandbox.start([
-                {name: 'shippings/components/form@sulusalesshipping', options: { el: $form, data: shipping.toJSON()}}
+                {
+                    name: 'shippings/components/form@sulusalesshipping',
+                    options: {
+                        el: $form,
+                        data: shipping.toJSON(),
+                        shippedOrderItems: !!shippedOrderItems ? shippedOrderItems : null
+                    }
+                }
             ]);
             dfd.resolve();
         },

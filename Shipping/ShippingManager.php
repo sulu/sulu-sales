@@ -295,18 +295,27 @@ class ShippingManager
             $apiShippings = new Shipping($shipping, $locale);
 
             // set currently shipped items (sum of all shippings for that item)
-            $shippingCounts = $this->em->getRepository(self::$shippingEntityName)->getSumOfShippedItemsByOrderId($shipping->getOrder()->getId());
-            foreach ($shippingCounts as $shippingCount) {
-                foreach ($apiShippings->getItems() as $apiItem) {
-                    if ($shippingCount['items_id'] === $apiItem->getEntity()->getItem()->getId()) {
-                        $apiItem->setShippedItems($shippingCount['shipped']);
-                    }
+            $shippingCounts = $this->getSumOfShippedItemsByOrderId($shipping->getOrder()->getId());
+            foreach ($apiShippings->getItems() as $apiItem) {
+                $itemId = $apiItem->getEntity()->getItem()->getId();
+                if (array_key_exists($itemId, $shippingCounts)) {
+                    $apiItem->setShippedItems($shippingCounts[$itemId]);
                 }
             }
             return $apiShippings;
         } else {
             return null;
         }
+    }
+
+    public function getSumOfShippedItemsByOrderId($orderId)
+    {
+        $result = array();
+        $sums = $this->em->getRepository(self::$shippingEntityName)->getSumOfShippedItemsByOrderId($orderId);
+        foreach ($sums as $sum) {
+            $result[$sum['items_id']] = intval($sum['shipped']);
+        }
+        return $result;
     }
 
     /**
@@ -360,7 +369,7 @@ class ShippingManager
                 )
             ),
             'account',
-            'salesshippings.orders.account',
+            'salescore.account',
             ' ',
             false,
             false,
@@ -387,7 +396,7 @@ class ShippingManager
                 )
             ),
             'contact',
-            'salesorder.orders.contact',
+            'salescore.contact',
             ' ',
             false,
             false,

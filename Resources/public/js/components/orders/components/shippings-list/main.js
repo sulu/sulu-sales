@@ -26,7 +26,7 @@ define(function() {
 
             // add clicked
             this.sandbox.on('sulu.list-toolbar.add', function() {
-                this.sandbox.emit('sulu.salesshipping.shipping.new');
+                this.sandbox.emit('sulu.salesshipping.shipping.new', this.orderId);
             }, this);
         };
 
@@ -39,12 +39,14 @@ define(function() {
         templates: ['/admin/shipping/template/shipping/list'],
 
         initialize: function() {
+            this.orderId = null;
+
             this.render();
             bindCustomEvents.call(this);
         },
 
         render: function() {
-            var orderId = this.options.data.id;
+            this.orderId = this.options.data.id;
 
             this.sandbox.dom.html(this.$el, this.renderTemplate('/admin/shipping/template/shipping/list'));
 
@@ -58,7 +60,7 @@ define(function() {
                 },
                 {
                     el: this.sandbox.dom.find('#shippings-list', this.$el),
-                    url: '/admin/api/shippings?flat=true&orderId=' + orderId,
+                    url: '/admin/api/shippings?flat=true&orderId=' + this.orderId,
                     searchInstanceName: 'shippings',
                     searchFields: ['fullName'],
                     resultKey: 'shippings',
@@ -70,7 +72,7 @@ define(function() {
                                     column: 'number',
                                     align: 'left',
                                     callback: function(id) {
-                                        this.sandbox.emit('sulu.salesshipping.shipping.load', id, orderId);
+                                        this.sandbox.emit('sulu.salesshipping.shipping.load', id, this.orderId);
                                     }.bind(this)
                                 }
                             ],

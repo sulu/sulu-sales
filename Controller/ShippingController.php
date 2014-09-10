@@ -12,6 +12,8 @@ namespace Sulu\Bundle\Sales\ShippingBundle\Controller;
 
 use FOS\RestBundle\Routing\ClassResourceInterface;
 use Hateoas\Representation\CollectionRepresentation;
+use Sulu\Bundle\Sales\ShippingBundle\Api\Shipping;
+use Sulu\Bundle\Sales\ShippingBundle\Entity\ShippingStatus;
 use Sulu\Bundle\Sales\ShippingBundle\Shipping\Exception\MissingShippingAttributeException;
 use Sulu\Bundle\Sales\ShippingBundle\Shipping\Exception\ShippingDependencyNotFoundException;
 use Sulu\Bundle\Sales\ShippingBundle\Shipping\Exception\ShippingException;
@@ -28,6 +30,7 @@ use Sulu\Component\Rest\RestController;
 use Sulu\Component\Rest\RestHelperInterface;
 use Symfony\Component\HttpFoundation\Request;
 use FOS\RestBundle\Controller\Annotations\Post;
+use Sulu\Bundle\Sales\ShippingBundle\Entity\Shipping as ShippingEntity;
 
 /**
  * Makes shippings available through a REST API
@@ -158,6 +161,17 @@ class ShippingController extends RestController implements ClassResourceInterfac
     }
 
     /**
+     * @param Request $request
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function shippedorderitemsAction(Request $request)
+    {
+        $orderId = $request->get('orderId');
+        $sum = $this->getManager()->getSumOfShippedItemsByOrderId($orderId);
+        return $this->handleView($this->view($sum, 200));
+    }
+
+    /**
      * Creates and stores a new shipping.
      *
      * @param \Symfony\Component\HttpFoundation\Request $request
@@ -219,38 +233,38 @@ class ShippingController extends RestController implements ClassResourceInterfac
         return $this->handleView($view);
     }
 
-//    /**
-//     * @Post("/shippings/{id}")
-//     */
-//    public function postTriggerAction($id, Request $request)
-//    {
-//        $status = $request->get('action');
-//        $em = $this->getDoctrine()->getManager();
-//
-//        try {
-//            $order = $this->getManager()->findByIdAndLocale($id, $this->getLocale($request));
-//
-//            switch ($status) {
-//                case 'confirm':
-//                    $this->getManager()->convertStatus($order, OrderStatus::STATUS_CONFIRMED);
-//                    break;
-//                case 'edit':
-//                    $this->getManager()->convertStatus($order, OrderStatus::STATUS_CREATED);
-//                    break;
-//                default:
-//                    throw new RestException("Unrecognized status: " . $status);
-//
-//            }
-//
-//            $em->flush();
-//            $view = $this->view($order, 200);
-//        } catch (OrderNotFoundException $exc) {
-//            $exception = new EntityNotFoundException($exc->getEntityName(), $exc->getId());
-//            $view = $this->view($exception->toArray(), 404);
-//        }
-//
-//        return $this->handleView($view);
-//    }
+    /**
+     * @Post("/shippings/{id}")
+     */
+    public function postTriggerAction($id, Request $request)
+    {
+        $status = $request->get('action');
+        $em = $this->getDoctrine()->getManager();
+
+        try {
+            $shipping = $this->getManager()->findByIdAndLocale($id, $this->getLocale($request));
+
+            switch ($status) {
+                case 'deliverynote':
+                    $this->getManager()->convertStatus($shipping, ShippingStatus::STATUS_DELIVERY_NOTE);
+                    break;
+                case 'edit':
+                    $this->getManager()->convertStatus($shipping, ShippingStatus::STATUS_CREATED);
+                    break;
+                default:
+                    throw new RestException("Unrecognized status: " . $status);
+
+            }
+
+            $em->flush();
+            $view = $this->view($shipping, 200);
+        } catch (OrderNotFoundException $exc) {
+            $exception = new EntityNotFoundException($exc->getEntityName(), $exc->getId());
+            $view = $this->view($exception->toArray(), 404);
+        }
+
+        return $this->handleView($view);
+    }
 
     /**
      * Delete a shipping with the given id.

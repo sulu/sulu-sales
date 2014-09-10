@@ -7,23 +7,21 @@
 * with this source code in the file LICENSE.
 */
 
-define([], function() {
+define(['sulusalesshipping/util/shippingStatus'], function(ShippingStatus) {
 
     'use strict';
 
     var form = '#shipping-form',
+
+        defaults = {
+            shippedOrderItems: null
+        },
 
         constants = {
             accountId: '#account',
             contactId: '#contact',
             accountAddressesUrl: '/admin/api/accounts/<%= id %>/addresses',
             deliveryAddressInstanceName: 'delivery-address'
-//            accountContactsUrl: '/admin/api/accounts/<%= id %>/contacts?flat=true',
-//            accountUrl: '/admin/api/accounts?searchFields=name&flat=true&fields=id,name',
-//            accountInputId: '#account-input',
-//            paymentAddressInstanceName: 'invoice-address',
-//            contactSelectId: '#contact-select',
-//            itemTableId: '#order-items'
         },
 
         /**
@@ -86,15 +84,10 @@ define([], function() {
             if (this.options.data.id) {
                 // define workflow based on status
                 // TODO: get statuses from backend
-                if (this.shippingStatusId === 1) {
+                if (this.shippingStatusId === ShippingStatus.CREATED) {
                     workflow.items.push(workflowItems.confirm);
-                } else if (this.shippingStatusId === 3) {
+                } else if (this.shippingStatusId === ShippingStatus.DELIVERY_NOTE) {
                     workflow.items.push(workflowItems.edit);
-                }
-
-                // more than in cart
-                if (this.shippingStatusId > 2) {
-                    workflow.items.push(workflowItems.divider);
                 }
 
                 // add settings items
@@ -210,7 +203,7 @@ define([], function() {
             var title = this.sandbox.translate('salesshipping.shipping'),
                 breadcrumb = [
                     {title: 'navigation.sales'},
-                    {title: 'salesshipping.shippings.title', event: 'salesshipping.shipping.list'}
+                    {title: 'salesshipping.shippings.title', event: 'salesshipping.shippings.list'}
                 ];
 
             if (!!this.options.data && !!this.options.data.number) {
@@ -246,6 +239,7 @@ define([], function() {
         setFormData = function(data) {
             // add collection filters to form
             this.sandbox.form.setData(form, data).then(function() {
+                // set customer and contact based on orders delivery address
                 if (data.hasOwnProperty('deliveryAddress')) {
                     // set account
                     this.sandbox.dom.html(
@@ -290,6 +284,7 @@ define([], function() {
                         this.sandbox.emit('sulu.editable-data-row.' + constants.deliveryAddressInstanceName + '.data.update', addressesData, data);
                         this.options.data.deliveryAddress = data;
                         setFormData.call(this, this.options.data);
+                        this.dfdAddressSet.resolve();
                     }.bind(this));
 
 
@@ -329,22 +324,27 @@ define([], function() {
         templates: ['/admin/shipping/template/shipping/form'],
 
         initialize: function() {
+
+            this.options = this.sandbox.util.extend({}, defaults, this.options);
+
             this.saved = true;
 
             this.dfdAllFieldsInitialized = this.sandbox.data.deferred();
             this.dfdExpectedDeliveryDate = this.sandbox.data.deferred();
-            this.dfdInvoiceAddressInitialized = this.sandbox.data.deferred();
+            this.dfdDesiredDeliveryDate = this.sandbox.data.deferred();
+            this.dfdAddressSet = this.sandbox.data.deferred();
             this.dfdDeliveryAddressInitialized = this.sandbox.data.deferred();
 
             // define when all fields are initialized
-            this.sandbox.data.when(this.dfdExpectedDeliveryDate).then(function() {
+            this.sandbox.data.when(this.dfdExpectedDeliveryDate, this.dfdAddressSet).then(function() {
                 this.dfdAllFieldsInitialized.resolve();
             }.bind(this));
 
 
             this.shippingStatusId = getShippingStatusId.call(this);
+
             // set if form is editable
-            this.isEditable = this.shippingStatusId <= 2;
+            this.isEditable = (!this.shippingStatusId || this.shippingStatusId === ShippingStatus.CREATED);
 
             // bind events
             bindCustomEvents.call(this);
@@ -374,9 +374,13 @@ define([], function() {
         },
 
         render: function() {
-            var data = this.options.data;
+            var data = this.options.data,
+                templateData = this.sandbox.util.extend({}, {
+                    isEditable: this.isEditable,
+                    shippedOrderItems: this.options.shippedOrderItems
+                }, data);
 
-            this.sandbox.dom.html(this.$el, this.renderTemplate(this.templates[0], this.sandbox.util.extend({}, data, {isEditable: this.isEditable})));
+            this.sandbox.dom.html(this.$el, this.renderTemplate(this.templates[0], templateData));
 
             // initialize form
             initForm.call(this, data);
@@ -419,7 +423,7 @@ define([], function() {
                 this.sandbox.on('sulu.item-table.changed', changeHandler.bind(this));
 
 //                // listen on
-                this.sandbox.on('husky.select.delivery-terms.selected.item', changeHandler.bind(this));
+//                this.sandbox.on('husky.select.delivery-terms.selected.item', changeHandler.bind(this));
             }.bind(this));
 
         }
