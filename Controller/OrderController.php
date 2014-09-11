@@ -177,7 +177,7 @@ class OrderController extends RestController implements ClassResourceInterface
      * Change a order.
      *
      * @param \Symfony\Component\HttpFoundation\Request $request
-     * @param integer $id order ID
+     * @param $id order ID
      * @return \Symfony\Component\HttpFoundation\Response
      */
     public function putAction(Request $request, $id)
@@ -252,10 +252,8 @@ class OrderController extends RestController implements ClassResourceInterface
      */
     public function deleteAction(Request $request, $id)
     {
-        $locale = $this->getLocale($request);
-
-        $delete = function ($id) use ($locale) {
-            $this->getManager()->delete($id, $this->getUser()->getId());
+        $delete = function ($id) {
+            $this->getManager()->delete($id);
         };
         $view = $this->responseDelete($id, $delete);
 
