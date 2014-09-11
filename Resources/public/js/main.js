@@ -9,7 +9,8 @@
 
 require.config({
     paths: {
-        sulusalesorder: '../../sulusalesorder/js'
+        sulusalesorder: '../../sulusalesorder/js',
+        'sulusalesorder/utils/header': '../../sulusalesorder/js/utils/header'
     }
 });
 

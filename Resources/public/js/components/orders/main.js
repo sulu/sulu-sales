@@ -8,8 +8,9 @@
  */
 
 define([
-    'sulusalesorder/model/order'
-], function(Order) {
+    'sulusalesorder/model/order',
+    'sulusalesorder/util/header'
+], function(Order, HeaderUtil) {
 
     'use strict';
 
@@ -24,6 +25,7 @@ define([
                 this.renderList();
             } else if (this.options.display === 'form') {
                 this.renderForm().then(function() {
+                    HeaderUtil.setHeader.call(this, this.order);
                 }.bind(this));
             } else {
                 throw 'display type wrong';
@@ -49,6 +51,8 @@ define([
 
             // load list view
             this.sandbox.on('sulu.salesorder.orders.list', this.showOrderList.bind(this));
+
+            this.sandbox.on('sulu.salesorder.shipping.create', this.createOrderShipping.bind(this));
         },
 
         /**
@@ -85,6 +89,13 @@ define([
         },
 
         /**
+         * create a new shipping for an order
+         */
+        createOrderShipping: function() {
+            this.sandbox.emit('sulu.router.navigate', HeaderUtil.getUrl.call(this, this.options.id, 'shippings/add'), true, false);
+        },
+
+        /**
          * convert status of an order
          * @param statusString
          */
@@ -105,10 +116,10 @@ define([
 
         loadOrder: function(id, force) {
             force = (force === true);
-            this.sandbox.emit('sulu.router.navigate', 'sales/orders/edit:' + id + '/details', true, false ,force);
+            this.sandbox.emit('sulu.router.navigate', HeaderUtil.getUrl.call(this, id, 'details'), true, false, force);
         },
 
-        showDeleteWarning: function(ids){
+        showDeleteWarning: function(ids) {
             // show dialog
             this.sandbox.emit('sulu.overlay.show-warning',
                 'sulu.overlay.be-careful',
@@ -141,7 +152,7 @@ define([
          * @param successCallback
          * @param failCallback
          */
-        delOrder: function(id, successCallback, failCallback){
+        delOrder: function(id, successCallback, failCallback) {
 
             successCallback = typeof(successCallback) === 'function' ? successCallback : null;
             failCallback = typeof(failCallback) === 'function' ? failCallback : null;
