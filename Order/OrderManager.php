@@ -146,6 +146,9 @@ class OrderManager
         $contact = $this->addContactRelation($data, 'contact', function ($contact) use ($order) {
             $order->setContact($contact);
         });
+        if (!$contact) {
+            throw new OrderDependencyNotFoundException(self::$contactEntityName, '');
+        }
 
         // add contact
         $this->addContactRelation($data, 'responsibleContact', function ($contact) use ($order){
@@ -434,22 +437,20 @@ class OrderManager
      * @param $addCallback
      * @throws Exception\MissingOrderAttributeException
      * @throws Exception\OrderDependencyNotFoundException
-     * @return Contact
+     * @return Contact|null
      */
     private function addContactRelation(array $data, $dataKey, $addCallback)
     {
-        if (!array_key_exists($dataKey, $data) || !array_key_exists('id', $data[$dataKey])) {
-            throw new MissingOrderAttributeException($dataKey.' id');
+        $contact = null;
+        if (array_key_exists($dataKey, $data) && array_key_exists('id', $data[$dataKey])) {
+            /** @var Contact $contact */
+            $contactId = $data[$dataKey]['id'];
+            $contact = $this->em->getRepository(self::$contactEntityName)->find($contactId);
+            if (!$contact) {
+                throw new OrderDependencyNotFoundException(self::$contactEntityName, $contactId);
+            }
+            $addCallback($contact);
         }
-
-        /** @var Contact $contact */
-        $contactId = $data[$dataKey]['id'];
-        $contact = $this->em->getRepository(self::$contactEntityName)->find($contactId);
-        if (!$contact) {
-            throw new OrderDependencyNotFoundException(self::$contactEntityName, $contactId);
-        }
-        $addCallback($contact);
-
         return $contact;
     }
 
