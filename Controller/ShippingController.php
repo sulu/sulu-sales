@@ -223,7 +223,7 @@ class ShippingController extends RestController implements ClassResourceInterfac
             $exception = new EntityNotFoundException($exc->getEntityName(), $exc->getId());
             $view = $this->view($exception->toArray(), 400);
         } catch (MissingShippingAttributeException $exc) {
-            $exception = new MissingArgumentException(self::$shippingsEntityName, $exc->getAttribute());
+            $exception = new MissingArgumentException(self::$shippingEntityName, $exc->getAttribute());
             $view = $this->view($exception->toArray(), 400);
         } catch (ShippingException $exc) {
             $exception = new RestException($exc->getMessage());
