@@ -162,12 +162,11 @@ class ItemManager
     public function findEntityById($id)
     {
         $item = $this->itemRepository->find($id);
-
-        if ($item) {
-            return $item;
-        } else {
+        if (!$item) {
             return null;
         }
+
+        return $item;
     }
 
     /**

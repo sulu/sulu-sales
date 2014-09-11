@@ -221,13 +221,12 @@ define([
          * creates and returns a new row element
          */
         createItemRow = function(itemData, increaseCount) {
-            var data, rowTpl, $row, id,
+            var data, rowTpl, id,
                 processed = 0;
 
             if (increaseCount !== false) {
                 this.rowCount++;
             }
-
 
             // get sum of already processed items
             if (!!this.options.processedItems) {
@@ -251,9 +250,9 @@ define([
                     processedQuantity: processed
                 });
 
-            rowTpl = this.sandbox.util.template(RowTpl, data),
-                $row = this.sandbox.dom.createElement(rowTpl);
-            return $row;
+            rowTpl = this.sandbox.util.template(RowTpl, data);
+            // create row and return it
+            return this.sandbox.dom.createElement(rowTpl);
         },
 
         /**

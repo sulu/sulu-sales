@@ -25,7 +25,7 @@ disabled =  'disabled';
             <input class="input-field form-element"
                    value="<%= quantity %>"
                    data-type="decimal"
-                   data-validation-max="<% print( (parseFloat(item.quantity) - parseFloat(processedQuantity)).toFixed(1)) %>"
+                   data-validation-max="<%= (parseFloat(item.quantity) - parseFloat(processedQuantity)).toFixed(1) %>"
                    data-validation-min="0.0"
             <%= quantity %> <%= disabled %>/>
         </span>
