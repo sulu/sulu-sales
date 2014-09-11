@@ -102,7 +102,7 @@ define([
                 quantityUnit: this.sandbox.translate('salescore.item.unit'),
                 price: this.sandbox.translate('salescore.item.price'),
                 discount: this.sandbox.translate('salescore.item.discount'),
-                overallPrice: this.sandbox.translate('salescore.item.overallValue')
+                overallPrice: this.sandbox.translate('salescore.item.overall-value')
             };
         },
 
@@ -440,7 +440,7 @@ define([
             removeItemData.call(this, rowId);
 
             // remove validation
-            removeValidtaionFields.call(this, $row);
+            removeValidationFields.call(this, $row);
 
             // refresh global price
             updateGlobalPrice.call(this);
@@ -513,7 +513,7 @@ define([
          * remove validation from row
          * @param $row
          */
-        removeValidtaionFields = function($row) {
+        removeValidationFields = function($row) {
             this.sandbox.form.removeField(constants.formId, this.sandbox.dom.find(constants.quantityInput, $row));
             this.sandbox.form.removeField(constants.formId, this.sandbox.dom.find(constants.priceInput, $row));
             this.sandbox.form.removeField(constants.formId, this.sandbox.dom.find(constants.discountInput, $row));
@@ -609,7 +609,7 @@ define([
             this.rowCount = 0;
             this.table = null;
 
-            this.isEmpty = this.items.length
+            this.isEmpty = this.items.length;
 
             // if data is not set, check if it's set in elements DATA
             var dataItems = this.sandbox.dom.data(this.$el, 'items');
