@@ -17,16 +17,29 @@ define([], function() {
      * @param options
      */
     var setHeadlinesAndBreadCrumb = function(order, options) {
-        var title = this.sandbox.translate('salesorder.order'),
-            breadcrumb = [
-                {title: 'navigation.sales'},
-                {title: 'salesorder.orders.title', event: 'sulu.salesorder.orders.list'}
-            ],
+        var title, breadcrumb, hasOptions,
+            titleAddition = null,
+            breadcrumbAddition = null,
+            orderEvent = null;
+
+        title = this.sandbox.translate('salesorder.order');
+        breadcrumb = [
+            {title: 'navigation.sales'},
+            {title: 'salesorder.orders.title', event: 'sulu.salesorder.orders.list'}
+        ];
+
         // parse options
-            hasOptions = typeof options === 'object',
-            titleAddition = (hasOptions && options.hasOwnProperty('titleAddition')) ? options.titleAddition : null,
-            breadcrumbAddition = (hasOptions && options.hasOwnProperty('breadcrumbAddition')) ? options.breadcrumbAddition : null,
-            orderEvent = (hasOptions && options.hasOwnProperty('breadcrumbOrderEvent')) ? options.breadcrumbOrderEvent : null;
+        hasOptions = typeof options === 'object';
+        if (hasOptions && options.hasOwnProperty('titleAddition')) {
+            titleAddition = options.titleAddition;
+        }
+        if (hasOptions && options.hasOwnProperty('breadcrumbAddition')) {
+            breadcrumbAddition = options.breadcrumbAddition;
+        }
+        if (hasOptions && options.hasOwnProperty('breadcrumbOrderEvent')) {
+            orderEvent = options.breadcrumbOrderEvent;
+        }
+
         // set title based on order
         if (!!order && !!order.number) {
             title += ' #' + order.number;
@@ -56,7 +69,6 @@ define([], function() {
          * @param {String} [options.breadcrumbOrderEvent] event thats added to breadcrumb of the current order
          */
         setHeader: function(order, options) {
-
             // parse to json
             order = order.toJSON();
             // sets headline and breadcrumb
@@ -72,9 +84,9 @@ define([], function() {
         getUrl: function(id, postfix) {
             var url = 'sales/orders';
             if (!!id) {
-                 url += '/edit:' + id;
+                url += '/edit:' + id;
             }
-            if (!!postfix){
+            if (!!postfix) {
                 url += '/' + postfix;
             }
             return url;
