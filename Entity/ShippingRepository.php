@@ -3,6 +3,7 @@
 namespace Sulu\Bundle\Sales\ShippingBundle\Entity;
 
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\NoResultException;
 
 /**
  * ShippingRepository
@@ -124,7 +125,7 @@ class ShippingRepository extends EntityRepository
                 ->join('o.items', 'items')
                 ->leftJoin('shipping.shippingItems', 'shippingItems', 'WITH', 'items = shippingItems.item')
                 ->setParameter('orderId', $orderId)
-                ->groupBy('items.id')
+                ->groupBy('items.id, shipping.id, o.id, items.id, shippingItems.id')
                 ->where('shipping.status != :excludeStatus')
                 ->setParameter('excludeStatus', ShippingStatus::STATUS_CREATED)
             ;

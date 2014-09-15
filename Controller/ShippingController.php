@@ -17,6 +17,7 @@ use Sulu\Bundle\Sales\ShippingBundle\Entity\ShippingStatus;
 use Sulu\Bundle\Sales\ShippingBundle\Shipping\Exception\MissingShippingAttributeException;
 use Sulu\Bundle\Sales\ShippingBundle\Shipping\Exception\ShippingDependencyNotFoundException;
 use Sulu\Bundle\Sales\ShippingBundle\Shipping\Exception\ShippingException;
+use Sulu\Bundle\Sales\ShippingBundle\Shipping\Exception\ShippingNotFoundException;
 use Sulu\Bundle\Sales\ShippingBundle\Shipping\ShippingManager;
 use Sulu\Component\Rest\Exception\EntityNotFoundException;
 use Sulu\Component\Rest\Exception\MissingArgumentException;
