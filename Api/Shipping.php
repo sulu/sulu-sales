@@ -3,17 +3,18 @@
 namespace Sulu\Bundle\Sales\ShippingBundle\Api;
 
 use JMS\Serializer\Annotation\VirtualProperty;
-use Sulu\Bundle\Sales\CoreBundle\Api\Item;
-use Sulu\Bundle\Sales\OrderBundle\Api\Order;
-use Sulu\Component\Rest\ApiWrapper;
 use Hateoas\Configuration\Annotation\Relation;
 use JMS\Serializer\Annotation\SerializedName;
-use Sulu\Component\Security\UserInterface;
-use Sulu\Bundle\Sales\ShippingBundle\Entity\Shipping as ShippingEntity;
 use JMS\Serializer\Annotation\Exclude;
+use Sulu\Component\Rest\ApiWrapper;
+use Sulu\Component\Security\UserInterface;
+use Sulu\Bundle\Sales\CoreBundle\Api\Item;
+use Sulu\Bundle\Sales\OrderBundle\Api\Order;
+use Sulu\Bundle\Sales\ShippingBundle\Entity\Shipping as ShippingEntity;
+use Sulu\Bundle\Sales\ShippingBundle\Entity\ShippingItem as ShippingItemEntity;
 
 /**
- * The Shipping class which will be 2exported to the API
+ * The Shipping class which will be exported to the API
  * @package Sulu\Bundle\Sales\ShippingBundle\Api
  * @Relation("self", href="expr('/api/admin/shippings/' ~ object.getId())")
  */
@@ -23,6 +24,7 @@ class Shipping extends ApiWrapper
      * @Exclude
      */
     private $shippingItems;
+
     /**
      * @param ShippingEntity $shipping The shipping to wrap
      * @param string $locale The locale of this shipping
@@ -450,7 +452,7 @@ class Shipping extends ApiWrapper
      * @param \Sulu\Bundle\Sales\ShippingBundle\Entity\ShippingItem $shippingItems
      * @return Shipping
      */
-    public function addShippingItem(\Sulu\Bundle\Sales\ShippingBundle\Entity\ShippingItem $shippingItems)
+    public function addShippingItem(ShippingItemEntity $shippingItems)
     {
         $this->entity->addShippingItem($shippingItems);
 
@@ -462,7 +464,7 @@ class Shipping extends ApiWrapper
      *
      * @param \Sulu\Bundle\Sales\ShippingBundle\Entity\ShippingItem $shippingItems
      */
-    public function removeShippingItem(\Sulu\Bundle\Sales\ShippingBundle\Entity\ShippingItem $shippingItems)
+    public function removeShippingItem(ShippingItemEntity $shippingItems)
     {
         $this->entity->removeShippingItem($shippingItems);
     }

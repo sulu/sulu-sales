@@ -11,14 +11,14 @@ class OrderContentNavigationExtension implements ContentNavigationInterface
 
     public function __construct()
     {
-        $permissions = new ContentNavigationItem('salesshipping.shippings.title');
-        $permissions->setAction('shippings');
-        $permissions->setComponent('shippings@sulusalesshipping');
-        $permissions->setComponentOptions(array('display'=>'orderList'));
-        $permissions->setDisplay(array('edit'));
-        $permissions->setGroups(array('order'));
+        $shippings = new ContentNavigationItem('salesshipping.shippings.title');
+        $shippings->setAction('shippings');
+        $shippings->setComponent('shippings@sulusalesshipping');
+        $shippings->setComponentOptions(array('display'=>'orderList'));
+        $shippings->setDisplay(array('edit'));
+        $shippings->setGroups(array('order'));
 
-        $this->navigation[] = $permissions;
+        $this->navigation[] = $shippings;
     }
 
     public function getNavigationItems()

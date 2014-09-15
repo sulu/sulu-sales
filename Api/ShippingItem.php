@@ -149,7 +149,8 @@ class ShippingItem extends ApiWrapper
     }
 
     /**
-     * @return shippedItems*
+     * returns nuber of shipped items
+     * @return int
      * @VirtualProperty
      * @SerializedName("shippedItems")
      */

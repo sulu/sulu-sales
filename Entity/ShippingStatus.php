@@ -49,6 +49,17 @@ class ShippingStatus
     }
 
     /**
+     * @param $id
+     * @return $this
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
+        
+        return $this;
+    }
+
+    /**
      * Add shipping
      *
      * @param \Sulu\Bundle\Sales\ShippingBundle\Entity\Shipping $shipping
