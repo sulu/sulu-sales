@@ -53,6 +53,35 @@ define([
             this.sandbox.on('sulu.salesorder.orders.list', this.showOrderList.bind(this));
 
             this.sandbox.on('sulu.salesorder.shipping.create', this.createOrderShipping.bind(this));
+
+            this.sandbox.on('salesorder.orders.sidebar.getData', this.getDataForOrderSidebar.bind(this));
+        },
+
+        /**
+         * Gets data to init sidebar with correct params values
+         * @param payload
+         */
+        getDataForOrderSidebar: function(payload){
+            if(!!payload.data && !!payload.callback && typeof payload.callback === 'function'){
+                var model,
+                    order = Order.findOrCreate({id:payload.data});
+
+                order.fetch({
+                    success: function(response) {
+                        model = response.toJSON();
+                        if (!!model.account && !!model.contact) {
+                            payload.callback(model.contact.id, model.account.id);
+                        } else {
+                            this.sandbox.logger.error('received invalid data when initializing sidebar', model);
+                        }
+                    }.bind(this),
+                    error: function() {
+                        this.sandbox.logger.error('error while fetching order');
+                    }.bind(this)
+                });
+            } else {
+                this.sandbox.logger.error('param for getDataForOrderSidebar has to be an object with a data attribute and a valid callback (attribute)!');
+            }
         },
 
         /**

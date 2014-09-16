@@ -8,7 +8,7 @@
   * with this source code in the file LICENSE.
   */
 
-namespace Sulu\Bundle\ContactBundle\Widgets;
+namespace Sulu\Bundle\Sales\OrderBundle\Widgets;
 
 use Doctrine\ORM\EntityManager;
 use Sulu\Bundle\AdminBundle\Widgets\WidgetException;
@@ -59,7 +59,8 @@ class OrderInfo implements WidgetInterface
      * returns data to render template
      *
      * @param array $options
-     * @throws WidgetException
+     * @throws \Sulu\Bundle\AdminBundle\Widgets\WidgetParameterException
+     * @throws \Sulu\Bundle\AdminBundle\Widgets\WidgetEntityNotFoundException
      * @return array
      */
     public function getData($options)
@@ -73,7 +74,7 @@ class OrderInfo implements WidgetInterface
 
             if (!$contact) {
                 throw new WidgetEntityNotFoundException(
-                    'Entity ' . $this->contactEntityName . ' with id ' . $id . ' not found!',
+                    'Teset Entity ' . $this->contactEntityName . ' with id ' . $id . ' not found!',
                     $this->widgetName,
                     $id
                 );
@@ -81,7 +82,7 @@ class OrderInfo implements WidgetInterface
             return $this->parseContactForListSidebar($contact);
         } else {
             throw new WidgetParameterException(
-                'Required parameter contact not found or empty!',
+                'Test Required parameter contact not found or empty!',
                 $this->widgetName,
                 'contact'
             );
