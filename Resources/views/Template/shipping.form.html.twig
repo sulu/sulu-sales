@@ -12,13 +12,15 @@
                 <div class="grid-col-6">
                     <div class="form-group">
                         <label for="account" class="required"><%=translate('salescore.account')%></label>
+
                         <div id="account" class="not-clickable"></div>
                     </div>
                 </div>
                 <div class="grid-col-6">
                     <div class="form-group">
                         <label for="commission"><%=translate('salesorder.orders.commission')%></label>
-                        <input id="commission" class="form-element" type="text" data-mapper-property="commission" <%=
+                        <input id="commission" class="form-element" type="text" data-mapper-property="commission"
+                        <%=
                         disabled %>/>
                     </div>
                 </div>
@@ -28,6 +30,7 @@
                 <div class="grid-col-6">
                     <div class="form-group">
                         <label for="contact" class="required"><%=translate('salescore.contact')%></label>
+
                         <div id="contact" class="not-clickable"></div>
                     </div>
                 </div>
@@ -44,6 +47,7 @@
                 <div class="grid-col-6">
                     <div class="form-group">
                         <label for="expected-delivery-date-input"><%=translate('salesshipping.shippings.expected-delivery-date')%></label>
+
                         <div id="expected-delivery-date"
                              data-form="true"
                              data-type="husky-input"
@@ -106,7 +110,9 @@
             <div id="shipping-items"
                  data-aura-component="item-quantity-table@sulusalescore"
                  data-aura-is-editable="<%= isEditable %>"
+                 data-aura-is-new="<%= isNew %>"
                  data-aura-processed-items='<%= JSON.stringify(shippedOrderItems) %>'
+                 data-aura-header-translations='{"processedQuantity":"salesshipping.shippings.expected-delivery-date"}'
                  data-aura-items-data='<%= JSON.stringify(order.items) %>'
                  data-form="true"
                  data-type="itemTable"
@@ -116,10 +122,3 @@
     </form>
 </div>
 
-{% block data %}
-    <script type="text/javascript">
-        {#(function() {#}
-        {#App.emit('sulu.salesshipping.set-shipping-status', {{ shippingStatus |json_encode()|raw }});#}
-        {#})();#}
-    </script>
-{% endblock %}

@@ -2,6 +2,10 @@
 <xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
     <file source-language="en" datatype="plaintext" original="file.ext">
         <body>
+            <trans-unit id="550accg2ac181350142c0b4720e29ff0" resname="navigation.sales.shipping">
+                <source>navigation.sales.shipping</source>
+                <target>Shippings</target>
+            </trans-unit>
             <trans-unit id="550accg2ac181350142c0b4720e29ff1" resname="salesshipping.shippings.title">
                 <source>salesshipping.shippings.title</source>
                 <target>Shippings</target>
@@ -29,6 +33,10 @@
             <trans-unit id="550accg2ac181350142c0b4720e29ff7" resname="salesshipping.shippings.expected-delivery-date">
                 <source>salesshipping.shippings.expected-delivery-date</source>
                 <target>Desired delivery date</target>
+            </trans-unit>
+            <trans-unit id="550accg2ac181350142c0b4720e29ff8" resname="salesshipping.shippings.processed-items">
+                <source>salesshipping.shippings.processed-items</source>
+                <target>Shipped quantity</target>
             </trans-unit>
         </body>
     </file>

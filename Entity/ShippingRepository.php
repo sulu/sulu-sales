@@ -117,19 +117,31 @@ class ShippingRepository extends EntityRepository
      * @param $orderId
      * @return array|null
      */
-    public function getSumOfShippedItemsByOrderId($orderId) {
+    public function getSumOfShippedItemsByOrderId($orderId)
+    {
         try {
             $qb = $this->createQueryBuilder('shipping')
-                ->select('partial shipping.{id}, partial o.{id}, partial items.{id}, partial shippingItems.{id}, sum(shippingItems.quantity) AS shipped')
+                ->select('partial shipping.{id}, partial items.{id}, sum(shippingItems.quantity) AS shipped')
                 ->leftJoin('shipping.order', 'o', 'WITH', 'o.id = :orderId')
                 ->join('o.items', 'items')
                 ->leftJoin('shipping.shippingItems', 'shippingItems', 'WITH', 'items = shippingItems.item')
                 ->setParameter('orderId', $orderId)
-                ->groupBy('items.id, shipping.id, o.id, items.id, shippingItems.id')
+                ->groupBy('items.id')
                 ->where('shipping.status != :excludeStatus')
-                ->setParameter('excludeStatus', ShippingStatus::STATUS_CREATED)
-            ;
+                ->setParameter('excludeStatus', ShippingStatus::STATUS_CREATED);
             return $qb->getQuery()->getScalarResult();
+
+            // TODO: implement sql to resolve group by problem in postgres
+//            $dql = 'SELECT sum(shippingItems.quantity) AS sumShipped, item.id '.
+//                'FROM ss_shippings shipping' .
+//                'LEFT JOIN so_orders o ON shipping.idOrders = o.id AND (o.id = 1) ' .
+//                'INNER JOIN so_order_items orderItems ON o.id = orderItems.idOrders ' .
+//                'INNER JOIN sc_item item ON item.id = orderItems.idItems ' .
+//                'LEFT JOIN ss_shipping_items shippingItems ON shipping.id = shippingItems.idShippings AND (item.id = shippingItems.idItems)' .
+//                'WHERE shipping.idShippingStatus <> 1 ' .
+//                'GROUP BY item.id';
+//            $qb = $this->getEntityManager()->createQuery($dql);
+//            return $qb->getScalarResult();
         } catch (NoResultException $exc) {
             return null;
         }

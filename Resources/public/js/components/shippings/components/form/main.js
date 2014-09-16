@@ -21,7 +21,9 @@ define(['sulusalesshipping/util/shippingStatus'], function(ShippingStatus) {
             accountId: '#account',
             contactId: '#contact',
             accountAddressesUrl: '/admin/api/accounts/<%= id %>/addresses',
-            deliveryAddressInstanceName: 'delivery-address'
+            deliveryAddressInstanceName: 'delivery-address',
+            validateWarningTranslation: ''
+
         },
 
         /**
@@ -352,7 +354,8 @@ define(['sulusalesshipping/util/shippingStatus'], function(ShippingStatus) {
             // set header
             setHeaderTitle.call(this);
             setHeaderToolbar.call(this);
-            setSaved.call(this, true);
+            // if new shipping, show delivery
+            setSaved.call(this, !this.options.isNew);
 
             // render form
             this.render();
@@ -377,6 +380,7 @@ define(['sulusalesshipping/util/shippingStatus'], function(ShippingStatus) {
             var data = this.options.data,
                 templateData = this.sandbox.util.extend({}, {
                     isEditable: this.isEditable,
+                    isNew: !this.options.data.id,
                     shippedOrderItems: this.options.shippedOrderItems
                 }, data);
 
@@ -398,6 +402,8 @@ define(['sulusalesshipping/util/shippingStatus'], function(ShippingStatus) {
 
                 this.sandbox.logger.log('log data', data);
                 this.sandbox.emit('sulu.salesshipping.shipping.save', data);
+            } else {
+                this.sandbox.emit('sulu.labels.warning.show', this.sandbox.translate(constants.validateWarningTranslation));
             }
         },
 

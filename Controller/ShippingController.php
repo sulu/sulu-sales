@@ -74,7 +74,7 @@ class ShippingController extends RestController implements ClassResourceInterfac
         }
 
         // default contacts list
-        return $this->handleView( $this->view($descriptors), 200);
+        return $this->handleView($this->view($descriptors), 200);
     }
 
     /**
@@ -89,7 +89,7 @@ class ShippingController extends RestController implements ClassResourceInterfac
             $locale = $this->getLocale($request);
 
             $status = $request->get('status');
-            $orderId= $request->get('orderId');
+            $orderId = $request->get('orderId');
             if ($status) {
                 $filter['status'] = $status;
             }
@@ -130,7 +130,7 @@ class ShippingController extends RestController implements ClassResourceInterfac
             }
 
             $view = $this->view($list, 200);
-        } catch(ShippingException $ex) {
+        } catch (ShippingException $ex) {
             $rex = new RestException($ex->getMessage());
             $view = $this->view($rex->toArray(), 400);
         }
@@ -150,7 +150,7 @@ class ShippingController extends RestController implements ClassResourceInterfac
         $locale = $this->getLocale($request);
         $view = $this->responseGetById(
             $id,
-            function ($id) use ($locale) {
+            function ($id) use ($locale){
                 /** @var Shipping $shipping */
                 $shipping = $this->getManager()->findByIdAndLocale($id, $locale);
 
@@ -162,10 +162,12 @@ class ShippingController extends RestController implements ClassResourceInterfac
     }
 
     /**
+     * this function returns number of shipped items per item
+     * the result is a key value pair of itemId => number of shipped items
      * @param Request $request
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function shippedorderitemsAction(Request $request)
+    public function numberofshippedorderitemsAction(Request $request)
     {
         $orderId = $request->get('orderId');
         $sum = $this->getManager()->getSumOfShippedItemsByOrderId($orderId);
@@ -181,7 +183,7 @@ class ShippingController extends RestController implements ClassResourceInterfac
     public function postAction(Request $request)
     {
         try {
-            $shipping= $this->getManager()->save(
+            $shipping = $this->getManager()->save(
                 $request->request->all(),
                 $this->getLocale($request),
                 $this->getUser()->getId()
@@ -278,32 +280,11 @@ class ShippingController extends RestController implements ClassResourceInterfac
     {
         $locale = $this->getLocale($request);
 
-        $delete = function ($id) use ($locale) {
+        $delete = function ($id) use ($locale){
             $this->getManager()->delete($id, $this->getUser()->getId());
         };
         $view = $this->responseDelete($id, $delete);
 
         return $this->handleView($view);
     }
-
-//    /**
-//     * returns field-descriptor if status
-//     * @return DoctrineFieldDescriptor
-//     */
-//    private function getStatusFieldDescriptor()
-//    {
-//        return new DoctrineFieldDescriptor(
-//            'id',
-//            'status',
-//            self::$orderStatusEntityName,
-//            'salesorder.orders.status',
-//            array(
-//                self::$orderStatusEntityName => new DoctrineJoinDescriptor(
-//                        self::$orderStatusEntityName,
-//                        self::$orderEntityName . '.status'
-//                    )
-//            )
-//        );
-//    }
-
 }

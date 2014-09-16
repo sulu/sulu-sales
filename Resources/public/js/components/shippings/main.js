@@ -277,7 +277,7 @@ define([
                     error: this.errorCallback.bind(this, dfd)
                 });
 
-                this.sandbox.util.load('/admin/api/shippings/shippedorderitems?orderId=' + this.options.orderId).then(function(shippedOrderItemsData) {
+                this.sandbox.util.load('/admin/api/shippings/numberofshippedorderitems?orderId=' + this.options.orderId).then(function(shippedOrderItemsData) {
                     shippedOrderItems = shippedOrderItemsData;
                     dfdShipped.resolve();
                 }.bind(this));
