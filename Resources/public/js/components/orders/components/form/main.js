@@ -456,10 +456,10 @@ define([], function() {
         view: true,
 
         layout: {
-//                sidebar: {
-//                    width: 'fixed',
-//                    cssClasses: 'sidebar-padding-50'
-//                }
+                sidebar: {
+                    width: 'fixed',
+                    cssClasses: 'sidebar-padding-50'
+                }
         },
 
         templates: ['/admin/order/template/order/form'],
@@ -506,16 +506,22 @@ define([], function() {
             this.listenForChange();
 
             // initialize sidebar
-//                if (!!this.options.data && !!this.options.data.id) {
-//                    this.initSidebar(
-//                        '/admin/widget-groups/contact-detail?contact=',
-//                        this.options.data.id
-//                    );
-//                }
+            if (!!this.options.data && !!this.options.data.id) {
+                this.initSidebar(
+                    '/admin/widget-groups/order-detail',
+                    this.options.data.contact.id,
+                    this.options.data.account.id
+                );
+            }
         },
 
-        initSidebar: function(url, id) {
-            this.sandbox.emit('sulu.sidebar.set-widget', url + id);
+        initSidebar: function(url, contactId, accountId) {
+            if(!!contactId && !!accountId){
+                url += '?contact='+contactId+'&account='+accountId;
+                this.sandbox.emit('sulu.sidebar.set-widget', url);
+            } else {
+                this.sandbox.logger.error('invalid values for account and contact ids!');
+            }
         },
 
         render: function() {

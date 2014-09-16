@@ -88,19 +88,19 @@ define([
          * Binds general sidebar events
          */
         bindSidebarEvents: function() {
-            // bind sidebar
-//            this.sandbox.dom.off('#sidebar');
-//
-//            this.sandbox.dom.on('#sidebar', 'click', function(event) {
-//                var id = this.sandbox.dom.data(event.currentTarget,'id');
-//                this.sandbox.emit('sulu.contacts.accounts.load', id);
-//            }.bind(this), '#sidebar-accounts-list');
-//
-//            this.sandbox.dom.on('#sidebar', 'click', function(event) {
-//                var id = this.sandbox.dom.data(event.currentTarget,'id');
-//                this.sandbox.emit('sulu.router.navigate', 'contacts/contacts/edit:' + id + '/details');
-//                this.sandbox.emit('husky.navigation.select-item','contacts/contacts');
-//            }.bind(this), '#main-contact');
+            this.sandbox.dom.off('#sidebar');
+
+            this.sandbox.dom.on('#sidebar', 'click', function(event) {
+                var id = this.sandbox.dom.data(event.currentTarget,'id');
+                this.sandbox.emit('sulu.router.navigate', 'contacts/accounts/edit:' + id + '/details');
+                this.sandbox.emit('husky.navigation.select-item','contacts/accounts');
+            }.bind(this), '#sidebar-account');
+
+            this.sandbox.dom.on('#sidebar', 'click', function(event) {
+                var id = this.sandbox.dom.data(event.currentTarget,'id');
+                this.sandbox.emit('sulu.router.navigate', 'contacts/contacts/edit:' + id + '/details');
+                this.sandbox.emit('husky.navigation.select-item','contacts/contacts');
+            }.bind(this), '#sidebar-contact');
         },
 
         /**
