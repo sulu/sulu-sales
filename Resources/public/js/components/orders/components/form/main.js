@@ -20,7 +20,8 @@ define([], function() {
             accountInputId: '#account-input',
             deliveryAddressInstanceName: 'delivery-address',
             paymentAddressInstanceName: 'invoice-address',
-            contactSelectId: '#contact-select'
+            contactSelectId: '#contact-select',
+            validateWarningTranslation: 'salesorder.orders.validation-warning'
         },
 
         /**
@@ -546,6 +547,8 @@ define([], function() {
 
                 this.sandbox.logger.log('log data', data);
                 this.sandbox.emit('sulu.salesorder.order.save', data);
+            } else {
+                this.sandbox.emit('sulu.labels.warning.show', this.sandbox.translate(constants.validateWarningTranslation));
             }
         },
 

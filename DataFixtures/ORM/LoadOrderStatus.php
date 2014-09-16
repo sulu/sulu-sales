@@ -41,8 +41,8 @@ class LoadOrderStatus extends AbstractFixture implements OrderedFixtureInterface
         // confirmed
         $status = new OrderStatus();
         $status->setId(3);
-        $this->createStatusTranslation($manager, $status, 'Confirmed', 'en');
-        $this->createStatusTranslation($manager, $status, 'Bestätigt', 'de');
+        $this->createStatusTranslation($manager, $status, 'Order confirmed', 'en');
+        $this->createStatusTranslation($manager, $status, 'Auftragsbestätigung erstellt', 'de');
         $manager->persist($status);
 
         $manager->flush();

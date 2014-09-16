@@ -8,7 +8,7 @@
             </trans-unit>
             <trans-unit id="a50accg2ac181350142c0b4720e29ff2" resname="salesorder.orders.number">
                 <source>salesorder.orders.number</source>
-                <target>Order Number</target>
+                <target>Order reference</target>
             </trans-unit>
             <trans-unit id="a50accg2ac181350142c0b4720e29ff3" resname="salesorder.orders.contact">
                 <source>salesorder.orders.contact</source>
