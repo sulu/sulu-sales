@@ -1,0 +1,28 @@
+<tr id="<%= rowId %>" class="item-table-row <%= rowClass %>" data-id="<%= id %>" >
+    <td class="row-number">
+    </td>
+    <td class="item-name">
+        <span><%= name %></span>
+    </td>
+    <td class="item-number">
+        <span><%= number %></span>
+    </td>
+    <td class="item-quantity">
+        <span><%= quantity %></span>
+    </td>
+    <td class="item-quantity">
+        <span><%= processedQuantity %></span>
+    </td>
+    <td class="item-quantity">
+        <span><%= quantityInput %></span>
+    </td>
+    <td class="item-quantity-unit">
+       <span><%= quantityUnit %></span>
+    <td class="settings">
+    </td>
+    </td>
+    <% if (canAddRemove === true) { %>
+    <td class="item-remove">
+    </td>
+    <% } %>
+</tr>

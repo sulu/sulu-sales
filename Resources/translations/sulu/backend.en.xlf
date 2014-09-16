@@ -86,6 +86,14 @@
                 <source>salescore.item.processed-quantity</source>
                 <target>Proc. Quantity</target>
             </trans-unit>
+            <trans-unit id="a50accg2ac221350142c0b4720e29a22" resname="salescore.sidebar.contact">
+                <source>salescore.sidebar.contact</source>
+                <target>Contact</target>
+            </trans-unit>
+            <trans-unit id="a50accg2ac221350142c0b4720e29a23" resname="salescore.sidebar.customer">
+                <source>salescore.sidebar.customer</source>
+                <target>Customer</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>
