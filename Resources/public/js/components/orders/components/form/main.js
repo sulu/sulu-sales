@@ -507,20 +507,20 @@ define([], function() {
 
             // initialize sidebar
             if (!!this.options.data && !!this.options.data.id) {
-                this.initSidebar(
-                    '/admin/widget-groups/order-detail',
-                    this.options.data.contact.id,
-                    this.options.data.account.id
-                );
+                this.initSidebar();
             }
         },
 
-        initSidebar: function(url, contactId, accountId) {
-            if(!!contactId && !!accountId){
-                url += '?contact='+contactId+'&account='+accountId;
+        initSidebar: function() {
+
+            var url = '/admin/widget-groups/order-detail',
+                data = this.options.data;
+
+            if(!!data.contact && !!data.account && !!data.status){
+                url += '?contact='+data.contact.id+'&account='+data.account.id+'&status='+data.status.status;
                 this.sandbox.emit('sulu.sidebar.set-widget', url);
             } else {
-                this.sandbox.logger.error('invalid values for account and contact ids!');
+                this.sandbox.logger.error('required values for sidebar not present!');
             }
         },
 

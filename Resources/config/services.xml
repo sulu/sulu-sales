@@ -9,7 +9,7 @@
         <parameter key="sulu_sales_order.order_repository.class">Sulu\Bundle\Sales\OrderBundle\Entity\OrderRepository</parameter>
         <parameter key="sulu_sales_order.order_manager.class">Sulu\Bundle\Sales\OrderBundle\Order\OrderManager</parameter>
         <parameter key="sulu_sales_order.order_listener.class">Sulu\Bundle\Sales\OrderBundle\EventListener\OrderListener</parameter>
-        <parameter key="sulu_sales_order.widgets.order_info.class">Sulu\Bundle\Sales\OrderBundle\Widgets\OrderInfo</parameter>
+        <parameter key="sulu_sales_order.widgets.order_details.class">Sulu\Bundle\Sales\OrderBundle\Widgets\OrderDetails</parameter>
     </parameters>
     <services>
         <service id="sulu_sales_order.admin" class="%sulu_sales_order.admin.class%">
@@ -32,8 +32,8 @@
         <service id="sulu_sales_order.order_listener" class="%sulu_sales_order.order_listener.class%">
             <tag name="doctrine.event_listener" event="postPersist" method="postPersist"/>
         </service>
-        <service id="sulu_sales_order.widget.order_info" class="%sulu_sales_order.widgets.order_info.class%">
-            <tag name="sulu.widget" alias="sulu-sales-order-order-info"/>
+        <service id="sulu_sales_order.widget.order_details" class="%sulu_sales_order.widgets.order_details.class%">
+            <tag name="sulu.widget" alias="sulu-sales-order-order-details"/>
             <argument type="service" id="doctrine.orm.entity_manager"/>
         </service>
     </services>

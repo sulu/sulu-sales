@@ -1,0 +1,7 @@
+{% if data is defined and data is not null %}
+    <div class="grid-row m-bottom-40">
+        <h5 class="label"><%=translate('salesorder.orders.status')%></h5>
+        {{ data.status }}
+    </div>
+{% endif %}
+
