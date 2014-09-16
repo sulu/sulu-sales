@@ -173,6 +173,7 @@ define(['sulusalescore/components/editable-data-row/decorators/address-view'], f
         render: function() {
             if(!!this.options.disabled){
                 this.sandbox.dom.addClass(this.$el, 'disabled');
+                this.sandbox.dom.addClass(this.$el, 'not-clickable');
             }
 
             this.overlayView.render();

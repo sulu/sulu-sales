@@ -86,6 +86,10 @@
                 <source>salescore.item.processed-quantity</source>
                 <target>Bearb. Menge</target>
             </trans-unit>
+            <trans-unit id="a50accg2ac221350142c0b4720e29a22" resname="salesorder.orders.validation-warning">
+                <source>salesorder.orders.validation-warning</source>
+                <target>Bitte überprüfen deine Eingabe. Erst wenn alle Felder korrekt ausgefüllt sind, kann gespeichert werden.</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>

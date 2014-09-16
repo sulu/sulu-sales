@@ -63,7 +63,8 @@ define([
             overallPrice: '',
             currency: 'EUR',
             useProductsPrice: false,
-            tax: 0
+            tax: 0,
+            supplierName: ''
         },
 
         templates = {
@@ -566,14 +567,19 @@ define([
          */
         setItemByProduct = function(productData) {
             // merge with row defaults
-            return this.sandbox.util.extend({}, rowDefaults,
+            var itemData = this.sandbox.util.extend({}, rowDefaults,
                 {
                     name: productData.name,
                     number: productData.number,
                     product: productData
                 }
             );
+            // set supplierName as tooltip, if set
+            if (!!productData.supplierName) {
+                itemData.supplierName = productData.supplierName;
+            }
 
+            return itemData;
         },
 
         /**

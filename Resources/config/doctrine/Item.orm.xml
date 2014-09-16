@@ -35,6 +35,11 @@
                 <join-column name="idProducts" referenced-column-name="id" on-delete="SET NULL" nullable="true"/>
             </join-columns>
         </many-to-one>
+        <many-to-one field="supplier" target-entity="Sulu\Bundle\ContactBundle\Entity\Account">
+            <join-columns>
+                <join-column name="idAccountsSupplier" referenced-column-name="id" on-delete="SET NULL" nullable="true"/>
+            </join-columns>
+        </many-to-one>
         <many-to-one field="changer" target-entity="Sulu\Component\Security\UserInterface">
             <join-columns>
                 <join-column name="idUsersChanger" referenced-column-name="id" on-delete="SET NULL" nullable="true"/>

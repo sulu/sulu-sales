@@ -77,6 +77,12 @@ body {
         }
     }
 
+    .is-numeric,
+    .is-numeric input {
+
+        text-align: right;
+    }
+
     .span {
         height: 100%;
     }

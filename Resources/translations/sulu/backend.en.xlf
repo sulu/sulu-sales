@@ -86,6 +86,10 @@
                 <source>salescore.item.processed-quantity</source>
                 <target>Proc. Quantity</target>
             </trans-unit>
+            <trans-unit id="a50accg2ac221350142c0b4720e29a22" resname="salesorder.orders.validation-warning">
+                <source>salesorder.orders.validation-warning</source>
+                <target>Please check your input. You cannot save as long as not all required fields are filled properly.</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>
