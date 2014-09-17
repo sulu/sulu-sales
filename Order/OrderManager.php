@@ -11,20 +11,24 @@
 namespace Sulu\Bundle\Sales\OrderBundle\Order;
 
 use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\ORM\NoResultException;
 use Sulu\Bundle\ContactBundle\Entity\Account;
 use Sulu\Bundle\ContactBundle\Entity\Address;
 use Sulu\Bundle\ContactBundle\Entity\Contact;
 use Sulu\Bundle\ContactBundle\Entity\ContactRepository;
 use Sulu\Bundle\ContactBundle\Entity\TermsOfDelivery;
 use Sulu\Bundle\Sales\CoreBundle\Item\ItemManager;
+use Sulu\Bundle\Sales\OrderBundle\Entity\OrderActivityLog;
 use Sulu\Bundle\Sales\OrderBundle\Entity\OrderAddress;
 use Sulu\Bundle\Sales\OrderBundle\Entity\OrderRepository;
 use Sulu\Bundle\Sales\OrderBundle\Entity\Order as OrderEntity;
 use Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatus as OrderStatusEntity;
+use Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatus;
 use Sulu\Bundle\Sales\OrderBundle\Order\Exception\MissingOrderAttributeException;
 use Sulu\Bundle\Sales\OrderBundle\Order\Exception\OrderDependencyNotFoundException;
 use Sulu\Bundle\Sales\OrderBundle\Order\Exception\OrderException;
 use Sulu\Bundle\Sales\OrderBundle\Order\Exception\OrderNotFoundException;
+use Sulu\Component\Rest\Exception\EntityNotFoundException;
 use Sulu\Component\Rest\ListBuilder\Doctrine\FieldDescriptor\DoctrineConcatenationFieldDescriptor;
 use Sulu\Component\Rest\ListBuilder\Doctrine\FieldDescriptor\DoctrineFieldDescriptor;
 use Sulu\Bundle\Sales\OrderBundle\Api\Order;
@@ -68,7 +72,6 @@ class OrderManager
      */
     private $userRepository;
 
-
     /**
      * @var RestHelperInterface
      */
@@ -96,15 +99,26 @@ class OrderManager
     }
 
     /**
-     * @param array $data
-     * @param $locale
-     * @param $userId
-     * @param null $id
+     * Creates a new Order Entity
+     *
+     * @param array $data The data array, which will be used for setting the orders data
+     * @param $locale Locale
+     * @param int $userId Id of the User, which is is saved as creator / changer
+     * @param int|null $id If defined, the Order with the given ID will be updated
+     * @param int|null $statusId if defined, the status will be set to the given value
+     * @param bool $flush Defines if a flush should be performed
      * @throws Exception\OrderNotFoundException
      * @throws Exception\OrderException
      * @return null|Order|\Sulu\Bundle\Sales\OrderBundle\Entity\Order
      */
-    public function save(array $data, $locale, $userId, $id = null)
+    public function save(
+        array $data,
+        $locale,
+        $userId,
+        $id = null,
+        $statusId = null,
+        $flush = true
+    )
     {
         if ($id) {
             $order = $this->findByIdAndLocale($id, $locale);
@@ -143,7 +157,7 @@ class OrderManager
 //        $order->setSessionId($this->getProperty($data, 'number', $order->getNumber()));
 
         // add contact
-        $contact = $this->addContactRelation($data, 'contact', function ($contact) use ($order) {
+        $contact = $this->addContactRelation($data, 'contact', function ($contact) use ($order){
             $order->setContact($contact);
         });
         if (!$contact) {
@@ -161,10 +175,10 @@ class OrderManager
             $order->setCreator($user);
             $this->em->persist($order->getEntity());
 
-            // TODO: determine orders status
-            // FIXME: currently the status with id=1 is taken
-            $status = $this->em->getRepository(self::$orderStatusEntityName)->find(1);
-            $order->setStatus($status);
+            // set status to created if not defined
+            if ($statusId !== null) {
+                $statusId = OrderStatus::STATUS_CREATED;
+            }
 
             // create OrderAddress
             $deliveryAddress = new OrderAddress();
@@ -175,6 +189,11 @@ class OrderManager
             // assign to order
             $order->setDeliveryAddress($deliveryAddress);
             $order->setInvoiceAddress($invoiceAddress);
+        }
+
+        // set order status
+        if ($statusId !== null) {
+            $this->convertStatus($order, $statusId);
         }
 
         // set customer name to account if set, otherwise to contact
@@ -193,7 +212,9 @@ class OrderManager
         $order->setChanged(new DateTime());
         $order->setChanger($user);
 
-        $this->em->flush();
+        if ($flush) {
+            $this->em->flush();
+        }
 
         return $order;
     }
@@ -216,10 +237,25 @@ class OrderManager
         $this->em->flush();
     }
 
-    public function convertStatus(Order $order, $statusId, $flush = false) {
-
+    /**
+     * Converts the status of an order
+     * @param Order $order
+     * @param $statusId
+     * @param bool $flush
+     * @throws \Sulu\Component\Rest\Exception\EntityNotFoundException
+     */
+    public function convertStatus(Order $order, $statusId, $flush = false)
+    {
         // get current status
-        $currentStatus = $order->getStatus()->getEntity();
+        /** @var OrderStatusEntity $currentStatus */
+        if ($order->getStatus()) {
+            $currentStatus = $order->getStatus()->getEntity();
+
+            // status has not changed
+            if ($currentStatus->getId() === $statusId) {
+                return;
+            }
+        }
 
         // get desired status
         $statusEntity = $this->em
@@ -229,19 +265,52 @@ class OrderManager
             throw new EntityNotFoundException($statusEntity, $statusEntity);
         }
 
-        // check if status has changed
-        if($currentStatus->getId() !== $statusId) {
-            if ($statusId === OrderStatusEntity::STATUS_CREATED) {
-                // TODO: re-edit - do some business logic
-            }
+        // ACTIVITY LOG
+        $orderActivity = new OrderActivityLog();
+        $orderActivity->setOrder($order->getEntity());
+        $orderActivity->setStatusFrom($currentStatus);
+        $orderActivity->setStatusTo($statusEntity);
+        $orderActivity->setCreated(new \DateTime());
+        $this->em->persist($orderActivity);
 
-            $order->setStatus($statusEntity);
+        // BITMASK
+        $statusUpgrade = true;
+        $currentBitmaskStatus = $order->getBitmaskStatus();
+        // if desired status already is in bitmask, remove current state,
+        // since this must be a step back
+        if ($currentBitmaskStatus && $currentBitmaskStatus & $statusEntity->getId()) {
+            $order->setBitmaskStatus($currentBitmaskStatus & ~$currentStatus->getId());
+            $statusUpgrade = false;
+        } else {
+            // else increment bitmask status
+            $order->setBitmaskStatus($currentBitmaskStatus | $statusEntity->getId());
         }
+
+        // check if status has changed
+        if ($statusId === OrderStatusEntity::STATUS_CREATED) {
+            // TODO: re-edit - do some business logic
+        }
+        $order->setStatus($statusEntity);
 
         if ($flush === true) {
             $this->em->flush();
         }
+    }
 
+    /**
+     * finds a status by id
+     * @param $statusId
+     * @return object
+     * @throws \Sulu\Component\Rest\Exception\EntityNotFoundException
+     */
+    public function findOrderStatusById($statusId) {
+        try {
+            return $this->em
+                ->getRepository(self::$orderStatusEntityName)
+                ->find($statusId);
+        } catch(NoResultException $nre) {
+            throw new EntityNotFoundException(self::$orderStatusEntityName, $statusId);
+        }
     }
 
     /**
@@ -492,17 +561,17 @@ class OrderManager
      */
     private function setAddressDataForOrder(OrderAddress &$orderAddress, $addressData)
     {
-        $orderAddress->setStreet($this->getProperty($addressData,'street',''));
-        $orderAddress->setNumber($this->getProperty($addressData,'number',''));
-        $orderAddress->setAddition($this->getProperty($addressData,'addition',''));
-        $orderAddress->setCity($this->getProperty($addressData,'city',''));
-        $orderAddress->setZip($this->getProperty($addressData,'zip',''));
-        $orderAddress->setState($this->getProperty($addressData,'state',''));
-        $orderAddress->setCountry($this->getProperty($addressData,'country',''));
+        $orderAddress->setStreet($this->getProperty($addressData, 'street', ''));
+        $orderAddress->setNumber($this->getProperty($addressData, 'number', ''));
+        $orderAddress->setAddition($this->getProperty($addressData, 'addition', ''));
+        $orderAddress->setCity($this->getProperty($addressData, 'city', ''));
+        $orderAddress->setZip($this->getProperty($addressData, 'zip', ''));
+        $orderAddress->setState($this->getProperty($addressData, 'state', ''));
+        $orderAddress->setCountry($this->getProperty($addressData, 'country', ''));
 
-        $orderAddress->setPostboxCity($this->getProperty($addressData,'postboxCity',''));
-        $orderAddress->setPostboxPostcode($this->getProperty($addressData,'postboxPostcode',''));
-        $orderAddress->setPostboxNumber($this->getProperty($addressData,'postboxNumber',''));
+        $orderAddress->setPostboxCity($this->getProperty($addressData, 'postboxCity', ''));
+        $orderAddress->setPostboxPostcode($this->getProperty($addressData, 'postboxPostcode', ''));
+        $orderAddress->setPostboxNumber($this->getProperty($addressData, 'postboxNumber', ''));
     }
 
     /**
@@ -604,6 +673,15 @@ class OrderManager
         return null;
     }
 
+    /**
+     * processes items defined in an order and creates item entities
+     * @param $data
+     * @param Order $order
+     * @param $locale
+     * @param $userId
+     * @return bool
+     * @throws Exception\OrderException
+     */
     private function processItems($data, Order $order, $locale, $userId)
     {
         $result = true;
@@ -611,7 +689,7 @@ class OrderManager
             if ($this->checkIfSet('items', $data)) {
                 // items has to be an array
                 if (!is_array($data['items'])) {
-                    throw new MissingOrderAttributeException('items arrray');
+                    throw new MissingOrderAttributeException('items array');
                 }
 
                 $items = $data['items'];

@@ -159,7 +159,10 @@ define([], function() {
                     'sulu.overlay.be-careful',
                     'sulu.overlay.unsaved-changes-confirm',
                     null,
-                    callback.bind(this)
+                    function() {
+                        this.submit();
+                        callback.call(this)
+                    }.bind(this)
                 );
             }
             // otherwise proceed
@@ -471,6 +474,8 @@ define([], function() {
             this.accountId = null;
             this.contactId = null;
 
+            this.dfdFormSaved = this.sandbox.data.deferred();
+
             this.dfdAllFieldsInitialized = this.sandbox.data.deferred();
             this.dfdAutoCompleteInitialized = this.sandbox.data.deferred();
             this.dfdDesiredDeliveryDate = this.sandbox.data.deferred();
@@ -530,6 +535,7 @@ define([], function() {
         },
 
         submit: function() {
+            this.dfdFormSaved
             this.sandbox.logger.log('save Model');
 
             if (this.sandbox.form.validate(form)) {

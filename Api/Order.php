@@ -143,6 +143,30 @@ class Order extends ApiWrapper
     }
 
     /**
+     * Set bitmaskStatus
+     *
+     * @param integer $bitmaskStatus
+     * @return Order
+     */
+    public function setBitmaskStatus($bitmaskStatus)
+    {
+        $this->entity->setBitmaskStatus($bitmaskStatus);
+
+        return $this;
+    }
+
+    /**
+     * Get bitmaskStatus
+     * @VirtualProperty
+     * @SerializedName("bitmaskStatus")
+     * @return integer
+     */
+    public function getBitmaskStatus()
+    {
+        return $this->entity->getBitmaskStatus();
+    }
+
+    /**
      * Get sessionId
      * @return OrderStatus
      * @VirtualProperty

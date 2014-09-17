@@ -34,6 +34,7 @@ use Sulu\Bundle\Sales\CoreBundle\Entity\Item;
 use Sulu\Bundle\Sales\CoreBundle\Entity\ItemStatus;
 use Sulu\Bundle\Sales\CoreBundle\Entity\ItemStatusTranslation;
 use Sulu\Bundle\Sales\OrderBundle\Entity\Order;
+use Sulu\Bundle\Sales\OrderBundle\DataFixtures\ORM\LoadOrderStatus;
 use Sulu\Bundle\Sales\OrderBundle\Entity\OrderAddress;
 use Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatus;
 use Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatusTranslation;
@@ -180,6 +181,7 @@ class OrderControllerTest extends DatabaseTestCase
             self::$em->getClassMetadata('Sulu\Bundle\Sales\OrderBundle\Entity\OrderAddress'),
             self::$em->getClassMetadata('Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatus'),
             self::$em->getClassMetadata('Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatusTranslation'),
+            self::$em->getClassMetadata('Sulu\Bundle\Sales\OrderBundle\Entity\OrderActivityLog'),
             // SalesCoreBundle
             self::$em->getClassMetadata('Sulu\Bundle\Sales\CoreBundle\Entity\Item'),
             self::$em->getClassMetadata('Sulu\Bundle\Sales\CoreBundle\Entity\ItemAttribute'),
@@ -314,11 +316,32 @@ class OrderControllerTest extends DatabaseTestCase
         $this->contact2->setChanged(new DateTime());
 
         // order status
-        $this->orderStatus = new OrderStatus();
-        $this->orderStatusTranslation = new OrderStatusTranslation();
-        $this->orderStatusTranslation->setName('English-Order-Status-1');
-        $this->orderStatusTranslation->setLocale($this->locale);
-        $this->orderStatusTranslation->setStatus($this->orderStatus);
+        // created
+        $status = new OrderStatus();
+        $status->setId(OrderStatus::STATUS_CREATED);
+        $this->createStatusTranslation(self::$em, $status, 'Created', 'en');
+        $this->createStatusTranslation(self::$em, $status, 'Erfasst', 'de');
+        self::$em->persist($status);
+        $this->orderStatus = $status;
+        // cart
+        $status = new OrderStatus();
+        $status->setId(OrderStatus::STATUS_IN_CART);
+        $this->createStatusTranslation(self::$em, $status, 'In Cart', 'en');
+        $this->createStatusTranslation(self::$em, $status, 'Im Warenkorb', 'de');
+        self::$em->persist($status);
+        // confirmed
+        $status = new OrderStatus();
+        $status->setId(OrderStatus::STATUS_CONFIRMED);
+        $this->createStatusTranslation(self::$em, $status, 'Order confirmed', 'en');
+        $this->createStatusTranslation(self::$em, $status, 'Auftragsbestätigung erstellt', 'de');
+        self::$em->persist($status);
+        // confirmed
+        $status = new OrderStatus();
+        $status->setId(OrderStatus::STATUS_CLOSED_MANUALLY);
+        $this->createStatusTranslation(self::$em, $status, 'Order closed', 'en');
+        $this->createStatusTranslation(self::$em, $status, 'Auftragsbestätigung erstellt', 'de');
+        self::$em->persist($status);
+
 
         // order address
         $this->orderAddressDelivery = new OrderAddress();
@@ -368,6 +391,7 @@ class OrderControllerTest extends DatabaseTestCase
         $this->order->setContact($this->contact);
         $this->order->setAccount($this->account);
         $this->order->setStatus($this->orderStatus);
+        $this->order->setBitmaskStatus($this->orderStatus->getId());
         $this->order->setDeliveryAddress($this->orderAddressDelivery);
         $this->order->setInvoiceAddress($this->orderAddressInvoice);
 
@@ -450,10 +474,8 @@ class OrderControllerTest extends DatabaseTestCase
         self::$em->persist($this->contact2);
         self::$em->persist($this->order);
         self::$em->persist($order2);
-        self::$em->persist($this->orderStatus);
         self::$em->persist($this->orderAddressDelivery);
         self::$em->persist($this->orderAddressInvoice);
-        self::$em->persist($this->orderStatusTranslation);
         self::$em->persist($this->item);
         self::$em->persist($this->itemStatus);
         self::$em->persist($this->itemStatusTranslation);
@@ -464,6 +486,15 @@ class OrderControllerTest extends DatabaseTestCase
         self::$em->persist($productStatus);
         self::$em->persist($productStatusTranslation);
         self::$em->flush();
+    }
+
+    private function createStatusTranslation($manager, $status, $translation, $locale) {
+        $statusTranslation = new \Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatusTranslation();
+        $statusTranslation->setName($translation);
+        $statusTranslation->setLocale($locale);
+        $statusTranslation->setStatus($status);
+        $manager->persist($statusTranslation);
+        return $statusTranslation;
     }
 
     public function tearDown()
@@ -731,9 +762,27 @@ class OrderControllerTest extends DatabaseTestCase
         $this->client->request('GET', '/api/orders/' . $response->id);
         $response = json_decode($this->client->getResponse()->getContent());
         $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
+    }
 
+    public function testStatusChange()
+    {
+        $this->client->request('POST', '/api/orders/1', array(
+            'action' => 'confirm'
+        ));
+        $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
+        $response = json_decode($this->client->getResponse()->getContent());
+        $this->assertEquals(1, $response->id);
+        $this->assertEquals(OrderStatus::STATUS_CREATED | OrderStatus::STATUS_CONFIRMED, $response->bitmaskStatus);
+        $this->assertEquals(OrderStatus::STATUS_CONFIRMED, $response->status->id);
 
-
+        $this->client->request('POST', '/api/orders/1', array(
+            'action' => 'edit'
+        ));
+        $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
+        $response = json_decode($this->client->getResponse()->getContent());
+        $this->assertEquals(1, $response->id);
+        $this->assertEquals(OrderStatus::STATUS_CREATED & ~OrderStatus::STATUS_CONFIRMED, $response->bitmaskStatus);
+        $this->assertEquals(OrderStatus::STATUS_CREATED, $response->status->id);
     }
 
     public function testDeleteById()

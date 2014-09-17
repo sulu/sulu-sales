@@ -8,6 +8,8 @@
  * with this source code in the file LICENSE.
  */
 
+namespace Sulu\Bundle\Sales\OrderBundle\DataFixtures\ORM;
+
 use Doctrine\Common\DataFixtures\AbstractFixture;
 use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
@@ -26,22 +28,29 @@ class LoadOrderStatus extends AbstractFixture implements OrderedFixtureInterface
 
         // created
         $status = new OrderStatus();
-        $status->setId(1);
+        $status->setId(OrderStatus::STATUS_CREATED);
         $this->createStatusTranslation($manager, $status, 'Created', 'en');
-        $this->createStatusTranslation($manager, $status, 'Erstellt', 'de');
+        $this->createStatusTranslation($manager, $status, 'Erfasst', 'de');
         $manager->persist($status);
 
         // cart
         $status = new OrderStatus();
-        $status->setId(2);
+        $status->setId(OrderStatus::STATUS_IN_CART);
         $this->createStatusTranslation($manager, $status, 'In Cart', 'en');
         $this->createStatusTranslation($manager, $status, 'Im Warenkorb', 'de');
         $manager->persist($status);
 
         // confirmed
         $status = new OrderStatus();
-        $status->setId(3);
+        $status->setId(OrderStatus::STATUS_CONFIRMED);
         $this->createStatusTranslation($manager, $status, 'Order confirmed', 'en');
+        $this->createStatusTranslation($manager, $status, 'Auftragsbestätigung erstellt', 'de');
+        $manager->persist($status);
+
+        // confirmed
+        $status = new OrderStatus();
+        $status->setId(OrderStatus::STATUS_CLOSED_MANUALLY);
+        $this->createStatusTranslation($manager, $status, 'Order closed', 'en');
         $this->createStatusTranslation($manager, $status, 'Auftragsbestätigung erstellt', 'de');
         $manager->persist($status);
 
