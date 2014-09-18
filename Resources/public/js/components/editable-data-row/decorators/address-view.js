@@ -186,6 +186,14 @@ define(['text!sulusalescore/components/editable-data-row/templates/address.form.
                         }
                     );
                 }.bind(this), constants.rowClassSelector);
+
+                // TODO remove it, when when replaced by custom select
+                // this is temporarily replacement for the custom select
+                this.sandbox.dom.on(this.context.$el, 'change', function(event) {
+                    var id = this.sandbox.dom.val(event.currentTarget),
+                        data = this.context.getDataByPropertyAndValue.call(this, 'id', id);
+                    setFormData.call(this, data);
+                }.bind(this), this.options.selectSelector);
             }
         },
 

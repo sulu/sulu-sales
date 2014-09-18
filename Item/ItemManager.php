@@ -86,7 +86,7 @@ class ItemManager
         $user = $this->userRepository->findUserById($userId);
 
         // get product and set Product's data to item
-        $product = $this->setProduct($data, $item, $locale);
+        $product = $this->setItemByProductData($data, $item, $locale);
         // if product is not set, set data manually
         if (!$product) {
             $item->setName($this->getProperty($data, 'name', $item->getName()));
@@ -241,6 +241,8 @@ class ItemManager
     }
 
     /**
+     * Sets item based on given product data
+     *
      * @param $data
      * @param Item $item
      * @param $locale
@@ -248,7 +250,7 @@ class ItemManager
      * @throws \Sulu\Bundle\ProductBundle\Product\Exception\ProductNotFoundException
      * @return null|object
      */
-    private function setProduct($data, Item $item, $locale)
+    private function setItemByProductData($data, Item $item, $locale)
     {
         // terms of delivery
         $productData = $this->getProperty($data, 'product');
@@ -267,6 +269,9 @@ class ItemManager
             $item->setDescription($translation->getLongDescription());
             $item->setUseProductsPrice($this->getProperty($data, 'useProductsPrice', true));
             $item->setNumber($product->getNumber());
+
+            // TODO: get products supplier and set it (when product has supplier relation)
+//            $item->setSupplier($product->getSupplier);
 
             // TODO: get unit from product
             $item->setQuantityUnit('pc');

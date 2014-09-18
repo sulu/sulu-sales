@@ -178,12 +178,17 @@ define([
         },
 
         render: function() {
-            if(!!this.options.disabled){
+            if (!!this.options.disabled) {
                 this.sandbox.dom.addClass(this.$el, 'disabled');
                 this.sandbox.dom.addClass(this.$el, 'not-clickable');
             }
 
             this.overlayView.render();
+        },
+
+        setSelectedData: function(data) {
+            this.selectedData = data;
+            this.sandbox.dom.data(this.$el, 'value', data);
         },
 
         /**

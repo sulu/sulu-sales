@@ -3,6 +3,7 @@
 namespace Sulu\Bundle\Sales\CoreBundle\Api;
 
 use JMS\Serializer\Annotation\VirtualProperty;
+use Sulu\Bundle\ContactBundle\Entity\Account;
 use Sulu\Bundle\ProductBundle\Api\Product;
 use Sulu\Bundle\Sales\CoreBundle\Entity\Item as Entity;
 use Sulu\Bundle\Sales\CoreBundle\Entity\ItemAttribute;
@@ -431,6 +432,25 @@ class Item extends ApiWrapper
     public function getLenght()
     {
         return $this->entity->getLength();
+    }
+
+    /**
+     * @param Account
+     * @return Item
+     */
+    public function setSupplier($value)
+    {
+        $this->entity->setSupplier($value);
+
+        return $this;
+    }
+
+    /**
+     * @return Account
+     */
+    public function getSupplier()
+    {
+        return $this->entity->getSupplier();
     }
 
     /**

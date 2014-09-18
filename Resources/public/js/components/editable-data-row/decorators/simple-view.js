@@ -94,8 +94,8 @@ define(['text!sulusalescore/components/editable-data-row/templates/simple.form.h
 
                 // set data on form from selected address
                 this.sandbox.on('husky.select.' + this.options.instanceName + '.select.selected.item', function(id) {
-                    var adr = this.context.getDataByPropertyAndValue.call(this, 'id', id);
-                    setFormData.call(this, adr);
+                    var data = this.context.getDataByPropertyAndValue.call(this, 'id', id);
+                    setFormData.call(this, data);
                 }.bind(this));
             }
         },
@@ -130,14 +130,13 @@ define(['text!sulusalescore/components/editable-data-row/templates/simple.form.h
                 this.sandbox.emit('husky.overlay.' + this.context.options.instanceName + '.open');
             } else {
                 var data = this.sandbox.form.getData(this.formObject, true),
-                    newData;
+                    newData = data;
                 // merge changed address data with old data
                 if (typeof data === 'object') {
                     newData = this.sandbox.util.extend({}, this.context.selectedData, data);
-                    this.context.selectedData = newData[this.options.propertyName];
-                } else {
-                    this.context.selectedData = data;
+                    data = newData[this.options.propertyName];
                 }
+                this.context.setSelectedData(data);
 
                 CHANGED_EVENT.call(this, this.context.selectedData);
                 renderRow.call(this, this.context.selectedData);
@@ -189,6 +188,14 @@ define(['text!sulusalescore/components/editable-data-row/templates/simple.form.h
                         }
                     );
                 }.bind(this), constants.rowClassSelector);
+
+                // TODO remove it, when when replaced by custom select
+                // this is temporarily replacement for the custom select
+                this.sandbox.dom.on(this.context.$el, 'change', function(event) {
+                    var id = this.sandbox.dom.val(event.currentTarget),
+                        data = this.context.getDataByPropertyAndValue.call(this, 'id', id);
+                    setFormData.call(this, data);
+                }.bind(this), this.options.selectSelector);
             }
         },
 
