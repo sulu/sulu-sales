@@ -19,10 +19,11 @@
  * @param {String} [options.overlayTitle] translation key for the overlay title
  * @param {String} [options.dataFormat] structure which defines blocks with used fields and their delimiter - example below:
  * @param {String} [options.defaultProperty] property which is used to decide default displayed data
+ * @param {String} [options.propertyName] which property is taken from select
  *
  * Templates: The template for the overlay form has to use the editable-data-overlay-form class
  */
-define(['text!sulusalescore/components/editable-data-row/templates/address.form.html'], function(AddressTemplate) {
+define(['text!sulusalescore/components/editable-data-row/templates/simple.form.html'], function(SimpleTemplate) {
 
     'use strict';
 
@@ -31,35 +32,31 @@ define(['text!sulusalescore/components/editable-data-row/templates/address.form.
             fields: null,
             defaultProperty: null,
             overlayTemplate: null,
-            overlayTitle: '',
-            selectSelector: '#address-select'
+            overlayTitle: 'public.edit-entries',
+            selectSelector: '#data-select',
+            propertyName: 'name'
         },
 
         constants = {
             rowClass: 'editable-row',
             rowClassSelector: '.editable-row',
-
-            overlayTitle: 'salesorder.orders.addressOverlayTitle',
-
             formSelector: '.editable-data-overlay-form'
         },
 
         templates = {
             rowTemplate: function(value, disabled) {
-
                 if (!!disabled) {
                     return ['<span class="block ', constants.rowClass , ' disabled">', value, '</span>'].join('');
                 }
-
                 return ['<span class="block pointer ', constants.rowClass , '">', value, '</span>'].join('');
             }
         },
 
-        eventNamespace = 'sulu.editable-data-row.address-view.',
+        eventNamespace = 'sulu.editable-data-row.simple-view.',
 
         /**
          * raised when an item is changed
-         * @event sulu.editable-data-row.address-view.instanceName.initialized
+         * @event sulu.editable-data-row.simple-view.instanceName.initialized
          */
         EVENT_INITIALIZED = function() {
             this.sandbox.emit(eventNamespace + this.options.instanceName + '.initialized');
@@ -132,9 +129,15 @@ define(['text!sulusalescore/components/editable-data-row/templates/address.form.
             if (!accepted) {
                 this.sandbox.emit('husky.overlay.' + this.context.options.instanceName + '.open');
             } else {
-                var data = this.sandbox.form.getData(this.formObject, true);
+                var data = this.sandbox.form.getData(this.formObject, true),
+                    newData;
                 // merge changed address data with old data
-                this.context.selectedData = this.sandbox.util.extend({}, this.context.selectedData, data);
+                if (typeof data === 'object') {
+                    newData = this.sandbox.util.extend({}, this.context.selectedData, data);
+                    this.context.selectedData = newData[this.options.propertyName];
+                } else {
+                    this.context.selectedData = data;
+                }
 
                 CHANGED_EVENT.call(this, this.context.selectedData);
                 renderRow.call(this, this.context.selectedData);
@@ -178,11 +181,11 @@ define(['text!sulusalescore/components/editable-data-row/templates/address.form.
                     this.sandbox.emit(
                             'sulu.editable-data-row.' + this.options.instanceName + '.overlay.initialize',
                         {
-                            overlayTemplate: AddressTemplate,
-                            overlayTitle: constants.overlayTitle,
+                            overlayTemplate: SimpleTemplate,
+                            overlayTitle: this.options.overlayTitle,
                             overlayOkCallback: showInformationDialog.bind(this),
                             overlayCloseCallback: null,
-                            overlayData: flattenAddresses.call(this, this.context.data)
+                            overlayData: this.context.data
                         }
                     );
                 }.bind(this), constants.rowClassSelector);
@@ -190,66 +193,21 @@ define(['text!sulusalescore/components/editable-data-row/templates/address.form.
         },
 
         /**
-         * Flattens an address object or an array of addresses
-         * @param data
-         * @returns {*}
-         */
-        flattenAddresses = function(data) {
-
-            if (!!data && this.sandbox.util.typeOf(data) === 'array') {
-                this.sandbox.util.foreach(data, function(address) {
-                    if (!!address && !!address.country && !!address.country.name) {
-                        address.country = address.country.name;
-                    }
-
-                    address.fullAddress = getAddressString.call(this, address);
-
-                }.bind(this));
-            } else {
-                if (!!data && !!data.country && !!data.country.name) {
-                    data.country = data.country.name;
-                }
-
-                data.fullAddress = getAddressString.call(this, data);
-            }
-            return data;
-        },
-
-        /**
          * Renders the single row with the data according to the fields param or a replacement when no data is given
          */
         renderRow = function(data) {
             var $row,
-                $oldRow,
-                address;
+                $oldRow;
 
             // remove old row when rendering is triggered not for the first time
             $oldRow = this.sandbox.dom.find(constants.rowClassSelector, this.context.$el);
             this.sandbox.dom.remove($oldRow);
 
             if (!!data) {
-                address = flattenAddresses.call(this, data);
-                $row = this.sandbox.dom.createElement(templates.rowTemplate(address.fullAddress, this.context.options.disabled));
+                $row = this.sandbox.dom.createElement(templates.rowTemplate(data, this.context.options.disabled));
                 this.sandbox.dom.append(this.context.$el, $row);
             }
-        },
-
-        /**
-         * Returns the address according to the defined format
-         * @param address
-         * @returns {*}
-         */
-        getAddressString = function(address) {
-            var str = !!address.street ? address.street : '',
-                part = (address.zip + ' ' + address.city).trim();
-
-            str += !!str.length && !!address.number ? ' ' + address.number :address.number;
-            str += !!str.length && !!part ? ', ' + part : part;
-            str += !!str.length && !!address.country ? ', ' + address.country : address.country;
-
-            return str;
         };
-
 
     return {
 

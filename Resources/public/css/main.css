@@ -115,8 +115,8 @@ body {
 /* line 138, ../scss/modules/item-table.scss */
 .global-price-container .global-price-table {
   width: initial;
-  position: absolute;
-  right: 31px;
+  float: right;
+  margin-right: 31px;
   text-align: right;
 }
 /* line 144, ../scss/modules/item-table.scss */
@@ -141,4 +141,9 @@ body {
 /* line 6, ../scss/main.scss */
 .not-clickable {
   color: #999;
+}
+
+/* line 12, ../scss/main.scss */
+h2.divider {
+  clear: both;
 }

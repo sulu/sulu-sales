@@ -86,9 +86,29 @@
                 <source>salescore.item.processed-quantity</source>
                 <target>Proc. Quantity</target>
             </trans-unit>
-            <trans-unit id="a50accg2ac221350142c0b4720e29a22" resname="salesorder.orders.validation-warning">
-                <source>salesorder.orders.validation-warning</source>
-                <target>Please check your input. You cannot save as long as not all required fields are filled properly.</target>
+            <trans-unit id="a50accg2ac221350142c0b4720e29a22" resname="salescore.conversion-failed">
+                <source>salescore.conversion-failed</source>
+                <target>Status-conversion failed.</target>
+            </trans-unit>
+            <trans-unit id="a50accg2ac221350142c0b4720e29a23" resname="salescore.shipping-failed">
+                <source>salescore.shipping-failed</source>
+                <target>A new shipping could not be created.</target>
+            </trans-unit>
+            <trans-unit id="a50accg2ac221350142c0b4720e29a24" resname="salescore.items">
+                <source>salescore.items</source>
+                <target>Items</target>
+            </trans-unit>
+            <trans-unit id="a50accg2ac221350142c0b4720e29a25" resname="salescore.shipping.date">
+                <source>salescore.shipping.date</source>
+                <target>Shipping-date</target>
+            </trans-unit>
+            <trans-unit id="a50accg2ac221350142c0b4720e29a26" resname="salescore.currency">
+                <source>salescore.currency</source>
+                <target>Currency</target>
+            </trans-unit>
+            <trans-unit id="a50accg2ac221350142c0b4720e29a27" resname="salescore.paymentMethod">
+                <source>salescore.paymentMethod</source>
+                <target>Payment method</target>
             </trans-unit>
         </body>
     </file>

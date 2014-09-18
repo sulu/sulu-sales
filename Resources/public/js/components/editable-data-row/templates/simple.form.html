@@ -1,0 +1,32 @@
+<div class="editable-data-overlay-container grid">
+
+    <div class="grid-row">
+        <div class="form-group-vertical">
+            <label for="data-select"><%=translate('public.selection')%></label>
+
+            <div id="data-select"
+                 data-aura-component="select@husky"
+                 data-aura-deselect-field="select.no-choice"
+                 data-aura-repeat-select="true"
+                 data-aura-default-label="<%=translate('public.please-choose')%>"
+                 data-aura-instance-name="<%=instanceName + '.select'%>"
+                 data-aura-data='<%= JSON.stringify(data) %>'
+                 data-aura-pre-selected-elements="[]"
+                 data-aura-value-name="name">
+            </div>
+
+        </div>
+    </div>
+
+    <form class="form-vertical editable-data-overlay-form">
+        <div class="grid-row">
+            <div class="grid-col-12">
+                <!--<div class="form-group-vertical">-->
+                    <!--<label for="name"><%=translate('')%></label>-->
+                    <input id="name" type="text" class="form-element"
+                           data-mapper-property="name"/>
+                <!--</div>-->
+            </div>
+        </div>
+    </form>
+</div>

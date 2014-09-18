@@ -13,11 +13,15 @@
  *
  * @param {Object} [options] Configuration object
  * @param {String} [options.instanceName] instance name of the component and its subcomponents
+ * @param {String} [options.selectData] data that is shown in select
  * @param {String} [options.view] view name
  * @param {Object} [options.viewOptions] options for the view
  * @param {Object} [options.disabled] disables interaction by default
  */
-define(['sulusalescore/components/editable-data-row/decorators/address-view'], function(AddressView) {
+define([
+    'sulusalescore/components/editable-data-row/decorators/address-view',
+    'sulusalescore/components/editable-data-row/decorators/simple-view'
+], function(AddressView, SimpleView) {
 
     'use strict';
 
@@ -25,11 +29,14 @@ define(['sulusalescore/components/editable-data-row/decorators/address-view'], f
             view: 'address',
             viewOptions: {},
             instanceName: 'undefined',
-            disabled: false
+            disabled: false,
+            selectData: null,
+            overlayTitle: null
         },
 
         decorators = {
-            address: AddressView
+            address: AddressView,
+            simple: SimpleView
         },
 
         constants = {
@@ -145,7 +152,7 @@ define(['sulusalescore/components/editable-data-row/decorators/address-view'], f
             this.options = this.sandbox.util.extend({}, defaults, this.options);
 
             this.selectedData = this.options.value;
-            this.data = null;
+            this.data = this.options.selectData;
 
             // make a copy of the decorators for each editable-data-row instance
             // if you directly access the decorators variable the editable-data-row-context in the decorators will be overwritten
