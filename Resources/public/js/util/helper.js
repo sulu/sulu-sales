@@ -19,7 +19,7 @@ define([], function() {
          * @returns {string}
          */
         parseDate: function(date, format) {
-            date = date || new Date();
+            date = date && date.getDate() ? date : new Date();
             format = format || 'mm/dd/yyyy';
             var dd = date.getDate(),
                 mm = date.getMonth() + 1, //January is 0!
@@ -35,9 +35,9 @@ define([], function() {
             }
 
             // replace format by real values
-            dateString = dateString.replace('mm',mm);
-            dateString = dateString.replace('dd',dd);
-            dateString = dateString.replace('yyyy',yyyy);
+            dateString = dateString.replace('mm', mm);
+            dateString = dateString.replace('dd', dd);
+            dateString = dateString.replace('yyyy', yyyy);
 
             return dateString;
         }

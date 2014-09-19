@@ -23,7 +23,9 @@
  *
  * Templates: The template for the overlay form has to use the editable-data-overlay-form class
  */
-define(['text!sulusalescore/components/editable-data-row/templates/simple.form.html'], function(SimpleTemplate) {
+define([
+    'text!sulusalescore/components/editable-data-row/templates/simple.form.html'
+], function(SimpleTemplate) {
 
     'use strict';
 
@@ -40,26 +42,29 @@ define(['text!sulusalescore/components/editable-data-row/templates/simple.form.h
         constants = {
             rowClass: 'editable-row',
             rowClassSelector: '.editable-row',
-            formSelector: '.editable-data-overlay-form'
+            formSelector: '.editable-data-overlay-form',
+            eventNamespace: 'sulu.editable-data-row.simple-view.'
         },
 
         templates = {
             rowTemplate: function(value, disabled) {
                 if (!!disabled) {
-                    return ['<span class="block ', constants.rowClass , ' disabled">', value, '</span>'].join('');
+                    return ['<span class="block ',
+                        constants.rowClass ,
+                        ' disabled">',
+                        value,
+                        '</span>'].join('');
                 }
                 return ['<span class="block pointer ', constants.rowClass , '">', value, '</span>'].join('');
             }
         },
-
-        eventNamespace = 'sulu.editable-data-row.simple-view.',
 
         /**
          * raised when an item is changed
          * @event sulu.editable-data-row.simple-view.instanceName.initialized
          */
         EVENT_INITIALIZED = function() {
-            this.sandbox.emit(eventNamespace + this.options.instanceName + '.initialized');
+            this.sandbox.emit(constants.eventNamespace + this.options.instanceName + '.initialized');
         },
 
         /**
@@ -68,7 +73,7 @@ define(['text!sulusalescore/components/editable-data-row/templates/simple.form.h
          * @param data
          */
         CHANGED_EVENT = function(data) {
-            this.sandbox.emit(eventNamespace + this.options.instanceName + '.changed', data);
+            this.sandbox.emit(constants.eventNamespace + this.options.instanceName + '.changed', data);
         },
 
         /**
@@ -105,7 +110,6 @@ define(['text!sulusalescore/components/editable-data-row/templates/simple.form.h
          * @var callback - callback function returns true or false if data got deleted
          */
         showInformationDialog = function() {
-
             // hide overlay
             this.sandbox.emit('husky.overlay.' + this.context.options.instanceName + '.close');
 
@@ -125,7 +129,6 @@ define(['text!sulusalescore/components/editable-data-row/templates/simple.form.h
          * @param accepted
          */
         handleDialogClick = function(accepted) {
-
             if (!accepted) {
                 this.sandbox.emit('husky.overlay.' + this.context.options.instanceName + '.open');
             } else {
@@ -202,7 +205,8 @@ define(['text!sulusalescore/components/editable-data-row/templates/simple.form.h
         },
 
         /**
-         * Renders the single row with the data according to the fields param or a replacement when no data is given
+         * Renders the single row with the data according to the fields param or
+         * a replacement when no data is given
          */
         renderRow = function(data) {
             var $row,
@@ -213,7 +217,9 @@ define(['text!sulusalescore/components/editable-data-row/templates/simple.form.h
             this.sandbox.dom.remove($oldRow);
 
             if (!!data) {
-                $row = this.sandbox.dom.createElement(templates.rowTemplate(data, this.context.options.disabled));
+                $row = this.sandbox.dom.createElement(
+                    templates.rowTemplate(data, this.context.options.disabled)
+                );
                 this.sandbox.dom.append(this.context.$el, $row);
             }
         };

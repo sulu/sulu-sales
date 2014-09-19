@@ -57,7 +57,7 @@ define([
          * @event sulu.editable-data-row.[instanceName].initialized
          */
         EVENT_INITIALIZED = function() {
-             return eventNamespace + this.options.instanceName + '.initialized';
+            return eventNamespace + this.options.instanceName + '.initialized';
         },
 
         /**
@@ -126,7 +126,7 @@ define([
                 if (!!this.data) {
                     this.overlayView.openOverlay();
                 }
-            }.bind(this), '.'+constants.addClass);
+            }.bind(this), '.' + constants.addClass);
         },
 
         /**
@@ -169,12 +169,15 @@ define([
         },
 
         /**
-         * Renders the single row with the data according to the fields param or a replacement when no data is given
+         * Renders the single row with the data according to the fields param or
+         * a replacement when no data is given
          */
         renderPlus = function() {
             var $row;
             if (!this.options.disabled) {
-                $row = this.sandbox.dom.createElement('<i class="fa fa-plus-circle pointer '+constants.addClass+'"></i>');
+                $row = this.sandbox.dom.createElement(
+                        '<i class="fa fa-plus-circle pointer ' + constants.addClass + '"></i>'
+                );
                 this.sandbox.dom.append(this.$el, $row);
             }
         },
@@ -220,7 +223,7 @@ define([
 
             if (!!this.selectedData) {
                 this.render();
-            } else if(!!this.options.showPlusIcon) {
+            } else if (!!this.options.showPlusIcon) {
                 renderPlus.call(this);
             }
 
@@ -238,7 +241,7 @@ define([
 
         setSelectedData: function(data) {
             if (!!data) {
-                var plusIcon = this.sandbox.dom.find('.'+constants.addClass, this.$el);
+                var plusIcon = this.sandbox.dom.find('.' + constants.addClass, this.$el);
                 // check if plus is set
                 if (plusIcon.length !== null) {
                     this.sandbox.dom.remove(plusIcon);
