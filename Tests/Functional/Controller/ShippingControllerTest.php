@@ -219,6 +219,7 @@ class ShippingControllerTest extends DatabaseTestCase
             // SalesShippingBundle
             self::$em->getClassMetadata('Sulu\Bundle\Sales\ShippingBundle\Entity\Shipping'),
             self::$em->getClassMetadata('Sulu\Bundle\Sales\ShippingBundle\Entity\ShippingItem'),
+            self::$em->getClassMetadata('Sulu\Bundle\Sales\ShippingBundle\Entity\ShippingActivityLog'),
             self::$em->getClassMetadata('Sulu\Bundle\Sales\ShippingBundle\Entity\ShippingStatus'),
             self::$em->getClassMetadata('Sulu\Bundle\Sales\ShippingBundle\Entity\ShippingStatusTranslation'),
             // ProductBundle

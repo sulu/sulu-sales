@@ -26,13 +26,11 @@
         <contexts>
             <context key="main">
                 <meta>
-                    <title lang="de">Hauptnavigation</title>
                     <title lang="en">Mainnavigation</title>
                 </meta>
             </context>
             <context key="footer">
                 <meta>
-                    <title lang="de">Footernavigation</title>
                     <title lang="en">Footernavigation</title>
                 </meta>
             </context>

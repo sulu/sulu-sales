@@ -126,6 +126,11 @@ class Shipping
     private $creator;
 
     /**
+     * @var integer
+     */
+    private $bitmaskStatus;
+
+    /**
      * Constructor
      */
     public function __construct()
@@ -657,5 +662,28 @@ class Shipping
     public function getCreator()
     {
         return $this->creator;
+    }
+
+    /**
+     * Set bitmaskStatus
+     *
+     * @param integer $bitmaskStatus
+     * @return Shipping
+     */
+    public function setBitmaskStatus($bitmaskStatus)
+    {
+        $this->bitmaskStatus = $bitmaskStatus;
+    
+        return $this;
+    }
+
+    /**
+     * Get bitmaskStatus
+     *
+     * @return integer 
+     */
+    public function getBitmaskStatus()
+    {
+        return $this->bitmaskStatus;
     }
 }

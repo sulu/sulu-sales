@@ -12,7 +12,8 @@ class ShippingStatus
 
     const STATUS_CREATED = 1;
     const STATUS_DELIVERY_NOTE = 2;
-    const STATUS_SHIPPED= 3;
+    const STATUS_SHIPPED= 4;
+    const STATUS_CANCELED= 8;
 
     /**
      * @var integer

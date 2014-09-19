@@ -514,6 +514,30 @@ class Shipping extends ApiWrapper
     }
 
     /**
+     * Set bitmaskStatus
+     *
+     * @param integer $bitmaskStatus
+     * @return Shipping
+     */
+    public function setBitmaskStatus($bitmaskStatus)
+    {
+        $this->entity->setBitmaskStatus($bitmaskStatus);
+
+        return $this;
+    }
+
+    /**
+     * Get bitmaskStatus
+     * @VirtualProperty
+     * @SerializedName("bitmaskStatus")
+     * @return integer
+     */
+    public function getBitmaskStatus()
+    {
+        return $this->entity->getBitmaskStatus();
+    }
+
+    /**
      * Set termsOfDelivery
      *
      * @param \Sulu\Bundle\ContactBundle\Entity\TermsOfDelivery $termsOfDelivery

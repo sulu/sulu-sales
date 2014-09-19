@@ -20,7 +20,6 @@ use Sulu\Component\Rest\RestHelperInterface;
 use Sulu\Component\Security\UserRepositoryInterface;
 use Sulu\Bundle\Sales\CoreBundle\Item\ItemManager;
 use Sulu\Bundle\Sales\OrderBundle\Entity\OrderAddress;
-use Sulu\Bundle\Sales\ShippingBundle\Entity\ShippingStatus;
 use Sulu\Bundle\Sales\ShippingBundle\Shipping\Exception\MissingShippingAttributeException;
 use Sulu\Bundle\Sales\ShippingBundle\Shipping\Exception\ShippingDependencyNotFoundException;
 use Sulu\Bundle\Sales\ShippingBundle\Shipping\Exception\ShippingException;
@@ -28,6 +27,7 @@ use Sulu\Bundle\Sales\ShippingBundle\Shipping\Exception\ShippingNotFoundExceptio
 use Sulu\Bundle\Sales\ShippingBundle\Entity\Shipping as ShippingEntity;
 use Sulu\Bundle\Sales\ShippingBundle\Api\ShippingItem;
 use Sulu\Bundle\Sales\ShippingBundle\Entity\ShippingItem as ShippingItemEntity;
+use Sulu\Bundle\Sales\ShippingBundle\Entity\ShippingStatus as ShippingStatusEntity;
 use Sulu\Bundle\Sales\ShippingBundle\Api\Shipping;
 
 class ShippingManager
@@ -150,7 +150,7 @@ class ShippingManager
             $shipping->setCreator($user);
             $this->em->persist($shipping->getEntity());
 
-            $status = $this->em->getRepository(self::$shippingStatusEntityName)->find(ShippingStatus::STATUS_CREATED);
+            $status = $this->em->getRepository(self::$shippingStatusEntityName)->find(ShippingStatusEntity::STATUS_CREATED);
             $shipping->setStatus($status);
 
             // create OrderAddress
@@ -222,25 +222,54 @@ class ShippingManager
      */
     public function convertStatus(Shipping $shipping, $statusId, $flush = false)
     {
-
         // get current status
-        $currentStatus = $shipping->getStatus()->getEntity();
+        $currentStatus = null;
+        if ($shipping->getStatus()) {
+            $currentStatus = $shipping->getStatus()->getEntity();
+
+            // if status has not changed, skip
+            if ($currentStatus->getId() === $statusId) {
+                return;
+            }
+        }
 
         // get desired status
         $statusEntity = $this->em
-            ->getRepository(self::$shippingStatusEntityName)
+            ->getRepository(self::$orderStatusEntityName)
             ->find($statusId);
         if (!$statusEntity) {
-            throw new EntityNotFoundException(self::$shippingStatusEntityName, $statusEntity);
+            throw new EntityNotFoundException($statusEntity, $statusEntity);
+        }
+
+        // ACTIVITY LOG
+        $shippingActivity = new OrderActivityLog();
+        $shippingActivity->setOrder($shipping->getEntity());
+        if ($currentStatus) {
+            $shippingActivity->setStatusFrom($currentStatus);
+        }
+        $shippingActivity->setStatusTo($statusEntity);
+        $shippingActivity->setCreated(new \DateTime());
+        $this->em->persist($shippingActivity);
+
+        // BITMASK
+        $currentBitmaskStatus = $shipping->getBitmaskStatus();
+        // if desired status already is in bitmask, remove current state
+        // since this is a step back
+        if ($currentBitmaskStatus && $currentBitmaskStatus & $statusEntity->getId()) {
+            $shipping->setBitmaskStatus($currentBitmaskStatus & ~$currentStatus->getId());
+        } else {
+            // else increment bitmask status
+            $shipping->setBitmaskStatus($currentBitmaskStatus | $statusEntity->getId());
         }
 
         // check if status has changed
-        if ($currentStatus->getId() !== $statusId) {
-            if ($statusId === ShippingStatus::STATUS_CREATED) {
-                // TODO: re-edit - do some business logic
-            }
+        if ($statusId === ShippingStatusEntity::STATUS_CREATED) {
+            // TODO: re-edit - do some business logic
+        }
+        $shipping->setStatus($statusEntity);
 
-            $shipping->setStatus($statusEntity);
+        if ($flush === true) {
+            $this->em->flush();
         }
     }
 

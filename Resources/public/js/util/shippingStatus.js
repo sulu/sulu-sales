@@ -17,6 +17,6 @@ define([], function() {
     return {
         CREATED: 1,
         DELIVERY_NOTE: 2,
-        SHIPPED: 3
+        SHIPPED: 4
     };
 });
