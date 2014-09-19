@@ -220,12 +220,12 @@
             <label for="currency-select" class="required"><%=translate('salescore.currency')%></label>
             <div id="currency-select"
                  data-aura-component="select@husky"
-                 data-aura-data="[]"
+                 data-aura-data='[{"id":1,"name":"EUR"}]'
                  data-aura-instance-name="currency-select"
                  data-aura-value-name="name"
                  data-aura-multiple-select="false"
                  data-aura-default-label="<%=translate('dropdown.please-choose')%>"
-                 data-aura-pre-selected-elements="[]"
+                 data-aura-pre-selected-elements="[1]"
                  data-aura-disabled="<%= !isEditable %>"
                  {#data-validation-required="true"#}
                  data-type="husky-select"
@@ -247,32 +247,32 @@
                  data-aura-instance-name="shipping-date"
                  data-aura-input-id="shipping-date-input"
                  data-aura-input-name="shipping-date"
-                 data-mapper-property="shippingDate">
+                 data-mapper-property="desiredDeliveryDate">
             </div>
         </div>
     </div>
 </div>
-<div class="grid-row small changeListener">
-    <div class="grid-col-6">
-        <div class="form-group">
-            <label for="payment-select" class="required"><%=translate('salescore.paymentMethod')%></label>
-            <div id="payment-select"
-                 data-aura-component="select@husky"
-                 data-aura-data="[]"
-                 data-aura-instance-name="payment-select"
-                 data-aura-value-name="name"
-                 data-aura-multiple-select="false"
-                 data-aura-default-label="<%=translate('dropdown.please-choose')%>"
-                 data-aura-pre-selected-elements="[]"
-                 data-aura-disabled="<%= !isEditable %>"
-                 data-type="husky-select"
-                 data-mapper-property="payment"
-                 data-form="true">
-             </div>
-        </div>
-        <div class="grid-col-6"></div>
-    </div>
-</div>
+{#<div class="grid-row small changeListener">#}
+    {#<div class="grid-col-6">#}
+        {#<div class="form-group">#}
+            {#<label for="payment-select" class="required"><%=translate('salescore.paymentMethod')%></label>#}
+            {#<div id="payment-select"#}
+                 {#data-aura-component="select@husky"#}
+                 {#data-aura-data="[]"#}
+                 {#data-aura-instance-name="payment-select"#}
+                 {#data-aura-value-name="name"#}
+                 {#data-aura-multiple-select="false"#}
+                 {#data-aura-default-label="<%=translate('dropdown.please-choose')%>"#}
+                 {#data-aura-pre-selected-elements="[]"#}
+                 {#data-aura-disabled="<%= !isEditable %>"#}
+                 {#data-type="husky-select"#}
+                 {#data-mapper-property="payment"#}
+                 {#data-form="true">#}
+             {#</div>#}
+        {#</div>#}
+        {#<div class="grid-col-6"></div>#}
+    {#</div>#}
+{#</div>#}
 
 
 </form>

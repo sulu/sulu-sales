@@ -243,28 +243,31 @@ define([
                 this.sandbox.emit('sulu.salesorder.orders.list');
             }, this);
 
-            // TODO desired deliverydate
-            this.sandbox.on('husky.input.desired-delivery-date.initialized', function() {
-                this.dfdDesiredDeliveryDate.resolve();
+            this.sandbox.on('husky.input.shipping-date.initialized', function() {
+                this.dfdShippingDate.resolve();
+            }, this);
+
+            this.sandbox.on('husky.input.order-date.initialized', function() {
+                this.dfdOrderDate.resolve();
             }, this);
 
             this.sandbox.on('husky.auto-complete.' + this.accountInstanceName + '.select', accountChangedListener.bind(this));
 
-            this.sandbox.on('sulu.editable-data-row.delivery-address.initialized', function() {
+            this.sandbox.on('sulu.editable-data-row.' + constants.deliveryAddressInstanceName + '.initialized', function() {
                 this.dfdDeliveryAddressInitialized.resolve();
             }.bind(this));
 
-            this.sandbox.on('sulu.editable-data-row.invoice-address.initialized', function() {
+            this.sandbox.on('sulu.editable-data-row.' + constants.billingAddressInstanceName + '.initialized', function() {
                 this.dfdInvoiceAddressInitialized.resolve();
             }.bind(this));
 
-            this.sandbox.on('sulu.editable-data-row.address-view.delivery-address.changed', function(data) {
+            this.sandbox.on('sulu.editable-data-row.address-view.' + constants.deliveryAddressInstanceName + '.changed', function(data) {
                 this.options.data.deliveryAddress = data;
                 setFormData.call(this, this.options.data);
                 changeHandler.call(this);
             }.bind(this));
 
-            this.sandbox.on('sulu.editable-data-row.address-view.invoice-address.changed', function(data) {
+            this.sandbox.on('sulu.editable-data-row.address-view.' + constants.billingAddressInstanceName + '.changed', function(data) {
                 this.options.data.invoiceAddress = data;
                 setFormData.call(this, this.options.data);
                 changeHandler.call(this);
@@ -309,10 +312,6 @@ define([
 
             this.sandbox.start(form);
 
-            // TODO: init desired delivery date
-            this.dfdDesiredDeliveryDate.resolve();
-
-            // TODO init address and contacts
             if (!!data.account && !!data.account.id) {
                 initSelectsByAccountId.call(this, data.account.id, data);
             }
@@ -412,14 +411,14 @@ define([
             var data, preselect, account, addressData;
 
             // load account
-            account = Account.findOrCreate({id:id});
+            account = Account.findOrCreate({id: id});
             account.fetch({
                 success: function(model) {
                     account = model.toJSON();
-                    if (account.hasOwnProperty('termsOfDelivery')) {
+                    if (account.hasOwnProperty('termsOfDelivery') && !!account.termsOfDelivery) {
                         setValueOfEditableDataRow.call(this, constants.deliveryTermsInstanceName, account.termsOfDelivery.terms);
                     }
-                    if (account.hasOwnProperty('termsOfPayment')) {
+                    if (account.hasOwnProperty('termsOfPayment') && !!account.termsOfPayment) {
                         setValueOfEditableDataRow.call(this, constants.paymentTermsInstanceName, account.termsOfPayment.terms);
                     }
 
@@ -440,7 +439,7 @@ define([
                         this.sandbox.data.when(this.dfdDeliveryAddressInitialized).then(function() {
                             initAddressComponents.call(this, addressData, constants.deliveryAddressInstanceName, preselect);
                             this.options.data.deliveryAddress = preselect;
-                            setFormData.call(this, this.options.data);
+//                            setFormData.call(this, this.options.data);
                         }.bind(this));
 
                         preselect = null;
@@ -456,7 +455,7 @@ define([
                         this.sandbox.data.when(this.dfdInvoiceAddressInitialized).then(function() {
                             initAddressComponents.call(this, addressData, constants.billingAddressInstanceName, preselect);
                             this.options.data.invoiceAddress = preselect;
-                            setFormData.call(this, this.options.data);
+//                            setFormData.call(this, this.options.data);
                         }.bind(this));
                     }
 
@@ -521,13 +520,14 @@ define([
 
             this.dfdAllFieldsInitialized = this.sandbox.data.deferred();
             this.dfdAutoCompleteInitialized = this.sandbox.data.deferred();
-            this.dfdDesiredDeliveryDate = this.sandbox.data.deferred();
+            this.dfdShippingDate = this.sandbox.data.deferred();
+            this.dfdOrderDate = this.sandbox.data.deferred();
 
             this.dfdInvoiceAddressInitialized = this.sandbox.data.deferred();
             this.dfdDeliveryAddressInitialized = this.sandbox.data.deferred();
 
             // define when all fields are initialized
-            this.sandbox.data.when(this.dfdDesiredDeliveryDate, this.dfdAutoCompleteInitialized).then(function() {
+            this.sandbox.data.when(this.dfdShippingDate, this.dfdOrderDate, this.dfdAutoCompleteInitialized).then(function() {
                 this.dfdAllFieldsInitialized.resolve();
             }.bind(this));
 
