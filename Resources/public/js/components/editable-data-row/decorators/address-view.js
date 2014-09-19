@@ -132,9 +132,10 @@ define(['text!sulusalescore/components/editable-data-row/templates/address.form.
             if (!accepted) {
                 this.sandbox.emit('husky.overlay.' + this.context.options.instanceName + '.open');
             } else {
-                var data = this.sandbox.form.getData(this.formObject, true);
+                var data = this.sandbox.form.getData(this.formObject, true),
                 // merge changed address data with old data
-                this.context.selectedData = this.sandbox.util.extend({}, this.context.selectedData, data);
+                newData = this.sandbox.util.extend({}, this.context.selectedData, data);
+                this.context.setSelectedData(newData);
 
                 CHANGED_EVENT.call(this, this.context.selectedData);
                 renderRow.call(this, this.context.selectedData);

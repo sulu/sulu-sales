@@ -240,16 +240,17 @@ define([
         },
 
         setSelectedData: function(data) {
-            if (!!data) {
-                var plusIcon = this.sandbox.dom.find('.' + constants.addClass, this.$el);
+            var plusIcon = this.sandbox.dom.find('.' + constants.addClass, this.$el);
                 // check if plus is set
-                if (plusIcon.length !== null) {
-                    this.sandbox.dom.remove(plusIcon);
-                }
-
-                this.selectedData = data;
-                this.sandbox.dom.data(this.$el, 'value', data);
+            if (!!data && plusIcon.length !== 0) {
+                this.sandbox.dom.remove(plusIcon);
+            } else if (!data && plusIcon.length === 0) {
+                renderPlus.call(this);
             }
+
+            this.selectedData = data;
+            this.sandbox.dom.data(this.$el, 'value', data);
+
         },
 
         /**
