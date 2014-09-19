@@ -518,7 +518,7 @@ class OrderControllerTest extends DatabaseTestCase
         $this->assertEquals('10kg minimum', $response->termsOfDeliveryContent);
         $this->assertEquals('10% off', $response->termsOfPaymentContent);
         // order status
-        $this->assertEquals('English-Order-Status-1', $response->status->status);
+        $this->assertEquals('Created', $response->status->status);
         $this->assertEquals($this->orderStatus->getId(), $response->status->id);
         // contact
         $this->assertEquals($this->contact->getId(), $response->contact->id);
@@ -696,7 +696,7 @@ class OrderControllerTest extends DatabaseTestCase
         $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
 
         $this->assertEquals('NUMBER:0815', $response->orderNumber);
-        $this->assertEquals('English-Order-Status-1', $response->status->status);
+        $this->assertEquals('Created', $response->status->status);
 
         $this->checkOrderAddress($response->invoiceAddress, $this->address, $this->contact, $this->account);
         $this->checkOrderAddress($response->deliveryAddress, $this->address2, $this->contact, $this->account);
