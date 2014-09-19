@@ -7,7 +7,11 @@
  * with this source code in the file LICENSE.
  */
 
-define([], function() {
+define([
+    'sulusalesorder/util/orderStatus',
+    'sulusalescore/util/helper',
+    'sulucontact/model/account'
+], function(OrderStatus, CoreHelper, Account) {
 
     'use strict';
 
@@ -19,9 +23,13 @@ define([], function() {
             accountUrl: '/admin/api/accounts?searchFields=name&flat=true&fields=id,name',
             accountInputId: '#account-input',
             deliveryAddressInstanceName: 'delivery-address',
-            paymentAddressInstanceName: 'invoice-address',
+            billingAddressInstanceName: 'billing-address',
+            paymentTermsInstanceName: 'payment-terms',
+            deliveryTermsInstanceName: 'delivery-terms',
             contactSelectId: '#contact-select',
-            validateWarningTranslation: 'salesorder.orders.validation-warning'
+            validateWarningTranslation: 'form.validation-warning',
+            translationConversionFailed: 'salescore.conversion-failed',
+            translationShippingFailed: 'salescore.shipping-failed'
         },
 
         /**
@@ -88,15 +96,14 @@ define([], function() {
             if (this.options.data.id) {
 
                 // define workflow based on orderStatus
-                // TODO: get statuses from backend
-                if (this.orderStatusId === 1) {
+                if (this.orderStatusId === OrderStatus.CREATED) {
                     workflow.items.push(workflowItems.confirm);
-                } else if (this.orderStatusId === 3) {
+                } else if (this.orderStatusId === OrderStatus.CONFIRMED) {
                     workflow.items.push(workflowItems.edit);
                 }
 
                 // more than in cart
-                if (this.orderStatusId > 2) {
+                if (this.orderStatusId >= OrderStatus.CONFIRMED) {
                     workflow.items.push(workflowItems.divider);
                     workflow.items.push(workflowItems.shipping);
                 }
@@ -121,8 +128,10 @@ define([], function() {
          */
         confirmOrder = function() {
             checkForUnsavedData.call(this, function() {
-                this.sandbox.emit('sulu.salesorder.order.confirm');
-            });
+                    this.sandbox.emit('sulu.salesorder.order.confirm');
+                },
+                showErrorLabel.bind(this, constants.translationConversionFailed)
+            );
         },
 
         /**
@@ -130,8 +139,10 @@ define([], function() {
          */
         editOrder = function() {
             checkForUnsavedData.call(this, function() {
-                this.sandbox.emit('sulu.salesorder.order.edit');
-            });
+                    this.sandbox.emit('sulu.salesorder.order.edit');
+                },
+                showErrorLabel.bind(this, constants.translationConversionFailed)
+            );
         },
 
         /**
@@ -139,15 +150,23 @@ define([], function() {
          */
         createShipping = function() {
             checkForUnsavedData.call(this, function() {
-                this.sandbox.emit('sulu.salesorder.shipping.create');
-            });
+                    this.sandbox.emit('sulu.salesorder.shipping.create');
+                },
+                showErrorLabel.bind(this, constants.translationShippingFailed)
+            );
+        },
+
+        showErrorLabel = function(translationKey) {
+            this.sandbox.emit('sulu.labels.error.show',
+                this.sandbox.translate(translationKey));
         },
 
         /**
          * checks for unsaved data. if unsaved, a dialog is shown, else immediately proceed
          * @param callback - called when no unsaved data, or warning was confirmed
+         * @param errorCallback - if submission fails
          */
-        checkForUnsavedData = function(callback) {
+        checkForUnsavedData = function(callback, errorCallback) {
             if (typeof callback !== 'function') {
                 return;
             }
@@ -157,11 +176,13 @@ define([], function() {
                 // show dialog
                 this.sandbox.emit('sulu.overlay.show-warning',
                     'sulu.overlay.be-careful',
-                    'sulu.overlay.unsaved-changes-confirm',
+                    'sulu.overlay.save-unsaved-changes-confirm',
                     null,
                     function() {
-                        this.submit();
-                        callback.call(this)
+                        this.submit().then(
+                            callback.bind(this),
+                            errorCallback.bind(this)
+                        );
                     }.bind(this)
                 );
             }
@@ -209,6 +230,7 @@ define([], function() {
             this.sandbox.on('sulu.salesorder.order.saved', function(data) {
                 this.options.data = data;
                 setSaved.call(this, true);
+                this.dfdFormSaved.resolve();
             }, this);
 
             // contact save
@@ -344,6 +366,15 @@ define([], function() {
         },
 
         /**
+         * set value of editable data-row
+         * @param instanceName
+         * @param value
+         */
+        setValueOfEditableDataRow = function(instanceName, value) {
+            this.sandbox.emit('sulu.editable-data-row.' + instanceName + '.set-value', value);
+        },
+
+        /**
          * called when account auto-complete is changed
          * @param event
          */
@@ -360,7 +391,7 @@ define([], function() {
                 } else {
                     initContactSelect.call(this, []);
                     initAddressComponents.call(this, [], constants.deliveryAddressInstanceName);
-                    initAddressComponents.call(this, [], constants.paymentAddressInstanceName);
+                    initAddressComponents.call(this, [], constants.billingAddressInstanceName);
                 }
             }
         },
@@ -378,58 +409,70 @@ define([], function() {
          * @param orderData
          */
         initSelectsByAccountId = function(id, orderData) {
-            var data, preselect;
+            var data, preselect, account, addressData;
+
+            // load account
+            account = Account.findOrCreate({id:id});
+            account.fetch({
+                success: function(model) {
+                    account = model.toJSON();
+                    if (account.hasOwnProperty('termsOfDelivery')) {
+                        setValueOfEditableDataRow.call(this, constants.deliveryTermsInstanceName, account.termsOfDelivery.terms);
+                    }
+                    if (account.hasOwnProperty('termsOfPayment')) {
+                        setValueOfEditableDataRow.call(this, constants.paymentTermsInstanceName, account.termsOfPayment.terms);
+                    }
+
+                    if (account.hasOwnProperty('addresses')) {
+                        addressData = account.addresses;
+
+                        // when an address is already selected, the selected address should be used
+                        // otherwise the first delivery / payment address found will be used
+                        preselect = null;
+                        if (!orderData || !orderData.deliveryAddress) {
+                            preselect = findAddressWherePropertyIs.call(this, addressData, 'deliveryAddress', true);
+
+                            // when no delivery address is found the first address will be used
+                            if (!preselect && addressData.length > 0) {
+                                preselect = addressData[0];
+                            }
+                        }
+                        this.sandbox.data.when(this.dfdDeliveryAddressInitialized).then(function() {
+                            initAddressComponents.call(this, addressData, constants.deliveryAddressInstanceName, preselect);
+                            this.options.data.deliveryAddress = preselect;
+                            setFormData.call(this, this.options.data);
+                        }.bind(this));
+
+                        preselect = null;
+                        if (!orderData || !orderData.invoiceAddress) {
+                            preselect = findAddressWherePropertyIs.call(this, addressData, 'billingAddress', true);
+
+                            // when no invoice address is found the first address will be used
+                            if (!preselect && addressData.length > 0) {
+                                preselect = addressData[0];
+                            }
+                        }
+
+                        this.sandbox.data.when(this.dfdInvoiceAddressInitialized).then(function() {
+                            initAddressComponents.call(this, addressData, constants.billingAddressInstanceName, preselect);
+                            this.options.data.invoiceAddress = preselect;
+                            setFormData.call(this, this.options.data);
+                        }.bind(this));
+                    }
+
+                }.bind(this),
+                error: function() {
+                    // TODO: MESSAGE
+                    this.sandbox.emit('sulu.labels.warning.show', this.sandbox.translate('error while fetching account'));
+                }.bind(this)
+            });
+
+            // load contacts of an account
             this.sandbox.util.load(this.sandbox.util.template(constants.accountContactsUrl, {id: id}))
                 .then(function(response) {
                     data = response._embedded.contacts;
                     preselect = !!orderData && orderData.contact ? [orderData.contact.id] : null;
                     initContactSelect.call(this, data, preselect);
-                }.bind(this))
-                .fail(function(textStatus, error) {
-                    this.sandbox.logger.error(textStatus, error);
-                }.bind(this));
-
-            // load addresses of account
-            this.sandbox.util.load(this.sandbox.util.template(constants.accountAddressesUrl, {id: id}))
-                .then(function(response) {
-
-                    // is already refactored in another branch
-                    data = response._embedded.addresses;
-                    preselect = null;
-
-                    // when an address is already selected, the selected address should be used
-                    // otherwise the first delivery / payment address found will be used
-                    if (!orderData || !orderData.deliveryAddress) {
-                        preselect = findAddressWherePropertyIs.call(this, data, 'deliveryAddress', true);
-
-                        // when no delivery address is found the first address will be used
-                        if(!preselect && data.length > 0) {
-                            preselect = data[0];
-                        }
-                    }
-                    this.sandbox.data.when(this.dfdDeliveryAddressInitialized).then(function() {
-                        initAddressComponents.call(this, data, constants.deliveryAddressInstanceName, preselect);
-                        this.options.data.deliveryAddress = preselect;
-                        setFormData.call(this, this.options.data);
-                    }.bind(this));
-
-                    preselect = null;
-
-                    if (!orderData || !orderData.invoiceAddress) {
-                        preselect = findAddressWherePropertyIs.call(this, data, 'billingAddress', true);
-
-                        // when no invoice address is found the first address will be used
-                        if(!preselect && data.length > 0) {
-                            preselect = data[0];
-                        }
-                    }
-
-                    this.sandbox.data.when(this.dfdInvoiceAddressInitialized).then(function() {
-                        initAddressComponents.call(this, data, constants.paymentAddressInstanceName, preselect);
-                        this.options.data.invoiceAddress = preselect;
-                        setFormData.call(this, this.options.data);
-                    }.bind(this));
-
                 }.bind(this))
                 .fail(function(textStatus, error) {
                     this.sandbox.logger.error(textStatus, error);
@@ -491,7 +534,7 @@ define([], function() {
             this.orderStatusId = getOrderStatusId.call(this);
 
             // set if form is editable
-            this.isEditable = this.orderStatusId <= 2;
+            this.isEditable = this.orderStatusId <= OrderStatus.IN_CART;
 
             // current id
             var id = this.options.data.id ? this.options.data.id : 'new';
@@ -526,7 +569,10 @@ define([], function() {
 
         render: function() {
 
-            this.sandbox.dom.html(this.$el, this.renderTemplate(this.templates[0], {isEditable: this.isEditable}));
+            this.sandbox.dom.html(this.$el, this.renderTemplate(this.templates[0], {
+                isEditable: this.isEditable,
+                parseDate: CoreHelper.parseDate
+            }));
 
             var data = this.options.data;
 
@@ -535,7 +581,7 @@ define([], function() {
         },
 
         submit: function() {
-            this.dfdFormSaved
+            this.dfdFormSaved = this.sandbox.data.deferred();
             this.sandbox.logger.log('save Model');
 
             if (this.sandbox.form.validate(form)) {
@@ -555,7 +601,9 @@ define([], function() {
                 this.sandbox.emit('sulu.salesorder.order.save', data);
             } else {
                 this.sandbox.emit('sulu.labels.warning.show', this.sandbox.translate(constants.validateWarningTranslation));
+                this.dfdFormSaved.reject();
             }
+            return this.dfdFormSaved;
         },
 
         // event listens for changes in form
@@ -578,12 +626,6 @@ define([], function() {
 
                 // change in item-table
                 this.sandbox.on('sulu.item-table.changed', changeHandler.bind(this));
-
-                // listen on
-                this.sandbox.on('husky.select.contact-select.selected.item', changeHandler.bind(this));
-                this.sandbox.on('husky.select.responsible-contact-select.selected.item', changeHandler.bind(this));
-                this.sandbox.on('husky.select.delivery-terms.selected.item', changeHandler.bind(this));
-                this.sandbox.on('husky.select.payment-terms.selected.item', changeHandler.bind(this));
 
                 // TODO: use this for resetting account
 //                    this.sandbox.dom.on(constants.accountInputId+' input', 'changed', accountChangedListener.bind(this));

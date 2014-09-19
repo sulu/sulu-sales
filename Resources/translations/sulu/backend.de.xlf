@@ -78,6 +78,10 @@
                 <source>salesorder.orders.shipping.create</source>
                 <target>Lieferung erstellen</target>
             </trans-unit>
+            <trans-unit id="a50accg2ac181350142c0b4720e29f20" resname="salesorder.orders.orderDate">
+                <source>salesorder.orders.orderDate</source>
+                <target>Auftragsdatum</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>

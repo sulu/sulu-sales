@@ -141,12 +141,8 @@ class OrderManager
         $order->setCommission($this->getProperty($data, 'commission', $order->getCommission()));
         $order->setTaxfree($this->getProperty($data, 'taxfree', $order->getTaxfree()));
 
-        if (($desiredDeliveryDate = $this->getProperty($data, 'desiredDeliveryDate', $order->getDesiredDeliveryDate())) !== null) {
-            if (is_string($desiredDeliveryDate)) {
-                $desiredDeliveryDate = new DateTime($data['desiredDeliveryDate']);
-            }
-            $order->setDesiredDeliveryDate($desiredDeliveryDate);
-        }
+        $this->setDate($data, 'desiredDeliveryDate', $order->getDesiredDeliveryDate(), array($order,'setDesiredDeliveryDate'));
+        $this->setDate($data, 'orderDate', $order->getOrderDate(), array($order,'setOrderDate'));
 
         $this->setTermsOfDelivery($data, $order);
         $this->setTermsOfPayment($data, $order);
@@ -176,7 +172,7 @@ class OrderManager
             $this->em->persist($order->getEntity());
 
             // set status to created if not defined
-            if ($statusId !== null) {
+            if ($statusId === null) {
                 $statusId = OrderStatus::STATUS_CREATED;
             }
 
@@ -247,11 +243,11 @@ class OrderManager
     public function convertStatus(Order $order, $statusId, $flush = false)
     {
         // get current status
-        /** @var OrderStatusEntity $currentStatus */
+        $currentStatus = null;
         if ($order->getStatus()) {
             $currentStatus = $order->getStatus()->getEntity();
 
-            // status has not changed
+            // if status has not changed, skip
             if ($currentStatus->getId() === $statusId) {
                 return;
             }
@@ -268,19 +264,19 @@ class OrderManager
         // ACTIVITY LOG
         $orderActivity = new OrderActivityLog();
         $orderActivity->setOrder($order->getEntity());
-        $orderActivity->setStatusFrom($currentStatus);
+        if ($currentStatus) {
+            $orderActivity->setStatusFrom($currentStatus);
+        }
         $orderActivity->setStatusTo($statusEntity);
         $orderActivity->setCreated(new \DateTime());
         $this->em->persist($orderActivity);
 
         // BITMASK
-        $statusUpgrade = true;
         $currentBitmaskStatus = $order->getBitmaskStatus();
-        // if desired status already is in bitmask, remove current state,
-        // since this must be a step back
+        // if desired status already is in bitmask, remove current state
+        // since this is a step back
         if ($currentBitmaskStatus && $currentBitmaskStatus & $statusEntity->getId()) {
             $order->setBitmaskStatus($currentBitmaskStatus & ~$currentStatus->getId());
-            $statusUpgrade = false;
         } else {
             // else increment bitmask status
             $order->setBitmaskStatus($currentBitmaskStatus | $statusEntity->getId());
@@ -303,12 +299,13 @@ class OrderManager
      * @return object
      * @throws \Sulu\Component\Rest\Exception\EntityNotFoundException
      */
-    public function findOrderStatusById($statusId) {
+    public function findOrderStatusById($statusId)
+    {
         try {
             return $this->em
                 ->getRepository(self::$orderStatusEntityName)
                 ->find($statusId);
-        } catch(NoResultException $nre) {
+        } catch (NoResultException $nre) {
             throw new EntityNotFoundException(self::$orderStatusEntityName, $statusId);
         }
     }
@@ -375,6 +372,23 @@ class OrderManager
         }
 
         return $order;
+    }
+
+    /**
+     * sets a date if it's set in data
+     * @param $data
+     * @param $key
+     * @param $currentDate
+     * @param callable $setCallback
+     */
+    private function setDate($data, $key, $currentDate, callable $setCallback)
+    {
+        if (($date = $this->getProperty($data, $key, $currentDate)) !== null) {
+            if (is_string($date)) {
+                $date = new DateTime($data[$key]);
+            }
+            call_user_func($setCallback, $date);
+        }
     }
 
     /**
@@ -595,8 +609,10 @@ class OrderManager
      */
     private function setTermsOfDelivery($data, Order $order)
     {
+        $terms = null;
         // terms of delivery
         $termsOfDeliveryData = $this->getProperty($data, 'termsOfDelivery');
+        $termsOfDeliveryContentData = $this->getProperty($data, 'termsOfDeliveryContent');
         if ($termsOfDeliveryData) {
             if (!array_key_exists('id', $termsOfDeliveryData)) {
                 throw new MissingOrderAttributeException('termsOfDelivery.id');
@@ -608,12 +624,16 @@ class OrderManager
             }
             $order->setTermsOfDelivery($terms);
             $order->setTermsOfDeliveryContent($terms->getTerms());
-            return $terms;
         } else {
             $order->setTermsOfDelivery(null);
             $order->setTermsOfDeliveryContent(null);
         }
-        return null;
+        // set content data
+        if ($termsOfDeliveryContentData) {
+            $order->setTermsOfDeliveryContent($termsOfDeliveryContentData);
+        }
+
+        return $terms;
     }
 
     /**
@@ -625,8 +645,10 @@ class OrderManager
      */
     private function setTermsOfPayment($data, Order $order)
     {
+        $terms = null;
         // terms of delivery
         $termsOfPaymentData = $this->getProperty($data, 'termsOfPayment');
+        $termsOfPaymentContentData = $this->getProperty($data, 'termsOfPaymentContent');
         if ($termsOfPaymentData) {
             if (!array_key_exists('id', $termsOfPaymentData)) {
                 throw new MissingOrderAttributeException('termsOfPayment.id');
@@ -638,12 +660,16 @@ class OrderManager
             }
             $order->setTermsOfPayment($terms);
             $order->setTermsOfPaymentContent($terms->getTerms());
-            return $terms;
+
         } else {
             $order->setTermsOfPayment(null);
             $order->setTermsOfPaymentContent(null);
         }
-        return null;
+        // set content data
+        if ($termsOfPaymentContentData) {
+            $order->setTermsOfPaymentContent($termsOfPaymentContentData);
+        }
+        return $terms;
     }
 
     /**

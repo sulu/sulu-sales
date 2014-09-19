@@ -34,7 +34,6 @@ use Sulu\Bundle\Sales\CoreBundle\Entity\Item;
 use Sulu\Bundle\Sales\CoreBundle\Entity\ItemStatus;
 use Sulu\Bundle\Sales\CoreBundle\Entity\ItemStatusTranslation;
 use Sulu\Bundle\Sales\OrderBundle\Entity\Order;
-use Sulu\Bundle\Sales\OrderBundle\DataFixtures\ORM\LoadOrderStatus;
 use Sulu\Bundle\Sales\OrderBundle\Entity\OrderAddress;
 use Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatus;
 use Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatusTranslation;

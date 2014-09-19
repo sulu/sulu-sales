@@ -44,14 +44,28 @@ class LoadOrderStatus extends AbstractFixture implements OrderedFixtureInterface
         $status = new OrderStatus();
         $status->setId(OrderStatus::STATUS_CONFIRMED);
         $this->createStatusTranslation($manager, $status, 'Order confirmed', 'en');
-        $this->createStatusTranslation($manager, $status, 'Auftragsbestätigung erstellt', 'de');
+        $this->createStatusTranslation($manager, $status, 'Bestätigt', 'de');
         $manager->persist($status);
 
         // confirmed
         $status = new OrderStatus();
         $status->setId(OrderStatus::STATUS_CLOSED_MANUALLY);
-        $this->createStatusTranslation($manager, $status, 'Order closed', 'en');
-        $this->createStatusTranslation($manager, $status, 'Auftragsbestätigung erstellt', 'de');
+        $this->createStatusTranslation($manager, $status, 'Manually closed', 'en');
+        $this->createStatusTranslation($manager, $status, 'Manuell geschlossen', 'de');
+        $manager->persist($status);
+
+        // canceled
+        $status = new OrderStatus();
+        $status->setId(OrderStatus::STATUS_CANCELED);
+        $this->createStatusTranslation($manager, $status, 'Canceled', 'en');
+        $this->createStatusTranslation($manager, $status, 'Abgebrochen', 'de');
+        $manager->persist($status);
+
+        // canceled
+        $status = new OrderStatus();
+        $status->setId(OrderStatus::STATUS_COMPLETED);
+        $this->createStatusTranslation($manager, $status, 'Completed', 'en');
+        $this->createStatusTranslation($manager, $status, 'Abgeschlossen', 'de');
         $manager->persist($status);
 
         $manager->flush();
