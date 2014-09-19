@@ -415,11 +415,20 @@ define([
             account.fetch({
                 success: function(model) {
                     account = model.toJSON();
-                    if (account.hasOwnProperty('termsOfDelivery') && !!account.termsOfDelivery) {
-                        setValueOfEditableDataRow.call(this, constants.deliveryTermsInstanceName, account.termsOfDelivery.terms);
-                    }
-                    if (account.hasOwnProperty('termsOfPayment') && !!account.termsOfPayment) {
-                        setValueOfEditableDataRow.call(this, constants.paymentTermsInstanceName, account.termsOfPayment.terms);
+
+                    var paymentTerms = null,
+                        deliveryTerms = null;
+
+                    if (!orderData) {
+                        if (account.hasOwnProperty('termsOfDelivery') && !!account.termsOfDelivery) {
+                            deliveryTerms = account.termsOfDelivery.terms;
+                        }
+                        setValueOfEditableDataRow.call(this, constants.deliveryTermsInstanceName, deliveryTerms);
+
+                        if (account.hasOwnProperty('termsOfPayment') && !!account.termsOfPayment) {
+                            paymentTerms = account.termsOfPayment.terms;
+                        }
+                        setValueOfEditableDataRow.call(this, constants.paymentTermsInstanceName, paymentTerms);
                     }
 
                     if (account.hasOwnProperty('addresses')) {
@@ -435,6 +444,8 @@ define([
                             if (!preselect && addressData.length > 0) {
                                 preselect = addressData[0];
                             }
+                        } else {
+                            preselect = orderData.deliveryAddress;
                         }
                         this.sandbox.data.when(this.dfdDeliveryAddressInitialized).then(function() {
                             initAddressComponents.call(this, addressData, constants.deliveryAddressInstanceName, preselect);
@@ -450,6 +461,8 @@ define([
                             if (!preselect && addressData.length > 0) {
                                 preselect = addressData[0];
                             }
+                        } else {
+                            preselect = orderData.invoiceAddress;
                         }
 
                         this.sandbox.data.when(this.dfdInvoiceAddressInitialized).then(function() {
