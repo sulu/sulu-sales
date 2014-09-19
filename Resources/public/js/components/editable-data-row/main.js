@@ -57,7 +57,24 @@ define([
          * @event sulu.editable-data-row.[instanceName].initialized
          */
         EVENT_INITIALIZED = function() {
-            this.sandbox.emit(eventNamespace + this.options.instanceName + '.initialized');
+             return eventNamespace + this.options.instanceName + '.initialized';
+        },
+
+        /**
+         * updates data and sets an element
+         * @event sulu.editable-data-row.[instanceName].data.update
+         */
+        EVENT_DATA_UPDATE = function() {
+            return eventNamespace + this.options.instanceName + '.data.update';
+        },
+
+        /**
+         * sets value of a data row
+         * @event sulu.editable-data-row.[instanceName].set-value
+         * @param value The new value
+         */
+        EVENT_SET_VALUE = function() {
+            return eventNamespace + this.options.instanceName + '.set-value';
         },
 
         /**
@@ -66,11 +83,15 @@ define([
         bindCustomEvents = function() {
             if (!this.options.disabled) {
 
+                // sets value
+                this.sandbox.on(EVENT_SET_VALUE.call(this), function(preselected) {
+                    this.setSelectedData(preselected);
+                    this.overlayView.render();
+                }.bind(this));
+
                 // triggered when new data is available
-                this.sandbox.on('sulu.editable-data-row.' + this.options.instanceName + '.data.update', function(data, preselected) {
-                    if (!!preselected) {
-                        this.selectedData = preselected;
-                    }
+                this.sandbox.on(EVENT_DATA_UPDATE.call(this), function(data, preselected) {
+                    this.setSelectedData(preselected);
 
                     this.data = data;
                     this.overlayView.render();
@@ -102,7 +123,9 @@ define([
 
         bindDomEvents = function() {
             this.sandbox.dom.on(this.$el, 'click', function() {
-                this.overlayView.openOverlay();
+                if (!!this.data) {
+                    this.overlayView.openOverlay();
+                }
             }.bind(this), '.'+constants.addClass);
         },
 
@@ -201,7 +224,7 @@ define([
                 renderPlus.call(this);
             }
 
-            EVENT_INITIALIZED.call(this);
+            this.sandbox.emit(EVENT_INITIALIZED.call(this));
         },
 
         render: function() {
@@ -214,14 +237,16 @@ define([
         },
 
         setSelectedData: function(data) {
-            var plusIcon = this.sandbox.dom.find('.'+constants.addClass, this.$el);
-            // check if plus is set
-            if (plusIcon.length !== null) {
-                this.sandbox.dom.remove(plusIcon);
-            }
+            if (!!data) {
+                var plusIcon = this.sandbox.dom.find('.'+constants.addClass, this.$el);
+                // check if plus is set
+                if (plusIcon.length !== null) {
+                    this.sandbox.dom.remove(plusIcon);
+                }
 
-            this.selectedData = data;
-            this.sandbox.dom.data(this.$el, 'value', data);
+                this.selectedData = data;
+                this.sandbox.dom.data(this.$el, 'value', data);
+            }
         },
 
         /**

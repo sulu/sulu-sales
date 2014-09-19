@@ -174,18 +174,7 @@ define(['text!sulusalescore/components/editable-data-row/templates/address.form.
         bindDomEvents = function() {
             if (!this.context.options.disabled) {
                 // click handler to trigger overlay
-                this.sandbox.dom.on(this.context.$el, 'click', function() {
-                    this.sandbox.emit(
-                            'sulu.editable-data-row.' + this.options.instanceName + '.overlay.initialize',
-                        {
-                            overlayTemplate: AddressTemplate,
-                            overlayTitle: constants.overlayTitle,
-                            overlayOkCallback: showInformationDialog.bind(this),
-                            overlayCloseCallback: null,
-                            overlayData: flattenAddresses.call(this, this.context.data)
-                        }
-                    );
-                }.bind(this), constants.rowClassSelector);
+                this.sandbox.dom.on(this.context.$el, 'click', openOverlay.bind(this), constants.rowClassSelector);
 
                 // TODO remove it, when when replaced by custom select
                 // this is temporarily replacement for the custom select
@@ -242,6 +231,19 @@ define(['text!sulusalescore/components/editable-data-row/templates/address.form.
             }
         },
 
+        openOverlay = function() {
+            this.sandbox.emit(
+                    'sulu.editable-data-row.' + this.options.instanceName + '.overlay.initialize',
+                {
+                    overlayTemplate: AddressTemplate,
+                    overlayTitle: constants.overlayTitle,
+                    overlayOkCallback: showInformationDialog.bind(this),
+                    overlayCloseCallback: null,
+                    overlayData: flattenAddresses.call(this, this.context.data)
+                }
+            );
+        },
+
         /**
          * Returns the address according to the defined format
          * @param address
@@ -279,7 +281,7 @@ define(['text!sulusalescore/components/editable-data-row/templates/address.form.
         },
 
         openOverlay: function() {
-
+            openOverlay.call(this);
         }
     };
 });
