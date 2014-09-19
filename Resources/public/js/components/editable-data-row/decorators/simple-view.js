@@ -170,24 +170,26 @@ define(['text!sulusalescore/components/editable-data-row/templates/simple.form.h
             }.bind(this));
         },
 
+        openOverlay = function() {
+            this.sandbox.emit(
+                    'sulu.editable-data-row.' + this.options.instanceName + '.overlay.initialize',
+                {
+                    overlayTemplate: SimpleTemplate,
+                    overlayTitle: this.options.overlayTitle,
+                    overlayOkCallback: showInformationDialog.bind(this),
+                    overlayCloseCallback: null,
+                    overlayData: this.context.data
+                }
+            );
+        },
+
         /**
          * bind dom events
          */
         bindDomEvents = function() {
             if (!this.context.options.disabled) {
                 // click handler to trigger overlay
-                this.sandbox.dom.on(this.context.$el, 'click', function() {
-                    this.sandbox.emit(
-                            'sulu.editable-data-row.' + this.options.instanceName + '.overlay.initialize',
-                        {
-                            overlayTemplate: SimpleTemplate,
-                            overlayTitle: this.options.overlayTitle,
-                            overlayOkCallback: showInformationDialog.bind(this),
-                            overlayCloseCallback: null,
-                            overlayData: this.context.data
-                        }
-                    );
-                }.bind(this), constants.rowClassSelector);
+                this.sandbox.dom.on(this.context.$el, 'click', openOverlay.bind(this), constants.rowClassSelector);
 
                 // TODO remove it, when when replaced by custom select
                 // this is temporarily replacement for the custom select
@@ -233,6 +235,10 @@ define(['text!sulusalescore/components/editable-data-row/templates/simple.form.h
 
         render: function() {
             renderRow.call(this, this.context.selectedData);
+        },
+
+        openOverlay: function() {
+            openOverlay.call(this);
         }
     };
 });

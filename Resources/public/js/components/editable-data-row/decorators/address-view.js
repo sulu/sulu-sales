@@ -276,6 +276,10 @@ define(['text!sulusalescore/components/editable-data-row/templates/address.form.
 
         render: function() {
             renderRow.call(this, this.context.selectedData);
+        },
+
+        openOverlay: function() {
+
         }
     };
 });

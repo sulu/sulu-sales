@@ -17,6 +17,7 @@
  * @param {String} [options.view] view name
  * @param {Object} [options.viewOptions] options for the view
  * @param {Object} [options.disabled] disables interaction by default
+ * @param {Object} [options.showPlusIcon] shows Plus icon, when value is empty
  */
 define([
     'sulusalescore/components/editable-data-row/decorators/address-view',
@@ -31,7 +32,8 @@ define([
             instanceName: 'undefined',
             disabled: false,
             selectData: null,
-            overlayTitle: null
+            overlayTitle: null,
+            showPlusIcon: true
         },
 
         decorators = {
@@ -42,6 +44,8 @@ define([
         constants = {
             overlayContainerClass: 'edit-data-overlay',
             overlayContainerClassSelector: '.edit-data-overlay',
+            rowClassSelector: '.editable-row',
+            addClass: 'add-data',
 
             overlayFormSelector: 'editable-data-overlay-form'
         },
@@ -96,6 +100,12 @@ define([
             }
         },
 
+        bindDomEvents = function() {
+            this.sandbox.dom.on(this.$el, 'click', function() {
+                this.overlayView.openOverlay();
+            }.bind(this), '.'+constants.addClass);
+        },
+
         /**
          * Inits the overlay with a specific template
          */
@@ -136,12 +146,26 @@ define([
         },
 
         /**
+         * Renders the single row with the data according to the fields param or a replacement when no data is given
+         */
+        renderPlus = function() {
+            var $row;
+            if (!this.options.disabled) {
+                $row = this.sandbox.dom.createElement('<i class="fa fa-plus-circle pointer '+constants.addClass+'"></i>');
+                this.sandbox.dom.append(this.$el, $row);
+            }
+        },
+
+        /**
          * Validates a view
          * @param view
          */
         isViewValid = function(view) {
-            return !!(typeof view.initialize === 'function' &&
-                typeof view.render === 'function');
+            return !!(
+                typeof view.initialize === 'function' &&
+                typeof view.openOverlay === 'function' &&
+                typeof view.render === 'function'
+                );
         };
 
     return {
@@ -169,9 +193,12 @@ define([
             }
 
             bindCustomEvents.call(this);
+            bindDomEvents.call(this);
 
             if (!!this.selectedData) {
                 this.render();
+            } else if(!!this.options.showPlusIcon) {
+                renderPlus.call(this);
             }
 
             EVENT_INITIALIZED.call(this);
@@ -187,6 +214,12 @@ define([
         },
 
         setSelectedData: function(data) {
+            var plusIcon = this.sandbox.dom.find('.'+constants.addClass, this.$el);
+            // check if plus is set
+            if (plusIcon.length !== null) {
+                this.sandbox.dom.remove(plusIcon);
+            }
+
             this.selectedData = data;
             this.sandbox.dom.data(this.$el, 'value', data);
         },
