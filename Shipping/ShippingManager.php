@@ -12,6 +12,7 @@ namespace Sulu\Bundle\Sales\ShippingBundle\Shipping;
 
 use DateTime;
 use Doctrine\Common\Persistence\ObjectManager;
+use Sulu\Bundle\Sales\ShippingBundle\Entity\ShippingActivityLog;
 use Sulu\Component\Rest\Exception\EntityNotFoundException;
 use Sulu\Component\Rest\ListBuilder\Doctrine\FieldDescriptor\DoctrineConcatenationFieldDescriptor;
 use Sulu\Component\Rest\ListBuilder\Doctrine\FieldDescriptor\DoctrineFieldDescriptor;
@@ -93,15 +94,24 @@ class ShippingManager
     }
 
     /**
-     * @param array $data
-     * @param $locale
+     * saves a shipping
+     *
+     * @param array $data array of data to be set
+     * @param $locale locale in which the data should be set
      * @param $userId
-     * @param null $id
-     * @return null|Shipping
+     * @param null|int $id
+     * @param null|int $statusId
+     * @param bool $flush
+     * @throws Exception\ShippingNotFoundException
      * @throws Exception\ShippingException
-     * @throws ShippingNotFoundException
+     * @return null|Shipping
      */
-    public function save(array $data, $locale, $userId, $id = null)
+    public function save(array $data,
+                         $locale,
+                         $userId,
+                         $id = null,
+                         $statusId = null,
+                         $flush = true)
     {
         if ($id) {
             $shipping = $this->findByIdAndLocale($id, $locale);
@@ -150,8 +160,10 @@ class ShippingManager
             $shipping->setCreator($user);
             $this->em->persist($shipping->getEntity());
 
-            $status = $this->em->getRepository(self::$shippingStatusEntityName)->find(ShippingStatusEntity::STATUS_CREATED);
-            $shipping->setStatus($status);
+            // set status to created if not defined
+            if ($statusId === null) {
+                $statusId = ShippingStatusEntity::STATUS_CREATED;
+            }
 
             // create OrderAddress
             $deliveryAddress = new OrderAddress();
@@ -159,6 +171,10 @@ class ShippingManager
             $this->em->persist($deliveryAddress);
             // assign
             $shipping->setDeliveryAddress($deliveryAddress);
+        }
+        // set order status
+        if ($statusId !== null) {
+            $this->convertStatus($shipping, $statusId);
         }
 
         // set order address
@@ -191,7 +207,9 @@ class ShippingManager
         $shipping->setChanged(new DateTime());
         $shipping->setChanger($user);
 
-        $this->em->flush();
+        if ($flush) {
+            $this->em->flush();
+        }
 
         return $shipping;
     }
@@ -235,15 +253,15 @@ class ShippingManager
 
         // get desired status
         $statusEntity = $this->em
-            ->getRepository(self::$orderStatusEntityName)
+            ->getRepository(self::$shippingStatusEntityName)
             ->find($statusId);
         if (!$statusEntity) {
             throw new EntityNotFoundException($statusEntity, $statusEntity);
         }
 
         // ACTIVITY LOG
-        $shippingActivity = new OrderActivityLog();
-        $shippingActivity->setOrder($shipping->getEntity());
+        $shippingActivity = new ShippingActivityLog();
+        $shippingActivity->setShipping($shipping->getEntity());
         if ($currentStatus) {
             $shippingActivity->setStatusFrom($currentStatus);
         }
@@ -327,9 +345,11 @@ class ShippingManager
             $shippingCounts = $this->getSumOfShippedItemsByOrderId($shipping->getOrder()->getId());
             foreach ($apiShippings->getItems() as $apiItem) {
                 $itemId = $apiItem->getEntity()->getItem()->getId();
+                $sum = 0;
                 if (array_key_exists($itemId, $shippingCounts)) {
-                    $apiItem->setShippedItems($shippingCounts[$itemId]);
+                    $sum = $shippingCounts[$itemId];
                 }
+                $apiItem->setShippedItems($sum);
             }
             return $apiShippings;
         } else {

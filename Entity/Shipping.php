@@ -21,7 +21,7 @@ class Shipping
     private $shippingNumber;
 
     /**
-     * @var string
+     * @var stringgetst
      */
     private $customerName;
 

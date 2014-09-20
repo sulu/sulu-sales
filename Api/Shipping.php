@@ -504,12 +504,15 @@ class Shipping extends ApiWrapper
     /**
      * Get status
      *
-     * @return \Sulu\Bundle\Sales\ShippingBundle\Entity\ShippingStatus
+     * @return \Sulu\Bundle\Sales\ShippingBundle\Entity\ShippingStatus|null
      * @VirtualProperty
      * @SerializedName("status")
      */
     public function getStatus()
     {
+        if (!$this->entity->getStatus()) {
+            return null;
+        }
         return new ShippingStatus($this->entity->getStatus(), $this->locale);
     }
 
