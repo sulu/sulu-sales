@@ -85,7 +85,6 @@ define(['sulusalesshipping/util/shippingStatus'], function(ShippingStatus) {
             // if shipping is not new
             if (this.options.data.id) {
                 // define workflow based on status
-                // TODO: get statuses from backend
                 if (this.shippingStatusId === ShippingStatus.CREATED) {
                     workflow.items.push(workflowItems.confirm);
                 } else if (this.shippingStatusId === ShippingStatus.DELIVERY_NOTE) {
@@ -131,7 +130,7 @@ define(['sulusalesshipping/util/shippingStatus'], function(ShippingStatus) {
          */
         checkForUnsavedData = function(callback) {
             if (typeof callback !== 'function') {
-                return;
+                throw 'checkForUnsavedData: callback is not a function';
             }
 
             // check if unsaved data
@@ -181,7 +180,6 @@ define(['sulusalesshipping/util/shippingStatus'], function(ShippingStatus) {
                 this.sandbox.emit('sulu.salesshipping.shippings.list');
             }, this);
 
-            // TODO expected deliverydate
             this.sandbox.on('husky.input.expected-delivery-date.initialized', function() {
                 this.dfdExpectedDeliveryDate.resolve();
             }, this);
@@ -427,9 +425,6 @@ define(['sulusalesshipping/util/shippingStatus'], function(ShippingStatus) {
 
                 // change in item-table
                 this.sandbox.on('sulu.item-table.changed', changeHandler.bind(this));
-
-//                // listen on
-//                this.sandbox.on('husky.select.delivery-terms.selected.item', changeHandler.bind(this));
             }.bind(this));
 
         }

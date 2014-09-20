@@ -324,7 +324,7 @@ class ShippingManager
         } else if (array_key_exists($key, $this->orderFieldDescriptors)) {
             return $this->orderFieldDescriptors[$key];
         } else {
-            throw new ShippingException('field descriptor with key '.$key.' could not be found');
+            throw new ShippingException('field descriptor with key ' . $key . ' could not be found');
         }
     }
 
@@ -382,7 +382,7 @@ class ShippingManager
 
         array_walk(
             $shipping,
-            function (&$shipping) use ($locale){
+            function (&$shipping) use ($locale) {
                 $shipping = new Shipping($shipping, $locale);
             }
         );
@@ -477,8 +477,8 @@ class ShippingManager
 
     }
 
-    private function initializeOrderFieldDescriptors($locale) {
-
+    private function initializeOrderFieldDescriptors()
+    {
         $orderJoin = array(
             self::$orderEntityName => new DoctrineJoinDescriptor(
                     self::$orderEntityName,
@@ -604,7 +604,7 @@ class ShippingManager
     {
         $result = true;
         try {
-            if ($this->checkDataSet($data,'items', false)) {
+            if ($this->checkDataSet($data, 'items', false)) {
                 // items has to be an array
                 if (!is_array($data['items'])) {
                     throw new MissingShippingAttributeException('items array');
@@ -612,11 +612,11 @@ class ShippingManager
 
                 $items = $data['items'];
 
-                $get = function ($item){
+                $get = function ($item) {
                     return $item->getId();
                 };
 
-                $delete = function ($item) use ($shipping){
+                $delete = function ($item) use ($shipping) {
                     $entity = $item->getEntity();
                     // remove from order
                     $shipping->removeShippingItem($entity);
@@ -624,13 +624,13 @@ class ShippingManager
                     $this->em->remove($entity);
                 };
 
-                $update = function ($item, $matchedEntry) use ($locale){
+                $update = function ($item, $matchedEntry) use ($locale) {
                     $shippingItem = $this->saveShippingItem($matchedEntry, $item->getEntity());
 
                     return $shippingItem ? true : false;
                 };
 
-                $add = function ($itemData) use ($locale, $shipping){
+                $add = function ($itemData) use ($locale, $shipping) {
                     $shippingItem = $this->saveShippingItem($itemData);
                     $shippingItem->setShipping($shipping->getEntity());
                     return $shipping->addShippingItem($shippingItem, null, $locale);

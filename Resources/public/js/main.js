@@ -18,10 +18,6 @@ define({
 
     name: "SuluSalesShippingBundle",
 
-    STATUS_CREATED : 1,
-    STATUS_DELIVERY_NOTE: 2,
-    STATUS_SHIPPED: 2,
-
     initialize: function(app) {
 
         'use strict';

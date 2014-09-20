@@ -19,21 +19,13 @@ define([
 
         initialize: function() {
             this.bindCustomEvents();
-            this.bindSidebarEvents();
             this.shipping = null;
             this.order = null;
 
             if (this.options.display === 'list') {
                 this.renderList();
             } else if (this.options.display === 'form') {
-                this.renderForm().then(function() {
-//                    {
-//                        breadcrumbAddition : [
-//                            {title: 'salesshipping.shippings.title', event: 'salesshipping.order.shipping.list'},
-//                        ],
-//                            breadcrumbOrderEvent: 'salesshipping.order.load'
-//                    }
-                }.bind(this));
+                this.renderForm();
             } else if (this.options.display === 'orderList') {
                 this.renderOrderList().then(function() {
                     OrderHeaderUtil.setHeader.call(this, this.order);
@@ -62,26 +54,6 @@ define([
 
             // load list view
             this.sandbox.on('sulu.salesshipping.shippings.list', this.listAction.bind(this));
-        },
-
-        /**
-         * Binds general sidebar events
-         */
-        bindSidebarEvents: function() {
-            // TODO: uncomment after sidebar is implemented
-            // bind sidebar
-//            this.sandbox.dom.off('#sidebar');
-//
-//            this.sandbox.dom.on('#sidebar', 'click', function(event) {
-//                var id = this.sandbox.dom.data(event.currentTarget,'id');
-//                this.sandbox.emit('sulu.contacts.accounts.load', id);
-//            }.bind(this), '#sidebar-accounts-list');
-//
-//            this.sandbox.dom.on('#sidebar', 'click', function(event) {
-//                var id = this.sandbox.dom.data(event.currentTarget,'id');
-//                this.sandbox.emit('sulu.router.navigate', 'contacts/contacts/edit:' + id + '/details');
-//                this.sandbox.emit('husky.navigation.select-item','contacts/contacts');
-//            }.bind(this), '#main-contact');
         },
 
         /**
@@ -220,7 +192,7 @@ define([
                 this.order = Order.findOrCreate({id: this.options.id});
 
                 this.order.fetch({
-                    success: function(model) {
+                    success: function() {
                         var $list = this.sandbox.dom.createElement('<div id="order-shippings-list-container"/>');
                         this.html($list);
                         this.sandbox.start([
@@ -247,7 +219,9 @@ define([
             // load data and show form
             this.shipping = new Shipping();
 
-            var dfd = this.sandbox.data.deferred();
+            var dfd = this.sandbox.data.deferred(),
+                dfdOrder, dfdShipped,
+                shippedOrderItems;
 
             // shipping exists
             if (!!this.options.id) {
@@ -264,9 +238,9 @@ define([
                 this.order = Order.findOrCreate({id: this.options.orderId});
                 this.shipping = this.shipping.set({order: this.order});
 
-                var shippedOrderItems = null,
-                    dfdOrder = this.sandbox.data.deferred(),
-                    dfdShipped = this.sandbox.data.deferred();
+                shippedOrderItems = null;
+                dfdOrder = this.sandbox.data.deferred();
+                dfdShipped = this.sandbox.data.deferred();
 
                 this.order.fetch({
                     success: function(order) {
@@ -290,7 +264,7 @@ define([
         },
 
         startForm: function(dfd, shipping, shippedOrderItems) {
-            var $form = this.sandbox.dom.createElement('<div id="shipping-form-container"/>')
+            var $form = this.sandbox.dom.createElement('<div id="shipping-form-container"/>');
             this.html($form);
 
             this.sandbox.start([
