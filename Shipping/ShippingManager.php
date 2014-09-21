@@ -152,7 +152,9 @@ class ShippingManager
         }
 
         // set terms of delivery
-        $this->setTermsOfDelivery($data, $shipping);
+        $shipping->setTermsOfDeliveryContent($this->getProperty($data, 'termsOfDeliveryContent', null));
+        // set terms of payment
+        $shipping->setTermsOfPaymentContent($this->getProperty($data, 'termsOfPaymentContent', null));
 
         // create shipping (POST)
         if ($shipping->getId() == null) {
@@ -542,36 +544,6 @@ class ShippingManager
     private function getProperty(array $data, $key, $default = null)
     {
         return array_key_exists($key, $data) && $data[$key] !== null ? $data[$key] : $default;
-    }
-
-    /**
-     * @param $data
-     * @param Shipping $shipping
-     * @return null|object
-     * @throws Exception\ShippingDependencyNotFoundException
-     * @throws Exception\MissingShippingAttributeException
-     */
-    private function setTermsOfDelivery($data, Shipping $shipping)
-    {
-        // terms of delivery
-        $termsOfDeliveryData = $this->getProperty($data, 'termsOfDelivery');
-        if ($termsOfDeliveryData) {
-            if (!array_key_exists('id', $termsOfDeliveryData)) {
-                throw new MissingShippingAttributeException('termsOfDelivery.id');
-            }
-            // TODO: inject repository class
-            $terms = $this->em->getRepository(self::$termsOfDeliveryEntityName)->find($termsOfDeliveryData['id']);
-            if (!$terms) {
-                throw new ShippingDependencyNotFoundException(self::$termsOfDeliveryEntityName, $termsOfDeliveryData['id']);
-            }
-            $shipping->setTermsOfDelivery($terms);
-            $shipping->setTermsOfDeliveryContent($terms->getTerms());
-            return $terms;
-        } else {
-            $shipping->setTermsOfDelivery(null);
-            $shipping->setTermsOfDeliveryContent(null);
-        }
-        return null;
     }
 
     /**

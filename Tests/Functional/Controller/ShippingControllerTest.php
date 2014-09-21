@@ -495,8 +495,8 @@ class ShippingControllerTest extends DatabaseTestCase
         $this->shipping->setLength(103);
         $this->shipping->setWeight(10);
         $this->shipping->setNote('simple shipping note');
-        $this->shipping->setTermsOfDelivery($this->termsOfDelivery);
         $this->shipping->setTermsOfDeliveryContent($this->termsOfDelivery->getTerms());
+        $this->shipping->setTermsOfPaymentContent($this->termsOfPayment->getTerms());
         $this->shipping->setTrackingId('abcd1234');
         $this->shipping->setTrackingUrl('http://www.tracking.url?token=abcd1234');
 
@@ -611,6 +611,7 @@ class ShippingControllerTest extends DatabaseTestCase
 
         // terms
         $this->assertEquals($this->termsOfDelivery->getTerms(), $response->termsOfDeliveryContent);
+        $this->assertEquals($this->termsOfPayment->getTerms(), $response->termsOfPaymentContent);
 
     }
 
@@ -723,9 +724,8 @@ class ShippingControllerTest extends DatabaseTestCase
             'order' => array(
                 'id' => 1
             ),
-            'termsOfDelivery' => array(
-                'id' => 1
-            ),
+            'termsOfDeliveryContent' => $this->termsOfDelivery->getTerms(),
+            'termsOfPaymentContent' => $this->termsOfPayment->getTerms(),
             'items' => array()
         );
 
