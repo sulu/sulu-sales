@@ -11,6 +11,9 @@ class ShippingStatus
 {
 
     const STATUS_CREATED = 1;
+    const STATUS_DELIVERY_NOTE = 2;
+    const STATUS_SHIPPED= 4;
+    const STATUS_CANCELED= 8;
 
     /**
      * @var integer
@@ -44,6 +47,17 @@ class ShippingStatus
     public function getId()
     {
         return $this->id;
+    }
+
+    /**
+     * @param $id
+     * @return $this
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
+
+        return $this;
     }
 
     /**

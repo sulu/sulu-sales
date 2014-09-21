@@ -219,6 +219,7 @@ class ShippingControllerTest extends DatabaseTestCase
             // SalesShippingBundle
             self::$em->getClassMetadata('Sulu\Bundle\Sales\ShippingBundle\Entity\Shipping'),
             self::$em->getClassMetadata('Sulu\Bundle\Sales\ShippingBundle\Entity\ShippingItem'),
+            self::$em->getClassMetadata('Sulu\Bundle\Sales\ShippingBundle\Entity\ShippingActivityLog'),
             self::$em->getClassMetadata('Sulu\Bundle\Sales\ShippingBundle\Entity\ShippingStatus'),
             self::$em->getClassMetadata('Sulu\Bundle\Sales\ShippingBundle\Entity\ShippingStatusTranslation'),
             // ProductBundle
@@ -667,7 +668,8 @@ class ShippingControllerTest extends DatabaseTestCase
                 'postboxNumber' => 'postboxNumber',
                 'postboxCity' => 'postboxCity',
                 'postboxPostcode' => 'postboxPostcode'
-            )
+            ),
+            'items' => array()
         );
         $this->client->request(
             'PUT',
@@ -723,7 +725,8 @@ class ShippingControllerTest extends DatabaseTestCase
             ),
             'termsOfDelivery' => array(
                 'id' => 1
-            )
+            ),
+            'items' => array()
         );
 
         $this->client->request('POST', '/api/shippings', $data);
@@ -739,79 +742,6 @@ class ShippingControllerTest extends DatabaseTestCase
 
         $this->compareDataWithAddress($data['deliveryAddress'], $response->deliveryAddress);
     }
-
-//    public function testPostItems()
-//    {
-//        $data = array(
-//            'orderNumber' => 'NUMBER:0815',
-//            'supplierName' => $this->account->getName(),
-//            'account' => array(
-//                'id' => 1
-//            ),
-//            'contact' => array(
-//                'id' => 1
-//            ),
-//            'invoiceAddress' => array(
-//                'street' => 'Sample-Street',
-//                'number' => '12',
-//                'addition' => 'Entrance 2',
-//                'city' => 'Sample-City',
-//                'state' => 'State',
-//                'zip' => '12345',
-//                'country' => 'Country',
-//                'postboxNumber' => 'postboxNumber',
-//                'postboxCity' => 'postboxCity',
-//                'postboxPostcode' => 'postboxPostcode'
-//            ),
-//            'deliveryAddress' => array(
-//                'street' => 'Street',
-//                'number' => '2',
-//                'city' => 'Utopia',
-//                'zip' => '1',
-//                'country' => 'Country'
-//            ),
-//            'items' => array(
-//                array(
-//                    'name' => $this->productTranslation->getName(),
-//                    'number' => $this->product->getNumber(),
-//                    'quantity' => 2,
-//                    'quantityUnit' => 'pc',
-//                    'price' => $this->product->getPrice(),
-//                    'discount' => 10,
-//                    'tax' => 20,
-//                    'description' => $this->productTranslation->getLongDescription(),
-//                    'useProductsPrice' => false,
-//                    'weight' => 12,
-//                    'width' => 13,
-//                    'height' => 14,
-//                    'length' => 15,
-//                    'supplierName' => 'supplier',
-//                    'product' => array(
-//                        'id' => $this->product->getId()
-//                    )
-//                )
-//            )
-//        );
-//
-//        $this->client->request('POST', '/api/orders', $data);
-//        $response = json_decode($this->client->getResponse()->getContent());
-//
-//        $this->client->request('GET', '/api/orders/' . $response->id);
-//        $response = json_decode($this->client->getResponse()->getContent());
-//        $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
-//
-//
-//
-//    }
-//
-//    public function testDeleteById()
-//    {
-//        $this->client->request('DELETE', '/api/orders/1');
-//        $this->assertEquals('204', $this->client->getResponse()->getStatusCode());
-//
-//        $this->client->request('GET', '/api/orders/1');
-//        $this->assertEquals('404', $this->client->getResponse()->getStatusCode());
-//    }
 
     /**
      * asserts equality if object's attribute exist

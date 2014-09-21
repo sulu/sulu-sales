@@ -12,8 +12,12 @@ namespace Sulu\Bundle\Sales\ShippingBundle\Controller;
 
 use FOS\RestBundle\Routing\ClassResourceInterface;
 use Hateoas\Representation\CollectionRepresentation;
+use Sulu\Bundle\Sales\ShippingBundle\Api\Shipping;
+use Sulu\Bundle\Sales\ShippingBundle\Entity\ShippingStatus;
 use Sulu\Bundle\Sales\ShippingBundle\Shipping\Exception\MissingShippingAttributeException;
 use Sulu\Bundle\Sales\ShippingBundle\Shipping\Exception\ShippingDependencyNotFoundException;
+use Sulu\Bundle\Sales\ShippingBundle\Shipping\Exception\ShippingException;
+use Sulu\Bundle\Sales\ShippingBundle\Shipping\Exception\ShippingNotFoundException;
 use Sulu\Bundle\Sales\ShippingBundle\Shipping\ShippingManager;
 use Sulu\Component\Rest\Exception\EntityNotFoundException;
 use Sulu\Component\Rest\Exception\MissingArgumentException;
@@ -27,6 +31,7 @@ use Sulu\Component\Rest\RestController;
 use Sulu\Component\Rest\RestHelperInterface;
 use Symfony\Component\HttpFoundation\Request;
 use FOS\RestBundle\Controller\Annotations\Post;
+use Sulu\Bundle\Sales\ShippingBundle\Entity\Shipping as ShippingEntity;
 
 /**
  * Makes shippings available through a REST API
@@ -60,8 +65,16 @@ class ShippingController extends RestController implements ClassResourceInterfac
     {
         $locale = $this->getLocale($request);
 
+        $context = $request->get('context');
+
+        if ($context === 'order') {
+            $descriptors = array_values($this->getManager()->getFieldDescriptors($locale, $context));
+        } else {
+            $descriptors = array_values($this->getManager()->getFieldDescriptors($locale));
+        }
+
         // default contacts list
-        return $this->handleView($this->view(array_values($this->getManager()->getFieldDescriptors($locale)), 200));
+        return $this->handleView($this->view($descriptors), 200);
     }
 
     /**
@@ -70,48 +83,57 @@ class ShippingController extends RestController implements ClassResourceInterfac
      */
     public function cgetAction(Request $request)
     {
-        $filter = array();
+        try {
+            $filter = array();
 
-        $locale = $this->getLocale($request);
+            $locale = $this->getLocale($request);
 
-        $status = $request->get('status');
-        if ($status) {
-            $filter['status'] = $status;
-        }
-
-        if ($request->get('flat') == 'true') {
-            /** @var RestHelperInterface $restHelper */
-            $restHelper = $this->get('sulu_core.doctrine_rest_helper');
-
-            /** @var DoctrineListBuilderFactory $factory */
-            $factory = $this->get('sulu_core.doctrine_list_builder_factory');
-
-            /** @var DoctrineListBuilder $listBuilder */
-            $listBuilder = $factory->create(self::$shippingEntityName);
-
-            $restHelper->initializeListBuilder($listBuilder, $this->getManager()->getFieldDescriptors($locale));
-
-            foreach ($filter as $key => $value) {
-                $listBuilder->where($this->getManager()->getFieldDescriptor($key), $value);
+            $status = $request->get('status');
+            $orderId = $request->get('orderId');
+            if ($status) {
+                $filter['status'] = $status;
+            }
+            if ($orderId) {
+                $filter['orderId'] = $orderId;
             }
 
-            $list = new ListRepresentation(
-                $listBuilder->execute(),
-                self::$entityKey,
-                'get_shippings',
-                $request->query->all(),
-                $listBuilder->getCurrentPage(),
-                $listBuilder->getLimit(),
-                $listBuilder->count()
-            );
-        } else {
-            $list = new CollectionRepresentation(
-                $this->getManager()->findAllByLocale($this->getLocale($request), $filter),
-                self::$entityKey
-            );
-        }
+            if ($request->get('flat') == 'true') {
+                /** @var RestHelperInterface $restHelper */
+                $restHelper = $this->get('sulu_core.doctrine_rest_helper');
 
-        $view = $this->view($list, 200);
+                /** @var DoctrineListBuilderFactory $factory */
+                $factory = $this->get('sulu_core.doctrine_list_builder_factory');
+
+                /** @var DoctrineListBuilder $listBuilder */
+                $listBuilder = $factory->create(self::$shippingEntityName);
+
+                $restHelper->initializeListBuilder($listBuilder, $this->getManager()->getFieldDescriptors($locale));
+
+                foreach ($filter as $key => $value) {
+                    $listBuilder->where($this->getManager()->getFieldDescriptor($key), $value);
+                }
+
+                $list = new ListRepresentation(
+                    $listBuilder->execute(),
+                    self::$entityKey,
+                    'get_shippings',
+                    $request->query->all(),
+                    $listBuilder->getCurrentPage(),
+                    $listBuilder->getLimit(),
+                    $listBuilder->count()
+                );
+            } else {
+                $list = new CollectionRepresentation(
+                    $this->getManager()->findAllByLocale($this->getLocale($request), $filter),
+                    self::$entityKey
+                );
+            }
+
+            $view = $this->view($list, 200);
+        } catch (ShippingException $ex) {
+            $rex = new RestException($ex->getMessage());
+            $view = $this->view($rex->toArray(), 400);
+        }
 
         return $this->handleView($view);
     }
@@ -128,7 +150,7 @@ class ShippingController extends RestController implements ClassResourceInterfac
         $locale = $this->getLocale($request);
         $view = $this->responseGetById(
             $id,
-            function ($id) use ($locale) {
+            function ($id) use ($locale){
                 /** @var Shipping $shipping */
                 $shipping = $this->getManager()->findByIdAndLocale($id, $locale);
 
@@ -140,6 +162,19 @@ class ShippingController extends RestController implements ClassResourceInterfac
     }
 
     /**
+     * this function returns number of shipped items per item
+     * the result is a key value pair of itemId => number of shipped items
+     * @param Request $request
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function numberofshippedorderitemsAction(Request $request)
+    {
+        $orderId = $request->get('orderId');
+        $sum = $this->getManager()->getSumOfShippedItemsByOrderId($orderId);
+        return $this->handleView($this->view($sum, 200));
+    }
+
+    /**
      * Creates and stores a new shipping.
      *
      * @param \Symfony\Component\HttpFoundation\Request $request
@@ -148,7 +183,7 @@ class ShippingController extends RestController implements ClassResourceInterfac
     public function postAction(Request $request)
     {
         try {
-            $shipping= $this->getManager()->save(
+            $shipping = $this->getManager()->save(
                 $request->request->all(),
                 $this->getLocale($request),
                 $this->getUser()->getId()
@@ -191,7 +226,7 @@ class ShippingController extends RestController implements ClassResourceInterfac
             $exception = new EntityNotFoundException($exc->getEntityName(), $exc->getId());
             $view = $this->view($exception->toArray(), 400);
         } catch (MissingShippingAttributeException $exc) {
-            $exception = new MissingArgumentException(self::$shippingsEntityName, $exc->getAttribute());
+            $exception = new MissingArgumentException(self::$shippingEntityName, $exc->getAttribute());
             $view = $this->view($exception->toArray(), 400);
         } catch (ShippingException $exc) {
             $exception = new RestException($exc->getMessage());
@@ -201,38 +236,38 @@ class ShippingController extends RestController implements ClassResourceInterfac
         return $this->handleView($view);
     }
 
-//    /**
-//     * @Post("/shippings/{id}")
-//     */
-//    public function postTriggerAction($id, Request $request)
-//    {
-//        $status = $request->get('action');
-//        $em = $this->getDoctrine()->getManager();
-//
-//        try {
-//            $order = $this->getManager()->findByIdAndLocale($id, $this->getLocale($request));
-//
-//            switch ($status) {
-//                case 'confirm':
-//                    $this->getManager()->convertStatus($order, OrderStatus::STATUS_CONFIRMED);
-//                    break;
-//                case 'edit':
-//                    $this->getManager()->convertStatus($order, OrderStatus::STATUS_CREATED);
-//                    break;
-//                default:
-//                    throw new RestException("Unrecognized status: " . $status);
-//
-//            }
-//
-//            $em->flush();
-//            $view = $this->view($order, 200);
-//        } catch (OrderNotFoundException $exc) {
-//            $exception = new EntityNotFoundException($exc->getEntityName(), $exc->getId());
-//            $view = $this->view($exception->toArray(), 404);
-//        }
-//
-//        return $this->handleView($view);
-//    }
+    /**
+     * @Post("/shippings/{id}")
+     */
+    public function postTriggerAction($id, Request $request)
+    {
+        $status = $request->get('action');
+        $em = $this->getDoctrine()->getManager();
+
+        try {
+            $shipping = $this->getManager()->findByIdAndLocale($id, $this->getLocale($request));
+
+            switch ($status) {
+                case 'deliverynote':
+                    $this->getManager()->convertStatus($shipping, ShippingStatus::STATUS_DELIVERY_NOTE);
+                    break;
+                case 'edit':
+                    $this->getManager()->convertStatus($shipping, ShippingStatus::STATUS_CREATED);
+                    break;
+                default:
+                    throw new RestException("Unrecognized status: " . $status);
+
+            }
+
+            $em->flush();
+            $view = $this->view($shipping, 200);
+        } catch (OrderNotFoundException $exc) {
+            $exception = new EntityNotFoundException($exc->getEntityName(), $exc->getId());
+            $view = $this->view($exception->toArray(), 404);
+        }
+
+        return $this->handleView($view);
+    }
 
     /**
      * Delete a shipping with the given id.
@@ -245,32 +280,11 @@ class ShippingController extends RestController implements ClassResourceInterfac
     {
         $locale = $this->getLocale($request);
 
-        $delete = function ($id) use ($locale) {
+        $delete = function ($id) use ($locale){
             $this->getManager()->delete($id, $this->getUser()->getId());
         };
         $view = $this->responseDelete($id, $delete);
 
         return $this->handleView($view);
     }
-
-//    /**
-//     * returns field-descriptor if status
-//     * @return DoctrineFieldDescriptor
-//     */
-//    private function getStatusFieldDescriptor()
-//    {
-//        return new DoctrineFieldDescriptor(
-//            'id',
-//            'status',
-//            self::$orderStatusEntityName,
-//            'salesorder.orders.status',
-//            array(
-//                self::$orderStatusEntityName => new DoctrineJoinDescriptor(
-//                        self::$orderStatusEntityName,
-//                        self::$orderEntityName . '.status'
-//                    )
-//            )
-//        );
-//    }
-
 }

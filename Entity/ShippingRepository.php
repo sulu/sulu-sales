@@ -3,6 +3,7 @@
 namespace Sulu\Bundle\Sales\ShippingBundle\Entity;
 
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\NoResultException;
 
 /**
  * ShippingRepository
@@ -58,6 +59,11 @@ class ShippingRepository extends EntityRepository
                         $qb->andWhere('status.id = :' . $key);
                         $qb->setParameter($key, $value);
                         break;
+                    case 'orderId':
+                        $qb->leftJoin('shipping.order', 'o');
+                        $qb->andWhere('o.id = :' . $key);
+                        $qb->setParameter($key, $value);
+                        break;
                 }
             }
 
@@ -82,6 +88,60 @@ class ShippingRepository extends EntityRepository
             $qb->setParameter('shippingId', $id);
 
             return $qb->getQuery()->getSingleResult();
+        } catch (NoResultException $exc) {
+            return null;
+        }
+    }
+
+    /**
+     * Finds a shipping by Order
+     * @param $id
+     * @param $locale
+     * @return Shipping|null
+     */
+    public function findByOrder($id, $locale)
+    {
+        try {
+            $qb = $this->getShippingQuery($locale);
+            $qb->andWhere('shipping.id = :shippingId');
+            $qb->setParameter('shippingId', $id);
+
+            return $qb->getQuery()->getSingleResult();
+        } catch (NoResultException $exc) {
+            return null;
+        }
+    }
+
+    /**
+     * returns sum of items that are assigned to a shipping which is not in status 'created'
+     * @param $orderId
+     * @return array|null
+     */
+    public function getSumOfShippedItemsByOrderId($orderId)
+    {
+        try {
+            $qb = $this->createQueryBuilder('shipping')
+                ->select('partial shipping.{id}, partial items.{id}, sum(shippingItems.quantity) AS shipped')
+                ->leftJoin('shipping.order', 'o', 'WITH', 'o.id = :orderId')
+                ->join('o.items', 'items')
+                ->leftJoin('shipping.shippingItems', 'shippingItems', 'WITH', 'items = shippingItems.item')
+                ->setParameter('orderId', $orderId)
+                ->groupBy('items.id')
+                ->where('shipping.status != :excludeStatus')
+                ->setParameter('excludeStatus', ShippingStatus::STATUS_CREATED);
+            return $qb->getQuery()->getScalarResult();
+
+            // TODO: implement sql to resolve group by problem in postgres
+//            $dql = 'SELECT sum(shippingItems.quantity) AS sumShipped, item.id '.
+//                'FROM ss_shippings shipping' .
+//                'LEFT JOIN so_orders o ON shipping.idOrders = o.id AND (o.id = 1) ' .
+//                'INNER JOIN so_order_items orderItems ON o.id = orderItems.idOrders ' .
+//                'INNER JOIN sc_item item ON item.id = orderItems.idItems ' .
+//                'LEFT JOIN ss_shipping_items shippingItems ON shipping.id = shippingItems.idShippings AND (item.id = shippingItems.idItems)' .
+//                'WHERE shipping.idShippingStatus <> 1 ' .
+//                'GROUP BY item.id';
+//            $qb = $this->getEntityManager()->createQuery($dql);
+//            return $qb->getScalarResult();
         } catch (NoResultException $exc) {
             return null;
         }

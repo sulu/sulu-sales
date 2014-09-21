@@ -6,6 +6,7 @@
     <parameters>
         <parameter key="sulu_sales_shipping.admin.class">Sulu\Bundle\Sales\ShippingBundle\Admin\SuluSalesShippingAdmin</parameter>
         <parameter key="sulu_sales_shipping.admin.content_navigation.class">Sulu\Bundle\Sales\ShippingBundle\Admin\SuluSalesShippingContentNavigation</parameter>
+        <parameter key="sulu_sales_shipping.admin.order_content_navigation.class">Sulu\Bundle\Sales\ShippingBundle\Admin\OrderContentNavigationExtension</parameter>
         <parameter key="sulu_sales_shipping.shipping_repository.class">Sulu\Bundle\Sales\ShippingBundle\Entity\ShippingRepository</parameter>
         <parameter key="sulu_sales_shipping.shipping_manager.class">Sulu\Bundle\Sales\ShippingBundle\Shipping\ShippingManager</parameter>
         <parameter key="sulu_sales_shipping.shipping_listener.class">Sulu\Bundle\Sales\ShippingBundle\EventListener\ShippingListener</parameter>
@@ -21,6 +22,11 @@
                  factory-method="getRepository" factory-service="doctrine.orm.entity_manager">
             <argument>SuluSalesShippingBundle:Shipping</argument>
         </service>
+
+        <service id="sulu_sales_shipping.admin.order_content_navigation" class="%sulu_sales_shipping.admin.order_content_navigation.class%">
+            <tag name="sulu.sales_order.content_navigation"/>
+        </service>
+
         <service id="sulu_sales_shipping.shipping_manager" class="%sulu_sales_shipping.shipping_manager.class%">
             <argument type="service" id="doctrine.orm.entity_manager" />
             <argument type="service" id="sulu_security.user_repository" />

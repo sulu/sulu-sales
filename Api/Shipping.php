@@ -3,21 +3,28 @@
 namespace Sulu\Bundle\Sales\ShippingBundle\Api;
 
 use JMS\Serializer\Annotation\VirtualProperty;
-use Sulu\Bundle\Sales\CoreBundle\Api\Item;
-use Sulu\Bundle\Sales\OrderBundle\Api\Order;
-use Sulu\Component\Rest\ApiWrapper;
 use Hateoas\Configuration\Annotation\Relation;
 use JMS\Serializer\Annotation\SerializedName;
+use JMS\Serializer\Annotation\Exclude;
+use Sulu\Component\Rest\ApiWrapper;
 use Sulu\Component\Security\UserInterface;
+use Sulu\Bundle\Sales\CoreBundle\Api\Item;
+use Sulu\Bundle\Sales\OrderBundle\Api\Order;
 use Sulu\Bundle\Sales\ShippingBundle\Entity\Shipping as ShippingEntity;
+use Sulu\Bundle\Sales\ShippingBundle\Entity\ShippingItem as ShippingItemEntity;
 
 /**
- * The Shipping class which will be 2exported to the API
+ * The Shipping class which will be exported to the API
  * @package Sulu\Bundle\Sales\ShippingBundle\Api
  * @Relation("self", href="expr('/api/admin/shippings/' ~ object.getId())")
  */
 class Shipping extends ApiWrapper
 {
+    /**
+     * @Exclude
+     */
+    private $shippingItems;
+
     /**
      * @param ShippingEntity $shipping The shipping to wrap
      * @param string $locale The locale of this shipping
@@ -445,7 +452,7 @@ class Shipping extends ApiWrapper
      * @param \Sulu\Bundle\Sales\ShippingBundle\Entity\ShippingItem $shippingItems
      * @return Shipping
      */
-    public function addShippingItem(\Sulu\Bundle\Sales\ShippingBundle\Entity\ShippingItem $shippingItems)
+    public function addShippingItem(ShippingItemEntity $shippingItems)
     {
         $this->entity->addShippingItem($shippingItems);
 
@@ -457,7 +464,7 @@ class Shipping extends ApiWrapper
      *
      * @param \Sulu\Bundle\Sales\ShippingBundle\Entity\ShippingItem $shippingItems
      */
-    public function removeShippingItem(\Sulu\Bundle\Sales\ShippingBundle\Entity\ShippingItem $shippingItems)
+    public function removeShippingItem(ShippingItemEntity $shippingItems)
     {
         $this->entity->removeShippingItem($shippingItems);
     }
@@ -471,12 +478,14 @@ class Shipping extends ApiWrapper
      */
     public function getItems()
     {
-        $items = array();
-        foreach ($this->entity->getShippingItems() as $shippingItem) {
-            $items[] = new ShippingItem($shippingItem, $this->locale);
+        if (!$this->shippingItems) {
+            $this->shippingItems = array();
+            foreach ($this->entity->getShippingItems() as $shippingItem) {
+                $this->shippingItems[] = new ShippingItem($shippingItem, $this->locale);
+            }
         }
 
-        return $items;
+        return $this->shippingItems;
     }
 
     /**
@@ -495,13 +504,40 @@ class Shipping extends ApiWrapper
     /**
      * Get status
      *
-     * @return \Sulu\Bundle\Sales\ShippingBundle\Entity\ShippingStatus
+     * @return \Sulu\Bundle\Sales\ShippingBundle\Entity\ShippingStatus|null
      * @VirtualProperty
      * @SerializedName("status")
      */
     public function getStatus()
     {
+        if (!$this->entity->getStatus()) {
+            return null;
+        }
         return new ShippingStatus($this->entity->getStatus(), $this->locale);
+    }
+
+    /**
+     * Set bitmaskStatus
+     *
+     * @param integer $bitmaskStatus
+     * @return Shipping
+     */
+    public function setBitmaskStatus($bitmaskStatus)
+    {
+        $this->entity->setBitmaskStatus($bitmaskStatus);
+
+        return $this;
+    }
+
+    /**
+     * Get bitmaskStatus
+     * @VirtualProperty
+     * @SerializedName("bitmaskStatus")
+     * @return integer
+     */
+    public function getBitmaskStatus()
+    {
+        return $this->entity->getBitmaskStatus();
     }
 
     /**
@@ -600,5 +636,13 @@ class Shipping extends ApiWrapper
     {
         // TODO
 //        return $this->entity->creator;
+    }
+
+    /**
+     * returns the entities locale
+     * @return string
+     */
+    public function getLocale() {
+        return $this->locale;
     }
 }

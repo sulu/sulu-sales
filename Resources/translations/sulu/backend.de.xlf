@@ -2,9 +2,41 @@
 <xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
     <file source-language="de" datatype="plaintext" original="file.ext">
         <body>
+            <trans-unit id="550accg2ac181350142c0b4720e29ff0" resname="navigation.sales.shipping">
+                <source>navigation.sales.shipping</source>
+                <target>Lieferungen</target>
+            </trans-unit>
             <trans-unit id="550accg2ac181350142c0b4720e29ff1" resname="salesshipping.shippings.title">
                 <source>salesshipping.shippings.title</source>
                 <target>Lieferungen</target>
+            </trans-unit>
+            <trans-unit id="550accg2ac181350142c0b4720e29ff2" resname="salesshipping.shippings.number">
+                <source>salesshipping.shippings.number</source>
+                <target>Liefernummer</target>
+            </trans-unit>
+            <trans-unit id="550accg2ac181350142c0b4720e29ff3" resname="salesshipping.shippings.confirm">
+                <source>salesshipping.shippings.confirm</source>
+                <target>Lieferschein erstellen</target>
+            </trans-unit>
+            <trans-unit id="550accg2ac181350142c0b4720e29ff4" resname="salesshipping.shippings.edit">
+                <source>salesshipping.shippings.edit</source>
+                <target>Lieferung bearbeiten</target>
+            </trans-unit>
+            <trans-unit id="550accg2ac181350142c0b4720e29ff5" resname="salesshipping.shipping">
+                <source>salesshipping.shipping</source>
+                <target>Lieferung</target>
+            </trans-unit>
+            <trans-unit id="550accg2ac181350142c0b4720e29ff6" resname="salesshipping.shippings.desired-delivery-date">
+                <source>salesshipping.shippings.desired-delivery-date</source>
+                <target>Gew. Lieferdatum</target>
+            </trans-unit>
+            <trans-unit id="550accg2ac181350142c0b4720e29ff7" resname="salesshipping.shippings.expected-delivery-date">
+                <source>salesshipping.shippings.expected-delivery-date</source>
+                <target>Vorauss. Lieferdatum</target>
+            </trans-unit>
+            <trans-unit id="550accg2ac181350142c0b4720e29ff8" resname="salesshipping.shippings.processed-items">
+                <source>salesshipping.shippings.processed-items</source>
+                <target>Gelief. Menge</target>
             </trans-unit>
         </body>
     </file>
