@@ -4,13 +4,20 @@
         <div class="form-group-vertical">
             <label for="address-select"><%=translate('public.address')%></label>
 
-            <div id="address-select"
-                 data-aura-component="select@husky"
-                 data-aura-default-label="<%=translate('public.please-choose')%>"
-                 data-aura-instance-name="<%=instanceName + '.select'%>"
-                 data-aura-data='<%= JSON.stringify(data) %>'
-                 data-aura-value-name="fullAddress">
-            </div>
+            <!--<div id="address-select"-->
+                 <!--data-aura-component="select@husky"-->
+                 <!--data-aura-default-label="<%=translate('public.please-choose')%>"-->
+                 <!--data-aura-instance-name="<%=instanceName + '.select'%>"-->
+                 <!--data-aura-data='<%= JSON.stringify(data) %>'-->
+                 <!--data-aura-value-name="fullAddress">-->
+            <!--</div>-->
+
+            <select class="form-element" id="address-select">
+                <option><%=translate('public.please-choose')%></option>
+                <% _.each(data, function(d) { %>
+                <option value="<%=d.id%>"><%= d.fullAddress %></option>
+                <% }); %>
+            </select>
 
         </div>
     </div>
@@ -41,7 +48,6 @@
                         </div>
                     </div>
                 </div>
-
                 <div class="grid-row m-bottom-40">
                     <div class="grid-col-2">
                         <div class="form-group-vertical">
@@ -72,7 +78,6 @@
                         </div>
                     </div>
                 </div>
-
             </div>
         </form>
     </div>

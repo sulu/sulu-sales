@@ -133,17 +133,22 @@ body {
   border-top: 1px solid #ccc;
 }
 
+/* line 1, ../scss/modules/sidebar.scss */
+.sulu-sidebar .blue-icon > span {
+  margin-top: 0;
+}
+
 /* line 1, ../scss/modules/editable-data-row.scss */
 .disabled .editable-row {
   cursor: auto !important;
 }
 
-/* line 6, ../scss/main.scss */
+/* line 7, ../scss/main.scss */
 .not-clickable {
   color: #999;
 }
 
-/* line 12, ../scss/main.scss */
+/* line 13, ../scss/main.scss */
 h2.divider {
   clear: both;
 }
