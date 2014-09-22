@@ -96,7 +96,7 @@ define([
                     rowClass: 'header',
                     name: this.sandbox.translate('salescore.item.product'),
                     number: this.sandbox.translate('salescore.item.number'),
-                    quantity: this.sandbox.translate('salescore.item.quantity'),
+                    quantity: this.sandbox.translate('salescore.item.order-quantity'),
                     quantityInput: this.sandbox.translate('salescore.item.quantity'),
                     quantityUnit: this.sandbox.translate('salescore.item.unit'),
                     price: this.sandbox.translate('salescore.item.price'),
@@ -270,6 +270,10 @@ define([
             // correct number format
             data.formattedMaxQuantity = this.sandbox.numberFormat(data.maxQuantity,'d');
 
+            if (data.isNew) {
+                data.quantity = data.formattedMaxQuantity;
+            }
+
             rowTpl = this.sandbox.util.template(RowTpl, data);
             // create row and return it
             return this.sandbox.dom.createElement(rowTpl);
@@ -351,14 +355,18 @@ define([
          * @param items
          */
         renderItems = function(items) {
-            var i, length, item, $row, rowId;
+            var i, length, item, $row, rowId, quantity;
             for (i = -1, length = items.length; ++i < length;) {
                 item = items[i];
 
-                $row = addItemRow.call(this, items[i]);
+                $row = addItemRow.call(this, item);
 
                 // add to items array
                 rowId = this.sandbox.dom.attr($row, 'id');
+                if (this.options.isNew) {
+                    quantity = this.sandbox.dom.val(this.sandbox.dom.find(constants.quantityInput, $row));
+                    item.quantity = quantity;
+                }
                 this.items[rowId] = item;
             }
             // refresh items data attribute
