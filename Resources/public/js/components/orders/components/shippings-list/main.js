@@ -29,6 +29,10 @@ define(function() {
         view: true,
 
         layout: {
+            sidebar: {
+                width: 'fixed',
+                cssClasses: 'sidebar-padding-50'
+            }
         },
 
         templates: ['/admin/shipping/template/shipping/list'],
@@ -38,6 +42,22 @@ define(function() {
 
             this.render();
             bindCustomEvents.call(this);
+
+            this.initSidebar();
+
+        },
+
+        initSidebar: function() {
+
+            var url = '/admin/widget-groups/order-detail',
+                data = this.options.data;
+
+            if(!!data.contact && !!data.account && !!data.status){
+                url += '?contact='+data.contact.id+'&account='+data.account.id+'&status='+data.status.status;
+                this.sandbox.emit('sulu.sidebar.set-widget', url);
+            } else {
+                this.sandbox.logger.error('required values for sidebar not present!');
+            }
         },
 
         render: function() {

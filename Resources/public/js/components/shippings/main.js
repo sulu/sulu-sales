@@ -229,7 +229,7 @@ define([
                                 name: 'orders/components/shippings-list@sulusalesshipping',
                                 options: {
                                     el: $list,
-                                    data: this.order
+                                    data: this.order.toJSON()
                                 }
                             }
                         ]);
