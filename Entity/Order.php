@@ -143,6 +143,21 @@ class Order
     private $creator;
 
     /**
+     * @var integer
+     */
+    private $bitmaskStatus;
+
+    /**
+     * @var float
+     */
+    private $totalPrice;
+
+    /**
+     * @var \DateTime
+     */
+    private $orderDate;
+
+    /**
      * Constructor
      */
     public function __construct()
@@ -743,5 +758,74 @@ class Order
     public function getCreator()
     {
         return $this->creator;
+    }
+
+    /**
+     * Set bitmaskStatus
+     *
+     * @param integer $bitmaskStatus
+     * @return Order
+     */
+    public function setBitmaskStatus($bitmaskStatus)
+    {
+        $this->bitmaskStatus = $bitmaskStatus;
+    
+        return $this;
+    }
+
+    /**
+     * Get bitmaskStatus
+     *
+     * @return integer 
+     */
+    public function getBitmaskStatus()
+    {
+        return $this->bitmaskStatus;
+    }
+
+    /**
+     * Set totalPrice
+     *
+     * @param float $totalPrice
+     * @return Order
+     */
+    public function setTotalPrice($totalPrice)
+    {
+        $this->totalPrice = $totalPrice;
+    
+        return $this;
+    }
+
+    /**
+     * Get totalPrice
+     *
+     * @return float 
+     */
+    public function getTotalPrice()
+    {
+        return $this->totalPrice;
+    }
+
+    /**
+     * Set orderDate
+     *
+     * @param \DateTime $orderDate
+     * @return Order
+     */
+    public function setOrderDate($orderDate)
+    {
+        $this->orderDate = $orderDate;
+    
+        return $this;
+    }
+
+    /**
+     * Get orderDate
+     *
+     * @return \DateTime 
+     */
+    public function getOrderDate()
+    {
+        return $this->orderDate;
     }
 }

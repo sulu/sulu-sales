@@ -13,9 +13,13 @@ class OrderStatus
 
     const STATUS_IN_CART = 2;
 
-    const STATUS_CONFIRMED = 3;
+    const STATUS_CONFIRMED = 4;
 
-    const STATUS_CLOSED = 4;
+    const STATUS_CLOSED_MANUALLY = 8;
+
+    const STATUS_CANCELED = 16;
+
+    const STATUS_COMPLETED = 32;
 
     /**
      * @var integer

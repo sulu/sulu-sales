@@ -65,7 +65,6 @@ class Order extends ApiWrapper
     }
 
     /**
-     * @return int
      * @VirtualProperty
      * @SerializedName("created")
      * @return DateTime
@@ -86,7 +85,6 @@ class Order extends ApiWrapper
     }
 
     /**
-     * @return int
      * @VirtualProperty
      * @SerializedName("changed")
      * @return DateTime
@@ -143,6 +141,30 @@ class Order extends ApiWrapper
     }
 
     /**
+     * Set bitmaskStatus
+     *
+     * @param integer $bitmaskStatus
+     * @return Order
+     */
+    public function setBitmaskStatus($bitmaskStatus)
+    {
+        $this->entity->setBitmaskStatus($bitmaskStatus);
+
+        return $this;
+    }
+
+    /**
+     * Get bitmaskStatus
+     * @VirtualProperty
+     * @SerializedName("bitmaskStatus")
+     * @return integer
+     */
+    public function getBitmaskStatus()
+    {
+        return $this->entity->getBitmaskStatus();
+    }
+
+    /**
      * Get sessionId
      * @return OrderStatus
      * @VirtualProperty
@@ -150,7 +172,11 @@ class Order extends ApiWrapper
      */
     public function getStatus()
     {
-        return new OrderStatus($this->entity->getStatus(), $this->locale);
+        if ($this->entity && $this->entity->getStatus()) {
+            return new OrderStatus($this->entity->getStatus(), $this->locale);
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -662,5 +688,47 @@ class Order extends ApiWrapper
     public function getOrderNumber()
     {
         return $this->entity->getOrderNumber();
+    }
+
+    /**
+     * @param $totalPrice
+     * @return Order
+     */
+    public function setTotalPrice($totalPrice)
+    {
+        $this->entity->setTotalPrice($totalPrice);
+
+        return $this;
+    }
+
+    /**
+     * @return float
+     * @VirtualProperty
+     * @SerializedName("totalPrice")
+     */
+    public function getTotalPrice()
+    {
+        return $this->entity->getTotalPrice();
+    }
+
+    /**
+     * @param DateTime
+     * @return Order
+     */
+    public function setOrderDate($orderDate)
+    {
+        $this->entity->setOrderDate($orderDate);
+
+        return $this;
+    }
+
+    /**
+     * @return DateTime
+     * @VirtualProperty
+     * @SerializedName("orderDate")
+     */
+    public function getOrderDate()
+    {
+        return $this->entity->getOrderDate();
     }
 }
