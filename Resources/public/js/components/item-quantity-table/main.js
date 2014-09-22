@@ -16,7 +16,7 @@
  * @param {Bool}  [options.isEditable] defines if component is editable
  * @param {Bool}  [options.canAddRemove] defines if remove and add rows are processed
  * @param {Bool}  [options.showFinishedItems] defines if a completely processed item should be shown
- * @param {Object} [options.translations] Translations to set to template
+ * @param {Object} [options.headerTranslations] Translations to set to template
  * @param {String}  [options.processedQuantityValueName] name of data-field  that shows the processed quantity
  * @param {Object}  [options.processedItems] key value pair of sum items that already have been processed
  *                                           (f.e. count of already shipped items of an order)
@@ -37,7 +37,8 @@ define([
             canAddRemove: false,
             showFinishedItems: true,
             isEditable: true,
-            translations: {}
+            isNew: false,
+            headerTranslations: {}
         },
 
         constants = {
@@ -75,7 +76,7 @@ define([
             quantity: null
         },
 
-        // event namespace
+    // event namespace
         eventNamespace = 'sulu.item-table.',
 
         /**
@@ -86,20 +87,31 @@ define([
 
         /**
          * data that is shown in header
+         * is merged with this options.translations
          */
         getHeaderData = function() {
-            return {
-                rowClass: 'header',
-                name: this.sandbox.translate('salescore.item.product'),
-                number: this.sandbox.translate('salescore.item.number'),
-                quantity: this.sandbox.translate('salescore.item.quantity'),
-                quantityInput: this.sandbox.translate('salescore.item.quantity'),
-                quantityUnit: this.sandbox.translate('salescore.item.unit'),
-                price: this.sandbox.translate('salescore.item.price'),
-                discount: this.sandbox.translate('salescore.item.discount'),
-                overallPrice: this.sandbox.translate('salescore.item.overall-value'),
-                processedQuantity: this.sandbox.translate('salescore.item.processed-quantity')
-            };
+            var i, translations,
+                translated = {},
+                defaultTranslations = {
+                    rowClass: 'header',
+                    name: this.sandbox.translate('salescore.item.product'),
+                    number: this.sandbox.translate('salescore.item.number'),
+                    quantity: this.sandbox.translate('salescore.item.quantity'),
+                    quantityInput: this.sandbox.translate('salescore.item.quantity'),
+                    quantityUnit: this.sandbox.translate('salescore.item.unit'),
+                    price: this.sandbox.translate('salescore.item.price'),
+                    discount: this.sandbox.translate('salescore.item.discount'),
+                    overallPrice: this.sandbox.translate('salescore.item.overall-value'),
+                    processedQuantity: this.sandbox.translate('salescore.item.processed-quantity')
+                };
+            // translate passed translations
+            for (i in this.options.headerTranslations) {
+                translated[i] = this.sandbox.translate(this.options.headerTranslations[i]);
+            }
+            // merge default translations with given one's
+            translations = this.sandbox.util.extend({}, defaultTranslations, translated);
+
+            return translations;
         },
 
         /**
@@ -231,7 +243,7 @@ define([
             // get sum of already processed items
             if (!!this.options.processedItems) {
                 id = itemData.item.id;
-                processed = this.options.processedItems[id];
+                processed = this.options.processedItems[id] || 0;
             } else if (itemData.hasOwnProperty(this.options.processedQuantityValueName)) {
                 processed = itemData[this.options.processedQuantityValueName];
             }
@@ -243,12 +255,20 @@ define([
             }
 
             data = this.sandbox.util.extend({}, rowDefaults, itemData, {
-                    rowId: constants.rowIdPrefix + this.rowCount,
-                    rowNumber: this.rowCount,
-                    isEditable: this.options.isEditable,
-                    canAddRemove: this.options.canAddRemove,
-                    processedQuantity: processed
-                });
+                rowId: constants.rowIdPrefix + this.rowCount,
+                rowNumber: this.rowCount,
+                isEditable: this.options.isEditable,
+                isNew: this.options.isNew,
+                canAddRemove: this.options.canAddRemove,
+                processedQuantity: processed,
+                numberFormat: this.sandbox.numberFormat
+            });
+            // calculate max quantity
+            data.maxQuantity = (parseFloat(data.item.quantity) - parseFloat(processed)).toFixed(1);
+            // parse to int
+            data.maxQuantity = (data.maxQuantity % 1 === 0) ? parseInt(data.maxQuantity) : data.maxQuantity;
+            // correct number format
+            data.formattedMaxQuantity = this.sandbox.numberFormat(data.maxQuantity,'d');
 
             rowTpl = this.sandbox.util.template(RowTpl, data);
             // create row and return it

@@ -630,4 +630,32 @@ class Item
     {
         return $this->creator;
     }
+    /**
+     * @var \Sulu\Bundle\ContactBundle\Entity\Account
+     */
+    private $supplier;
+
+
+    /**
+     * Set supplier
+     *
+     * @param \Sulu\Bundle\ContactBundle\Entity\Account $supplier
+     * @return Item
+     */
+    public function setSupplier(\Sulu\Bundle\ContactBundle\Entity\Account $supplier = null)
+    {
+        $this->supplier = $supplier;
+    
+        return $this;
+    }
+
+    /**
+     * Get supplier
+     *
+     * @return \Sulu\Bundle\ContactBundle\Entity\Account 
+     */
+    public function getSupplier()
+    {
+        return $this->supplier;
+    }
 }

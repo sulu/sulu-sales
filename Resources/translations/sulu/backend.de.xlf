@@ -86,6 +86,30 @@
                 <source>salescore.item.processed-quantity</source>
                 <target>Bearb. Menge</target>
             </trans-unit>
+            <trans-unit id="a50accg2ac221350142c0b4720e29a22" resname="salescore.conversion-failed">
+                <source>salescore.conversion-failed</source>
+                <target>Statusänderung fehlgeschlagen.</target>
+            </trans-unit>
+            <trans-unit id="a50accg2ac221350142c0b4720e29a23" resname="salescore.shipping-failed">
+                <source>salescore.shipping-failed</source>
+                <target>Neue Lieferung konnte nicht erstellt werden</target>
+            </trans-unit>
+            <trans-unit id="a50accg2ac221350142c0b4720e29a24" resname="salescore.items">
+                <source>salescore.items</source>
+                <target>Positionen</target>
+            </trans-unit>
+            <trans-unit id="a50accg2ac221350142c0b4720e29a25" resname="salescore.shipping.date">
+                <source>salescore.shipping.date</source>
+                <target>Lieferdatum</target>
+            </trans-unit>
+            <trans-unit id="a50accg2ac221350142c0b4720e29a26" resname="salescore.currency">
+                <source>salescore.currency</source>
+                <target>Währung</target>
+            </trans-unit>
+            <trans-unit id="a50accg2ac221350142c0b4720e29a27" resname="salescore.paymentMethod">
+                <source>salescore.paymentMethod</source>
+                <target>Zahlungsart</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>

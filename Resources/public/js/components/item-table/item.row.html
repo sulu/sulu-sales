@@ -7,17 +7,17 @@ disabled =  'disabled';
 <tr id="<%= rowId %>" class="item-table-row <%= rowClass %>" data-id="<%= id %>">
     <td class="row-number"></td>
     <td class="item-name">
-        <span><%= name %></span>
+        <span title="<%= supplierName %>"><%= name %></span>
 
         <div class="product-search input-field"></div>
     </td>
-    <td class="item-number">
+    <td class="item-number is-numeric">
         <span><%= number %></span>
     </td>
     <td class="settings">
         <i class="fa fa-list"/>
     </td>
-    <td class="item-quantity">
+    <td class="item-quantity is-numeric">
         <span>
             <input class="input-field form-element"
                    data-validation-required="true"
@@ -27,10 +27,10 @@ disabled =  'disabled';
             <%= disabled %>/>
         </span>
     </td>
-    <td class="item-quantity-unit">
+    <td class="item-quantity-unit is-numeric">
         <%= quantityUnit %>
     </td>
-    <td class="item-price">
+    <td class="item-price is-numeric">
         <span>
             <input class="price input-field form-element"
                    data-validation-required="true"
@@ -40,7 +40,7 @@ disabled =  'disabled';
             <%= disabled %>/>
         </span>
     </td>
-    <td class="item-discount">
+    <td class="item-discount is-numeric">
         <span>
             <input class="discount input-field form-element"
                    value="<%= discount %>"
@@ -50,7 +50,7 @@ disabled =  'disabled';
             <%= disabled %>/>
         </span>
     </td>
-    <td class="item-overall-price">
+    <td class="item-overall-price is-numeric">
         <span class="overall-price">
             <%= overallPrice %>
         </span>

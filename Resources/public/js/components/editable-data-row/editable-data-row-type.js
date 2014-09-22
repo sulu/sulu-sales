@@ -21,7 +21,7 @@ define([
 
             typeInterface = {
                 setValue: function(data) {
-                    if (!!data && typeof data === 'object') {
+                    if (!!data) {
                         this.$el.data({
                             'value': data
                         }).trigger('data-changed');

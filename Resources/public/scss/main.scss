@@ -1,2 +1,14 @@
 @import 'modules/item-table',
         'modules/editable-data-row';
+
+// *** GENERAL DEFINITIONS ***
+
+.not-clickable {
+    color: #999;
+}
+
+
+// QUICK FIX
+h2.divider {
+    clear: both;
+}

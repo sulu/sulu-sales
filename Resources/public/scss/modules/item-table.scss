@@ -77,6 +77,12 @@ body {
         }
     }
 
+    .is-numeric,
+    .is-numeric input {
+
+        text-align: right;
+    }
+
     .span {
         height: 100%;
     }
@@ -131,8 +137,8 @@ body {
 
     .global-price-table {
         width: initial;
-        position: absolute;
-        right: 31px;
+        float: right;
+        margin-right: 31px;
         text-align: right;
 
         td {

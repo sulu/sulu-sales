@@ -11,23 +11,23 @@ disabled =  'disabled';
 
         <div class="product-search input-field"></div>
     </td>
-    <td class="item-number">
+    <td class="item-number is-numeric">
         <span><%= item.number %></span>
     </td>
-    <td class="item-quantity">
-        <span><%= item.quantity %></span>
+    <td class="item-quantity is-numeric">
+        <span><%= numberFormat(item.quantity.toFixed(1), 'd') %></span>
     </td>
-    <td class="item-processed-quantity">
-        <span><%= processedQuantity %></span>
+    <td class="item-processed-quantity is-numeric">
+        <span><%= numberFormat(processedQuantity.toFixed(1), 'd')%></span>
     </td>
-    <td class="quantity-input">
+    <td class="quantity-input is-numeric">
         <span>
             <input class="input-field form-element"
-                   value="<%= quantity %>"
+                   value="<%= isNew ? formattedMaxQuantity : quantity %>"
                    data-type="decimal"
-                   data-validation-max="<%= (parseFloat(item.quantity) - parseFloat(processedQuantity)).toFixed(1) %>"
+                   data-validation-max="<%= maxQuantity %>"
                    data-validation-min="0.0"
-            <%= quantity %> <%= disabled %>/>
+            <%= disabled %>/>
         </span>
     </td>
     <td class="item-quantity-unit">
