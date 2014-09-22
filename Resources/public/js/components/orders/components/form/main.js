@@ -457,10 +457,10 @@ define([], function() {
         view: true,
 
         layout: {
-//                sidebar: {
-//                    width: 'fixed',
-//                    cssClasses: 'sidebar-padding-50'
-//                }
+                sidebar: {
+                    width: 'fixed',
+                    cssClasses: 'sidebar-padding-50'
+                }
         },
 
         templates: ['/admin/order/template/order/form'],
@@ -507,16 +507,22 @@ define([], function() {
             this.listenForChange();
 
             // initialize sidebar
-//                if (!!this.options.data && !!this.options.data.id) {
-//                    this.initSidebar(
-//                        '/admin/widget-groups/contact-detail?contact=',
-//                        this.options.data.id
-//                    );
-//                }
+            if (!!this.options.data && !!this.options.data.id) {
+                this.initSidebar();
+            }
         },
 
-        initSidebar: function(url, id) {
-            this.sandbox.emit('sulu.sidebar.set-widget', url + id);
+        initSidebar: function() {
+
+            var url = '/admin/widget-groups/order-detail',
+                data = this.options.data;
+
+            if(!!data.contact && !!data.account && !!data.status){
+                url += '?contact='+data.contact.id+'&account='+data.account.id+'&status='+data.status.status;
+                this.sandbox.emit('sulu.sidebar.set-widget', url);
+            } else {
+                this.sandbox.logger.error('required values for sidebar not present!');
+            }
         },
 
         render: function() {
