@@ -1,0 +1,10 @@
+<div id="item-table-form" class="item-table-list-form<% if (isEditable == 'false' || isEditable == false) {print(' disabled');} %>">
+    <div class="item-table-container">
+        <table class="item-table-list"></table>
+    </div>
+    <% if (canAddRemove === true) { %>
+    <div class="item-add grid-col-5">
+        <a href="#" class="add-row"><i class="fa fa-plus-circle"></i><%= addText %></a>
+    </div>
+    <% } %>
+</div>
