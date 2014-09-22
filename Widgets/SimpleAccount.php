@@ -18,9 +18,9 @@ use Sulu\Bundle\ContactBundle\Entity\Account;
 use Sulu\Bundle\ContactBundle\Entity\Address;
 use Sulu\Bundle\ContactBundle\Entity\Contact;
 /**
- * example widget for contact controller
+ * SimpleAccount widget
  *
- * @package Sulu\Bundle\ContactBundle\Widgets
+ * @package Sulu\Bundle\Sales\CoreBundle\Widgets
  */
 class SimpleAccount implements WidgetInterface
 {
