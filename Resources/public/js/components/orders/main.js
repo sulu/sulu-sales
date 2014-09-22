@@ -53,25 +53,54 @@ define([
             this.sandbox.on('sulu.salesorder.orders.list', this.showOrderList.bind(this));
 
             this.sandbox.on('sulu.salesorder.shipping.create', this.createOrderShipping.bind(this));
+
+            this.sandbox.on('salesorder.orders.sidebar.getData', this.getDataForOrderSidebar.bind(this));
+        },
+
+        /**
+         * Gets data to init sidebar with correct params values
+         * @param payload
+         */
+        getDataForOrderSidebar: function(payload){
+            if(!!payload.data && !!payload.callback && typeof payload.callback === 'function'){
+                var model,
+                    order = Order.findOrCreate({id:payload.data});
+
+                order.fetch({
+                    success: function(response) {
+                        model = response.toJSON();
+                        if (!!model.account && !!model.contact) {
+                            payload.callback(model.contact.id, model.account.id);
+                        } else {
+                            this.sandbox.logger.error('received invalid data when initializing sidebar', model);
+                        }
+                    }.bind(this),
+                    error: function() {
+                        this.sandbox.logger.error('error while fetching order');
+                    }.bind(this)
+                });
+            } else {
+                this.sandbox.logger.error('param for getDataForOrderSidebar has to be an object with a data attribute and a valid callback (attribute)!');
+            }
         },
 
         /**
          * Binds general sidebar events
          */
         bindSidebarEvents: function() {
-            // bind sidebar
-//            this.sandbox.dom.off('#sidebar');
-//
-//            this.sandbox.dom.on('#sidebar', 'click', function(event) {
-//                var id = this.sandbox.dom.data(event.currentTarget,'id');
-//                this.sandbox.emit('sulu.contacts.accounts.load', id);
-//            }.bind(this), '#sidebar-accounts-list');
-//
-//            this.sandbox.dom.on('#sidebar', 'click', function(event) {
-//                var id = this.sandbox.dom.data(event.currentTarget,'id');
-//                this.sandbox.emit('sulu.router.navigate', 'contacts/contacts/edit:' + id + '/details');
-//                this.sandbox.emit('husky.navigation.select-item','contacts/contacts');
-//            }.bind(this), '#main-contact');
+            this.sandbox.dom.off('#sidebar');
+
+            this.sandbox.dom.on('#sidebar', 'click', function(event) {
+                var id = this.sandbox.dom.data(event.currentTarget,'id');
+                this.sandbox.emit('sulu.router.navigate', 'contacts/accounts/edit:' + id + '/details');
+                this.sandbox.emit('husky.navigation.select-item','contacts/accounts');
+            }.bind(this), '#sidebar-account');
+
+            this.sandbox.dom.on('#sidebar', 'click', function(event) {
+                var id = this.sandbox.dom.data(event.currentTarget,'id');
+                this.sandbox.emit('sulu.router.navigate', 'contacts/contacts/edit:' + id + '/details');
+                this.sandbox.emit('husky.navigation.select-item','contacts/contacts');
+            }.bind(this), '#sidebar-contact');
         },
 
         /**

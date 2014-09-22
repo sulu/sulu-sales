@@ -201,6 +201,7 @@ class OrderControllerTest extends DatabaseTestCase
             self::$em->getClassMetadata('Sulu\Bundle\ProductBundle\Entity\ProductTranslation'),
             self::$em->getClassMetadata('Sulu\Bundle\ProductBundle\Entity\ProductAttribute'),
             self::$em->getClassMetadata('Sulu\Bundle\ProductBundle\Entity\Addon'),
+            self::$em->getClassMetadata('Sulu\Bundle\ProductBundle\Entity\AttributeType'),
             // ContactBundle
             self::$em->getClassMetadata('Sulu\Bundle\ContactBundle\Entity\Account'),
             self::$em->getClassMetadata('Sulu\Bundle\ContactBundle\Entity\AccountContact'),
@@ -554,7 +555,7 @@ class OrderControllerTest extends DatabaseTestCase
         $this->assertEquals($this->item->getStatus()->getId(), $item->status->id);
         $this->assertEquals('English-Item-Status-1', $item->status->status);
         // item product
-        $this->assertEquals($this->item->getProduct()->getId(), $item->product->id);
+        $this->assertEquals($this->item->getProduct()->getId(), $item->productRelation->id);
     }
 
     public function testGetAll()
