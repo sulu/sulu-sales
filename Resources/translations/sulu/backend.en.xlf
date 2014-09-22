@@ -32,11 +32,19 @@
             </trans-unit>
             <trans-unit id="550accg2ac181350142c0b4720e29ff7" resname="salesshipping.shippings.expected-delivery-date">
                 <source>salesshipping.shippings.expected-delivery-date</source>
-                <target>Desired delivery date</target>
+                <target>Shipping date</target>
             </trans-unit>
             <trans-unit id="550accg2ac181350142c0b4720e29ff8" resname="salesshipping.shippings.processed-items">
                 <source>salesshipping.shippings.processed-items</source>
                 <target>Shipped quantity</target>
+            </trans-unit>
+            <trans-unit id="550accg2ac181350142c0b4720e29ff9" resname="salesshipping.shippings.ship">
+                <source>salesshipping.shippings.ship</source>
+                <target>Ship order</target>
+            </trans-unit>
+            <trans-unit id="550accg2ac181350142c0b4720e29f10" resname="salesshipping.shippings.cancel">
+                <source>salesshipping.shippings.cancel</source>
+                <target>Cancel order</target>
             </trans-unit>
         </body>
     </file>

@@ -40,8 +40,10 @@ define([
             this.sandbox.on('sulu.salesshipping.shipping.delete', this.showDeleteWarning.bind(this));
 
             // conversion events
-            this.sandbox.on('sulu.salesshipping.shipping.confirm', this.confirmAction.bind(this));
-            this.sandbox.on('sulu.salesshipping.shipping.edit', this.editAction.bind(this));
+            this.sandbox.on('sulu.salesshipping.shipping.confirm', this.confirmStatusAction.bind(this));
+            this.sandbox.on('sulu.salesshipping.shipping.edit', this.editStatusAction.bind(this));
+            this.sandbox.on('sulu.salesshipping.shipping.ship', this.shipStatusAction.bind(this));
+            this.sandbox.on('sulu.salesshipping.shipping.cancel', this.cancelStatusAction.bind(this));
 
             // save the current package
             this.sandbox.on('sulu.salesshipping.shipping.save', this.saveAction.bind(this));
@@ -59,22 +61,43 @@ define([
         /**
          * confirm a shipping
          */
-        confirmAction: function() {
-            this.convertStatus('deliverynote');
+        confirmStatusAction: function() {
+            this.convertStatus('deliverynote', true);
         },
 
         /**
          * edit a shipping, which is already confirmed
          */
-        editAction: function() {
-            this.convertStatus('edit');
+        editStatusAction: function() {
+            this.convertStatus('edit', true);
+        },
+
+        /**
+         * ship a shipping, which is already confirmed
+         */
+        shipStatusAction: function() {
+            this.convertStatus('ship', true).then(function(status) {
+                this.sandbox.emit('sulu.salesshipping.shipping.status-change', status);
+            }.bind(this));
+        },
+
+        /**
+         * cancels a shipping, which is was shipped
+         */
+        cancelStatusAction: function() {
+            this.convertStatus('cancel', true).then(function(status) {
+                this.sandbox.emit('sulu.salesshipping.shipping.status-change', status);
+            }.bind(this));
         },
 
         /**
          * convert status of a shipping
          * @param statusString
          */
-        convertStatus: function(statusString) {
+        convertStatus: function(statusString, requiresReload) {
+            requiresReload = requiresReload === true ? true : false;
+
+            var dfd = this.sandbox.data.deferred();
             // set action
             this.shipping.set({
                 action: statusString
@@ -84,9 +107,15 @@ define([
                 type: 'post',
                 success: function(response) {
                     this.sandbox.logger.log('successfully changed status', response);
-                    this.loadAction(this.shipping.id, true);
-                }.bind(this)
+                    this.loadAction(this.shipping.id, requiresReload);
+                    dfd.resolve();
+                }.bind(this),
+                error: function() {
+                    dfd.reject();
+                }
             });
+
+            return dfd;
         },
 
         loadAction: function(id, force) {
