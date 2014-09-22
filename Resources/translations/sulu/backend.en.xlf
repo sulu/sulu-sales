@@ -110,7 +110,15 @@
                 <source>salescore.paymentMethod</source>
                 <target>Payment method</target>
             </trans-unit>
-            <trans-unit id="a50accg2ac221350142c0b4720e29a28" resname="salescore.orderDate">
+            <trans-unit id="a50accg2ac221350142c0b4720e29a28" resname="salescore.sidebar.contact">
+                <source>salescore.sidebar.contact</source>
+                <target>Contact</target>
+            </trans-unit>
+            <trans-unit id="a50accg2ac221350142c0b4720e29a29" resname="salescore.sidebar.customer">
+                <source>salescore.sidebar.customer</source>
+                <target>Customer</target>
+            </trans-unit>
+            <trans-unit id="a50accg2ac221350142c0b4720e29a30" resname="salescore.orderDate">
                 <source>salescore.orderDate</source>
                 <target>Order date</target>
             </trans-unit>

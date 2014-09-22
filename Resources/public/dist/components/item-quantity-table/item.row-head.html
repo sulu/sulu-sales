@@ -7,23 +7,22 @@
     <td class="item-number is-numeric">
         <span><%= number %></span>
     </td>
-    <td class="settings">
-    </td>
     <td class="item-quantity is-numeric">
         <span><%= quantity %></span>
     </td>
-    <td class="item-quantity-unit is-numeric">
-        <%= quantityUnit %>
+    <td class="item-quantity is-numeric">
+        <span><%= processedQuantity %></span>
     </td>
-    <td class="item-price is-numeric">
-        <span><%= price %></span>
+    <td class="item-quantity is-numeric">
+        <span><%= quantityInput %></span>
     </td>
-    <td class="item-discount is-numeric">
-        <span><%= discount %></span>
+    <td class="item-quantity-unit">
+       <span><%= quantityUnit %></span>
+    <td class="settings">
     </td>
-    <td class="item-overallPrice is-numeric">
-        <%= overallPrice %>
     </td>
+    <% if (canAddRemove === true) { %>
     <td class="item-remove">
     </td>
+    <% } %>
 </tr>

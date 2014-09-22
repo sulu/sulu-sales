@@ -1,0 +1,44 @@
+<% var disabled = '';
+if (rowClass === 'new' || isEditable == 'false' || isEditable == false) {
+disabled =  'disabled';
+}
+%>
+
+<tr id="<%= rowId %>" class="item-table-row <%= rowClass %>" data-id="<%= id %>">
+    <td class="row-number"></td>
+    <td class="item-name">
+        <span><%= item.name %></span>
+
+        <div class="product-search input-field"></div>
+    </td>
+    <td class="item-number is-numeric">
+        <span><%= item.number %></span>
+    </td>
+    <td class="item-quantity is-numeric">
+        <span><%= numberFormat(item.quantity.toFixed(1), 'd') %></span>
+    </td>
+    <td class="item-processed-quantity is-numeric">
+        <span><%= numberFormat(processedQuantity.toFixed(1), 'd')%></span>
+    </td>
+    <td class="quantity-input is-numeric">
+        <span>
+            <input class="input-field form-element"
+                   value="<%= isNew ? formattedMaxQuantity : quantity %>"
+                   data-type="decimal"
+                   data-validation-max="<%= maxQuantity %>"
+                   data-validation-min="0.0"
+            <%= disabled %>/>
+        </span>
+    </td>
+    <td class="item-quantity-unit">
+        <%= item.quantityUnit %>
+    </td>
+    <td class="settings">
+        <i class="fa fa-list"/>
+    </td>
+    <% if (canAddRemove === true) { %>
+    <td class="item-remove">
+        <a href="#"><i class="fa fa-times remove-row"></i></a>
+    </td>
+    <% } %>
+</tr>
