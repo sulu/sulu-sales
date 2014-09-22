@@ -1,0 +1,1 @@
+define(["mvc/relationalmodel","mvc/hasone","sulusalesorder/model/order"],function(a,b,c){"use strict";return a({urlRoot:"/admin/api/shippings",defaults:function(){return{id:null,number:""}},relations:[{type:b,key:"order",relatedModel:c}]})});
