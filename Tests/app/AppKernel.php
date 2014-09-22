@@ -1,9 +1,10 @@
 <?php
 
+use Sulu\Component\HttpKernel\SuluKernel;
 use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\Config\Loader\LoaderInterface;
 
-class AppKernel extends Kernel
+class AppKernel extends SuluKernel
 {
     public function registerBundles()
     {
@@ -48,5 +49,11 @@ class AppKernel extends Kernel
         } else {
             $loader->load(__DIR__ . '/config/config.mysql.yml');
         }
+    }
+
+    public function __construct($environment, $debug)
+    {
+        parent::__construct($environment, $debug);
+        $this->setContext(SuluKernel::CONTEXT_ADMIN);
     }
 }
