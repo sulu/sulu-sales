@@ -31,6 +31,11 @@ class Shipping
     private $termsOfDeliveryContent;
 
     /**
+     * @var string
+     */
+    private $termsOfPaymentContent;
+
+    /**
      * @var float
      */
     private $width;
@@ -104,11 +109,6 @@ class Shipping
      * @var \Sulu\Bundle\Sales\ShippingBundle\Entity\ShippingStatus
      */
     private $status;
-
-    /**
-     * @var \Sulu\Bundle\ContactBundle\Entity\TermsOfDelivery
-     */
-    private $termsOfDelivery;
 
     /**
      * @var \Sulu\Bundle\Sales\OrderBundle\Entity\Order
@@ -573,29 +573,6 @@ class Shipping
     }
 
     /**
-     * Set termsOfDelivery
-     *
-     * @param \Sulu\Bundle\ContactBundle\Entity\TermsOfDelivery $termsOfDelivery
-     * @return Shipping
-     */
-    public function setTermsOfDelivery(\Sulu\Bundle\ContactBundle\Entity\TermsOfDelivery $termsOfDelivery = null)
-    {
-        $this->termsOfDelivery = $termsOfDelivery;
-    
-        return $this;
-    }
-
-    /**
-     * Get termsOfDelivery
-     *
-     * @return \Sulu\Bundle\ContactBundle\Entity\TermsOfDelivery 
-     */
-    public function getTermsOfDelivery()
-    {
-        return $this->termsOfDelivery;
-    }
-
-    /**
      * Set order
      *
      * @param \Sulu\Bundle\Sales\OrderBundle\Entity\Order $order
@@ -685,5 +662,28 @@ class Shipping
     public function getBitmaskStatus()
     {
         return $this->bitmaskStatus;
+    }
+
+    /**
+     * Set termsOfPaymentContent
+     *
+     * @param string $termsOfPaymentContent
+     * @return Shipping
+     */
+    public function setTermsOfPaymentContent($termsOfPaymentContent)
+    {
+        $this->termsOfPaymentContent = $termsOfPaymentContent;
+    
+        return $this;
+    }
+
+    /**
+     * Get termsOfPaymentContent
+     *
+     * @return string 
+     */
+    public function getTermsOfPaymentContent()
+    {
+        return $this->termsOfPaymentContent;
     }
 }

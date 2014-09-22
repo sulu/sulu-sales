@@ -77,6 +77,14 @@ define(['sulusalesshipping/util/shippingStatus'], function(ShippingStatus) {
                         title: this.sandbox.translate('salesshipping.shippings.edit'),
                         callback: editClickedHandler.bind(this)
                     },
+                    ship: {
+                        title: this.sandbox.translate('salesshipping.shippings.ship'),
+                        callback: shipClickedHandler.bind(this)
+                    },
+                    cancel: {
+                        title: this.sandbox.translate('salesshipping.shippings.cancel'),
+                        callback: cancelClickedHandler.bind(this)
+                    },
                     divider: {
                         divider: true
                     }
@@ -89,6 +97,10 @@ define(['sulusalesshipping/util/shippingStatus'], function(ShippingStatus) {
                     workflow.items.push(workflowItems.confirm);
                 } else if (this.shippingStatusId === ShippingStatus.DELIVERY_NOTE) {
                     workflow.items.push(workflowItems.edit);
+                    workflow.items.push(workflowItems.divider);
+                    workflow.items.push(workflowItems.ship);
+                } else if (this.shippingStatusId === ShippingStatus.SHIPPED) {
+                    workflow.items.push(workflowItems.cancel);
                 }
 
                 // add settings items
@@ -121,6 +133,24 @@ define(['sulusalesshipping/util/shippingStatus'], function(ShippingStatus) {
         editClickedHandler = function() {
             checkForUnsavedData.call(this, function() {
                 this.sandbox.emit('sulu.salesshipping.shipping.edit');
+            });
+        },
+
+        /**
+         * ship an order, checks for unsaved data and shows a warning
+         */
+        shipClickedHandler = function() {
+            checkForUnsavedData.call(this, function() {
+                this.sandbox.emit('sulu.salesshipping.shipping.ship');
+            });
+        },
+
+        /**
+         * cancels an order
+         */
+        cancelClickedHandler = function() {
+            checkForUnsavedData.call(this, function() {
+                this.sandbox.emit('sulu.salesshipping.shipping.cancel');
             });
         },
 
@@ -174,6 +204,11 @@ define(['sulusalesshipping/util/shippingStatus'], function(ShippingStatus) {
             this.sandbox.on('sulu.header.toolbar.save', function() {
                 this.submit();
             }, this);
+
+            this.sandbox.on('husky.toolbar.header.initialized', function() {
+                // if new shipping, enable save button
+                setSaved.call(this, !this.isNew);
+            }.bind(this));
 
             // back to list
             this.sandbox.on('sulu.header.back', function() {
@@ -328,6 +363,7 @@ define(['sulusalesshipping/util/shippingStatus'], function(ShippingStatus) {
             this.options = this.sandbox.util.extend({}, defaults, this.options);
 
             this.saved = true;
+            this.isNew = !this.options.data.id;
 
             this.dfdAllFieldsInitialized = this.sandbox.data.deferred();
             this.dfdExpectedDeliveryDate = this.sandbox.data.deferred();
@@ -352,8 +388,6 @@ define(['sulusalesshipping/util/shippingStatus'], function(ShippingStatus) {
             // set header
             setHeaderTitle.call(this);
             setHeaderToolbar.call(this);
-            // if new shipping, show delivery
-            setSaved.call(this, !this.options.isNew);
 
             // render form
             this.render();
@@ -378,7 +412,7 @@ define(['sulusalesshipping/util/shippingStatus'], function(ShippingStatus) {
             var data = this.options.data,
                 templateData = this.sandbox.util.extend({}, {
                     isEditable: this.isEditable,
-                    isNew: !this.options.data.id,
+                    isNew: this.isNew,
                     shippedOrderItems: this.options.shippedOrderItems
                 }, data);
 

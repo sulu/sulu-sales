@@ -12,11 +12,6 @@ define(function() {
     'use strict';
 
     var bindCustomEvents = function() {
-            // navigate to edit contact
-            this.sandbox.on('husky.datagrid.item.click', function(item) {
-//                this.sandbox.emit('sulu.sidebar.set-widget', '/admin/widget-groups/contact-info?contact=' + item);
-            }, this);
-
             // delete clicked
             this.sandbox.on('sulu.list-toolbar.delete', function() {
                 this.sandbox.emit('husky.datagrid.items.get-selected', function(ids) {
@@ -51,7 +46,7 @@ define(function() {
             this.sandbox.dom.html(this.$el, this.renderTemplate('/admin/shipping/template/shipping/list'));
 
             // init list-toolbar and datagrid
-            this.sandbox.sulu.initListToolbarAndList.call(this, 'shippingsFields', '/admin/api/shippings/fields?context=order',
+            this.sandbox.sulu.initListToolbarAndList.call(this, 'orderShippingFields', '/admin/api/shippings/fields?context=order',
                 {
                     el: this.$find('#list-toolbar-container'),
                     instanceName: 'shippings',

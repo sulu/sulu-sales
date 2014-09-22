@@ -12,6 +12,7 @@
 
         <field name="customerName" type="string" column="customerName" length="255" nullable="true"/>
         <field name="termsOfDeliveryContent" type="string" column="termsOfDeliveryContent" length="255" nullable="true"/>
+        <field name="termsOfPaymentContent" type="string" column="termsOfPaymentContent" length="255" nullable="true"/>
 
         <field name="width" type="float" column="width" length="10" nullable="true"/>
         <field name="height" type="float" column="height" length="10" nullable="true"/>
@@ -23,7 +24,7 @@
         <field name="commission" type="string" column="commission" length="255" nullable="true"/>
         <field name="note" type="text" column="note" nullable="true"/>
 
-        <field name="bitmaskStatus" type="integer" column="bitmaskStatus" nullable="true"/>
+        <field name="bitmaskStatus" type="integer" column="bitmaskStatus" nullable="false"/>
         <!-- TODO: Create Carriers -->
 
         <field name="created" type="datetime" column="created"></field>
@@ -41,11 +42,6 @@
         <many-to-one field="status" target-entity="Sulu\Bundle\Sales\ShippingBundle\Entity\ShippingStatus" inversed-by="shipping">
             <join-columns>
                 <join-column name="idShippingStatus" referenced-column-name="id" nullable="false"/>
-            </join-columns>
-        </many-to-one>
-        <many-to-one field="termsOfDelivery" target-entity="Sulu\Bundle\ContactBundle\Entity\TermsOfDelivery">
-            <join-columns>
-                <join-column name="idTermsOfDelivery"/>
             </join-columns>
         </many-to-one>
         <many-to-one field="order" target-entity="Sulu\Bundle\Sales\OrderBundle\Entity\Order">

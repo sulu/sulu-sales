@@ -9,6 +9,7 @@ use Hateoas\Representation\CollectionRepresentation;
 class TemplateController extends RestController
 {
     static $termsOfDeliveryEntityName = 'SuluContactBundle:TermsOfDelivery';
+    static $termsOfPaymentEntityName = 'SuluContactBundle:TermsOfPayment';
     /**
      * Returns Template for list
      * @return \Symfony\Component\HttpFoundation\Response
@@ -28,7 +29,8 @@ class TemplateController extends RestController
     {
         return $this->render(
             'SuluSalesShippingBundle:Template:shipping.form.html.twig', array(
-                'termsOfDelivery' => $this->getTermsArray(static::$termsOfDeliveryEntityName)
+                'termsOfDelivery' => $this->getTermsArray(static::$termsOfDeliveryEntityName),
+                'termsOfPayment' => $this->getTermsArray(static::$termsOfPaymentEntityName)
             )
         );
     }

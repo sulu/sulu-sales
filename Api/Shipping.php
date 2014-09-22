@@ -134,6 +134,31 @@ class Shipping extends ApiWrapper
     }
 
     /**
+     * Set termsOfPaymentContent
+     *
+     * @param string $termsOfPaymentContent
+     * @return Shipping
+     */
+    public function setTermsOfPaymentContent($termsOfPaymentContent)
+    {
+        $this->entity->setTermsOfPaymentContent($termsOfPaymentContent);
+
+        return $this;
+    }
+
+    /**
+     * Get termsOfPaymentContent
+     *
+     * @return string
+     * @VirtualProperty
+     * @SerializedName("termsOfPaymentContent")
+     */
+    public function getTermsOfPaymentContent()
+    {
+        return $this->entity->getTermsOfPaymentContent();
+    }
+
+    /**
      * Set width
      *
      * @param float $width
@@ -538,31 +563,6 @@ class Shipping extends ApiWrapper
     public function getBitmaskStatus()
     {
         return $this->entity->getBitmaskStatus();
-    }
-
-    /**
-     * Set termsOfDelivery
-     *
-     * @param \Sulu\Bundle\ContactBundle\Entity\TermsOfDelivery $termsOfDelivery
-     * @return Shipping
-     */
-    public function setTermsOfDelivery(\Sulu\Bundle\ContactBundle\Entity\TermsOfDelivery $termsOfDelivery = null)
-    {
-        $this->entity->setTermsOfDelivery($termsOfDelivery);
-
-        return $this;
-    }
-
-    /**
-     * Get termsOfDelivery
-     *
-     * @return \Sulu\Bundle\ContactBundle\Entity\TermsOfDelivery
-     * @VirtualProperty
-     * @SerializedName("termsOfDelivery")
-     */
-    public function getTermsOfDelivery()
-    {
-        return $this->entity->getTermsOfDelivery();
     }
 
     /**

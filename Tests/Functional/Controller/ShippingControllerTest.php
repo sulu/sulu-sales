@@ -233,6 +233,7 @@ class ShippingControllerTest extends DatabaseTestCase
             self::$em->getClassMetadata('Sulu\Bundle\ProductBundle\Entity\AttributeSet'),
             self::$em->getClassMetadata('Sulu\Bundle\ProductBundle\Entity\AttributeSetTranslation'),
             self::$em->getClassMetadata('Sulu\Bundle\ProductBundle\Entity\Attribute'),
+            self::$em->getClassMetadata('Sulu\Bundle\ProductBundle\Entity\AttributeType'),
             self::$em->getClassMetadata('Sulu\Bundle\ProductBundle\Entity\AttributeTranslation'),
             self::$em->getClassMetadata('Sulu\Bundle\ProductBundle\Entity\ProductTranslation'),
             self::$em->getClassMetadata('Sulu\Bundle\ProductBundle\Entity\ProductAttribute'),
@@ -352,8 +353,9 @@ class ShippingControllerTest extends DatabaseTestCase
 
         // order status
         $this->orderStatus = new OrderStatus();
+        $this->orderStatus->setId(1);
         $this->orderStatusTranslation = new OrderStatusTranslation();
-        $this->orderStatusTranslation->setName('English-Order-Status-1');
+        $this->orderStatusTranslation->setName('Created');
         $this->orderStatusTranslation->setLocale($this->locale);
         $this->orderStatusTranslation->setStatus($this->orderStatus);
 
@@ -402,6 +404,7 @@ class ShippingControllerTest extends DatabaseTestCase
         $this->order->setDesiredDeliveryDate(new DateTime('2015-01-01'));
         $this->order->setSessionId('abcd1234');
         $this->order->setTaxfree(true);
+        $this->order->setBitmaskStatus($this->orderStatus->getId());
         $this->order->setContact($this->contact);
         $this->order->setAccount($this->account);
         $this->order->setStatus($this->orderStatus);
@@ -474,6 +477,7 @@ class ShippingControllerTest extends DatabaseTestCase
 
         // shipping
         $this->shippingStatus = new ShippingStatus();
+        $this->shippingStatus->setId(1);
         $this->shippingStatusTranslation = new ShippingStatusTranslation();
         $this->shippingStatusTranslation->setName('English-Shipping-Status-1');
         $this->shippingStatusTranslation->setLocale($this->locale);
@@ -495,10 +499,11 @@ class ShippingControllerTest extends DatabaseTestCase
         $this->shipping->setLength(103);
         $this->shipping->setWeight(10);
         $this->shipping->setNote('simple shipping note');
-        $this->shipping->setTermsOfDelivery($this->termsOfDelivery);
         $this->shipping->setTermsOfDeliveryContent($this->termsOfDelivery->getTerms());
+        $this->shipping->setTermsOfPaymentContent($this->termsOfPayment->getTerms());
         $this->shipping->setTrackingId('abcd1234');
         $this->shipping->setTrackingUrl('http://www.tracking.url?token=abcd1234');
+        $this->shipping->setBitmaskStatus($this->shippingStatus->getId());
 
         $this->shipping2 = clone $this->shipping;
         $this->shipping2->setNumber('00002');
@@ -611,6 +616,7 @@ class ShippingControllerTest extends DatabaseTestCase
 
         // terms
         $this->assertEquals($this->termsOfDelivery->getTerms(), $response->termsOfDeliveryContent);
+        $this->assertEquals($this->termsOfPayment->getTerms(), $response->termsOfPaymentContent);
 
     }
 
@@ -723,9 +729,8 @@ class ShippingControllerTest extends DatabaseTestCase
             'order' => array(
                 'id' => 1
             ),
-            'termsOfDelivery' => array(
-                'id' => 1
-            ),
+            'termsOfDeliveryContent' => $this->termsOfDelivery->getTerms(),
+            'termsOfPaymentContent' => $this->termsOfPayment->getTerms(),
             'items' => array()
         );
 

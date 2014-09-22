@@ -254,6 +254,12 @@ class ShippingController extends RestController implements ClassResourceInterfac
                 case 'edit':
                     $this->getManager()->convertStatus($shipping, ShippingStatus::STATUS_CREATED);
                     break;
+                case 'ship':
+                    $this->getManager()->convertStatus($shipping, ShippingStatus::STATUS_SHIPPED);
+                    break;
+                case 'cancel':
+                    $this->getManager()->convertStatus($shipping, ShippingStatus::STATUS_CANCELED);
+                    break;
                 default:
                     throw new RestException("Unrecognized status: " . $status);
 
