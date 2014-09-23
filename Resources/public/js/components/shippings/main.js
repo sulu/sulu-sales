@@ -56,6 +56,10 @@ define([
 
             // load list view
             this.sandbox.on('sulu.salesshipping.shippings.list', this.listAction.bind(this));
+
+            // load orders list
+            this.sandbox.on('sulu.salesshipping.orders.list', this.listOrdersAction.bind(this));
+
         },
 
         /**
@@ -170,6 +174,10 @@ define([
 
         listAction: function() {
             this.sandbox.emit('sulu.router.navigate', 'sales/shippings');
+        },
+
+        listOrdersAction: function() {
+            this.sandbox.emit('sulu.router.navigate', 'sales/orders');
         },
 
         // save action

@@ -12,18 +12,23 @@ define(function() {
     'use strict';
 
     var bindCustomEvents = function() {
-            // delete clicked
-            this.sandbox.on('sulu.list-toolbar.delete', function() {
-                this.sandbox.emit('husky.datagrid.items.get-selected', function(ids) {
-                    this.sandbox.emit('sulu.salesshipping.shipping.delete', ids);
-                }.bind(this));
-            }, this);
+        // delete clicked
+        this.sandbox.on('sulu.list-toolbar.delete', function() {
+            this.sandbox.emit('husky.datagrid.items.get-selected', function(ids) {
+                this.sandbox.emit('sulu.salesshipping.shipping.delete', ids);
+            }.bind(this));
+        }, this);
 
-            // add clicked
-            this.sandbox.on('sulu.list-toolbar.add', function() {
-                this.sandbox.emit('sulu.salesshipping.shipping.new', this.orderId);
-            }, this);
-        };
+        // add clicked
+        this.sandbox.on('sulu.list-toolbar.add', function() {
+            this.sandbox.emit('sulu.salesshipping.shipping.new', this.orderId);
+        }, this);
+
+        // back to list
+        this.sandbox.on('sulu.header.back', function() {
+            this.sandbox.emit('sulu.salesshipping.orders.list');
+        }, this);
+    };
 
     return {
         view: true,
@@ -52,8 +57,8 @@ define(function() {
             var url = '/admin/widget-groups/order-detail',
                 data = this.options.data;
 
-            if(!!data.contact && !!data.account && !!data.status){
-                url += '?contact='+data.contact.id+'&account='+data.account.id+'&status='+data.status.status;
+            if (!!data.contact && !!data.account && !!data.status) {
+                url += '?contact=' + data.contact.id + '&account=' + data.account.id + '&status=' + data.status.status;
                 this.sandbox.emit('sulu.sidebar.set-widget', url);
             } else {
                 this.sandbox.logger.error('required values for sidebar not present!');
