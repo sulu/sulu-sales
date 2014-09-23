@@ -24,7 +24,7 @@ abstract class FlowOfDocuments implements WidgetInterface
     private $entries = [];
 
     /**
-     * @return \Sulu\Bundle\Sales\CoreBundle\Core\SalesDocument[]
+     * @return array []
      */
     public function getEntries()
     {

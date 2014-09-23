@@ -1,28 +1,28 @@
 <div class="grid-row m-bottom-40" id="flow-of-documents"
-        ></div>
+        data-aura-component="flow-of-documents@sulusalescore"
+        data-aura-instance-name="orders"
+        data-aura-data='{{ data|json_encode()|raw }}'></div>
 
 <div class="grid-row m-bottom-40">
     <p class="sidebar-table-title m-left-10">Belegfluss</p>
     <table class="sidebar-table">
-        <tbody>
-            <tr class="pointer">
-                <td class="icon-cell"><span class="fa fa-shopping-cart icon"></span></td>
-                <td>Order #12345</td>
-                <td>20.02.2014</td>
-                <td class="icon-cell" title="Download document"><span class="fa fa-cloud-download icon"></span></td>
-            </tr>
-            <tr class="pointer">
-                <td class="icon-cell"><span class="fa fa-money icon"></span></td>
-                <td>Title of Contract</td>
-                <td>20.02.2014</td>
-                <td class="icon-cell" title="Download document"><span class="fa fa-cloud-download icon"></span></td>
-            </tr>
-            <tr class="pointer">
-                <td class="icon-cell"><span class="fa fa-truck icon"></span></td>
-                <td>Call for next meeting</td>
-                <td>20.02.2014</td>
-                <td class="icon-cell" title="Download document"><span class="fa fa-cloud-download icon"></span></td>
-            </tr>
-        </tbody>
+        <tr class="pointer">
+            <td class="icon-cell"><span class="fa fa-shopping-cart icon"></span></td>
+            <td>Order #12345</td>
+            <td>20.02.2014</td>
+            <td class="icon-cell" title="Download document"><span class="fa fa-cloud-download icon"></span></td>
+        </tr>
+        <tr class="pointer">
+            <td class="icon-cell"><span class="fa fa-money icon"></span></td>
+            <td>Title of Contract</td>
+            <td>20.02.2014</td>
+            <td class="icon-cell" title="Download document"><span class="fa fa-cloud-download icon"></span></td>
+        </tr>
+        <tr class="pointer">
+            <td class="icon-cell"><span class="fa fa-truck icon"></span></td>
+            <td>Call for next meeting</td>
+            <td>20.02.2014</td>
+            <td class="icon-cell" title="Download document"><span class="fa fa-cloud-download icon"></span></td>
+        </tr>
     </table>
 </div>
