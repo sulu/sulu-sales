@@ -50,6 +50,7 @@ class FlowOfDocuments extends FlowOfDocumentsBase
             $this->getOrderData($options);
             $this->getShippingData($options);
             parent::orderDataByDate();
+            return parent::getEntries();
         } else {
             throw new WidgetException('No params found!', $this->getName());
         }
