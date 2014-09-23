@@ -15,7 +15,7 @@ body {
             display:none;
         }
         .global-price-table {
-            right: 0;
+            margin-right: 0;
         }
 
         input {
@@ -111,6 +111,7 @@ body {
 
 .item-add {
     a {
+        color: black;
         &:hover, &:visited {
             color: black;
         }
