@@ -8,6 +8,7 @@ use Sulu\Bundle\ContactBundle\Entity\Contact;
 use Sulu\Bundle\ContactBundle\Entity\TermsOfDelivery;
 use Sulu\Bundle\ContactBundle\Entity\TermsOfPayment;
 use Sulu\Bundle\Sales\CoreBundle\Api\Item;
+use Sulu\Bundle\Sales\CoreBundle\Core\SalesDocument;
 use Sulu\Bundle\Sales\OrderBundle\Entity\Order as OrderEntity;
 use Sulu\Bundle\Sales\OrderBundle\Entity\OrderAddress as OrderAddressEntity;
 use Sulu\Component\Rest\ApiWrapper;
@@ -21,7 +22,7 @@ use DateTime;
  * @package Sulu\Bundle\Sales\OrderBundle\Api
  * @Relation("self", href="expr('/api/admin/orders/' ~ object.getId())")
  */
-class Order extends ApiWrapper
+class Order extends ApiWrapper implements SalesDocument
 {
     /**
      * @param OrderEntity $order The order to wrap
@@ -730,5 +731,40 @@ class Order extends ApiWrapper
     public function getOrderDate()
     {
         return $this->entity->getOrderDate();
+    }
+
+    /**
+     * Returns the date of the document
+     *
+     * @return DateTime
+     */
+    public function getDate()
+    {
+        return $this->getOrderDate();
+    }
+
+    /**
+     * Returns the type of the document
+     *
+     * @return String
+     */
+    public function getType()
+    {
+        return 'order';
+    }
+
+    /**
+     * Returns object as array
+     *
+     * @return array []
+     */
+    public function toArray()
+    {
+        return array(
+            'number' => $this->getNumber(),
+            'data' => $this->getDate(),
+            'type' => $this->getType(),
+            'id' => $this->getId()
+        );
     }
 }

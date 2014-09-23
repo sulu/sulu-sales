@@ -10,18 +10,22 @@
         <parameter key="sulu_sales_order.order_manager.class">Sulu\Bundle\Sales\OrderBundle\Order\OrderManager</parameter>
         <parameter key="sulu_sales_order.order_listener.class">Sulu\Bundle\Sales\OrderBundle\EventListener\OrderListener</parameter>
         <parameter key="sulu_sales_order.widgets.order_details.class">Sulu\Bundle\Sales\OrderBundle\Widgets\OrderDetails</parameter>
+        <parameter key="sulu_sales_order.widgets.order_flow_of_documents.class">Sulu\Bundle\Sales\OrderBundle\Widgets\FlowOfDocuments</parameter>
     </parameters>
     <services>
         <service id="sulu_sales_order.admin" class="%sulu_sales_order.admin.class%">
             <tag name="sulu.admin" />
             <argument>%sulu_admin.name%</argument>
         </service>
+
         <service id="sulu_sales_order.admin.content_navigation" class="%sulu_sales_order.admin.content_navigation.class%">
         </service>
+
         <service id="sulu_sales_order.order_repository" class="%sulu_sales_order.order_repository.class%"
                  factory-method="getRepository" factory-service="doctrine.orm.entity_manager">
             <argument>SuluSalesOrderBundle:Order</argument>
         </service>
+
         <service id="sulu_sales_order.order_manager" class="%sulu_sales_order.order_manager.class%">
             <argument type="service" id="doctrine.orm.entity_manager" />
             <argument type="service" id="sulu_sales_order.order_repository" />
@@ -29,12 +33,22 @@
             <argument type="service" id="sulu_sales_core.item_manager" />
             <argument type="service" id="sulu_core.rest_helper" strict="false"/>
         </service>
+
         <service id="sulu_sales_order.order_listener" class="%sulu_sales_order.order_listener.class%">
             <tag name="doctrine.event_listener" event="postPersist" method="postPersist"/>
         </service>
+
         <service id="sulu_sales_order.widget.order_details" class="%sulu_sales_order.widgets.order_details.class%">
             <tag name="sulu.widget" alias="sulu-sales-order-order-details"/>
             <argument type="service" id="doctrine.orm.entity_manager"/>
         </service>
+
+        <!-- FIXME the shipping manager should not be included like this - better would be a tagged service -->
+
+        <service id="sulu_sales_order.widget.order_flow_of_documents" class="%sulu_sales_order.widgets.order_flow_of_documents.class%">
+            <tag name="sulu.widget" alias="sulu-sales-order-order-flow-of-documents"/>
+            <argument type="service" id="sulu_sales_shipping.shipping_manager"/>
+        </service>
+
     </services>
 </container>

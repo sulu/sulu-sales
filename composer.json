@@ -37,6 +37,7 @@
         "sulu/website-bundle": "dev-develop",
         "sulu/category-bundle": "dev-develop",
         "sulu/media-bundle": "dev-develop",
+        "sulu/sales-shipping-bundle": "dev-develop",
 
         "symfony-cmf/routing-bundle": "1.2.*@dev",
         "symfony-cmf/routing": "1.2.*@dev",
