@@ -24,8 +24,7 @@
         "sulu/product-bundle": "dev-develop",
         "sulu/contact-bundle": "dev-develop",
         "sulu/security-bundle": "dev-develop",
-        "sulu/sales-core-bundle": "dev-develop",
-        "sulu/sales-shipping-bundle": "dev-develop"
+        "sulu/sales-core-bundle": "dev-develop"
     },
     "require-dev": {
         "sensio/framework-extra-bundle":  "~3.0",
@@ -38,6 +37,7 @@
         "sulu/website-bundle": "dev-develop",
         "sulu/category-bundle": "dev-develop",
         "sulu/media-bundle": "dev-develop",
+        "sulu/sales-shipping-bundle": "dev-develop",
 
         "symfony-cmf/routing-bundle": "1.2.*@dev",
         "symfony-cmf/routing": "1.2.*@dev",
