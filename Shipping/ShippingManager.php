@@ -370,6 +370,21 @@ class ShippingManager
     }
 
     /**
+     * Returns shippings by order id
+     * @param $orderId
+     * @param $locale
+     * @return array
+     */
+    public function findByOrderId($orderId, $locale){
+        $result = array();
+        $items = $this->em->getRepository(self::$shippingEntityName)->findByOrderId($orderId, $locale);
+        foreach ($items as $item) {
+            $result[] = new Shipping($item, $locale);
+        }
+        return $result;
+    }
+
+    /**
      * @param $locale
      * @param array $filter
      * @return mixed
