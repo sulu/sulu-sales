@@ -24,7 +24,8 @@
         "sulu/product-bundle": "dev-develop",
         "sulu/contact-bundle": "dev-develop",
         "sulu/security-bundle": "dev-develop",
-        "sulu/sales-core-bundle": "dev-develop"
+        "sulu/sales-core-bundle": "dev-develop",
+        "sulu/sales-shipping-bundle": "dev-develop"
     },
     "require-dev": {
         "sensio/framework-extra-bundle":  "~3.0",
