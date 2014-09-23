@@ -49,7 +49,7 @@ abstract class FlowOfDocuments implements WidgetInterface
             $this->entries,
             function ($a, $b) use ($desc) {
                 if ($a['date'] > $b['date']) {
-                    if($desc) {
+                    if(!$desc) {
                         return 1;
                     }
                     return -1;
@@ -58,9 +58,6 @@ abstract class FlowOfDocuments implements WidgetInterface
                         return -1;
                     }
                     return 1;
-                } else {
-                    return 0;
-
                 }
             }
         );
