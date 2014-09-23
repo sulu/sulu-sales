@@ -138,6 +138,37 @@ body {
   margin-top: 0;
 }
 
+/* line 5, ../scss/modules/sidebar.scss */
+.sidebar-table {
+  font-size: 12px;
+  border-top: 2px solid #ccc;
+  border-bottom: 2px solid #ccc;
+}
+/* line 11, ../scss/modules/sidebar.scss */
+.sidebar-table tr {
+  height: 30px;
+  border-bottom: 1px solid #ccc;
+}
+/* line 16, ../scss/modules/sidebar.scss */
+.sidebar-table td {
+  padding-left: 10px;
+}
+/* line 20, ../scss/modules/sidebar.scss */
+.sidebar-table td:last-child {
+  padding-right: 10px;
+}
+/* line 24, ../scss/modules/sidebar.scss */
+.sidebar-table td.icon-cell {
+  width: 25px;
+}
+
+/* line 29, ../scss/modules/sidebar.scss */
+.sidebar-table-title {
+  font-size: 12px;
+  margin: 10px;
+  font-weight: bold;
+}
+
 /* line 1, ../scss/modules/editable-data-row.scss */
 .disabled .editable-row {
   cursor: auto !important;

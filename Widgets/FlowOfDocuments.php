@@ -73,6 +73,6 @@ abstract class FlowOfDocuments implements WidgetInterface
      */
     public function getTemplate()
     {
-        return 'SuluSalesCoreBundle:Widgets:core.account.html.twig';
+        return 'SuluSalesCoreBundle:Widgets:core.flow.of.documents.html.twig';
     }
 }

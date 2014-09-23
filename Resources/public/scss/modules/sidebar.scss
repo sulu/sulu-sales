@@ -1,3 +1,33 @@
 .sulu-sidebar .blue-icon > span {
     margin-top: 0;
 }
+
+.sidebar-table {
+    font-size: 12px;
+    border-top: 2px solid #ccc;
+    border-bottom: 2px solid #ccc;
+
+
+    tr {
+        height:30px;
+        border-bottom: 1px solid #ccc;
+    }
+
+    td {
+        padding-left: 10px;
+    }
+
+    td:last-child {
+        padding-right: 10px;
+    }
+
+    td.icon-cell {
+        width: 25px;
+    }
+}
+
+.sidebar-table-title {
+    font-size: 12px;
+    margin: 10px;
+    font-weight: bold;
+}
