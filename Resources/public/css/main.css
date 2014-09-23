@@ -153,11 +153,11 @@ body {
 .sidebar-table td {
   padding-left: 10px;
 }
-/* line 20, ../scss/modules/sidebar.scss */
+/* line 19, ../scss/modules/sidebar.scss */
 .sidebar-table td:last-child {
   padding-right: 10px;
 }
-/* line 24, ../scss/modules/sidebar.scss */
+/* line 23, ../scss/modules/sidebar.scss */
 .sidebar-table td.icon-cell {
   width: 25px;
 }

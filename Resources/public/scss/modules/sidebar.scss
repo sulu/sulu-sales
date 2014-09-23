@@ -15,14 +15,14 @@
 
     td {
         padding-left: 10px;
-    }
 
-    td:last-child {
-        padding-right: 10px;
-    }
+        &:last-child {
+            padding-right: 10px;
+        }
 
-    td.icon-cell {
-        width: 25px;
+        &.icon-cell {
+            width: 25px;
+        }
     }
 }
 

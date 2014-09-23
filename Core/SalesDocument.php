@@ -13,7 +13,7 @@ namespace Sulu\Bundle\Sales\CoreBundle\Core;
 use DateTime;
 
 /**
- * Interface SalesDocument is should be implemented by all documents which will be displayed in the table-widget in the
+ * Interface SalesDocument should be implemented by all documents which will be displayed in the table-widget in the
  * sidebar. It will offer methods to retrieve basic information about the documents
  */
 interface SalesDocument {

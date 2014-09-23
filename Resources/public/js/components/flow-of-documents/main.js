@@ -179,12 +179,6 @@ define([], function() {
                     this.sandbox.logger.warn('flow-of-documents: No icon-definition found!');
                     return '';
             }
-        },
-
-        bindCustomEvents = function() {
-        },
-
-        bindDomEvents = function() {
         };
 
     return {
