@@ -48,7 +48,7 @@ class FlowOfDocuments extends FlowOfDocumentsBase
     {
         if ($this->checkRequiredParameters($options)) {
             $this->getOrderData($options);
-            $this->getShippingData($options);
+            $this->fetchShippingData($options);
             parent::orderDataByDate(false);
             return parent::getEntries();
         } else {
@@ -75,12 +75,12 @@ class FlowOfDocuments extends FlowOfDocumentsBase
     }
 
     /**
-     * Retrieves shipping data for a specific order
+     * Retrieves shipping data for a specific order and adds it to the entries
      *
      * @param $options
      * @throws \Sulu\Bundle\AdminBundle\Widgets\WidgetParameterException
      */
-    protected function getShippingData($options)
+    protected function fetchShippingData($options)
     {
         $shippings = $this->shippingManager->findByOrderId($options['orderId'], $options['locale']);
         if (!empty($shippings)) {

@@ -760,7 +760,6 @@ class Order extends ApiWrapper implements SalesDocument
      */
     public function toArray()
     {
-
         return array(
             'number' => $this->getNumber(),
             'data' => $this->getDate(),
