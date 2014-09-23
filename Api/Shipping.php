@@ -2,10 +2,12 @@
 
 namespace Sulu\Bundle\Sales\ShippingBundle\Api;
 
+use DateTime;
 use JMS\Serializer\Annotation\VirtualProperty;
 use Hateoas\Configuration\Annotation\Relation;
 use JMS\Serializer\Annotation\SerializedName;
 use JMS\Serializer\Annotation\Exclude;
+use Sulu\Bundle\Sales\CoreBundle\Core\SalesDocument;
 use Sulu\Component\Rest\ApiWrapper;
 use Sulu\Component\Security\UserInterface;
 use Sulu\Bundle\Sales\CoreBundle\Api\Item;
@@ -15,10 +17,11 @@ use Sulu\Bundle\Sales\ShippingBundle\Entity\ShippingItem as ShippingItemEntity;
 
 /**
  * The Shipping class which will be exported to the API
+ *
  * @package Sulu\Bundle\Sales\ShippingBundle\Api
  * @Relation("self", href="expr('/api/admin/shippings/' ~ object.getId())")
  */
-class Shipping extends ApiWrapper
+class Shipping extends ApiWrapper implements SalesDocument
 {
     /**
      * @Exclude
@@ -538,6 +541,7 @@ class Shipping extends ApiWrapper
         if (!$this->entity->getStatus()) {
             return null;
         }
+
         return new ShippingStatus($this->entity->getStatus(), $this->locale);
     }
 
@@ -556,6 +560,7 @@ class Shipping extends ApiWrapper
 
     /**
      * Get bitmaskStatus
+     *
      * @VirtualProperty
      * @SerializedName("bitmaskStatus")
      * @return integer
@@ -640,9 +645,46 @@ class Shipping extends ApiWrapper
 
     /**
      * returns the entities locale
+     *
      * @return string
      */
-    public function getLocale() {
+    public function getLocale()
+    {
         return $this->locale;
+    }
+
+    /**
+     * Returns the date of the document
+     *
+     * @return DateTime
+     */
+    public function getDate()
+    {
+        return $this->getExpectedDeliveryDate();
+    }
+
+    /**
+     * Returns the type of the document
+     *
+     * @return String
+     */
+    public function getType()
+    {
+        return 'shipping';
+    }
+
+    /**
+     * Returns object as array
+     *
+     * @return array []
+     */
+    public function toArray()
+    {
+        return array(
+            'number' => $this->getNumber(),
+            'type' => $this->getType(),
+            'date' => $this->getExpectedDeliveryDate(),
+            'id' => $this->getId()
+        );
     }
 }

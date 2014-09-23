@@ -94,19 +94,19 @@ class ShippingRepository extends EntityRepository
     }
 
     /**
-     * Finds a shipping by Order
+     * Finds a shipping by a order id
      * @param $id
      * @param $locale
-     * @return Shipping|null
+     * @return array|null
      */
-    public function findByOrder($id, $locale)
+    public function findByOrderId($id, $locale)
     {
         try {
             $qb = $this->getShippingQuery($locale);
-            $qb->andWhere('shipping.id = :shippingId');
-            $qb->setParameter('shippingId', $id);
+            $qb->andWhere('shipping.order = :id');
+            $qb->setParameter('id', $id);
 
-            return $qb->getQuery()->getSingleResult();
+            return $qb->getQuery()->getResult();
         } catch (NoResultException $exc) {
             return null;
         }
