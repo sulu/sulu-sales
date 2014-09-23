@@ -118,6 +118,18 @@
                 <source>salescore.sidebar.customer</source>
                 <target>Kunde</target>
             </trans-unit>
+            <trans-unit id="a50accg2ac221350142c0b4720e29a30" resname="sales.core.flow-of-documents">
+                <source>sales.core.flow-of-documents</source>
+                <target>Belegfluss</target>
+            </trans-unit>
+            <trans-unit id="a50accg2ac221350142c0b4720e29a31" resname="salescore.order">
+                <source>salescore.order</source>
+                <target>Auftrag</target>
+            </trans-unit>
+            <trans-unit id="a50accg2ac221350142c0b4720e29a32" resname="salescore.shipping">
+                <source>salescore.shipping</source>
+                <target>Lieferung</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>

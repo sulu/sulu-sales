@@ -13,7 +13,13 @@
  *
  * @param {Object} [options] Configuration object
  * @param {String} [options.instanceName] instance name of the component and its subcomponents
- * // TODO
+ * @param {String} [options.header] translation key for the header on top of the table
+ * @param {Array} [options.columDefinition] defines the data displayed in the columns
+ * @param {String} [options.columDefinition.property] used property of the data
+ * @param {String} [options.columDefinition.type] type of display [icon, number, date]
+ * @param {String} [options.columDefinition.prefix] prefix for number type
+ * @param {String} [options.columDefinition.prefixProperty] prefix for the number type which displays the type as text
+ *
  */
 define([], function() {
 
@@ -41,15 +47,15 @@ define([], function() {
         },
 
         templates = {
-          header: function(title){
-            return '<p class="'+constants.titleClass+' m-left-10">'+title+'</p>';
-          },
-          table: function(){
-              return '<table class="'+constants.tableClass+'"></table>';
-          },
-          row: function(){
-              return '<tr class="pointer"></tr>';
-          }
+            header: function(title) {
+                return '<p class="' + constants.titleClass + ' m-left-10">' + title + '</p>';
+            },
+            table: function() {
+                return '<table class="' + constants.tableClass + '"></table>';
+            },
+            row: function() {
+                return '<tr class="pointer"></tr>';
+            }
         },
 
         constants = {
@@ -70,30 +76,30 @@ define([], function() {
         /**
          * Renders header for table
          */
-        renderHeader = function(){
+        renderHeader = function() {
             var title = this.sandbox.translate(this.options.header),
-                $header = this.sandbox.dom.createElement(templates.header.call(this,title));
+                $header = this.sandbox.dom.createElement(templates.header.call(this, title));
             this.sandbox.dom.append(this.$el, $header);
         },
 
         /**
          * Renders table
          */
-        renderTable = function(){
+        renderTable = function() {
             this.$table = this.sandbox.dom.createElement(templates.table.call(this));
             renderRows.call(this);
             this.sandbox.dom.append(this.$el, this.$table);
         },
 
-        renderRows = function(){
-            this.sandbox.util.foreach(this.options.data, function(data){
+        renderRows = function() {
+            this.sandbox.util.foreach(this.options.data, function(data) {
                 renderRow.call(this, data);
             }.bind(this));
         },
 
-        renderRow = function(data){
+        renderRow = function(data) {
             var $row = this.sandbox.dom.createElement(templates.row.call(this));
-            this.sandbox.util.foreach(this.options.columnDefinition, function(definition){
+            this.sandbox.util.foreach(this.options.columnDefinition, function(definition) {
                 renderCell.call(this, data, $row, definition);
             }.bind(this));
             this.sandbox.dom.append(this.$table, $row);
@@ -105,38 +111,38 @@ define([], function() {
          * @param $row
          * @param definition
          */
-        renderCell = function(data, $row, definition){
+        renderCell = function(data, $row, definition) {
             var value,
                 cssClass,
                 prefix = '',
                 $td;
 
-            switch(definition.type){
+            // TODO refactor when more abstraction is needed and more time available
+
+            switch (definition.type) {
                 case 'icon':
                     value = data[definition.property];
                     cssClass = getCssClassForValue.call(this, value);
-                    $td = this.sandbox.dom.createElement('<td class="icon-cell"><span class="fa '+ cssClass +' icon"></span></td>');
+                    $td = this.sandbox.dom.createElement('<td class="icon-cell"><span class="fa ' + cssClass + ' icon"></span></td>');
                     break;
                 case 'number':
-                    if(!!data[definition.prefixProperty]){
-                        prefix = getPrefixForType.call(this,data[definition.prefixProperty])+' ';
+                    if (!!data[definition.prefixProperty]) {
+                        prefix = getPrefixForType.call(this, data[definition.prefixProperty]) + ' ';
                     }
-
-                    if(!!definition.prefix){
+                    if (!!definition.prefix) {
                         prefix += definition.prefix;
                     }
-
                     value = data[definition.property];
-                    $td = this.sandbox.dom.createElement('<td>'+prefix+value+'</td>');
+                    $td = this.sandbox.dom.createElement('<td>' + prefix + value + '</td>');
                     break;
                 case 'date':
-                    if(typeof data[definition.property] === 'object'){
+                    if (typeof data[definition.property] === 'object') {
                         value = data[definition.property].date;
                     } else {
                         value = data[definition.property];
                     }
-                    value = this.sandbox.date.format(new Date(value));
-                    $td = this.sandbox.dom.createElement('<td>'+value+'</td>');
+                    value = (this.sandbox.date.format(new Date(value))).split(' ')[0];
+                    $td = this.sandbox.dom.createElement('<td>' + value + '</td>');
                     break;
                 default:
                     value = '';
@@ -147,8 +153,8 @@ define([], function() {
             this.sandbox.dom.append($row, $td);
         },
 
-        getPrefixForType= function(type){
-            switch(type){
+        getPrefixForType = function(type) {
+            switch (type) {
                 case 'order':
                     return this.sandbox.translate('salescore.order');
                 case 'shipping':
@@ -161,8 +167,8 @@ define([], function() {
             }
         },
 
-        getCssClassForValue = function(value){
-            switch(value){
+        getCssClassForValue = function(value) {
+            switch (value) {
                 case 'order':
                     return 'fa-shopping-cart';
                 case 'shipping':
