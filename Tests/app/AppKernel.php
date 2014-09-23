@@ -35,6 +35,9 @@ class AppKernel extends SuluKernel
             new \Sulu\Bundle\MediaBundle\SuluMediaBundle(),
             new \Sulu\Bundle\CategoryBundle\SuluCategoryBundle(),
 
+            // TODO to be removed when issue with shipping manager is solved fixed
+            new \Sulu\Bundle\Sales\ShippingBundle\SuluSalesShippingBundle(),
+
         );
 
         return $bundles;
