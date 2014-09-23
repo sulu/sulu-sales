@@ -96,7 +96,7 @@ define([
                     rowClass: 'header',
                     name: this.sandbox.translate('salescore.item.product'),
                     number: this.sandbox.translate('salescore.item.number'),
-                    quantity: this.sandbox.translate('salescore.item.quantity'),
+                    quantity: this.sandbox.translate('salescore.item.order-quantity'),
                     quantityInput: this.sandbox.translate('salescore.item.quantity'),
                     quantityUnit: this.sandbox.translate('salescore.item.unit'),
                     price: this.sandbox.translate('salescore.item.price'),
@@ -106,7 +106,9 @@ define([
                 };
             // translate passed translations
             for (i in this.options.headerTranslations) {
-                translated[i] = this.sandbox.translate(this.options.headerTranslations[i]);
+                if (this.options.headerTranslations.hasOwnProperty(i)) {
+                    translated[i] = this.sandbox.translate(this.options.headerTranslations[i]);
+                }
             }
             // merge default translations with given one's
             translations = this.sandbox.util.extend({}, defaultTranslations, translated);
@@ -125,11 +127,6 @@ define([
          * bind dom events
          */
         bindDomEvents = function() {
-
-            // add new item
-            this.sandbox.dom.on(this.$el, 'click', addNewItemClicked.bind(this), '.add-row');
-            // remove row
-            this.sandbox.dom.on(this.$el, 'click', removeRowClicked.bind(this), '.remove-row');
 
             this.sandbox.dom.on(this.$el, 'data-changed', function(event) {
                 var items = event.items || [];
@@ -165,68 +162,6 @@ define([
                 row: $row,
                 id: rowId
             };
-        },
-
-        /**
-         *  DOM-EVENT listener: remove row
-         */
-        removeRowClicked = function(event) {
-            event.preventDefault();
-
-            var $row = this.sandbox.dom.closest(event.currentTarget, '.item-table-row'),
-                rowId = this.sandbox.dom.attr($row, 'id');
-            removeItemRow.call(this, rowId, $row);
-        },
-
-        /**
-         * removes item at rowId
-         * @param rowId
-         */
-        removeItemData = function(rowId) {
-            // remove from items data
-            delete this.items[rowId];
-
-            refreshItemsData.call(this);
-        },
-
-        /**
-         * adds item to data at index rowId
-         * @param rowId
-         * @param itemData
-         */
-        addItemData = function(rowId, itemData) {
-            this.items[rowId] = itemData;
-
-            refreshItemsData.call(this);
-        },
-
-        /**
-         *  DOM-EVENT listener: add a new row
-         */
-        addNewItemClicked = function(event) {
-            event.preventDefault();
-            addNewItemRow.call(this);
-        },
-
-        /**
-         * removes row with
-         * @param id
-         * @param $row the row element
-         */
-        removeItemRow = function(rowId, $row) {
-            // remove from table
-            this.sandbox.dom.remove($row);
-
-            // decrease row counter
-            this.rowCount--;
-
-            // remove from data
-            removeItemData.call(this, rowId);
-
-            // remove validation
-            removeValidtaionFields.call(this, $row);
-
-            this.sandbox.emit(EVENT_CHANGED);
         },
 
         /**
@@ -268,7 +203,11 @@ define([
             // parse to int
             data.maxQuantity = (data.maxQuantity % 1 === 0) ? parseInt(data.maxQuantity) : data.maxQuantity;
             // correct number format
-            data.formattedMaxQuantity = this.sandbox.numberFormat(data.maxQuantity,'d');
+            data.formattedMaxQuantity = this.sandbox.numberFormat(data.maxQuantity, 'd');
+
+            if (data.isNew) {
+                data.quantity = data.formattedMaxQuantity;
+            }
 
             rowTpl = this.sandbox.util.template(RowTpl, data);
             // create row and return it
@@ -286,58 +225,6 @@ define([
         },
 
         /**
-         * updates a specific row
-         * @param rowId
-         */
-        updateItemRow = function(rowId, itemData) {
-            var $row = createItemRow.call(this, itemData, false);
-            this.sandbox.dom.replaceWith(this.$find('#' + rowId), $row);
-
-            // add item to data
-            addItemData.call(this, rowId, itemData);
-
-            // add to validation
-            addValidationFields.call(this, $row);
-
-            // emit data change
-            this.sandbox.emit(EVENT_CHANGED);
-
-            return $row;
-        },
-
-        /**
-         * add validation to row
-         * @param $row
-         */
-        addValidationFields = function($row) {
-            this.sandbox.form.addField(constants.formId, this.sandbox.dom.find(constants.quantityInput, $row));
-            this.sandbox.form.addField(constants.formId, this.sandbox.dom.find(constants.priceInput, $row));
-            this.sandbox.form.addField(constants.formId, this.sandbox.dom.find(constants.discountInput, $row));
-        },
-
-        /**
-         * remove validation from row
-         * @param $row
-         */
-        removeValidtaionFields = function($row) {
-            this.sandbox.form.removeField(constants.formId, this.sandbox.dom.find(constants.quantityInput, $row));
-            this.sandbox.form.removeField(constants.formId, this.sandbox.dom.find(constants.priceInput, $row));
-            this.sandbox.form.removeField(constants.formId, this.sandbox.dom.find(constants.discountInput, $row));
-        },
-
-        /**
-         * adds a new item
-         */
-        addNewItemRow = function() {
-            var $row,
-                data = {
-                    rowClass: 'new'
-                };
-            $row = addItemRow.call(this, data);
-            initProductSearch.call(this, $row);
-        },
-
-        /**
          * rerenders component
          */
         rerenderItems = function(items) {
@@ -351,14 +238,18 @@ define([
          * @param items
          */
         renderItems = function(items) {
-            var i, length, item, $row, rowId;
+            var i, length, item, $row, rowId, quantity;
             for (i = -1, length = items.length; ++i < length;) {
                 item = items[i];
 
-                $row = addItemRow.call(this, items[i]);
+                $row = addItemRow.call(this, item);
 
                 // add to items array
                 rowId = this.sandbox.dom.attr($row, 'id');
+                if (this.options.isNew) {
+                    quantity = this.sandbox.dom.val(this.sandbox.dom.find(constants.quantityInput, $row));
+                    item.quantity = quantity;
+                }
                 this.items[rowId] = item;
             }
             // refresh items data attribute
@@ -386,9 +277,11 @@ define([
         getProcessedByItemId = function(id) {
             var i, item;
             for (i in this.options.data) {
-                item = this.options.data[i].item;
-                if (item.id === id) {
-                    return this.options.data[i];
+                if (this.options.data.hasOwnProperty(i)) {
+                    item = this.options.data[i].item;
+                    if (item.id === id) {
+                        return this.options.data[i];
+                    }
                 }
             }
             return null;
@@ -408,13 +301,15 @@ define([
 
             // for every item find a processed item or create a new one
             for (i in this.options.itemsData) {
-                item = this.options.itemsData[i];
-                processed = getProcessedByItemId.call(this, item.id);
-                // if no processed item was found, create a new one
-                if (!processed) {
-                    processed = this.sandbox.util.extend({}, rowDefaults, {item: item});
+                if (this.options.itemsData.hasOwnProperty(i)) {
+                    item = this.options.itemsData[i];
+                    processed = getProcessedByItemId.call(this, item.id);
+                    // if no processed item was found, create a new one
+                    if (!processed) {
+                        processed = this.sandbox.util.extend({}, rowDefaults, {item: item});
+                    }
+                    dataProcessed.push(processed);
                 }
-                dataProcessed.push(processed);
             }
 
             this.options.data = dataProcessed;
@@ -430,7 +325,7 @@ define([
 
     return {
         initialize: function() {
-            var dataItems, dataProcessed, i, processed, item;
+            var dataItems;
             // load defaults
             this.options = this.sandbox.util.extend({}, defaults, this.options);
 
@@ -439,7 +334,7 @@ define([
             this.rowCount = 0;
             this.table = null;
 
-            this.isEmpty = this.items.length
+            this.isEmpty = this.items.length;
 
             // if data is not set, check if it's set in elements DATA
             dataItems = this.sandbox.dom.data(this.$el, 'items');
@@ -494,7 +389,9 @@ define([
                 items = [];
             // convert this.items to array
             for (i in this.items) {
-                items.push(this.items[i]);
+                if (this.items.hasOwnProperty(i)) {
+                    items.push(this.items[i]);
+                }
             }
             return items;
         }
