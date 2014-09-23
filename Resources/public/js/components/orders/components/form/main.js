@@ -8,10 +8,11 @@
  */
 
 define([
+    'app-config',
     'sulusalesorder/util/orderStatus',
     'sulusalescore/util/helper',
     'sulucontact/model/account'
-], function(OrderStatus, CoreHelper, Account) {
+], function(AppConfig, OrderStatus, CoreHelper, Account) {
 
     'use strict';
 
@@ -586,7 +587,7 @@ define([
                         contact: data.contact.id,
                         account: data.account.id,
                         status: data.status.status,
-                        locale: SULU.user.locale,
+                        locale: AppConfig.getUser().locale,
                         orderDate: data.orderDate,
                         orderNumber: data.number,
                         orderId: data.id
