@@ -588,7 +588,8 @@ define([
                         status: data.status.status,
                         locale: SULU.user.locale,
                         orderDate: data.orderDate,
-                        orderNumber: data.number
+                        orderNumber: data.number,
+                        orderId: data.id
                     }
                 });
 
