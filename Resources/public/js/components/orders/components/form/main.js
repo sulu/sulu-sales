@@ -52,21 +52,6 @@ define([
                         }.bind(this)
                     }
                 ],
-                settings = {
-                    icon: 'gear',
-                    iconSize: 'large',
-                    group: 'left',
-                    id: 'options-button',
-                    position: 30,
-                    items: [
-                        {
-                            title: this.sandbox.translate('toolbar.delete'),
-                            callback: function() {
-                                this.sandbox.emit('sulu.header.toolbar.delete');
-                            }.bind(this)
-                        }
-                    ]
-                },
                 workflow = {
                     icon: 'hand-o-right',
                     iconSize: 'large',
@@ -109,10 +94,6 @@ define([
                     workflow.items.push(workflowItems.shipping);
                 }
 
-                // add settings items
-                if (settings.items.length > 0) {
-                    toolbarItems.push(settings);
-                }
                 // add workflow items
                 if (workflow.items.length > 0) {
                     toolbarItems.push(workflow);

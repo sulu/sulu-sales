@@ -20,7 +20,7 @@ define(function() {
                     callback: function(contact, account) {
                         this.sandbox.emit(
                             'sulu.sidebar.set-widget',
-                            '/admin/widget-groups/order-info?contact=' + contact + '&account=' + account
+                                '/admin/widget-groups/order-info?contact=' + contact + '&account=' + account
                         );
                     }.bind(this)
                 });
@@ -37,6 +37,31 @@ define(function() {
             this.sandbox.on('sulu.list-toolbar.add', function() {
                 this.sandbox.emit('sulu.salesorder.order.new');
             }, this);
+        },
+
+        // list-toolbar template
+        getListToolbarTemplate = function() {
+            return [
+                {
+                    id: 'add',
+                    icon: 'plus-circle',
+                    class: 'highlight-white',
+                    position: 1,
+                    title: this.sandbox.translate('sulu.list-toolbar.add'),
+                    callback: function() {
+                        this.sandbox.emit('sulu.list-toolbar.add');
+                    }.bind(this)
+                },
+                {
+                    id: 'settings',
+                    icon: 'gear',
+                    items: [
+                        {
+                            type: 'columnOptions'
+                        }
+                    ]
+                }
+            ];
         };
 
     return {
@@ -79,7 +104,8 @@ define(function() {
                 {
                     el: this.$find('#list-toolbar-container'),
                     instanceName: 'orders',
-                    inHeader: true
+                    inHeader: true,
+                    template: getListToolbarTemplate.call(this)
                 },
                 {
                     el: this.sandbox.dom.find('#orders-list', this.$el),
@@ -89,6 +115,7 @@ define(function() {
                     resultKey: 'orders',
                     viewOptions: {
                         table: {
+                            selectItem: null,
                             icons: [
                                 {
                                     icon: 'pencil',

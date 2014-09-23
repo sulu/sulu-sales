@@ -19,9 +19,9 @@ use Sulu\Bundle\AdminBundle\Widgets\WidgetParameterException;
 use Sulu\Bundle\AdminBundle\Widgets\WidgetEntityNotFoundException;
 
 /**
- * example widget for contact controller
+ * Orderdetails widget
  *
- * @package Sulu\Bundle\ContactBundle\Widgets
+ * @package Sulu\Bundle\Sales\OrderBundle\Widgets
  */
 class OrderDetails implements WidgetInterface
 {
