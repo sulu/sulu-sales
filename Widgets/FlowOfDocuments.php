@@ -50,7 +50,7 @@ class FlowOfDocuments extends FlowOfDocumentsBase
             $this->getOrderData($options);
             $this->fetchShippingData($options);
             parent::orderDataByDate(false);
-            return parent::getEntries();
+            return parent::serializeData();
         } else {
             throw new WidgetException('No params found!', $this->getName());
         }
@@ -86,7 +86,7 @@ class FlowOfDocuments extends FlowOfDocumentsBase
         if (!empty($shippings)) {
             /* @var SalesDocument $shipping */
             foreach ($shippings as $shipping) {
-                parent::addEntry($shipping->toArray());
+                parent::addEntry($shipping->getSalesDocumentData());
             }
         }
     }
