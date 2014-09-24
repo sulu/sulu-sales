@@ -50,6 +50,7 @@ class FlowOfDocuments extends FlowOfDocumentsBase
             $this->getOrderData($options);
             $this->fetchShippingData($options);
             parent::orderDataByDate(false);
+
             return parent::serializeData();
         } else {
             throw new WidgetException('No params found!', $this->getName());
@@ -65,12 +66,11 @@ class FlowOfDocuments extends FlowOfDocumentsBase
     protected function getOrderData($options)
     {
         parent::addEntry(
-            array(
-                'id' => $options['orderId'],
-                'number' => $options['orderNumber'],
-                'type' => 'order',
-                'date' => new DateTime($options['orderDate'])
-            )
+            $options['orderId'],
+            $options['orderNumber'],
+            'order',
+            new DateTime($options['orderDate']),
+            $this->getRouteForOrder($options['orderId'])
         );
     }
 
@@ -86,7 +86,14 @@ class FlowOfDocuments extends FlowOfDocumentsBase
         if (!empty($shippings)) {
             /* @var SalesDocument $shipping */
             foreach ($shippings as $shipping) {
-                parent::addEntry($shipping->getSalesDocumentData());
+                $data = $shipping->getSalesDocumentData();
+                parent::addEntry(
+                    $data['id'],
+                    $data['number'],
+                    $data['type'],
+                    $data['date'],
+                    $this->getRouteForShipping($data['id'])
+                );
             }
         }
     }
@@ -96,7 +103,7 @@ class FlowOfDocuments extends FlowOfDocumentsBase
      * @return bool
      * @throws \Sulu\Bundle\AdminBundle\Widgets\WidgetParameterException
      */
-    protected function checkRequiredParameters($options)
+    function checkRequiredParameters($options)
     {
         $attribute = "";
         if (!empty($options)) {
@@ -130,6 +137,27 @@ class FlowOfDocuments extends FlowOfDocumentsBase
             $this->widgetName,
             $attribute
         );
+    }
 
+    /**
+     * Returns uri for orders
+     *
+     * @param $id
+     * @return string
+     */
+    protected function getRouteForOrder($id)
+    {
+        return 'sales/orders/edit:' . $id . '/details';
+    }
+
+    /**
+     * Returns uri for shippings
+     *
+     * @param $id
+     * @return string
+     */
+    protected function getRouteForShipping($id)
+    {
+        return 'sales/shippings/edit:' . $id . '/details';
     }
 }
