@@ -734,36 +734,16 @@ class Order extends ApiWrapper implements SalesDocument
     }
 
     /**
-     * Returns the date of the document
+     * Returns the data needed for the sales document widget as array
      *
-     * @return DateTime
+     * @return array
      */
-    public function getDate()
-    {
-        return $this->getOrderDate();
-    }
-
-    /**
-     * Returns the type of the document
-     *
-     * @return String
-     */
-    public function getType()
-    {
-        return 'order';
-    }
-
-    /**
-     * Returns object as array
-     *
-     * @return array []
-     */
-    public function toArray()
+    public function getSalesDocumentData()
     {
         return array(
             'number' => $this->getNumber(),
-            'data' => $this->getDate(),
-            'type' => $this->getType(),
+            'data' => $this->getOrderDate(),
+            'type' => 'order',
             'id' => $this->getId()
         );
     }
