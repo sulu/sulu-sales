@@ -13,12 +13,14 @@ namespace Sulu\Bundle\Sales\OrderBundle\Controller;
 use FOS\RestBundle\Routing\ClassResourceInterface;
 use Hateoas\Representation\CollectionRepresentation;
 
+use Sulu\Bundle\Sales\CoreBundle\SalesDependency\SalesDependencyClassInterface;
 use Sulu\Bundle\Sales\OrderBundle\Api\Order;
 use Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatus;
 use Sulu\Bundle\Sales\OrderBundle\Order\Exception\MissingOrderAttributeException;
 use Sulu\Bundle\Sales\OrderBundle\Order\Exception\OrderDependencyNotFoundException;
 use Sulu\Bundle\Sales\OrderBundle\Order\Exception\OrderException;
 use Sulu\Bundle\Sales\OrderBundle\Order\Exception\OrderNotFoundException;
+use Sulu\Bundle\Sales\OrderBundle\Order\OrderDependencyManager;
 use Sulu\Bundle\Sales\OrderBundle\Order\OrderManager;
 use Sulu\Component\Rest\Exception\EntityNotFoundException;
 use Sulu\Component\Rest\Exception\MissingArgumentException;
@@ -52,6 +54,14 @@ class OrderController extends RestController implements ClassResourceInterface
     private function getManager()
     {
         return $this->get('sulu_sales_order.order_manager');
+    }
+
+    /**
+     * @return OrderDependencyManager
+     */
+    private function getDependencyManager()
+    {
+        return $this->get('sulu_sales_order.order_dependency_manager');
     }
 
     /**
@@ -138,6 +148,13 @@ class OrderController extends RestController implements ClassResourceInterface
             function ($id) use ($locale) {
                 /** @var Order $order */
                 $order = $this->getManager()->findByIdAndLocale($id, $locale);
+
+                // get and set permissions
+
+                $order->setPermissions(array(
+                    'isDeletable' => $this->getDependencyManager()->allowDelete($id),
+                    'isCancelable' => $this->getDependencyManager()->allowCancel($id)
+                ));
 
                 return $order;
             }
