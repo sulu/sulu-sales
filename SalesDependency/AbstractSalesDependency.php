@@ -11,8 +11,8 @@
 namespace Sulu\Bundle\Sales\CoreBundle\SalesDependency;
 
 /**
- * Interface of Sales Dependencies
- * which defines which dependencies and permissions an entity has
+ * Abstract Class for gathering sales dependencies
+ * defines which dependencies and permissions an entity has
  *
  * @package Sulu\Bundle\Sales\CoreBundle\SalesDependency
  */
