@@ -148,6 +148,34 @@ class ShippingRepository extends EntityRepository
     }
 
     /**
+     * returns number of shippings by order id
+     * @param $orderId
+     * @param array $statusIds
+     * @param string $comparator
+     * @return int|mixed
+     */
+    public function countByOrderId($orderId, $statusIds = array(), $comparator = "=")
+    {
+        try {
+            $qb = $this->createQueryBuilder('shipping')
+                ->select('count(shipping.id)')
+                ->join('shipping.order','o')
+                ->join('shipping.status','status')
+                ->where('o.id = :orderId')
+                ->groupBy('o.id')
+                ->setParameter('orderId', $orderId);
+            foreach ($statusIds as $statusId) {
+                $qb->andWhere('status.id '.$comparator.' :excludeStatus');
+                $qb->setParameter('excludeStatus', $statusId);
+            }
+
+            return $qb->getQuery()->getSingleScalarResult();
+        } catch (NoResultException $nre) {
+            return 0;
+        }
+    }
+
+    /**
      * Returns query for shippings
      * @param string $locale The locale to load
      * @return \Doctrine\ORM\QueryBuilder

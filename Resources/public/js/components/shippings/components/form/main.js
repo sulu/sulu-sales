@@ -97,6 +97,7 @@ define(['sulusalesshipping/util/shippingStatus'], function(ShippingStatus) {
                     workflow.items.push(workflowItems.confirm);
                 } else if (this.shippingStatusId === ShippingStatus.DELIVERY_NOTE) {
                     workflow.items.push(workflowItems.edit);
+                    workflow.items.push(workflowItems.cancel);
                     workflow.items.push(workflowItems.divider);
                     workflow.items.push(workflowItems.ship);
                 } else if (this.shippingStatusId === ShippingStatus.SHIPPED) {
@@ -460,7 +461,6 @@ define(['sulusalesshipping/util/shippingStatus'], function(ShippingStatus) {
                 // change in item-table
                 this.sandbox.on('sulu.item-table.changed', changeHandler.bind(this));
             }.bind(this));
-
         }
     };
 });
