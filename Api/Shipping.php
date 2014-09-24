@@ -654,35 +654,15 @@ class Shipping extends ApiWrapper implements SalesDocument
     }
 
     /**
-     * Returns the date of the document
+     * Returns the data needed for the sales document widget as array
      *
-     * @return DateTime
+     * @return array
      */
-    public function getDate()
-    {
-        return $this->getExpectedDeliveryDate();
-    }
-
-    /**
-     * Returns the type of the document
-     *
-     * @return String
-     */
-    public function getType()
-    {
-        return 'shipping';
-    }
-
-    /**
-     * Returns object as array
-     *
-     * @return array []
-     */
-    public function toArray()
+    public function getSalesDocumentData()
     {
         return array(
             'number' => $this->getNumber(),
-            'type' => $this->getType(),
+            'type' => 'shipping',
             'date' => $this->getExpectedDeliveryDate(),
             'id' => $this->getId()
         );
