@@ -10,6 +10,7 @@
         <parameter key="sulu_sales_shipping.shipping_repository.class">Sulu\Bundle\Sales\ShippingBundle\Entity\ShippingRepository</parameter>
         <parameter key="sulu_sales_shipping.shipping_manager.class">Sulu\Bundle\Sales\ShippingBundle\Shipping\ShippingManager</parameter>
         <parameter key="sulu_sales_shipping.shipping_listener.class">Sulu\Bundle\Sales\ShippingBundle\EventListener\ShippingListener</parameter>
+        <parameter key="sulu_sales_shipping.shipping_order_dependency.class">Sulu\Bundle\Sales\ShippingBundle\Dependencies\ShippingOrderDependencyClass</parameter>
     </parameters>
     <services>
         <service id="sulu_sales_shipping.admin" class="%sulu_sales_shipping.admin.class%">
@@ -25,6 +26,11 @@
 
         <service id="sulu_sales_shipping.admin.order_content_navigation" class="%sulu_sales_shipping.admin.order_content_navigation.class%">
             <tag name="sulu.sales_order.content_navigation"/>
+        </service>
+
+        <service id="sulu_sales_shipping.shipping_order_dependency" class="%sulu_sales_shipping.shipping_order_dependency.class%">
+            <tag name="sulu.sales_order.order_dependency"/>
+            <argument type="service" id="sulu_sales_shipping.shipping_manager" />
         </service>
 
         <service id="sulu_sales_shipping.shipping_manager" class="%sulu_sales_shipping.shipping_manager.class%">

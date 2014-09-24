@@ -13,6 +13,7 @@ namespace Sulu\Bundle\Sales\ShippingBundle\Shipping;
 use DateTime;
 use Doctrine\Common\Persistence\ObjectManager;
 use Sulu\Bundle\Sales\ShippingBundle\Entity\ShippingActivityLog;
+use Sulu\Bundle\Sales\ShippingBundle\Entity\ShippingRepository;
 use Sulu\Component\Rest\Exception\EntityNotFoundException;
 use Sulu\Component\Rest\ListBuilder\Doctrine\FieldDescriptor\DoctrineConcatenationFieldDescriptor;
 use Sulu\Component\Rest\ListBuilder\Doctrine\FieldDescriptor\DoctrineFieldDescriptor;
@@ -224,7 +225,7 @@ class ShippingManager
     public function delete($id)
     {
         // TODO: move shipping to an archive instead of remove it from database
-        $shipping = $this->em->getRepository(self::$shippingEntityName)->findById($id);
+        $shipping = $this->getShippingRepository()->findById($id);
 
         if (!$shipping) {
             throw new ShippingNotFoundException($id);
@@ -338,7 +339,7 @@ class ShippingManager
      */
     public function findByIdAndLocale($id, $locale)
     {
-        $shipping = $this->em->getRepository(self::$shippingEntityName)->findByIdAndLocale($id, $locale);
+        $shipping = $this->getShippingRepository()->findByIdAndLocale($id, $locale);
 
         if ($shipping) {
             $apiShippings = new Shipping($shipping, $locale);
@@ -362,7 +363,7 @@ class ShippingManager
     public function getSumOfShippedItemsByOrderId($orderId)
     {
         $result = array();
-        $sums = $this->em->getRepository(self::$shippingEntityName)->getSumOfShippedItemsByOrderId($orderId);
+        $sums = $this->getShippingRepository()->getSumOfShippedItemsByOrderId($orderId);
         foreach ($sums as $sum) {
             $result[$sum['items_id']] = intval($sum['shipped']);
         }
@@ -377,11 +378,23 @@ class ShippingManager
      */
     public function findByOrderId($orderId, $locale){
         $result = array();
-        $items = $this->em->getRepository(self::$shippingEntityName)->findByOrderId($orderId, $locale);
+        $items = $this->getShippingRepository()->findByOrderId($orderId, $locale);
         foreach ($items as $item) {
             $result[] = new Shipping($item, $locale);
         }
         return $result;
+    }
+
+    /**
+     * returns number of shippings by order id
+     * @param $orderId
+     * @param array $statusIds
+     * @param string $comparator
+     * @return int|mixed
+     */
+    public function countByOrderId($orderId, $statusIds = array(), $comparator = "=")
+    {
+        return $this->getShippingRepository()->countByOrderId($orderId, $statusIds, $comparator);
     }
 
     /**
@@ -392,9 +405,9 @@ class ShippingManager
     public function findAllByLocale($locale, $filter = array())
     {
         if (empty($filter)) {
-            $shipping = $this->em->getRepository(self::$shippingEntityName)->findAllByLocale($locale);
+            $shipping = $this->getShippingRepository()->findAllByLocale($locale);
         } else {
-            $shipping = $this->em->getRepository(self::$shippingEntityName)->findByLocaleAndFilter($locale, $filter);
+            $shipping = $this->getShippingRepository()->findByLocaleAndFilter($locale, $filter);
         }
 
         array_walk(
@@ -587,6 +600,16 @@ class ShippingManager
         return null;
     }
 
+    /**
+     * process shipping items
+     * @param $data
+     * @param Shipping $shipping
+     * @param $locale
+     * @param $userId
+     * @return bool
+     * @throws OrderException
+     * @throws Exception\MissingShippingAttributeException
+     */
     private function processItems($data, Shipping $shipping, $locale, $userId)
     {
         $result = true;
@@ -674,5 +697,13 @@ class ShippingManager
         }
 
         return $shippingItem;
+    }
+
+    /**
+     * @return ShippingRepository
+     */
+    private function getShippingRepository()
+    {
+        return $this->em->getRepository(self::$shippingEntityName);
     }
 }
