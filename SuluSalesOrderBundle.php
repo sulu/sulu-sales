@@ -11,6 +11,7 @@
 namespace Sulu\Bundle\Sales\OrderBundle;
 
 use Sulu\Bundle\Sales\OrderBundle\DependencyInjection\Compiler\AddContentNavigationPass;
+use Sulu\Bundle\Sales\OrderBundle\DependencyInjection\Compiler\AddOrderDependencyCompilerPass;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
@@ -21,5 +22,6 @@ class SuluSalesOrderBundle extends Bundle
         parent::build($container);
 
         $container->addCompilerPass(new AddContentNavigationPass);
+        $container->addCompilerPass(new AddOrderDependencyCompilerPass);
     }
 }

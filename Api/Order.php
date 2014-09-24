@@ -767,4 +767,6 @@ class Order extends ApiWrapper implements SalesDocument
             'id' => $this->getId()
         );
     }
+
+    public 
 }
