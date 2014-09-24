@@ -149,8 +149,12 @@ class OrderController extends RestController implements ClassResourceInterface
                 /** @var Order $order */
                 $order = $this->getManager()->findByIdAndLocale($id, $locale);
 
-                $allowDelete = $this->getDependencyManager()->allowDelete($id);
-                $allowCancel = $this->getDependencyManager()->allowCancel($id);
+                // get and set permissions
+
+                $order->setPermissions(array(
+                    'isDeletable' => $this->getDependencyManager()->allowDelete($id),
+                    'isCancelable' => $this->getDependencyManager()->allowCancel($id)
+                ));
 
                 return $order;
             }

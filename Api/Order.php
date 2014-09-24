@@ -24,6 +24,8 @@ use DateTime;
  */
 class Order extends ApiWrapper implements SalesDocument
 {
+    private $permissions = array();
+
     /**
      * @param OrderEntity $order The order to wrap
      * @param string $locale The locale of this order
@@ -748,5 +750,24 @@ class Order extends ApiWrapper implements SalesDocument
         );
     }
 
-    public 
+    /**
+     * @param array
+     * @return Order
+     */
+    public function setPermissions(array $permissions)
+    {
+        $this->permissions = $permissions;
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     * @VirtualProperty
+     * @SerializedName("permissions")
+     */
+    public function getPermissions()
+    {
+        return $this->permissions;
+    }
 }
