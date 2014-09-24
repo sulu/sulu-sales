@@ -8,11 +8,11 @@
  */
 
 define([
-    'app-config',
+    'sulusalesorder/util/sidebar',
     'sulusalesorder/util/orderStatus',
     'sulusalescore/util/helper',
     'sulucontact/model/account'
-], function(AppConfig, OrderStatus, CoreHelper, Account) {
+], function(Sidebar, OrderStatus, CoreHelper, Account) {
 
     'use strict';
 
@@ -551,33 +551,7 @@ define([
 
             // initialize sidebar
             if (!!this.options.data && !!this.options.data.id) {
-                this.initSidebar();
-            }
-        },
-
-        initSidebar: function() {
-
-            var link = '/admin/widget-groups/order-detail{?params*}',
-                data = this.options.data,
-                url, uriTemplate;
-
-            if(!!data.contact && !!data.account && !!data.status){
-                uriTemplate = this.sandbox.uritemplate.parse(link);
-                url = uriTemplate.expand({
-                    params: {
-                        contact: data.contact.id,
-                        account: data.account.id,
-                        status: data.status.status,
-                        locale: AppConfig.getUser().locale,
-                        orderDate: data.orderDate,
-                        orderNumber: data.number,
-                        orderId: data.id
-                    }
-                });
-
-                this.sandbox.emit('sulu.sidebar.set-widget', url);
-            } else {
-                this.sandbox.logger.error('required values for sidebar not present!');
+                Sidebar.init(this.sandbox, this.options.data);
             }
         },
 
