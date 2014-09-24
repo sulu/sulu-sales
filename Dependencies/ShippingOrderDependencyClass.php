@@ -10,8 +10,7 @@
 
 namespace Sulu\Bundle\Sales\ShippingBundle\Dependencies;
 
-use Proxies\__CG__\Sulu\Bundle\Sales\ShippingBundle\Entity\ShippingStatus;
-use Sulu\Bundle\Sales\CoreBundle\SalesDependency\AbstractSalesDependency;
+use Sulu\Bundle\Sales\ShippingBundle\Entity\ShippingStatus;
 use Sulu\Bundle\Sales\CoreBundle\SalesDependency\SalesDependencyClassInterface;
 use Sulu\Bundle\Sales\ShippingBundle\Shipping\ShippingManager;
 
@@ -86,6 +85,7 @@ class ShippingOrderDependencyClass implements SalesDependencyClassInterface
      */
     public function getDocuments($orderId)
     {
+        // TODO: still needs to be implemented
         $documents = array();
         return $documents;
     }
