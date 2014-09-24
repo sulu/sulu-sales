@@ -74,7 +74,7 @@ define([], function() {
         },
 
         /**
-         * raised when the instance is initialized
+         * raised when a row is clicked
          * @event sulu.editable-data-row.[instanceName].initialized
          */
         EVENT_CLICKED_ROW = function() {
