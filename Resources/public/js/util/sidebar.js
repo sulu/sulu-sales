@@ -13,7 +13,16 @@ define(['app-config'], function(AppConfig) {
 
     var bindCustomEvents = function() {
         this.sandbox.on('sulu.flow-of-documents.orders.row.clicked', function(data) {
-            this.sandbox.emit('sulu.router.navigate', data.route);
+            var routePartials, routeForNavigation;
+
+            if (!!data.route) {
+                this.sandbox.emit('sulu.router.navigate', data.route);
+
+                // adjusts navigation
+                routePartials = data.route.split('/');
+                routeForNavigation = routePartials[0] + '/' + routePartials[1];
+                this.sandbox.emit('husky.navigation.select-item', routeForNavigation);
+            }
         }.bind(this));
     };
 
