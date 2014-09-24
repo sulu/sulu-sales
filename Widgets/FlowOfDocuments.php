@@ -10,6 +10,7 @@
 
 namespace Sulu\Bundle\Sales\CoreBundle\Widgets;
 
+use DateTime;
 use Sulu\Bundle\AdminBundle\Widgets\WidgetException;
 use Sulu\Bundle\AdminBundle\Widgets\WidgetInterface;
 
@@ -41,6 +42,7 @@ abstract class FlowOfDocuments implements WidgetInterface
 
     /**
      * Sorts the data array by the date
+     *
      * @param bool $desc
      */
     protected function orderDataByDate($desc = true)
@@ -49,16 +51,17 @@ abstract class FlowOfDocuments implements WidgetInterface
             $this->entries,
             function ($a, $b) use ($desc) {
                 if ($a['date'] > $b['date']) {
-                    if(!$desc) {
+                    if (!$desc) {
                         return 1;
                     }
                     return -1;
                 } elseif ($a['date'] < $b['date']) {
-                    if(!$desc){
+                    if (!$desc) {
                         return -1;
                     }
                     return 1;
                 }
+                return 0;
             }
         );
     }
@@ -71,5 +74,32 @@ abstract class FlowOfDocuments implements WidgetInterface
     public function getTemplate()
     {
         return 'SuluSalesCoreBundle:Widgets:core.flow.of.documents.html.twig';
+    }
+
+    /**
+     * Serializes given entries and returns them
+     *
+     * @param $dateFormat
+     * @return mixed
+     */
+    protected function serializeData($dateFormat = DateTime::W3C)
+    {
+        return $this->parseDates($this->entries, $dateFormat);
+    }
+
+    /**
+     * Parses dates according to a given format
+     *
+     * @param $data
+     * @param string $format
+     * @return mixed
+     */
+    private function parseDates($data, $format)
+    {
+        foreach ($data as $key => $entry) {
+            $data[$key]['date'] = $data[$key]['date']->format($format);
+        }
+
+        return $data;
     }
 }

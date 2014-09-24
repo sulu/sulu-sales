@@ -14,11 +14,11 @@
  * @param {Object} [options] Configuration object
  * @param {String} [options.instanceName] instance name of the component and its subcomponents
  * @param {String} [options.header] translation key for the header on top of the table
- * @param {Array} [options.columDefinition] defines the data displayed in the columns
- * @param {String} [options.columDefinition.property] used property of the data
- * @param {String} [options.columDefinition.type] type of display [icon, number, date]
- * @param {String} [options.columDefinition.prefix] prefix for number type
- * @param {String} [options.columDefinition.prefixProperty] prefix for the number type which displays the type as text
+ * @param {Array} [options.columnDefinition] defines the data displayed in the columns
+ * @param {String} [options.columnDefinition.property] used property of the data
+ * @param {String} [options.columnDefinition.type] type of display [icon, number, date]
+ * @param {String} [options.columnDefinition.prefix] prefix for number type
+ * @param {String} [options.columnDefinition.prefixProperty] prefix for the number type which displays the type as text
  *
  */
 define([], function() {
@@ -136,12 +136,8 @@ define([], function() {
                     $td = this.sandbox.dom.createElement('<td>' + prefix + value + '</td>');
                     break;
                 case 'date':
-                    if (typeof data[definition.property] === 'object') {
-                        value = data[definition.property].date;
-                    } else {
-                        value = data[definition.property];
-                    }
-                    value = (this.sandbox.date.format(new Date(value))).split(' ')[0];
+                    // format date and strip time
+                    value = (this.sandbox.date.format(data[definition.property])).split(' ')[0];
                     $td = this.sandbox.dom.createElement('<td>' + value + '</td>');
                     break;
                 default:
@@ -153,6 +149,11 @@ define([], function() {
             this.sandbox.dom.append($row, $td);
         },
 
+        /**
+         * Returns a translated key for a type
+         * @param type
+         * @returns {String}
+         */
         getPrefixForType = function(type) {
             switch (type) {
                 case 'order':
@@ -167,8 +168,13 @@ define([], function() {
             }
         },
 
-        getCssClassForValue = function(value) {
-            switch (value) {
+        /**
+         * Returns css icon class for a type
+         * @param type
+         * @returns {String}
+         */
+        getCssClassForValue = function(type) {
+            switch (type) {
                 case 'order':
                     return 'fa-shopping-cart';
                 case 'shipping':
