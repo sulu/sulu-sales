@@ -33,11 +33,22 @@ abstract class FlowOfDocuments implements WidgetInterface
     }
 
     /**
-     * @param array $data
+     * Creates and adds an entry to the exisiting entries
+     * @param String|Number $id
+     * @param String $number
+     * @param String $type
+     * @param DateTime $date
+     * @param String $route
      */
-    public function addEntry(array $data)
+    protected function addEntry($id, $number, $type, DateTime $date, $route)
     {
-        $this->entries[] = $data;
+        $this->entries[] = array(
+            'id' => $id,
+            'number' => $number,
+            'type' => $type,
+            'date' => $date,
+            'route' => $route
+        );
     }
 
     /**

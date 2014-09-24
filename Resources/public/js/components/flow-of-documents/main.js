@@ -53,8 +53,8 @@ define([], function() {
             table: function() {
                 return '<table class="' + constants.tableClass + '"></table>';
             },
-            row: function() {
-                return '<tr class="pointer"></tr>';
+            row: function(id, route) {
+                return '<tr data-id="' + id + '" data-route="' + route + '" class="pointer"></tr>';
             }
         },
 
@@ -71,6 +71,14 @@ define([], function() {
          */
         EVENT_INITIALIZED = function() {
             return eventNamespace + this.options.instanceName + '.initialized';
+        },
+
+        /**
+         * raised when the instance is initialized
+         * @event sulu.editable-data-row.[instanceName].initialized
+         */
+        EVENT_CLICKED_ROW = function() {
+            return eventNamespace + this.options.instanceName + '.row.clicked';
         },
 
         /**
@@ -98,7 +106,7 @@ define([], function() {
         },
 
         renderRow = function(data) {
-            var $row = this.sandbox.dom.createElement(templates.row.call(this));
+            var $row = this.sandbox.dom.createElement(templates.row.call(this, data.id, data.route));
             this.sandbox.util.foreach(this.options.columnDefinition, function(definition) {
                 renderCell.call(this, data, $row, definition);
             }.bind(this));
@@ -168,6 +176,17 @@ define([], function() {
             }
         },
 
+        bindDomEvents = function() {
+            this.sandbox.dom.on(this.$el, 'click', function(event) {
+                var $tr = this.sandbox.dom.createElement(event.currentTarget),
+                    id = this.sandbox.dom.data($tr, 'id'),
+                    route = this.sandbox.dom.data($tr, 'route');
+
+                this.sandbox.emit(EVENT_CLICKED_ROW.call(this),{id: id, route: route});
+
+            }.bind(this), 'tr');
+        },
+
         /**
          * Returns css icon class for a type
          * @param type
@@ -197,6 +216,7 @@ define([], function() {
             this.options = this.sandbox.util.extend({}, defaults, this.options);
 
             this.render();
+            bindDomEvents.call(this);
             this.sandbox.emit(EVENT_INITIALIZED.call(this));
         },
 
