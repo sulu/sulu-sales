@@ -149,12 +149,15 @@ class OrderController extends RestController implements ClassResourceInterface
                 /** @var Order $order */
                 $order = $this->getManager()->findByIdAndLocale($id, $locale);
 
-                // get and set permissions
-
-                $order->setPermissions(array(
-                    'isDeletable' => $this->getDependencyManager()->allowDelete($id),
-                    'isCancelable' => $this->getDependencyManager()->allowCancel($id)
-                ));
+                // if order was found
+                if ($order) {
+                    // get and set permissions
+                    $order->setPermissions(array(
+                        'isDeletable' => $this->getDependencyManager()->allowDelete($order),
+                        'isCancelable' => $this->getDependencyManager()->allowCancel($order)
+                    ));
+                    $order->setWorkflows($this->getDependencyManager()->getWorkflows($order));
+                }
 
                 return $order;
             }
@@ -226,6 +229,8 @@ class OrderController extends RestController implements ClassResourceInterface
     }
 
     /**
+     * triggers actions like status conversion
+     *
      * @Post("/orders/{id}")
      */
     public function postTriggerAction($id, Request $request)
@@ -277,6 +282,10 @@ class OrderController extends RestController implements ClassResourceInterface
         return $this->handleView($view);
     }
 
+    /**
+     * holds status field descriptor (which is not needed in list)
+     * @return DoctrineFieldDescriptor
+     */
     private function getStatusFieldDescriptor()
     {
         return new DoctrineFieldDescriptor(

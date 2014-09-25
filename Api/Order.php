@@ -25,6 +25,7 @@ use DateTime;
 class Order extends ApiWrapper implements SalesDocument
 {
     private $permissions = array();
+    private $workflows = array();
 
     /**
      * @param OrderEntity $order The order to wrap
@@ -769,5 +770,26 @@ class Order extends ApiWrapper implements SalesDocument
     public function getPermissions()
     {
         return $this->permissions;
+    }
+
+    /**
+     * @param array
+     * @return Order
+     */
+    public function setWorkflows(array $workflows)
+    {
+        $this->workflows = $workflows;
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     * @VirtualProperty
+     * @SerializedName("workflows")
+     */
+    public function getWorkflows()
+    {
+        return $this->$workflows;
     }
 }
