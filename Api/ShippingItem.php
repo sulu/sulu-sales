@@ -103,14 +103,14 @@ class ShippingItem extends ApiWrapper
         return $this;
     }
 
-//    /**
-//     * Get Shipping
-//     * @return \Sulu\Bundle\Sales\ShippingBundle\Entity\Shipping
-//     */
-//    public function getShipping()
-//    {
-//        return $this->entity->getShipping();
-//    }
+    /**
+     * Get Shipping
+     * @return \Sulu\Bundle\Sales\ShippingBundle\Entity\Shipping
+     */
+    public function getShipping()
+    {
+        return new Shipping($this->entity->getShipping(), $this->locale);
+    }
 
     /**
      * Set item
