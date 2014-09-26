@@ -10,6 +10,19 @@ use Sulu\Component\Security\UserInterface;
  */
 class Item
 {
+    const STATUS_IN_CART = 1;
+    const STATUS_OFFERED = 2;
+    const STATUS_CREATED = 4;
+    const STATUS_ORDERED = 8;
+    const STATUS_SHIPPING_NOTE_PARTIALLY = 16;
+    const STATUS_SHIPPING_NOTE = 32;
+    const STATUS_SHIPPED_PARTIALLY = 64;
+    const STATUS_SHIPPED = 128;
+    const STATUS_CHARGED = 256;
+    const STATUS_DECLINED = 512;
+    const STATUS_CANCELED = 1024;
+    const STATUS_RETURNED = 2048;
+
     /**
      * @var string
      */
@@ -101,11 +114,6 @@ class Item
     private $attributes;
 
     /**
-     * @var \Sulu\Bundle\Sales\CoreBundle\Entity\ItemStatus
-     */
-    private $status;
-
-    /**
      * @var \Sulu\Bundle\ProductBundle\Entity\Product
      */
     private $product;
@@ -119,6 +127,11 @@ class Item
      * @var UserInterface
      */
     private $creator;
+
+    /**
+     * @var integer
+     */
+    private $bitmaskStatus;
 
     /**
      * Constructor
@@ -540,29 +553,6 @@ class Item
     }
 
     /**
-     * Set status
-     *
-     * @param \Sulu\Bundle\Sales\CoreBundle\Entity\ItemStatus $status
-     * @return Item
-     */
-    public function setStatus(\Sulu\Bundle\Sales\CoreBundle\Entity\ItemStatus $status = null)
-    {
-        $this->status = $status;
-    
-        return $this;
-    }
-
-    /**
-     * Get status
-     *
-     * @return \Sulu\Bundle\Sales\CoreBundle\Entity\ItemStatus 
-     */
-    public function getStatus()
-    {
-        return $this->status;
-    }
-
-    /**
      * Set product
      *
      * @param \Sulu\Bundle\ProductBundle\Entity\Product $product
@@ -657,5 +647,28 @@ class Item
     public function getSupplier()
     {
         return $this->supplier;
+    }
+
+    /**
+     * Set bitmaskStatus
+     *
+     * @param integer $bitmaskStatus
+     * @return Item
+     */
+    public function setBitmaskStatus($bitmaskStatus)
+    {
+        $this->bitmaskStatus = $bitmaskStatus;
+    
+        return $this;
+    }
+
+    /**
+     * Get bitmaskStatus
+     *
+     * @return integer 
+     */
+    public function getBitmaskStatus()
+    {
+        return $this->bitmaskStatus;
     }
 }
