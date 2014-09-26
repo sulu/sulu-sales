@@ -578,6 +578,20 @@ class Order extends ApiWrapper implements SalesDocument
     }
 
     /**
+     * get item entity by id
+     * @param $id
+     * @return mixed
+     */
+    public function getItem($id)
+    {
+        foreach ($this->entity->getItems() as $item) {
+            if ($item->getId() === $id) {
+                return $item;
+            }
+        }
+    }
+
+    /**
      * Set changer
      *
      * @param UserInterface $changer
