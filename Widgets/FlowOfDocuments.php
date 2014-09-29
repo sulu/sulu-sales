@@ -26,11 +26,14 @@ class FlowOfDocuments extends FlowOfDocumentsBase
      */
     protected $dependencyManager;
 
+    protected $routes;
+
     protected $widgetName = 'OrderFlowOfDocuments';
 
-    function __construct(SalesDependencyClassInterface $dependencyManager)
+    function __construct(SalesDependencyClassInterface $dependencyManager, array $routes)
     {
         $this->dependencyManager = $dependencyManager;
+        $this->routes = $routes;
     }
 
     /**
@@ -76,7 +79,7 @@ class FlowOfDocuments extends FlowOfDocumentsBase
             $options['orderNumber'],
             'order',
             new DateTime($options['orderDate']),
-            parent::getRouteForOrder($options['orderId'])
+            parent::getRoute($options['orderId'], 'order', 'details')
         );
     }
 
@@ -98,7 +101,7 @@ class FlowOfDocuments extends FlowOfDocumentsBase
                     $data['number'],
                     $data['type'],
                     $data['date'],
-                    parent::getRouteForShipping($data['id'])
+                    parent::getRoute($data['id'], $data['type'], 'details')
                 );
             }
         }

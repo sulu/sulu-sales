@@ -46,11 +46,10 @@
             <argument type="service" id="doctrine.orm.entity_manager"/>
         </service>
 
-        <!-- FIXME the shipping manager should not be included like this - better would be a tagged service -->
-
         <service id="sulu_sales_order.widget.order_flow_of_documents" class="%sulu_sales_order.widgets.order_flow_of_documents.class%">
             <tag name="sulu.widget" alias="sulu-sales-order-order-flow-of-documents"/>
             <argument type="service" id="sulu_sales_order.order_dependency_manager"/>
+            <argument>%sulu_sales_core.routes%</argument>
         </service>
 
     </services>
