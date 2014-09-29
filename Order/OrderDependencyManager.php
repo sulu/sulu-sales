@@ -11,6 +11,7 @@
 namespace Sulu\Bundle\Sales\OrderBundle\Order;
 use Sulu\Bundle\Sales\CoreBundle\SalesDependency\AbstractSalesDependency;
 use Sulu\Bundle\Sales\CoreBundle\SalesDependency\SalesDependencyClassInterface;
+use Sulu\Bundle\Sales\OrderBundle\Api\Order;
 
 /**
  * Class OrderPersmission
@@ -62,16 +63,18 @@ class OrderDependencyManager extends AbstractSalesDependency implements SalesDep
     /**
      *
      * @param $orderId
+     * @param $locale
      * @return array
      */
-    public function getDocuments($orderId)
+    public function getDocuments($orderId, $locale)
     {
         $documents = array();
         /** @var SalesDependencyClassInterface $dependency*/
         foreach ($this->dependencyClasses as $dependency) {
             // add to documents array
-            array_merge($documents, $dependency->getDocuments($orderId));
+            $documents = array_merge($documents, $dependency->getDocuments($orderId, $locale));
         }
+
         return $documents;
     }
 

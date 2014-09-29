@@ -50,7 +50,7 @@
 
         <service id="sulu_sales_order.widget.order_flow_of_documents" class="%sulu_sales_order.widgets.order_flow_of_documents.class%">
             <tag name="sulu.widget" alias="sulu-sales-order-order-flow-of-documents"/>
-            <argument type="service" id="sulu_sales_shipping.shipping_manager"/>
+            <argument type="service" id="sulu_sales_order.order_dependency_manager"/>
         </service>
 
     </services>
