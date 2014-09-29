@@ -113,4 +113,26 @@ abstract class FlowOfDocuments implements WidgetInterface
 
         return $data;
     }
+
+    /**
+     * Returns uri for orders
+     *
+     * @param $id
+     * @return string
+     */
+    protected function getRouteForOrder($id)
+    {
+        return 'sales/orders/edit:' . $id . '/details';
+    }
+
+    /**
+     * Returns uri for shippings
+     *
+     * @param $id
+     * @return string
+     */
+    protected function getRouteForShipping($id)
+    {
+        return 'sales/shippings/edit:' . $id . '/details';
+    }
 }

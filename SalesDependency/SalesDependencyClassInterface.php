@@ -41,7 +41,8 @@ interface SalesDependencyClassInterface
     /**
      *
      * @param $entityId
+     * @param $locale
      * @return array
      */
-    public function getDocuments($entityId);
+    public function getDocuments($entityId, $locale);
 }
