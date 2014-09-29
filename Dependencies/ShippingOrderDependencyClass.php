@@ -10,6 +10,7 @@
 
 namespace Sulu\Bundle\Sales\ShippingBundle\Dependencies;
 
+use Sulu\Bundle\Sales\ShippingBundle\Api\Shipping;
 use Sulu\Bundle\Sales\ShippingBundle\Entity\ShippingStatus;
 use Sulu\Bundle\Sales\CoreBundle\SalesDependency\SalesDependencyClassInterface;
 use Sulu\Bundle\Sales\ShippingBundle\Shipping\ShippingManager;
@@ -79,14 +80,19 @@ class ShippingOrderDependencyClass implements SalesDependencyClassInterface
     }
 
     /**
+     * Returns shippings which are associated with an order
      *
      * @param $orderId
+     * @param $locale
      * @return array
      */
-    public function getDocuments($orderId)
+    public function getDocuments($orderId, $locale)
     {
-        // TODO: still needs to be implemented
         $documents = array();
+        foreach($this->shippingManager->findByOrderId($orderId,$locale) as $shipping) {
+            $documents[] = new Shipping($shipping,$locale);
+        }
+
         return $documents;
     }
 
