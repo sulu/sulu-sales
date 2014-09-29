@@ -26,23 +26,32 @@ interface SalesDependencyClassInterface
 
     /**
      * returns array of parameters
-     * @param $entityId
+     * @param $entity
      * @return bool
      */
-    public function allowDelete($entityId);
+    public function allowDelete($entity);
 
     /**
      * returns the identifying name
-     * @param $entityId
+     * @param $entity
      * @return bool
      */
-    public function allowCancel($entityId);
+    public function allowCancel($entity);
 
     /**
+     * returns all documents for the given entityId
      *
      * @param $entityId
      * @param $locale
      * @return array
      */
     public function getDocuments($entityId, $locale);
+
+    /**
+     * returns all possible workflows for the current entity
+     *
+     * @param $entity
+     * @return array
+     */
+    public function getWorkflows($entity);
 }

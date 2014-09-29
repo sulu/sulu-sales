@@ -25,8 +25,6 @@ class ItemManager
 {
     protected static $productEntityName = 'SuluProductBundle:Product';
     protected static $itemEntityName = 'SuluSalesCoreBundle:Item';
-    protected static $itemStatusEntityName = 'SuluSalesCoreBundle:ItemStatus';
-    protected static $itemStatusTranslationEntityName = 'SuluSalesCoreBundle:ItemStatusTranslation';
 
     private $currentLocale;
 
@@ -68,10 +66,11 @@ class ItemManager
      * @param $locale
      * @param $userId
      * @param \Sulu\Bundle\Sales\CoreBundle\Api\Item $item
+     * @param null $itemStatusId
      * @internal param null $id
      * @return null|\Sulu\Bundle\Sales\CoreBundle\Api\Item
      */
-    public function save(array $data, $locale, $userId, Item $item = null)
+    public function save(array $data, $locale, $userId, Item $item = null, $itemStatusId = null)
     {
 
         // check requiresd data
@@ -106,16 +105,60 @@ class ItemManager
             $item->setCreator($user);
             $this->em->persist($item->getEntity());
 
-            // TODO: determine item status
-            // FIXME: currently the status with id=1 is taken
-            $status = $this->em->getRepository(self::$itemStatusEntityName)->find(1);
-            $item->setStatus($status);
+            if (!$itemStatusId = null) {
+                $itemStatusId = ItemEntity::STATUS_CREATED;
+            }
+        }
+
+        if ($itemStatusId) {
+            $this->addStatus($item, $itemStatusId);
         }
 
         $item->setChanged(new DateTime());
         $item->setChanger($user);
 
         return $item;
+    }
+
+    /**
+     * converts status of an item
+     * @param Item $item
+     * @param $status
+     * @param bool $flush
+     */
+    public function addStatus(Item $item, $status, $flush = false)
+    {
+        // BITMASK
+        $currentBitmaskStatus = $item->getBitmaskStatus();
+
+        // if status is not already is in bitmask
+        if (!($currentBitmaskStatus && $currentBitmaskStatus & $status)) {
+            // add status
+            $item->setBitmaskStatus($currentBitmaskStatus | $status);
+        }
+
+        if ($flush === true) {
+            $this->em->flush();
+        }
+    }
+    /**
+     * converts status of an item
+     * @param Item $item
+     * @param $status
+     * @param bool $flush
+     */
+    public function removeStatus(Item $item, $status, $flush = false)
+    {
+        // BITMASK
+        $currentBitmaskStatus = $item->getBitmaskStatus();
+        // if status is in bitmask, remove it
+        if ($currentBitmaskStatus && $currentBitmaskStatus & $status) {
+            $item->setBitmaskStatus($currentBitmaskStatus & ~$status);
+        }
+
+        if ($flush === true) {
+            $this->em->flush();
+        }
     }
 
     /**
