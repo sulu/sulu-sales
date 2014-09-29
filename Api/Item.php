@@ -181,29 +181,6 @@ class Item extends ApiWrapper
     }
 
     /**
-     * Set status
-     * @param ItemStatus
-     * @return Item
-     */
-    public function setStatus($status)
-    {
-        $this->entity->setStatus($status);
-
-        return $this;
-    }
-
-    /**
-     * Get status
-     * @return ItemStatus
-     * @VirtualProperty
-     * @SerializedName("changed")
-     */
-    public function getStatus()
-    {
-        return new ItemStatus($this->entity->getStatus(), $this->locale);
-    }
-
-    /**
      * @param float
      * @return Item
      */
@@ -432,6 +409,27 @@ class Item extends ApiWrapper
     public function getLenght()
     {
         return $this->entity->getLength();
+    }
+
+    /**
+     * @param int
+     * @return Item
+     */
+    public function setBitmaskStatus($status)
+    {
+        $this->entity->setBitmaskStatus($status);
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     * @VirtualProperty
+     * @SerializedName("bitmaskStatus")
+     */
+    public function getBitmaskStatus()
+    {
+        return $this->entity->getBitmaskStatus();
     }
 
     /**
