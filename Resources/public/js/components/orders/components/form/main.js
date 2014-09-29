@@ -109,7 +109,6 @@ define([
             if (workflow.hasOwnProperty('event') && !!workflow.event) {
                 var params = workflow.parameters || null
                 this.sandbox.emit(workflow.event, params);
-
             }
             // else if route, check for unsaved data before routing
             else if (workflow.hasOwnProperty('route') && !!workflow.route) {
