@@ -32,5 +32,40 @@ class SuluSalesCoreExtension extends Extension
 
         $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.xml');
+
+        $this->setDefaultRoutes($config);
+        $container->setParameter(
+            'sulu_sales_core.routes',
+            $config['routes']
+        );
+    }
+
+    /**
+     * Sets default values for routes for order/shipping/invoice bundle
+     *
+     * @param $config
+     */
+    private function setDefaultRoutes(&$config)
+    {
+        if (!array_key_exists('routes', $config) || count($config['routes']) == 0) {
+            $config['routes'] = array(
+                'order' => array(
+                    'base' => 'sales/orders',
+                    'details' => 'sales/orders/edit:[id]/details',
+                    'add' => 'sales/orders/edit:[id]/add',
+                    'shippings' => 'sales/orders/edit:[id]/shippings/add'
+                ),
+                'shipping' => array(
+                    'base' => 'sales/shippings',
+                    'details' => 'sales/shippings/edit:[id]/details',
+                    'add' => 'sales/shippings/edit:[id]/add'
+                ),
+                'invoice' => array(
+                    'base' => 'sales/invoices',
+                    'details' => 'sales/invoices/edit:[id]/details',
+                    'add' => 'sales/invoices/edit:[id]/add'
+                )
+            );
+        }
     }
 }
