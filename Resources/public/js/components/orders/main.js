@@ -186,6 +186,9 @@ define([
             successCallback = typeof(successCallback) === 'function' ? successCallback : null;
             failCallback = typeof(failCallback) === 'function' ? failCallback : null;
 
+            if (typeof id === 'object' && id.hasOwnProperty('id')) {
+                id = id.id;
+            }
             this.order = Order.findOrCreate({id: id});
             this.order.destroy({
                 success: successCallback,
