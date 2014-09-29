@@ -195,6 +195,7 @@ define(['sulusalesshipping/util/shippingStatus'], function(ShippingStatus) {
             // back to list
             this.sandbox.on('sulu.header.back', function() {
                 this.sandbox.emit('sulu.salesshipping.shippings.list');
+                this.sandbox.emit('husky.navigation.select-item','sales/shippings');
             }, this);
 
             this.sandbox.on('husky.input.expected-delivery-date.initialized', function() {

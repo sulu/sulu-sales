@@ -33,7 +33,7 @@ class ShippingOrderDependencyClass implements SalesDependencyClassInterface
      */
     private $name = 'shipping';
 
-    private $orderBaseUrl = 'sales/orders';
+    protected $routes;
 
     /**
      * @var ShippingManager
@@ -43,9 +43,10 @@ class ShippingOrderDependencyClass implements SalesDependencyClassInterface
     /**
      * constructor
      */
-    public function __construct(ShippingManager $shippingManager)
+    public function __construct(ShippingManager $shippingManager, array $routes)
     {
         $this->shippingManager = $shippingManager;
+        $this->routes = $routes;
     }
 
     /**
@@ -118,7 +119,7 @@ class ShippingOrderDependencyClass implements SalesDependencyClassInterface
                 array(
                     'section' => $this->getName(),
                     'title' => 'salesorder.orders.shipping.create',
-                    'route' => $this->getOrderUrl($order, 'shippings/add'),
+                    'route' => $this->getRoute($order->getId(), 'order', 'shippings'),
                 ),
             );
         }
@@ -127,12 +128,22 @@ class ShippingOrderDependencyClass implements SalesDependencyClassInterface
     }
 
     /**
-     * @param $order
-     * @param $postFix
+     * Returns uri for shippings
+     *
+     * @param $id
+     * @param string $subject
+     * @param string $type
      * @return string
      */
-    private function getOrderUrl($order, $postFix)
+    protected function getRoute($id, $subject, $type)
     {
-        return $this->orderBaseUrl . '/edit:' . $order->getId() . '/' . $postFix;
+        if (!is_null($this->routes) &&
+            array_key_exists($subject, $this->routes) &&
+            array_key_exists($type, $this->routes[$subject])
+        ) {
+            return str_replace('[id]', $id, $this->routes[$subject][$type]);
+        }
+
+        return '';
     }
 }

@@ -31,6 +31,7 @@
         <service id="sulu_sales_shipping.shipping_order_dependency" class="%sulu_sales_shipping.shipping_order_dependency.class%">
             <tag name="sulu.sales_order.order_dependency"/>
             <argument type="service" id="sulu_sales_shipping.shipping_manager" />
+            <argument>%sulu_sales_core.routes%</argument>
         </service>
 
         <service id="sulu_sales_shipping.shipping_manager" class="%sulu_sales_shipping.shipping_manager.class%">
