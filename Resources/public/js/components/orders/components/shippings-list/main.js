@@ -7,7 +7,7 @@
 * with this source code in the file LICENSE.
 */
 
-define(['app-config'], function(AppConfig) {
+define(['app-config', 'sulusalesorder/util/sidebar'], function(AppConfig, Sidebar) {
 
     'use strict';
 
@@ -48,34 +48,8 @@ define(['app-config'], function(AppConfig) {
             this.render();
             bindCustomEvents.call(this);
 
-            this.initSidebar();
+            Sidebar.initForDetail(this.sandbox, this.options.data);
 
-        },
-
-        initSidebar: function() {
-
-            var link = '/admin/widget-groups/order-detail{?params*}',
-                data = this.options.data,
-                url, uriTemplate;
-
-            if(!!data.contact && !!data.account && !!data.status){
-                uriTemplate = this.sandbox.uritemplate.parse(link);
-                url = uriTemplate.expand({
-                    params: {
-                        contact: data.contact.id,
-                        account: data.account.id,
-                        status: data.status.status,
-                        locale: AppConfig.getUser().locale,
-                        orderDate: data.orderDate,
-                        orderNumber: data.number,
-                        orderId: data.id
-                    }
-                });
-
-                this.sandbox.emit('sulu.sidebar.set-widget', url);
-            } else {
-                this.sandbox.logger.error('required values for sidebar not present!');
-            }
         },
 
         render: function() {
