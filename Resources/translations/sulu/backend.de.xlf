@@ -46,6 +46,14 @@
                 <source>salesshipping.shippings.cancel</source>
                 <target>Lieferung stornieren</target>
             </trans-unit>
+            <trans-unit id="550accg2ac181350142c0b4720e29f11" resname="salesshipping.shipping.status">
+                <source>salesshipping.shipping.status</source>
+                <target>Status</target>
+            </trans-unit>
+            <trans-unit id="550accg2ac181350142c0b4720e29f12" resname="salesshipping.shipping.date">
+                <source>salesshipping.shipping.date</source>
+                <target>Lieferdatum</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>

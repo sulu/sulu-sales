@@ -10,7 +10,7 @@
         <div class="grid-row m-bottom-40">
             <h5 class="label"><%=translate('salesshipping.shipping.date')%></h5>
             <h4 class="m-top-0 m-bottom-0">
-                {{ data.date }}
+                <%= (App.date.format(new Date('{{ data.date }}'))).split(' ')[0] %>
             </h4>
         </div>
     {% endif %}

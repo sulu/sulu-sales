@@ -28,7 +28,7 @@
             </trans-unit>
             <trans-unit id="550accg2ac181350142c0b4720e29ff6" resname="salesshipping.shippings.desired-delivery-date">
                 <source>salesshipping.shippings.desired-delivery-date</source>
-                <target>Exp. delivery date</target>
+                <target>Delivery date</target>
             </trans-unit>
             <trans-unit id="550accg2ac181350142c0b4720e29ff7" resname="salesshipping.shippings.expected-delivery-date">
                 <source>salesshipping.shippings.expected-delivery-date</source>
@@ -45,6 +45,14 @@
             <trans-unit id="550accg2ac181350142c0b4720e29f10" resname="salesshipping.shippings.cancel">
                 <source>salesshipping.shippings.cancel</source>
                 <target>Cancel order</target>
+            </trans-unit>
+            <trans-unit id="550accg2ac181350142c0b4720e29f11" resname="salesshipping.shipping.status">
+                <source>salesshipping.shipping.status</source>
+                <target>Status</target>
+            </trans-unit>
+            <trans-unit id="550accg2ac181350142c0b4720e29f12" resname="salesshipping.shipping.date">
+                <source>salesshipping.shipping.date</source>
+                <target>Deliverydate</target>
             </trans-unit>
         </body>
     </file>
