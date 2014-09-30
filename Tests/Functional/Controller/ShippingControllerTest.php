@@ -31,8 +31,6 @@ use Sulu\Bundle\ProductBundle\Entity\Type;
 use Sulu\Bundle\ProductBundle\Entity\TypeTranslation;
 
 use Sulu\Bundle\Sales\CoreBundle\Entity\Item;
-use Sulu\Bundle\Sales\CoreBundle\Entity\ItemStatus;
-use Sulu\Bundle\Sales\CoreBundle\Entity\ItemStatusTranslation;
 use Sulu\Bundle\Sales\OrderBundle\Entity\Order;
 use Sulu\Bundle\Sales\OrderBundle\Entity\OrderAddress;
 use Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatus;
@@ -116,14 +114,6 @@ class ShippingControllerTest extends DatabaseTestCase
      * @var Item
      */
     private $item;
-    /**
-     * @var ItemStatus
-     */
-    private $itemStatus;
-    /**
-     * @var ItemStatusTranslation
-     */
-    private $itemStatusTranslation;
     /**
      * @var Product
      */
@@ -214,8 +204,6 @@ class ShippingControllerTest extends DatabaseTestCase
             // SalesCoreBundle
             self::$em->getClassMetadata('Sulu\Bundle\Sales\CoreBundle\Entity\Item'),
             self::$em->getClassMetadata('Sulu\Bundle\Sales\CoreBundle\Entity\ItemAttribute'),
-            self::$em->getClassMetadata('Sulu\Bundle\Sales\CoreBundle\Entity\ItemStatus'),
-            self::$em->getClassMetadata('Sulu\Bundle\Sales\CoreBundle\Entity\ItemStatusTranslation'),
             // SalesShippingBundle
             self::$em->getClassMetadata('Sulu\Bundle\Sales\ShippingBundle\Entity\Shipping'),
             self::$em->getClassMetadata('Sulu\Bundle\Sales\ShippingBundle\Entity\ShippingItem'),
@@ -449,12 +437,6 @@ class ShippingControllerTest extends DatabaseTestCase
         $this->productTranslation->setLongDescription('EnglishProductLongDescription-1');
         $this->product->addTranslation($this->productTranslation);
 
-        // Item Status
-        $this->itemStatus = new ItemStatus();
-        $this->itemStatusTranslation = new ItemStatusTranslation();
-        $this->itemStatusTranslation->setName('English-Item-Status-1');
-        $this->itemStatusTranslation->setLocale($this->locale);
-        $this->itemStatusTranslation->setStatus($this->itemStatus);
         // Item
         $this->item = new Item();
         $this->item->setName('Product1');
@@ -474,7 +456,6 @@ class ShippingControllerTest extends DatabaseTestCase
         $this->item->setCreated(new DateTime());
         $this->item->setChanged(new DateTime());
         $this->item->setProduct($this->product);
-        $this->item->setStatus($this->itemStatus);
 
         $this->order->addItem($this->item);
 
@@ -541,8 +522,6 @@ class ShippingControllerTest extends DatabaseTestCase
         self::$em->persist($this->orderAddressInvoice);
         self::$em->persist($this->orderStatusTranslation);
         self::$em->persist($this->item);
-        self::$em->persist($this->itemStatus);
-        self::$em->persist($this->itemStatusTranslation);
         self::$em->persist($this->product);
         self::$em->persist($this->productTranslation);
         self::$em->persist($productType);
