@@ -24,6 +24,8 @@ abstract class FlowOfDocuments implements WidgetInterface
 {
     private $entries = [];
 
+    protected $routes;
+
     /**
      * @return array []
      */
@@ -34,6 +36,7 @@ abstract class FlowOfDocuments implements WidgetInterface
 
     /**
      * Creates and adds an entry to the exisiting entries
+     *
      * @param String|Number $id
      * @param String $number
      * @param String $type
@@ -65,13 +68,16 @@ abstract class FlowOfDocuments implements WidgetInterface
                     if (!$desc) {
                         return 1;
                     }
+
                     return -1;
                 } elseif ($a['date'] < $b['date']) {
                     if (!$desc) {
                         return -1;
                     }
+
                     return 1;
                 }
+
                 return 0;
             }
         );
@@ -112,5 +118,25 @@ abstract class FlowOfDocuments implements WidgetInterface
         }
 
         return $data;
+    }
+
+    /**
+     * Returns uri for shippings
+     *
+     * @param $id
+     * @param string $subject
+     * @param string $type
+     * @return string
+     */
+    protected function getRoute($id, $subject, $type)
+    {
+        if (!is_null($this->routes) &&
+            array_key_exists($subject, $this->routes) &&
+            array_key_exists($type, $this->routes[$subject])
+        ) {
+            return str_replace('[id]', $id, $this->routes[$subject][$type]);
+        }
+
+        return '';
     }
 }

@@ -41,10 +41,11 @@ interface SalesDependencyClassInterface
     /**
      * returns all documents for the given entityId
      *
-     * @param $entity
+     * @param $entityId
+     * @param $locale
      * @return array
      */
-    public function getDocuments($entity);
+    public function getDocuments($entityId, $locale);
 
     /**
      * returns all possible workflows for the current entity
