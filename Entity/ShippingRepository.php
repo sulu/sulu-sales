@@ -99,7 +99,7 @@ class ShippingRepository extends EntityRepository
      * @param $locale
      * @return array|null
      */
-    public function findByOrderId($id, $locale)
+    public function findByOrderId($id, $locale = null)
     {
         try {
             $qb = $this->getShippingQuery($locale);
@@ -115,33 +115,55 @@ class ShippingRepository extends EntityRepository
     /**
      * returns sum of items that are assigned to a shipping which is not in status 'created'
      * @param $orderId
+     * @param $includeStatusDeliveryNote defines if status deliveryNote should be included
      * @return array|null
      */
-    public function getSumOfShippedItemsByOrderId($orderId)
+    public function getSumOfShippedItemsByOrderId($orderId, $includeStatusDeliveryNote)
     {
         try {
             $qb = $this->createQueryBuilder('shipping')
                 ->select('partial shipping.{id}, partial items.{id}, sum(shippingItems.quantity) AS shipped')
                 ->leftJoin('shipping.order', 'o', 'WITH', 'o.id = :orderId')
                 ->join('o.items', 'items')
+                ->join('shipping.status', 'status')
                 ->leftJoin('shipping.shippingItems', 'shippingItems', 'WITH', 'items = shippingItems.item')
                 ->setParameter('orderId', $orderId)
                 ->groupBy('items.id')
-                ->where('shipping.status != :excludeStatus')
-                ->setParameter('excludeStatus', ShippingStatus::STATUS_CREATED);
+                ->where('status.id = :statusId')
+                ->setParameter('statusId', ShippingStatus::STATUS_SHIPPED);
+            if ($includeStatusDeliveryNote) {
+                $qb->orWhere('status.id = :statusId2')
+                    ->setParameter('statusId2', ShippingStatus::STATUS_DELIVERY_NOTE);
+            }
             return $qb->getQuery()->getScalarResult();
+        } catch (NoResultException $exc) {
+            return null;
+        }
+    }
 
-            // TODO: implement sql to resolve group by problem in postgres
-//            $dql = 'SELECT sum(shippingItems.quantity) AS sumShipped, item.id '.
-//                'FROM ss_shippings shipping' .
-//                'LEFT JOIN so_orders o ON shipping.idOrders = o.id AND (o.id = 1) ' .
-//                'INNER JOIN so_order_items orderItems ON o.id = orderItems.idOrders ' .
-//                'INNER JOIN sc_item item ON item.id = orderItems.idItems ' .
-//                'LEFT JOIN ss_shipping_items shippingItems ON shipping.id = shippingItems.idShippings AND (item.id = shippingItems.idItems)' .
-//                'WHERE shipping.idShippingStatus <> 1 ' .
-//                'GROUP BY item.id';
-//            $qb = $this->getEntityManager()->createQuery($dql);
-//            return $qb->getScalarResult();
+    /**
+     * returns all items that were shipped by itemId
+     * @param $itemId
+     * @param $includeStatusDeliveryNote defines if status deliveryNote should be included
+     * @return int
+     */
+    public function getSumOfShippedItemsByItemId($itemId, $includeStatusDeliveryNote)
+    {
+        try {
+            $qb = $this->createQueryBuilder('shipping')
+                ->select('sum(shippingItems.quantity) AS shipped')
+                ->join('shipping.shippingItems', 'shippingItems')
+                ->join('shippingItems.item', 'item', 'WITH', 'item.id = :itemId')
+                ->join('shipping.status', 'status')
+                ->groupBy('item.id')
+                ->where('status.id = :statusId')
+                ->setParameter('itemId', $itemId)
+                ->setParameter('statusId', ShippingStatus::STATUS_SHIPPED);
+            if ($includeStatusDeliveryNote) {
+                $qb->orWhere('status.id = :statusId2')
+                    ->setParameter('statusId2', ShippingStatus::STATUS_DELIVERY_NOTE);
+            }
+            return $qb->getQuery()->getSingleScalarResult();
         } catch (NoResultException $exc) {
             return null;
         }
@@ -159,13 +181,13 @@ class ShippingRepository extends EntityRepository
         try {
             $qb = $this->createQueryBuilder('shipping')
                 ->select('count(shipping.id)')
-                ->join('shipping.order','o')
-                ->join('shipping.status','status')
+                ->join('shipping.order', 'o')
+                ->join('shipping.status', 'status')
                 ->where('o.id = :orderId')
                 ->groupBy('o.id')
                 ->setParameter('orderId', $orderId);
             foreach ($statusIds as $statusId) {
-                $qb->andWhere('status.id '.$comparator.' :excludeStatus');
+                $qb->andWhere('status.id ' . $comparator . ' :excludeStatus');
                 $qb->setParameter('excludeStatus', $statusId);
             }
 
@@ -180,15 +202,18 @@ class ShippingRepository extends EntityRepository
      * @param string $locale The locale to load
      * @return \Doctrine\ORM\QueryBuilder
      */
-    private function getShippingQuery($locale)
+    private function getShippingQuery($locale = null)
     {
         $qb = $this->createQueryBuilder('shipping')
             ->leftJoin('shipping.deliveryAddress', 'deliveryAddress')
             ->leftJoin('shipping.status', 'status')
-            ->leftJoin('status.translations', 'statusTranslations', 'WITH', 'statusTranslations.locale = :locale')
             ->leftJoin('shipping.shippingItems', 'shippingItems')
-            ->leftJoin('shippingItems.item', 'items')
-            ->setParameter('locale', $locale);
+            ->leftJoin('shippingItems.item', 'items');
+
+        if ($locale) {
+            $qb->leftJoin('status.translations', 'statusTranslations', 'WITH', 'statusTranslations.locale = :locale')
+                ->setParameter('locale', $locale);
+        }
         return $qb;
     }
 }

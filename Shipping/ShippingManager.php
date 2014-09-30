@@ -12,6 +12,7 @@ namespace Sulu\Bundle\Sales\ShippingBundle\Shipping;
 
 use DateTime;
 use Doctrine\Common\Persistence\ObjectManager;
+use Sulu\Bundle\Sales\CoreBundle\Entity\Item;
 use Sulu\Bundle\Sales\ShippingBundle\Entity\ShippingActivityLog;
 use Sulu\Bundle\Sales\ShippingBundle\Entity\ShippingRepository;
 use Sulu\Component\Rest\Exception\EntityNotFoundException;
@@ -284,14 +285,82 @@ class ShippingManager
         }
 
         // check if status has changed
-        if ($statusId === ShippingStatusEntity::STATUS_CREATED) {
-            // TODO: re-edit - do some business logic
+        if ($statusId === ShippingStatusEntity::STATUS_DELIVERY_NOTE) {
+            // TODO: emit event
+            $this->convertItemStatus($shipping, $statusId);
         }
         $shipping->setStatus($statusEntity);
 
         if ($flush === true) {
             $this->em->flush();
         }
+    }
+
+    // TODO: this conversion isn't complete yet, there are still a lot of edge
+    // cases to go through
+    /**
+     * converts the status of an item
+     * @param Shipping $shipping
+     * @param $shippingStatusId
+     */
+    private function convertItemStatus(Shipping $shipping, $shippingStatusId)
+    {
+        foreach ($shipping->getItems() as $shippingItem) {
+            // get item
+            $item = $shippingItem->getItem();
+
+            // set item status based on current shipping status
+            switch ($shippingStatusId) {
+                // created
+                case ShippingStatusEntity::STATUS_CREATED:
+                    // TODO: REMOVE PREVIOUS STATE
+                    $this->itemManager->addStatus($item, Item::STATUS_CREATED);
+                    break;
+                // delivery note
+                case ShippingStatusEntity::STATUS_DELIVERY_NOTE:
+                    if ($this->isPartiallyItem($shippingItem, true)) {
+                        $itemStatus = Item::STATUS_SHIPPING_NOTE_PARTIALLY;
+                    } else {
+                        $itemStatus = Item::STATUS_SHIPPING_NOTE;
+
+                    }
+                    $this->itemManager->addStatus($item, $itemStatus);
+                    break;
+                // shipped
+                case ShippingStatusEntity::STATUS_SHIPPED:
+                    if ($this->isPartiallyItem($shippingItem, false)) {
+                        $itemStatus = Item::STATUS_SHIPPED_PARTIALLY;
+                    } else {
+                        $itemStatus = Item::STATUS_SHIPPED;
+
+                    }
+                    $this->itemManager->addStatus($item, $itemStatus);
+                    break;
+                case ShippingStatusEntity::STATUS_CANCELED:
+                    // TODO: check  if still fully shipped
+                    $this->itemManager->removeStatus($item, Item::STATUS_SHIPPED);
+                    // TODO: check if partially shipped
+                    break;
+            }
+        }
+    }
+
+    /**
+     * checks if an item is fully shipped or still open
+     * @param $shippingItem
+     * @param bool $includeDeliveryNoteStatus
+     * @return bool
+     */
+    private function isPartiallyItem($shippingItem, $includeDeliveryNoteStatus = false)
+    {
+        $item = $shippingItem->getItem();
+        $sumShipped = $this->getSumOfShippedItemsByItemId($item->getId(), $includeDeliveryNoteStatus);
+        $orderItem = $shippingItem->getShipping()->getOrder()->getItem($item->getId());
+        // if all items are shipped (exclude current item)
+        if ($sumShipped == $orderItem->getQuantity() - $shippingItem->getQuantity()) {
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -360,14 +429,19 @@ class ShippingManager
         }
     }
 
-    public function getSumOfShippedItemsByOrderId($orderId)
+    public function getSumOfShippedItemsByOrderId($orderId, $includeStatusDeliveryNote = true)
     {
         $result = array();
-        $sums = $this->getShippingRepository()->getSumOfShippedItemsByOrderId($orderId);
+        $sums = $this->getShippingRepository()->getSumOfShippedItemsByOrderId($orderId, $includeStatusDeliveryNote);
         foreach ($sums as $sum) {
             $result[$sum['items_id']] = intval($sum['shipped']);
         }
         return $result;
+    }
+
+    public function getSumOfShippedItemsByItemId($itemId, $includeStatusDeliveryNote = false)
+    {
+        return $this->getShippingRepository()->getSumOfShippedItemsByItemId($itemId, $includeStatusDeliveryNote);
     }
 
     /**
@@ -376,13 +450,25 @@ class ShippingManager
      * @param $locale
      * @return array
      */
-    public function findByOrderId($orderId, $locale){
+    public function findByOrderId($orderId, $locale)
+    {
         $result = array();
         $items = $this->getShippingRepository()->findByOrderId($orderId, $locale);
         foreach ($items as $item) {
             $result[] = new Shipping($item, $locale);
         }
         return $result;
+    }
+
+    /**
+     * returns shipping entities by order id
+     *
+     * @param $orderId
+     * @return array|null
+     */
+    public function findEntitiesByOrderId($orderId)
+    {
+        return $this->getShippingRepository()->findByOrderId($orderId);
     }
 
     /**
@@ -412,7 +498,7 @@ class ShippingManager
 
         array_walk(
             $shipping,
-            function (&$shipping) use ($locale) {
+            function (&$shipping) use ($locale){
                 $shipping = new Shipping($shipping, $locale);
             }
         );
@@ -503,7 +589,6 @@ class ShippingManager
         );
 
         $this->fieldDescriptors['orderNumber'] = $this->orderFieldDescriptors['orderNumber'];
-
 
     }
 
@@ -622,11 +707,11 @@ class ShippingManager
 
                 $items = $data['items'];
 
-                $get = function ($item) {
+                $get = function ($item){
                     return $item->getId();
                 };
 
-                $delete = function ($item) use ($shipping) {
+                $delete = function ($item) use ($shipping){
                     $entity = $item->getEntity();
                     // remove from order
                     $shipping->removeShippingItem($entity);
@@ -634,13 +719,13 @@ class ShippingManager
                     $this->em->remove($entity);
                 };
 
-                $update = function ($item, $matchedEntry) use ($locale) {
+                $update = function ($item, $matchedEntry) use ($locale){
                     $shippingItem = $this->saveShippingItem($matchedEntry, $item->getEntity());
 
                     return $shippingItem ? true : false;
                 };
 
-                $add = function ($itemData) use ($locale, $shipping) {
+                $add = function ($itemData) use ($locale, $shipping){
                     $shippingItem = $this->saveShippingItem($itemData);
                     $shippingItem->setShipping($shipping->getEntity());
                     return $shipping->addShippingItem($shippingItem, null, $locale);

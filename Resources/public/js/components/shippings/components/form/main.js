@@ -45,22 +45,7 @@ define(['sulusalesshipping/util/shippingStatus'], function(ShippingStatus) {
                         }.bind(this)
                     }
                 ],
-                settings = {
-                    icon: 'gear',
-                    iconSize: 'large',
-                    group: 'left',
-                    id: 'options-button',
-                    position: 30,
-                    items: [
-                        {
-                            title: this.sandbox.translate('toolbar.delete'),
-                            callback: function() {
-                                this.sandbox.emit('sulu.header.toolbar.delete');
-                            }.bind(this)
-                        }
-                    ]
-                },
-                workflow = {
+                workflowDropdown = {
                     icon: 'hand-o-right',
                     iconSize: 'large',
                     group: 'left',
@@ -94,23 +79,19 @@ define(['sulusalesshipping/util/shippingStatus'], function(ShippingStatus) {
             if (this.options.data.id) {
                 // define workflow based on status
                 if (this.shippingStatusId === ShippingStatus.CREATED) {
-                    workflow.items.push(workflowItems.confirm);
+                    workflowDropdown.items.push(workflowItems.confirm);
                 } else if (this.shippingStatusId === ShippingStatus.DELIVERY_NOTE) {
-                    workflow.items.push(workflowItems.edit);
-                    workflow.items.push(workflowItems.cancel);
-                    workflow.items.push(workflowItems.divider);
-                    workflow.items.push(workflowItems.ship);
+                    workflowDropdown.items.push(workflowItems.edit);
+                    workflowDropdown.items.push(workflowItems.cancel);
+                    workflowDropdown.items.push(workflowItems.divider);
+                    workflowDropdown.items.push(workflowItems.ship);
                 } else if (this.shippingStatusId === ShippingStatus.SHIPPED) {
-                    workflow.items.push(workflowItems.cancel);
+                    workflowDropdown.items.push(workflowItems.cancel);
                 }
 
-                // add settings items
-                if (settings.items.length > 0) {
-                    toolbarItems.push(settings);
-                }
                 // add workflow items
-                if (workflow.items.length > 0) {
-                    toolbarItems.push(workflow);
+                if (workflowDropdown.items.length > 0) {
+                    toolbarItems.push(workflowDropdown);
                 }
             }
             // show toolbar
