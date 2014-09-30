@@ -7,10 +7,13 @@
  * with this source code in the file LICENSE.
  */
 
-define(['app-config'], function(AppConfig) {
+define(['app-config', 'sulusalesorder/model/order'], function(AppConfig, Order) {
 
     'use strict';
 
+    /**
+     * Binds events for the sidebar in the details view
+     */
     var bindCustomEventsForDetailsSidebar = function() {
             this.sandbox.on('sulu.flow-of-documents.orders.row.clicked', function(data) {
                 var routePartials, routeForNavigation;
@@ -25,11 +28,15 @@ define(['app-config'], function(AppConfig) {
                 }
             }.bind(this));
         },
+
+        /**
+         * Binds events used by the sidebar in the list view
+         */
         bindCustomEventsForListSidebar = function() {
             // navigate to edit contact
             this.sandbox.on('husky.datagrid.item.click', function(id) {
                 // get data for sidebar via controller
-                this.sandbox.emit('salesorder.orders.sidebar.getData', {
+                getDataForListSidebar.call(this, {
                     data: id,
                     callback: function(contact, account) {
                         this.sandbox.emit(
@@ -41,7 +48,10 @@ define(['app-config'], function(AppConfig) {
             }, this);
         },
 
-        bindCustomEvents = function() {
+        /**
+         * Binds dom events for sidebar
+         */
+        bindDomEvents = function() {
             this.sandbox.dom.off('#sidebar');
 
             this.sandbox.dom.on('#sidebar', 'click', function(event) {
@@ -55,10 +65,42 @@ define(['app-config'], function(AppConfig) {
                 this.sandbox.emit('sulu.router.navigate', 'contacts/contacts/edit:' + id + '/details');
                 this.sandbox.emit('husky.navigation.select-item', 'contacts/contacts');
             }.bind(this), '#sidebar-contact');
+        },
+
+        /**
+         * Gets data to init list sidebar with correct params values
+         * @param payload
+         */
+        getDataForListSidebar = function(payload) {
+            if (!!payload && !!payload.data && !!payload.callback && typeof payload.callback === 'function') {
+                var model,
+                    order = Order.findOrCreate({id: payload.data});
+
+                order.fetch({
+                    success: function(response) {
+                        model = response.toJSON();
+                        if (!!model.account && !!model.contact) {
+                            payload.callback(model.contact.id, model.account.id);
+                        } else {
+                            this.sandbox.logger.error('received invalid data when initializing sidebar', model);
+                        }
+                    }.bind(this),
+                    error: function() {
+                        this.sandbox.logger.error('error while fetching order');
+                    }.bind(this)
+                });
+            } else {
+                this.sandbox.logger.error('param for getDataForListSidebar has to be an object with a data attribute and a valid callback (attribute)!');
+            }
         };
 
     return {
 
+        /**
+         * Inits sidebar for details view
+         * @param sandbox
+         * @param data
+         */
         initForDetail: function(sandbox, data) {
 
             var link = '/admin/widget-groups/order-detail{?params*}',
@@ -81,16 +123,20 @@ define(['app-config'], function(AppConfig) {
                 });
 
                 this.sandbox.emit('sulu.sidebar.set-widget', url);
-                bindCustomEvents.call(this);
+                bindDomEvents.call(this);
                 bindCustomEventsForDetailsSidebar.call(this);
             } else {
                 this.sandbox.logger.error('required values for sidebar not present!');
             }
         },
 
+        /**
+         * Inits sidebar for the list view
+         * @param sandbox
+         */
         initForList: function(sandbox) {
             this.sandbox = sandbox;
-            bindCustomEvents.call(this);
+            bindDomEvents.call(this);
             bindCustomEventsForListSidebar.call(this);
         }
     };

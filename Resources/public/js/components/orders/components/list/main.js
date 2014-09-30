@@ -118,7 +118,6 @@ define(['sulusalesorder/util/sidebar'], function(Sidebar) {
                     }
                 }
             );
-
             Sidebar.initForList(this.sandbox);
         }
     };
