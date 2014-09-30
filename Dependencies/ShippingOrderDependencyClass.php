@@ -10,27 +10,30 @@
 
 namespace Sulu\Bundle\Sales\ShippingBundle\Dependencies;
 
+use Sulu\Bundle\Sales\ShippingBundle\Api\Shipping;
 use Sulu\Bundle\Sales\OrderBundle\Api\Order;
 use Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatus;
 use Sulu\Bundle\Sales\OrderBundle\Order\OrderManager;
-use Sulu\Bundle\Sales\ShippingBundle\Entity\Shipping;
+use Sulu\Bundle\Sales\ShippingBundle\Entity\Shipping as ShippingEntity;
 use Sulu\Bundle\Sales\ShippingBundle\Entity\ShippingStatus;
 use Sulu\Bundle\Sales\CoreBundle\SalesDependency\SalesDependencyClassInterface;
 use Sulu\Bundle\Sales\ShippingBundle\Shipping\ShippingManager;
 
 /**
  * Class OrderPersmission
+ *
  * @package Sulu\Bundle\Sales\OrderBundle\Order
  */
 class ShippingOrderDependencyClass implements SalesDependencyClassInterface
 {
     /**
      * this dependendencies name
+     *
      * @var string
      */
     private $name = 'shipping';
 
-    private $orderBaseUrl = 'sales/orders';
+    protected $routes;
 
     /**
      * @var ShippingManager
@@ -40,15 +43,15 @@ class ShippingOrderDependencyClass implements SalesDependencyClassInterface
     /**
      * constructor
      */
-    public function __construct(
-        ShippingManager $shippingManager
-    )
+    public function __construct(ShippingManager $shippingManager, array $routes)
     {
         $this->shippingManager = $shippingManager;
+        $this->routes = $routes;
     }
 
     /**
      * returns name of the dependency class
+     *
      * @return string
      */
     public function getName()
@@ -58,6 +61,7 @@ class ShippingOrderDependencyClass implements SalesDependencyClassInterface
 
     /**
      * returns if the order with the given order ID can be deleted
+     *
      * @param $order
      * @return bool
      */
@@ -68,11 +72,13 @@ class ShippingOrderDependencyClass implements SalesDependencyClassInterface
         if ($this->shippingManager->countByOrderId($order->getId()) > 0) {
             return false;
         }
+
         return true;
     }
 
     /**
      * returns the identifying name
+     *
      * @param $order
      * @return bool
      */
@@ -83,19 +89,20 @@ class ShippingOrderDependencyClass implements SalesDependencyClassInterface
         if ($this->shippingManager->countByOrderId($order->getId(), array(ShippingStatus::STATUS_SHIPPED)) > 0) {
             return false;
         }
+
         return true;
     }
 
     /**
+     * Returns shippings which are associated with an order
      *
-     * @param $order
+     * @param $orderId
+     * @param $locale
      * @return array
      */
-    public function getDocuments($order)
+    public function getDocuments($orderId, $locale)
     {
-        // TODO: still needs to be implemented
-        $documents = array();
-        return $documents;
+        return $this->shippingManager->findByOrderId($orderId, $locale);
     }
 
     /**
@@ -112,7 +119,7 @@ class ShippingOrderDependencyClass implements SalesDependencyClassInterface
                 array(
                     'section' => $this->getName(),
                     'title' => 'salesorder.orders.shipping.create',
-                    'route' => $this->getOrderUrl($order, 'shippings/add')
+                    'route' => $this->getRoute($order->getId(), 'order', 'shippings'),
                 ),
             );
         }
@@ -121,12 +128,22 @@ class ShippingOrderDependencyClass implements SalesDependencyClassInterface
     }
 
     /**
-     * @param $order
-     * @param $postFix
+     * Returns uri for shippings
+     *
+     * @param $id
+     * @param string $subject
+     * @param string $type
      * @return string
      */
-    private function getOrderUrl($order, $postFix)
+    protected function getRoute($id, $subject, $type)
     {
-        return $this->orderBaseUrl . '/edit:'.$order->getId().'/'.$postFix;
+        if (!is_null($this->routes) &&
+            array_key_exists($subject, $this->routes) &&
+            array_key_exists($type, $this->routes[$subject])
+        ) {
+            return str_replace('[id]', $id, $this->routes[$subject][$type]);
+        }
+
+        return '';
     }
 }
