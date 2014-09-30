@@ -151,11 +151,6 @@ class OrderController extends RestController implements ClassResourceInterface
 
                 // if order was found
                 if ($order) {
-                    // get and set permissions
-                    $order->setPermissions(array(
-                        'isDeletable' => $this->getDependencyManager()->allowDelete($order),
-                        'isCancelable' => $this->getDependencyManager()->allowCancel($order)
-                    ));
                     $order->setWorkflows($this->getDependencyManager()->getWorkflows($order));
                 }
 
