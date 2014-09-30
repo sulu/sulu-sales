@@ -70,17 +70,19 @@ class OrderDependencyManager extends AbstractSalesDependency implements SalesDep
 
     /**
      *
-     * @param Order $order
+     * @param $orderId
+     * @param $locale
      * @return array
      */
-    public function getDocuments($order)
+    public function getDocuments($orderId, $locale)
     {
         $documents = array();
         /** @var SalesDependencyClassInterface $dependency */
         foreach ($this->dependencyClasses as $dependency) {
             // add to documents array
-            $documents = array_merge($documents, $dependency->getDocuments($order));
+            $documents = array_merge($documents, $dependency->getDocuments($orderId, $locale));
         }
+
         return $documents;
     }
 

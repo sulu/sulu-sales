@@ -14,17 +14,26 @@ use DateTime;
 use Sulu\Bundle\AdminBundle\Widgets\WidgetException;
 use Sulu\Bundle\AdminBundle\Widgets\WidgetParameterException;
 use Sulu\Bundle\Sales\CoreBundle\Core\SalesDocument;
+use Sulu\Bundle\Sales\CoreBundle\SalesDependency\SalesDependencyClassInterface;
 use Sulu\Bundle\Sales\CoreBundle\Widgets\FlowOfDocuments as FlowOfDocumentsBase;
-use Sulu\Bundle\Sales\ShippingBundle\Shipping\ShippingManager;
 
 class FlowOfDocuments extends FlowOfDocumentsBase
 {
 
+    /**
+     * DependencyManager
+     * @var SalesDependencyClassInterface
+     */
+    protected $dependencyManager;
+
+    protected $routes;
+
     protected $widgetName = 'OrderFlowOfDocuments';
 
-    function __construct(ShippingManager $shippingManager)
+    function __construct(SalesDependencyClassInterface $dependencyManager, array $routes)
     {
-        $this->shippingManager = $shippingManager;
+        $this->dependencyManager = $dependencyManager;
+        $this->routes = $routes;
     }
 
     /**
@@ -48,7 +57,7 @@ class FlowOfDocuments extends FlowOfDocumentsBase
     {
         if ($this->checkRequiredParameters($options)) {
             $this->getOrderData($options);
-            $this->fetchShippingData($options);
+            $this->fetchDocumentData($options);
             parent::orderDataByDate(false);
 
             return parent::serializeData();
@@ -70,29 +79,29 @@ class FlowOfDocuments extends FlowOfDocumentsBase
             $options['orderNumber'],
             'order',
             new DateTime($options['orderDate']),
-            $this->getRouteForOrder($options['orderId'])
+            parent::getRoute($options['orderId'], 'order', 'details')
         );
     }
 
     /**
-     * Retrieves shipping data for a specific order and adds it to the entries
+     * Retrieves document data for a specific order and adds it to the entries
      *
      * @param $options
      * @throws \Sulu\Bundle\AdminBundle\Widgets\WidgetParameterException
      */
-    protected function fetchShippingData($options)
+    protected function fetchDocumentData($options)
     {
-        $shippings = $this->shippingManager->findByOrderId($options['orderId'], $options['locale']);
-        if (!empty($shippings)) {
-            /* @var SalesDocument $shipping */
-            foreach ($shippings as $shipping) {
-                $data = $shipping->getSalesDocumentData();
+        $documents = $this->dependencyManager->getDocuments($options['orderId'], $options['locale']);
+        if (!empty($documents)) {
+            /* @var SalesDocument $document */
+            foreach ($documents as $document) {
+                $data = $document->getSalesDocumentData();
                 parent::addEntry(
                     $data['id'],
                     $data['number'],
                     $data['type'],
                     $data['date'],
-                    $this->getRouteForShipping($data['id'])
+                    parent::getRoute($data['id'], $data['type'], 'details')
                 );
             }
         }
@@ -137,27 +146,5 @@ class FlowOfDocuments extends FlowOfDocumentsBase
             $this->widgetName,
             $attribute
         );
-    }
-
-    /**
-     * Returns uri for orders
-     *
-     * @param $id
-     * @return string
-     */
-    protected function getRouteForOrder($id)
-    {
-        return 'sales/orders/edit:' . $id . '/details';
-    }
-
-    /**
-     * Returns uri for shippings
-     *
-     * @param $id
-     * @return string
-     */
-    protected function getRouteForShipping($id)
-    {
-        return 'sales/shippings/edit:' . $id . '/details';
     }
 }

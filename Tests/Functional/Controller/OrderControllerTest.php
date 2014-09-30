@@ -533,9 +533,6 @@ class OrderControllerTest extends DatabaseTestCase
         $this->assertEquals(1, count($response->items));
         $item = $response->items[0];
         $this->assertEquals($this->item->getId(), $item->id);
-        // item status
-        $this->assertEquals($this->item->getStatus()->getId(), $item->status->id);
-        $this->assertEquals('English-Item-Status-1', $item->status->status);
         // item product
         $this->assertEquals($this->item->getProduct()->getId(), $item->productRelation->id);
     }
