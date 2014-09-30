@@ -17,7 +17,7 @@
         </many-to-one>
 
         <many-to-one field="order" target-entity="Sulu\Bundle\Sales\OrderBundle\Entity\Order">
-            <join-column name="idOrders" referenced-column-name="id" nullable="false"/>
+            <join-column name="idOrders" referenced-column-name="id" nullable="false" on-delete="CASCADE" />
         </many-to-one>
 
     </entity>

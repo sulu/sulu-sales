@@ -186,6 +186,10 @@ define([
             successCallback = typeof(successCallback) === 'function' ? successCallback : null;
             failCallback = typeof(failCallback) === 'function' ? failCallback : null;
 
+            // if id is an object, try to get id. This happens if params is used as an array
+            if (typeof id === 'object' && id.hasOwnProperty('id')) {
+                id = id.id;
+            }
             this.order = Order.findOrCreate({id: id});
             this.order.destroy({
                 success: successCallback,

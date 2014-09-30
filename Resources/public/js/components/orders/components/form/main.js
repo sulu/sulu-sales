@@ -38,7 +38,11 @@ define([
          */
         setHeaderToolbar = function() {
 
-            var toolbarItems = [
+            var i, len,
+                workflow,
+                currentSection = null,
+                data = this.options.data,
+                toolbarItems = [
                     {
                         id: 'save-button',
                         icon: 'floppy-o',
@@ -52,7 +56,7 @@ define([
                         }.bind(this)
                     }
                 ],
-                workflow = {
+                workflowDropdown = {
                     icon: 'hand-o-right',
                     iconSize: 'large',
                     group: 'left',
@@ -60,49 +64,64 @@ define([
                     position: 40,
                     items: []
                 },
-                workflowItems = {
-                    confirm: {
-                        title: this.sandbox.translate('salesorder.orders.confirm'),
-                        callback: confirmOrder.bind(this)
-                    },
-                    edit: {
-                        title: this.sandbox.translate('salesorder.orders.edit'),
-                        callback: editOrder.bind(this)
-                    },
-                    shipping: {
-                        title: this.sandbox.translate('salesorder.orders.shipping.create'),
-                        callback: createShipping.bind(this)
-                    },
-                    divider: {
-                        divider: true
-                    }
+                divider = {
+                    divider: true
                 };
 
             // show settings template is order already saved
             if (this.options.data.id) {
+                // add workflows provided by api
+                for (i = -1, len = data.workflows.length; ++i < len;) {
+                    workflow = data.workflows[i];
 
-                // define workflow based on orderStatus
-                if (this.orderStatusId === OrderStatus.CREATED) {
-                    workflow.items.push(workflowItems.confirm);
-                } else if (this.orderStatusId === OrderStatus.CONFIRMED) {
-                    workflow.items.push(workflowItems.edit);
-                }
-
-                // more than in cart
-                if (this.orderStatusId >= OrderStatus.CONFIRMED) {
-                    workflow.items.push(workflowItems.divider);
-                    workflow.items.push(workflowItems.shipping);
+                    // if new section, add divider
+                    if (workflowDropdown.items.length === 0) {
+                        currentSection = workflow.section;
+                    } else if (!!currentSection &&
+                        currentSection !== workflow.section) {
+                        workflowDropdown.items.push(divider);
+                        currentSection = workflow.section;
+                    }
+                    // add workflow item
+                    workflowDropdown.items.push({
+                        title: this.sandbox.translate(workflow.title),
+                        callback: createWorkflowCallback.bind(this, workflow)
+                    });
                 }
 
                 // add workflow items
-                if (workflow.items.length > 0) {
-                    toolbarItems.push(workflow);
+                if (workflowDropdown.items.length > 0) {
+                    toolbarItems.push(workflowDropdown);
                 }
             }
             // show toolbar
             this.sandbox.emit('sulu.header.set-toolbar', {
                 template: toolbarItems
             });
+        },
+
+        /**
+         * creates a callback for a workflow
+         * @param workflow
+         */
+        createWorkflowCallback = function(workflow) {
+            // if event is defined, call event
+            if (workflow.hasOwnProperty('event') && !!workflow.event) {
+                var params = workflow.parameters || null
+                this.sandbox.emit(workflow.event, params);
+            }
+            // else if route, check for unsaved data before routing
+            else if (workflow.hasOwnProperty('route') && !!workflow.route) {
+                checkForUnsavedData.call(this, function() {
+                        this.sandbox.emit('sulu.router.navigate', workflow.route);
+                    },
+                    showErrorLabel.bind(this, '')
+                );
+            }
+            // otherwise, log error
+            else {
+                this.sandbox.logger.log('no route or event provided for workflow with title ' + workflow.title);
+            }
         },
 
         /**
@@ -124,17 +143,6 @@ define([
                     this.sandbox.emit('sulu.salesorder.order.edit');
                 },
                 showErrorLabel.bind(this, constants.translationConversionFailed)
-            );
-        },
-
-        /**
-         * create a shipping, checks for unsaved data and shows a warning
-         */
-        createShipping = function() {
-            checkForUnsavedData.call(this, function() {
-                    this.sandbox.emit('sulu.salesorder.shipping.create');
-                },
-                showErrorLabel.bind(this, constants.translationShippingFailed)
             );
         },
 
@@ -191,13 +199,10 @@ define([
         },
 
         bindCustomEvents = function() {
-
+            // status change events
+            this.sandbox.on('sulu.salesorder.order.edit.clicked', editOrder.bind(this));
+            this.sandbox.on('sulu.salesorder.order.confirm.clicked', confirmOrder.bind(this));
             this.sandbox.on('sulu.salesorder.set-order-status', setOrderStatuses.bind(this));
-
-            // delete contact
-            this.sandbox.on('sulu.header.toolbar.delete', function() {
-                this.sandbox.emit('sulu.salesorder.order.delete', this.options.data.id);
-            }, this);
 
             this.sandbox.on('husky.auto-complete.' + this.accountInstanceName + '.initialized', function() {
                 if (!this.isEditable) {
@@ -497,10 +502,10 @@ define([
         view: true,
 
         layout: {
-                sidebar: {
-                    width: 'fixed',
-                    cssClasses: 'sidebar-padding-50'
-                }
+            sidebar: {
+                width: 'fixed',
+                cssClasses: 'sidebar-padding-50'
+            }
         },
 
         templates: ['/admin/order/template/order/form'],

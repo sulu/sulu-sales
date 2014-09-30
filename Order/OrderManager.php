@@ -311,6 +311,24 @@ class OrderManager
     }
 
     /**
+     * find order entity by id
+     * @param $id
+     * @throws \Sulu\Component\Rest\Exception\EntityNotFoundException
+     * @internal param $statusId
+     * @return OrderEntity
+     */
+    public function findOrderEntityById($id)
+    {
+        try {
+            return $this->em
+                ->getRepository(self::$orderEntityName)
+                ->find($id);
+        } catch (NoResultException $nre) {
+            throw new EntityNotFoundException(self::$orderEntityName, $id);
+        }
+    }
+
+    /**
      * @param $locale
      * @return \Sulu\Component\Rest\ListBuilder\Doctrine\FieldDescriptor\DoctrineFieldDescriptor[]
      */
