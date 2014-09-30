@@ -74,11 +74,9 @@ define(['app-config', 'sulusalesshipping/model/shipping'], function(AppConfig, S
         getDataForListSidebar = function(payload) {
             if (!!payload && !!payload.data && !!payload.callback && typeof payload.callback === 'function') {
                 var model,
-                    order = Shipping.findOrCreate({id: payload.data});
+                    shipping = Shipping.findOrCreate({id: payload.data});
 
-                // TODO
-
-                order.fetch({
+                shipping.fetch({
                     success: function(response) {
                         model = response.toJSON();
                         if (!!model.order.account && !!model.order.contact) {
@@ -110,17 +108,20 @@ define(['app-config', 'sulusalesshipping/model/shipping'], function(AppConfig, S
 
             this.sandbox = sandbox;
 
-            if (!!data.contact && !!data.account && !!data.status) {
+            if (!!data.order.contact && !!data.order.account && !!data.status) {
                 uriTemplate = this.sandbox.uritemplate.parse(link);
                 url = uriTemplate.expand({
                     params: {
-                        contact: data.contact.id,
-                        account: data.account.id,
+                        id: data.id,
+                        number: data.number,
+                        contact: data.order.contact.id,
+                        account: data.order.account.id,
                         status: data.status.status,
                         locale: AppConfig.getUser().locale,
-                        orderDate: data.orderDate,
-                        orderNumber: data.number,
-                        orderId: data.id
+                        date: data.expectedDeliveryDate,
+                        orderDate: data.order.orderDate,
+                        orderNumber: data.order.number,
+                        orderId: data.order.id
                     }
                 });
 
