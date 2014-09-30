@@ -557,7 +557,7 @@ define([
 
             // initialize sidebar
             if (!!this.options.data && !!this.options.data.id) {
-                Sidebar.init(this.sandbox, this.options.data);
+                Sidebar.initForDetail(this.sandbox, this.options.data);
             }
         },
 

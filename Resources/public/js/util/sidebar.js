@@ -11,24 +11,55 @@ define(['app-config'], function(AppConfig) {
 
     'use strict';
 
-    var bindCustomEvents = function() {
-        this.sandbox.on('sulu.flow-of-documents.orders.row.clicked', function(data) {
-            var routePartials, routeForNavigation;
+    var bindCustomEventsForDetailsSidebar = function() {
+            this.sandbox.on('sulu.flow-of-documents.orders.row.clicked', function(data) {
+                var routePartials, routeForNavigation;
 
-            if (!!data.route) {
-                this.sandbox.emit('sulu.router.navigate', data.route);
+                if (!!data.route) {
+                    this.sandbox.emit('sulu.router.navigate', data.route);
 
-                // adjusts navigation
-                routePartials = data.route.split('/');
-                routeForNavigation = routePartials[0] + '/' + routePartials[1];
-                this.sandbox.emit('husky.navigation.select-item', routeForNavigation);
-            }
-        }.bind(this));
-    };
+                    // adjusts navigation
+                    routePartials = data.route.split('/');
+                    routeForNavigation = routePartials[0] + '/' + routePartials[1];
+                    this.sandbox.emit('husky.navigation.select-item', routeForNavigation);
+                }
+            }.bind(this));
+        },
+        bindCustomEventsForListSidebar = function() {
+            // navigate to edit contact
+            this.sandbox.on('husky.datagrid.item.click', function(id) {
+                // get data for sidebar via controller
+                this.sandbox.emit('salesorder.orders.sidebar.getData', {
+                    data: id,
+                    callback: function(contact, account) {
+                        this.sandbox.emit(
+                            'sulu.sidebar.set-widget',
+                                '/admin/widget-groups/order-info?contact=' + contact + '&account=' + account
+                        );
+                    }.bind(this)
+                });
+            }, this);
+        },
+
+        bindCustomEvents = function() {
+            this.sandbox.dom.off('#sidebar');
+
+            this.sandbox.dom.on('#sidebar', 'click', function(event) {
+                var id = this.sandbox.dom.data(event.currentTarget, 'id');
+                this.sandbox.emit('sulu.router.navigate', 'contacts/accounts/edit:' + id + '/details');
+                this.sandbox.emit('husky.navigation.select-item', 'contacts/accounts');
+            }.bind(this), '#sidebar-account');
+
+            this.sandbox.dom.on('#sidebar', 'click', function(event) {
+                var id = this.sandbox.dom.data(event.currentTarget, 'id');
+                this.sandbox.emit('sulu.router.navigate', 'contacts/contacts/edit:' + id + '/details');
+                this.sandbox.emit('husky.navigation.select-item', 'contacts/contacts');
+            }.bind(this), '#sidebar-contact');
+        };
 
     return {
 
-        init: function(sandbox, data) {
+        initForDetail: function(sandbox, data) {
 
             var link = '/admin/widget-groups/order-detail{?params*}',
                 url, uriTemplate;
@@ -51,9 +82,16 @@ define(['app-config'], function(AppConfig) {
 
                 this.sandbox.emit('sulu.sidebar.set-widget', url);
                 bindCustomEvents.call(this);
+                bindCustomEventsForDetailsSidebar.call(this);
             } else {
                 this.sandbox.logger.error('required values for sidebar not present!');
             }
+        },
+
+        initForList: function(sandbox) {
+            this.sandbox = sandbox;
+            bindCustomEvents.call(this);
+            bindCustomEventsForListSidebar.call(this);
         }
     };
 });
