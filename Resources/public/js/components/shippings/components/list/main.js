@@ -7,14 +7,23 @@
  * with this source code in the file LICENSE.
  */
 
-define(function() {
+define(['sulusalesshipping/util/sidebar'], function(Sidebar) {
 
     'use strict';
 
     var bindCustomEvents = function() {
         // navigate to edit contact
-        this.sandbox.on('husky.datagrid.item.click', function(item) {
-//                this.sandbox.emit('sulu.sidebar.set-widget', '/admin/widget-groups/contact-info?contact=' + item);
+        this.sandbox.on('husky.datagrid.item.click', function(id) {
+            // get data for sidebar via controller
+            this.sandbox.emit('salesorder.orders.sidebar.getData', {
+                data: id,
+                callback: function(contact, account) {
+                    this.sandbox.emit(
+                        'sulu.sidebar.set-widget',
+                            '/admin/widget-groups/order-info?contact=' + contact + '&account=' + account
+                    );
+                }.bind(this)
+            });
         }, this);
 
         // delete clicked
@@ -39,7 +48,10 @@ define(function() {
                 leftSpace: false,
                 rightSpace: false
             },
-            sidebar: false
+            sidebar: {
+                width: 'fixed',
+                cssClasses: 'sidebar-padding-50'
+            }
         },
 
         header: {
@@ -93,6 +105,8 @@ define(function() {
                     }
                 }
             );
+
+            Sidebar.initForList(this.sandbox);
         }
     };
 });

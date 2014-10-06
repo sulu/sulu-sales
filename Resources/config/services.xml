@@ -11,6 +11,8 @@
         <parameter key="sulu_sales_shipping.shipping_manager.class">Sulu\Bundle\Sales\ShippingBundle\Shipping\ShippingManager</parameter>
         <parameter key="sulu_sales_shipping.shipping_listener.class">Sulu\Bundle\Sales\ShippingBundle\EventListener\ShippingListener</parameter>
         <parameter key="sulu_sales_shipping.shipping_order_dependency.class">Sulu\Bundle\Sales\ShippingBundle\Dependencies\ShippingOrderDependencyClass</parameter>
+        <parameter key="sulu_sales_shipping.widgets.shipping_details.class">Sulu\Bundle\Sales\ShippingBundle\Widgets\ShippingDetails</parameter>
+        <parameter key="sulu_sales_shipping.widgets.shipping_flow_of_documents.class">Sulu\Bundle\Sales\ShippingBundle\Widgets\FlowOfDocuments</parameter>
     </parameters>
     <services>
         <service id="sulu_sales_shipping.admin" class="%sulu_sales_shipping.admin.class%">
@@ -43,5 +45,15 @@
         <service id="sulu_sales_shipping.shipping_listener" class="%sulu_sales_shipping.shipping_listener.class%">
             <tag name="doctrine.event_listener" event="postPersist" method="postPersist"/>
         </service>
+
+        <service id="sulu_sales_shipping.widget.shipping_details" class="%sulu_sales_shipping.widgets.shipping_details.class%">
+            <tag name="sulu.widget" alias="sulu-sales-shipping-shipping-details"/>
+        </service>
+
+        <service id="sulu_sales_shipping.widget.shipping_flow_of_documents" class="%sulu_sales_shipping.widgets.shipping_flow_of_documents.class%">
+            <tag name="sulu.widget" alias="sulu-sales-shipping-shipping-flow-of-documents"/>
+            <argument>%sulu_sales_core.routes%</argument>
+        </service>
+
     </services>
 </container>

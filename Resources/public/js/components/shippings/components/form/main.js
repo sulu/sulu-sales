@@ -7,7 +7,10 @@
 * with this source code in the file LICENSE.
 */
 
-define(['sulusalesshipping/util/shippingStatus'], function(ShippingStatus) {
+define([
+    'sulusalesshipping/util/shippingStatus',
+    'sulusalesshipping/util/sidebar'
+], function(ShippingStatus, Sidebar) {
 
     'use strict';
 
@@ -23,7 +26,6 @@ define(['sulusalesshipping/util/shippingStatus'], function(ShippingStatus) {
             accountAddressesUrl: '/admin/api/accounts/<%= id %>/addresses',
             deliveryAddressInstanceName: 'delivery-address',
             validateWarningTranslation: ''
-
         },
 
         /**
@@ -333,10 +335,10 @@ define(['sulusalesshipping/util/shippingStatus'], function(ShippingStatus) {
         view: true,
 
         layout: {
-//                sidebar: {
-//                    width: 'fixed',
-//                    cssClasses: 'sidebar-padding-50'
-//                }
+            sidebar: {
+                width: 'fixed',
+                cssClasses: 'sidebar-padding-50'
+            }
         },
 
         templates: ['/admin/shipping/template/shipping/form'],
@@ -379,16 +381,9 @@ define(['sulusalesshipping/util/shippingStatus'], function(ShippingStatus) {
             this.listenForChange();
 
             // initialize sidebar
-//                if (!!this.options.data && !!this.options.data.id) {
-//                    this.initSidebar(
-//                        '/admin/widget-groups/contact-detail?contact=',
-//                        this.options.data.id
-//                    );
-//                }
-        },
-
-        initSidebar: function(url, id) {
-            this.sandbox.emit('sulu.sidebar.set-widget', url + id);
+            if (!!this.options.data && !!this.options.data.id) {
+                Sidebar.initForDetail(this.sandbox, this.options.data);
+            }
         },
 
         render: function() {
