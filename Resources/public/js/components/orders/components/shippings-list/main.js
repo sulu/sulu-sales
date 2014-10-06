@@ -7,7 +7,10 @@
 * with this source code in the file LICENSE.
 */
 
-define(['app-config', 'sulusalesorder/util/sidebar'], function(AppConfig, Sidebar) {
+define([
+    'app-config',
+    'sulusalesorder/util/sidebar'
+], function(AppConfig, Sidebar) {
 
     'use strict';
 
