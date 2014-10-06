@@ -7,21 +7,31 @@
  * with this source code in the file LICENSE.
  */
 
-define(['app-config', 'sulusalesshipping/model/shipping'], function(AppConfig, Shipping) {
+define([
+    'app-config',
+    'sulusalesshipping/model/shipping'
+], function(AppConfig, Shipping) {
 
     'use strict';
+
+    var constants = {
+            widgetUrls: {
+                shippingInfo: '/admin/widget-groups/shipping-info',
+                shippingDetail: '/admin/widget-groups/shipping-detail{?params*}'
+            }
+        },
 
     /**
      * Binds events for the sidebar in the details view
      */
-    var bindCustomEventsForDetailsSidebar = function() {
+    bindCustomEventsForDetailsSidebar = function() {
             this.sandbox.on('sulu.flow-of-documents.orders.row.clicked', function(data) {
                 var routePartials, routeForNavigation;
 
                 if (!!data.route) {
                     this.sandbox.emit('sulu.router.navigate', data.route);
 
-                    // adjusts navigation
+                    // adjusts navigation - takes the first two segments of the url which are needed for the navigation event
                     routePartials = data.route.split('/');
                     routeForNavigation = routePartials[0] + '/' + routePartials[1];
                     this.sandbox.emit('husky.navigation.select-item', routeForNavigation);
@@ -41,7 +51,7 @@ define(['app-config', 'sulusalesshipping/model/shipping'], function(AppConfig, S
                     callback: function(contact, account) {
                         this.sandbox.emit(
                             'sulu.sidebar.set-widget',
-                                '/admin/widget-groups/shipping-info?contact=' + contact + '&account=' + account
+                                constants.widgetUrls.shippingInfo+'?contact=' + contact + '&account=' + account
                         );
                     }.bind(this)
                 });
@@ -103,13 +113,12 @@ define(['app-config', 'sulusalesshipping/model/shipping'], function(AppConfig, S
          */
         initForDetail: function(sandbox, data) {
 
-            var link = '/admin/widget-groups/shipping-detail{?params*}',
-                url, uriTemplate;
+            var url, uriTemplate;
 
             this.sandbox = sandbox;
 
             if (!!data.order.contact && !!data.order.account && !!data.status) {
-                uriTemplate = this.sandbox.uritemplate.parse(link);
+                uriTemplate = this.sandbox.uritemplate.parse(constants.widgetUrls.shippingDetail);
                 url = uriTemplate.expand({
                     params: {
                         id: data.id,
