@@ -107,14 +107,14 @@ define([
         createWorkflowCallback = function(workflow) {
             // if event is defined, call event
             if (workflow.hasOwnProperty('event') && !!workflow.event) {
-                var params = workflow.parameters || null
+                var params = workflow.parameters || null;
                 this.sandbox.emit(workflow.event, params);
             }
             // else if route, check for unsaved data before routing
             else if (workflow.hasOwnProperty('route') && !!workflow.route) {
                 checkForUnsavedData.call(this, function() {
                         this.sandbox.emit('sulu.router.navigate', workflow.route);
-                    },
+                    }.bind(this),
                     showErrorLabel.bind(this, '')
                 );
             }
@@ -556,7 +556,7 @@ define([
 
             // initialize sidebar
             if (!!this.options.data && !!this.options.data.id) {
-                Sidebar.init(this.sandbox, this.options.data);
+                Sidebar.initForDetail(this.sandbox, this.options.data);
             }
         },
 
