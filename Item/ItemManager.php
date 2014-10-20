@@ -43,12 +43,6 @@ class ItemManager
      */
     private $userRepository;
 
-    /**
-     * Describes the fields, which are handled by this controller
-     * @var DoctrineFieldDescriptor[]
-     */
-    private $fieldDescriptors = array();
-
     public function __construct(
         ObjectManager $em,
         ItemRepository $itemRepository,

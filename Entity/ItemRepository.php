@@ -97,8 +97,6 @@ class ItemRepository extends EntityRepository
     private function getItemQuery($locale)
     {
         $qb = $this->createQueryBuilder('item')
-            ->leftJoin('item.status', 'status')
-            ->leftJoin('status.translations', 'statusTranslations', 'WITH', 'statusTranslations.locale = :locale')
             ->setParameter('locale', $locale);
         return $qb;
     }
