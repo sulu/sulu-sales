@@ -405,20 +405,17 @@ define([
             var data = this.sandbox.form.getData(form),
                 quantityIsZero = this.isQuantityZero(data);
 
-            this.sandbox.logger.log('save Model');
-
             if (this.sandbox.form.validate(form) && !quantityIsZero) {
 
                 if (data.id === '') {
                     delete data.id;
                 }
-
-                this.sandbox.logger.log('log data', data);
+                this.sandbox.logger.log('saving shipping', data);
                 this.sandbox.emit('sulu.salesshipping.shipping.save', data);
             } else {
-                if(!!quantityIsZero){
+                if (!!quantityIsZero) {
                     this.sandbox.emit('sulu.labels.warning.show', this.sandbox.translate(constants.validateQuantityWarningTranslation));
-                } else{
+                } else {
                     this.sandbox.emit('sulu.labels.warning.show', this.sandbox.translate(constants.validateWarningTranslation));
                 }
             }
@@ -429,12 +426,10 @@ define([
          * @param data
          * @returns {boolean}
          */
-        isQuantityZero: function(data){
-
+        isQuantityZero: function(data) {
             var result = true;
-
-            this.sandbox.util.foreach(data.items, function(item){
-                if(parseInt(item.quantity,10) > 0){
+            this.sandbox.util.foreach(data.items, function(item) {
+                if (parseInt(item.quantity, 10) > 0) {
                     result = false;
                     return false;
                 }
