@@ -192,6 +192,7 @@ define([
                     if (!!data.id) {
                         this.sandbox.emit('sulu.salesshipping.shipping.saved', model);
                     } else {
+                        this.sandbox.emit('husky.navigation.select-item','sales/shippings');
                         this.sandbox.emit('sulu.router.navigate', 'sales/shippings/edit:' + model.id + '/overview');
                     }
                 }.bind(this),
