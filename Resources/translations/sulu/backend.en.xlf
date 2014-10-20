@@ -54,6 +54,14 @@
                 <source>salesshipping.shipping.date</source>
                 <target>Deliverydate</target>
             </trans-unit>
+            <trans-unit id="550accg2ac181350142c0b4720e29f13" resname="salesshipping.shipping.validation.error">
+                <source>salesshipping.shipping.validation.error</source>
+                <target>Some of the data is invalid!</target>
+            </trans-unit>
+            <trans-unit id="550accg2ac181350142c0b4720e29f14" resname="salesshipping.shipping.validation.quantityError">
+                <source>salesshipping.shipping.validation.quantityError</source>
+                <target>The required quantity for a shippment has to be greater than zero!</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>
