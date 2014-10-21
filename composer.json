@@ -50,5 +50,6 @@
             "Sulu\\Bundle\\Sales\\ShippingBundle": ""
         }
     },
-    "target-dir": "Sulu/Bundle/Sales/ShippingBundle"
+    "target-dir": "Sulu/Bundle/Sales/ShippingBundle",
+    "minimum-stability": "dev"
 }
