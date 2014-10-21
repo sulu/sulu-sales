@@ -25,7 +25,8 @@ define([
             contactId: '#contact',
             accountAddressesUrl: '/admin/api/accounts/<%= id %>/addresses',
             deliveryAddressInstanceName: 'delivery-address',
-            validateWarningTranslation: ''
+            validateQuantityWarningTranslation: 'salesshipping.shipping.validation.quantityError',
+            validateWarningTranslation: 'salesshipping.shipping.validation.error'
         },
 
         /**
@@ -401,20 +402,40 @@ define([
         },
 
         submit: function() {
-            this.sandbox.logger.log('save Model');
+            var data = this.sandbox.form.getData(form),
+                quantityIsZero = this.isQuantityZero(data);
 
-            if (this.sandbox.form.validate(form)) {
-                var data = this.sandbox.form.getData(form);
+            if (this.sandbox.form.validate(form) && !quantityIsZero) {
 
                 if (data.id === '') {
                     delete data.id;
                 }
-
-                this.sandbox.logger.log('log data', data);
+                this.sandbox.logger.log('saving shipping', data);
                 this.sandbox.emit('sulu.salesshipping.shipping.save', data);
             } else {
-                this.sandbox.emit('sulu.labels.warning.show', this.sandbox.translate(constants.validateWarningTranslation));
+                if (!!quantityIsZero) {
+                    this.sandbox.emit('sulu.labels.warning.show', this.sandbox.translate(constants.validateQuantityWarningTranslation));
+                } else {
+                    this.sandbox.emit('sulu.labels.warning.show', this.sandbox.translate(constants.validateWarningTranslation));
+                }
             }
+        },
+
+        /**
+         * checks if total quantity of the shippment is bigger than zero
+         * @param data
+         * @returns {boolean}
+         */
+        isQuantityZero: function(data) {
+            var result = true;
+            this.sandbox.util.foreach(data.items, function(item) {
+                if (parseInt(item.quantity, 10) > 0) {
+                    result = false;
+                    return false;
+                }
+            }.bind(this));
+
+            return result;
         },
 
         // event listens for changes in form

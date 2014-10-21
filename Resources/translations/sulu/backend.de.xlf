@@ -54,6 +54,14 @@
                 <source>salesshipping.shipping.date</source>
                 <target>Lieferdatum</target>
             </trans-unit>
+            <trans-unit id="550accg2ac181350142c0b4720e29f13" resname="salesshipping.shipping.validation.error">
+                <source>salesshipping.shipping.validation.error</source>
+                <target>Die eingegebenen Daten sind ungültig!</target>
+            </trans-unit>
+            <trans-unit id="550accg2ac181350142c0b4720e29f14" resname="salesshipping.shipping.validation.quantityError">
+                <source>salesshipping.shipping.validation.quantityError</source>
+                <target>Die Mindestmenge für eine Bestellung muss größer als 0 sein!</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>
