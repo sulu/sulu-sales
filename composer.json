@@ -13,12 +13,10 @@
     ],
     "require": {
         "php": ">=5.4",
-        "doctrine/orm": ">=2.2.3,<2.4-dev",
-        "friendsofsymfony/rest-bundle": "dev-master",
-        "friendsofsymfony/http-cache": "@dev",
-        "jms/serializer-bundle": "@dev",
-        "stof/doctrine-extensions-bundle": "1.1.*@dev",
+        "doctrine/orm": "2.4.*",
+        "stof/doctrine-extensions-bundle": "1.1.*",
         "willdurand/hateoas-bundle": "0.3.*",
+
         "sulu/sulu": "dev-develop",
         "sulu/admin-bundle": "dev-develop",
         "sulu/product-bundle": "dev-develop",
@@ -38,9 +36,8 @@
         "sulu/category-bundle": "dev-develop",
         "sulu/media-bundle": "dev-develop",
 
-        "symfony-cmf/routing-bundle": "1.2.*@dev",
-        "symfony-cmf/routing": "1.2.*@dev",
-        "liip/theme-bundle": "1.0.*@dev"
+        "symfony-cmf/routing-bundle": "1.2.*",
+        "liip/theme-bundle": "1.1.*"
     },
     "autoload": {
         "psr-0": {
