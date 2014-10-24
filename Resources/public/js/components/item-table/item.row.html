@@ -61,7 +61,7 @@ disabled =  'disabled';
             <%= disabled %>/>
         </span>
     </td>
-    <% } if (showPrice) { %>
+    <% } if (columns.indexOf('totalPrice') > -1) { %>
     <td class="item-overall-price is-numeric">
         <span class="overall-price">
             <%= overallPrice %>

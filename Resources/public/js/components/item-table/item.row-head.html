@@ -32,7 +32,7 @@
     <td class="item-discount is-numeric">
         <span><%= header.discount %></span>
     </td>
-    <% } if (showPrice === true) { %>
+    <% } if (columns.indexOf('totalPrice') > -1) { %>
     <td class="item-overallPrice is-numeric">
         <%= header.overallPrice %>
     </td>

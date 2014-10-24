@@ -14,7 +14,6 @@
  * @param {Object} [options] Configuration object
  * @param {Array}  [options.data] Array of data [string, object]
  * @param {Bool}  [options.isEditable] Defines if component is editable
- * @param {Bool}  [options.showPrice] Defines if total-price table should be shown
  * @param {Array}  [options.columns] Defines which columns should be shown. Array of strings
  * @param {Array}  [options.productFilter] extra parameter for filtering products
  */
@@ -31,7 +30,6 @@ define([
     var defaults = {
             data: [],
             isEditable: true,
-            showPrice: true,
             columns: [
                 'name',
                 'number',
@@ -39,7 +37,8 @@ define([
                 'quantity',
                 'quantityUnit',
                 'price',
-                'discount'
+                'discount',
+                'totalPrice'
             ],
             productFilter: null
         },
@@ -69,6 +68,7 @@ define([
             rowClass: null,
             id: null,
             rowNumber: null,
+            description: null,
             rowId: '',
             name: '',
             number: '',
@@ -94,15 +94,6 @@ define([
                     value,
                     '   </td>',
                     '</tr>'
-                ].join('');
-            },
-            column: function(content, isNumeric) {
-                return [
-                    '<td>',
-                    '   <span>',
-                    content,
-                    '   </span>',
-                    '</td>'
                 ].join('');
             }
         },
@@ -484,10 +475,13 @@ define([
             }
 
             var rowTpl, $row,
-                data = this.sandbox.util.extend({}, rowDefaults, itemData, {
-                    rowId: constants.rowIdPrefix + this.rowCount,
-                    rowNumber: this.rowCount,
-                }, this.options);
+                data = this.sandbox.util.extend({}, rowDefaults, itemData,
+                    {
+                        isEditable: this.options.isEditable,
+                        columns: this.options.columns,
+                        rowId: constants.rowIdPrefix + this.rowCount,
+                        rowNumber: this.rowCount,
+                    });
 
             data.overallPrice = getOverallPriceString.call(this, data);
             rowTpl = this.sandbox.util.template(RowTpl, data),
@@ -530,9 +524,15 @@ define([
          * @param $row
          */
         addValidationFields = function($row) {
-            this.sandbox.form.addField(constants.formId, this.sandbox.dom.find(constants.quantityInput, $row));
-            this.sandbox.form.addField(constants.formId, this.sandbox.dom.find(constants.priceInput, $row));
-            this.sandbox.form.addField(constants.formId, this.sandbox.dom.find(constants.discountInput, $row));
+            if (this.options.columns.indexOf('quantity') > 0) {
+                this.sandbox.form.addField(constants.formId, this.sandbox.dom.find(constants.quantityInput, $row));
+            }
+            if (this.options.columns.indexOf('price') > 0) {
+                this.sandbox.form.addField(constants.formId, this.sandbox.dom.find(constants.priceInput, $row));
+            }
+            if (this.options.columns.indexOf('discount') > 0) {
+                this.sandbox.form.addField(constants.formId, this.sandbox.dom.find(constants.discountInput, $row));
+            }
         },
 
         /**
@@ -540,9 +540,15 @@ define([
          * @param $row
          */
         removeValidationFields = function($row) {
-            this.sandbox.form.removeField(constants.formId, this.sandbox.dom.find(constants.quantityInput, $row));
-            this.sandbox.form.removeField(constants.formId, this.sandbox.dom.find(constants.priceInput, $row));
-            this.sandbox.form.removeField(constants.formId, this.sandbox.dom.find(constants.discountInput, $row));
+            if (this.options.columns.indexOf('quantity') > 0) {
+                this.sandbox.form.removeField(constants.formId, this.sandbox.dom.find(constants.quantityInput, $row));
+            }
+            if (this.options.columns.indexOf('price') > 0) {
+                this.sandbox.form.removeField(constants.formId, this.sandbox.dom.find(constants.priceInput, $row));
+            }
+            if (this.options.columns.indexOf('discount') > 0) {
+                this.sandbox.form.removeField(constants.formId, this.sandbox.dom.find(constants.discountInput, $row));
+            }
         },
 
         /**
@@ -592,13 +598,25 @@ define([
          */
         setItemByProduct = function(productData) {
             // merge with row defaults
-            var itemData = this.sandbox.util.extend({}, rowDefaults,
+            var i, len,
+                itemData = this.sandbox.util.extend({}, rowDefaults,
                 {
                     name: productData.name,
                     number: productData.number,
+                    description: productData.shortDescription,
+                    price: productData.price,
                     product: productData
                 }
             );
+
+            // get prices
+            if (!!productData.prices && productData.prices.length > 0) {
+                // TODO: get the correct price
+                for (i = -1, len = productData.price; ++i < len;) {
+                    // TODO get price with the correct currency
+                }
+            }
+
             // set supplierName as tooltip, if set
             if (!!productData.supplierName) {
                 itemData.supplierName = productData.supplierName;
@@ -661,9 +679,10 @@ define([
             // add translations for template
             var templateData = this.sandbox.util.extend({},
                 {
-                    addText: this.sandbox.translate('salescore.item.add')
-                },
-                this.options
+                    addText: this.sandbox.translate('salescore.item.add'),
+                    isEditable: this.options.isEditable,
+                    columns: this.options.columns
+                }
             );
 
             // init skeleton
