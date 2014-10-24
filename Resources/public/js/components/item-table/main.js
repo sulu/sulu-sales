@@ -12,8 +12,11 @@
  * @constructor
  *
  * @param {Object} [options] Configuration object
- * @param {Array}  [options.data] array of data [string, object]
- * @param {Bool}  [options.editable] defines if component is editable
+ * @param {Array}  [options.data] Array of data [string, object]
+ * @param {Bool}  [options.isEditable] Defines if component is editable
+ * @param {Bool}  [options.showPrice] Defines if total-price table should be shown
+ * @param {Array}  [options.columns] Defines which columns should be shown. Array of strings
+ * @param {Array}  [options.productFilter] extra parameter for filtering products
  */
 define([
     'text!sulusalescore/components/item-table/item.form.html',
@@ -23,9 +26,22 @@ define([
 
     'use strict';
 
+    // TODO: implement taxfree
+
     var defaults = {
             data: [],
-            editable: true
+            isEditable: true,
+            showPrice: true,
+            columns: [
+                'name',
+                'number',
+                'settings',
+                'quantity',
+                'quantityUnit',
+                'price',
+                'discount'
+            ],
+            productFilter: null
         },
 
         constants = {
@@ -79,6 +95,15 @@ define([
                     '   </td>',
                     '</tr>'
                 ].join('');
+            },
+            column: function(content, isNumeric) {
+                return [
+                    '<td>',
+                    '   <span>',
+                    content,
+                    '   </span>',
+                    '</td>'
+                ].join('');
             }
         },
 
@@ -99,6 +124,7 @@ define([
                 rowClass: 'header',
                 name: this.sandbox.translate('salescore.item.product'),
                 number: this.sandbox.translate('salescore.item.number'),
+                description: this.sandbox.translate('salescore.item.description'),
                 quantity: this.sandbox.translate('salescore.item.quantity'),
                 quantityUnit: this.sandbox.translate('salescore.item.unit'),
                 price: this.sandbox.translate('salescore.item.price'),
@@ -457,12 +483,11 @@ define([
                 this.rowCount++;
             }
 
-            var data = this.sandbox.util.extend({}, rowDefaults, itemData, {
+            var rowTpl, $row,
+                data = this.sandbox.util.extend({}, rowDefaults, itemData, {
                     rowId: constants.rowIdPrefix + this.rowCount,
                     rowNumber: this.rowCount,
-                    isEditable: this.options.editable
-                }),
-                rowTpl, $row;
+                }, this.options);
 
             data.overallPrice = getOverallPriceString.call(this, data);
             rowTpl = this.sandbox.util.template(RowTpl, data),
@@ -586,7 +611,7 @@ define([
          * renders table head
          */
         renderHeader = function() {
-            var rowData = this.sandbox.util.extend({}, rowDefaults, getHeaderData.call(this)),
+            var rowData = this.sandbox.util.extend({}, rowDefaults, this.options, {header: getHeaderData.call(this)}),
                 rowTpl = this.sandbox.util.template(RowHeadTpl, rowData);
             this.sandbox.dom.append(this.$find(constants.listClass), rowTpl);
         },
@@ -636,10 +661,9 @@ define([
             // add translations for template
             var templateData = this.sandbox.util.extend({},
                 {
-                    addText: this.sandbox.translate('salescore.item.add'),
-                    isEditable: this.options.editable
+                    addText: this.sandbox.translate('salescore.item.add')
                 },
-                this.options.data
+                this.options
             );
 
             // init skeleton
