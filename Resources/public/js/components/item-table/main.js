@@ -12,8 +12,10 @@
  * @constructor
  *
  * @param {Object} [options] Configuration object
- * @param {Array}  [options.data] array of data [string, object]
- * @param {Bool}  [options.editable] defines if component is editable
+ * @param {Array}  [options.data] Array of data [string, object]
+ * @param {Bool}  [options.isEditable] Defines if component is editable
+ * @param {Array}  [options.columns] Defines which columns should be shown. Array of strings
+ * @param {Array}  [options.productFilter] Extra parameter for filtering products
  */
 define([
     'text!sulusalescore/components/item-table/item.form.html',
@@ -23,9 +25,22 @@ define([
 
     'use strict';
 
+    // TODO: implement taxfree
+
     var defaults = {
             data: [],
-            editable: true
+            isEditable: true,
+            columns: [
+                'name',
+                'number',
+                'settings',
+                'quantity',
+                'quantityUnit',
+                'price',
+                'discount',
+                'totalPrice'
+            ],
+            productFilter: null
         },
 
         constants = {
@@ -53,6 +68,7 @@ define([
             rowClass: null,
             id: null,
             rowNumber: null,
+            description: null,
             rowId: '',
             name: '',
             number: '',
@@ -99,6 +115,7 @@ define([
                 rowClass: 'header',
                 name: this.sandbox.translate('salescore.item.product'),
                 number: this.sandbox.translate('salescore.item.number'),
+                description: this.sandbox.translate('salescore.item.description'),
                 quantity: this.sandbox.translate('salescore.item.quantity'),
                 quantityUnit: this.sandbox.translate('salescore.item.unit'),
                 price: this.sandbox.translate('salescore.item.price'),
@@ -457,12 +474,14 @@ define([
                 this.rowCount++;
             }
 
-            var data = this.sandbox.util.extend({}, rowDefaults, itemData, {
-                    rowId: constants.rowIdPrefix + this.rowCount,
-                    rowNumber: this.rowCount,
-                    isEditable: this.options.editable
-                }),
-                rowTpl, $row;
+            var rowTpl, $row,
+                data = this.sandbox.util.extend({}, rowDefaults, itemData,
+                    {
+                        isEditable: this.options.isEditable,
+                        columns: this.options.columns,
+                        rowId: constants.rowIdPrefix + this.rowCount,
+                        rowNumber: this.rowCount,
+                    });
 
             data.overallPrice = getOverallPriceString.call(this, data);
             rowTpl = this.sandbox.util.template(RowTpl, data),
@@ -505,9 +524,15 @@ define([
          * @param $row
          */
         addValidationFields = function($row) {
-            this.sandbox.form.addField(constants.formId, this.sandbox.dom.find(constants.quantityInput, $row));
-            this.sandbox.form.addField(constants.formId, this.sandbox.dom.find(constants.priceInput, $row));
-            this.sandbox.form.addField(constants.formId, this.sandbox.dom.find(constants.discountInput, $row));
+            if (this.options.columns.indexOf('quantity') > 0) {
+                this.sandbox.form.addField(constants.formId, this.sandbox.dom.find(constants.quantityInput, $row));
+            }
+            if (this.options.columns.indexOf('price') > 0) {
+                this.sandbox.form.addField(constants.formId, this.sandbox.dom.find(constants.priceInput, $row));
+            }
+            if (this.options.columns.indexOf('discount') > 0) {
+                this.sandbox.form.addField(constants.formId, this.sandbox.dom.find(constants.discountInput, $row));
+            }
         },
 
         /**
@@ -515,9 +540,15 @@ define([
          * @param $row
          */
         removeValidationFields = function($row) {
-            this.sandbox.form.removeField(constants.formId, this.sandbox.dom.find(constants.quantityInput, $row));
-            this.sandbox.form.removeField(constants.formId, this.sandbox.dom.find(constants.priceInput, $row));
-            this.sandbox.form.removeField(constants.formId, this.sandbox.dom.find(constants.discountInput, $row));
+            if (this.options.columns.indexOf('quantity') > 0) {
+                this.sandbox.form.removeField(constants.formId, this.sandbox.dom.find(constants.quantityInput, $row));
+            }
+            if (this.options.columns.indexOf('price') > 0) {
+                this.sandbox.form.removeField(constants.formId, this.sandbox.dom.find(constants.priceInput, $row));
+            }
+            if (this.options.columns.indexOf('discount') > 0) {
+                this.sandbox.form.removeField(constants.formId, this.sandbox.dom.find(constants.discountInput, $row));
+            }
         },
 
         /**
@@ -567,13 +598,25 @@ define([
          */
         setItemByProduct = function(productData) {
             // merge with row defaults
-            var itemData = this.sandbox.util.extend({}, rowDefaults,
+            var i, len,
+                itemData = this.sandbox.util.extend({}, rowDefaults,
                 {
                     name: productData.name,
                     number: productData.number,
+                    description: productData.shortDescription,
+                    price: productData.price,
                     product: productData
                 }
             );
+
+            // get prices
+            if (!!productData.prices && productData.prices.length > 0) {
+                // TODO: get the correct price
+//                for (i = -1, len = productData.price; ++i < len;) {
+//                    // TODO get price with the correct currency
+//                }
+            }
+
             // set supplierName as tooltip, if set
             if (!!productData.supplierName) {
                 itemData.supplierName = productData.supplierName;
@@ -586,7 +629,7 @@ define([
          * renders table head
          */
         renderHeader = function() {
-            var rowData = this.sandbox.util.extend({}, rowDefaults, getHeaderData.call(this)),
+            var rowData = this.sandbox.util.extend({}, rowDefaults, this.options, {header: getHeaderData.call(this)}),
                 rowTpl = this.sandbox.util.template(RowHeadTpl, rowData);
             this.sandbox.dom.append(this.$find(constants.listClass), rowTpl);
         },
@@ -637,9 +680,9 @@ define([
             var templateData = this.sandbox.util.extend({},
                 {
                     addText: this.sandbox.translate('salescore.item.add'),
-                    isEditable: this.options.editable
-                },
-                this.options.data
+                    isEditable: this.options.isEditable,
+                    columns: this.options.columns
+                }
             );
 
             // init skeleton

@@ -1,29 +1,42 @@
 <tr id="<%= rowId %>" class="item-table-row <%= rowClass %>" data-id="<%= id %>" >
     <td class="row-number">
     </td>
+    <% if (columns.indexOf('name') > -1) { %>
     <td class="item-name">
-        <span><%= name %></span>
+        <span><%= header.name %></span>
     </td>
+    <% } if (columns.indexOf('number') > -1) { %>
     <td class="item-number is-numeric">
-        <span><%= number %></span>
+        <span><%= header.number %></span>
     </td>
+    <% } if (columns.indexOf('description') > -1) { %>
+    <td class="item-description">
+        <span><%= header.description %></span>
+    </td>
+    <% } if (columns.indexOf('settings') > -1) { %>
     <td class="settings">
     </td>
+    <% } if (columns.indexOf('quantity') > -1) { %>
     <td class="item-quantity is-numeric">
-        <span><%= quantity %></span>
+        <span><%= header.quantity %></span>
     </td>
+    <% } if (columns.indexOf('quantityUnit') > -1) { %>
     <td class="item-quantity-unit is-numeric">
-        <%= quantityUnit %>
+        <%= header.quantityUnit %>
     </td>
+    <% } if (columns.indexOf('price') > -1) { %>
     <td class="item-price is-numeric">
-        <span><%= price %></span>
+        <span><%= header.price %></span>
     </td>
+    <% } if (columns.indexOf('discount') > -1) { %>
     <td class="item-discount is-numeric">
-        <span><%= discount %></span>
+        <span><%= header.discount %></span>
     </td>
+    <% } if (columns.indexOf('totalPrice') > -1) { %>
     <td class="item-overallPrice is-numeric">
-        <%= overallPrice %>
+        <%= header.overallPrice %>
     </td>
+    <% } %>
     <td class="item-remove">
     </td>
 </tr>

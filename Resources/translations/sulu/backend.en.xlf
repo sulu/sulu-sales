@@ -134,6 +134,10 @@
                 <source>salescore.orderDate</source>
                 <target>Order date</target>
             </trans-unit>
+            <trans-unit id="a50accg2ac221350142c0b4720e29a34" resname="salescore.item.description">
+                <source>salescore.item.description</source>
+                <target>Short Description</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>

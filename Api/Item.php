@@ -507,9 +507,9 @@ class Item extends ApiWrapper
     /**
      * @return Product
      * @VirtualProperty
-     * @SerializedName("productRelation")
+     * @SerializedName("product")
      */
-    public function getProductRelation()
+    public function getProduct()
     {
         if ($this->getEntity()->getProduct()) {
             return array(
