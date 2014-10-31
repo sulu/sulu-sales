@@ -15,7 +15,7 @@
  * @param {Array}  [options.data] Array of data [string, object]
  * @param {Bool}  [options.isEditable] Defines if component is editable
  * @param {Array}  [options.columns] Defines which columns should be shown. Array of strings
- * @param {Array}  [options.productFilter] extra parameter for filtering products
+ * @param {Array}  [options.productFilter] Extra parameter for filtering products
  */
 define([
     'text!sulusalescore/components/item-table/item.form.html',
@@ -612,9 +612,9 @@ define([
             // get prices
             if (!!productData.prices && productData.prices.length > 0) {
                 // TODO: get the correct price
-                for (i = -1, len = productData.price; ++i < len;) {
-                    // TODO get price with the correct currency
-                }
+//                for (i = -1, len = productData.price; ++i < len;) {
+//                    // TODO get price with the correct currency
+//                }
             }
 
             // set supplierName as tooltip, if set
