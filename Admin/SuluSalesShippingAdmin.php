@@ -24,7 +24,7 @@ class SuluSalesShippingAdmin extends Admin
         $section = new NavigationItem('');
 
         $sales = new NavigationItem('navigation.sales');
-        $sales->setIcon('file-text-o');
+        $sales->setIcon('shopping-cart');
         $section->addChild($sales);
 
         $shipping = new NavigationItem('navigation.sales.shipping');
