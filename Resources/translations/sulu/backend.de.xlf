@@ -138,6 +138,10 @@
                 <source>salescore.item.description</source>
                 <target>Kurzbeschreibung</target>
             </trans-unit>
+            <trans-unit id="a50accg2ac221350142c0b4720e29a35" resname="salescore.validation-warning">
+                <source>salescore.validation-warning</source>
+                <target>The provided data is not valid. Please recheck your submission.</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>
