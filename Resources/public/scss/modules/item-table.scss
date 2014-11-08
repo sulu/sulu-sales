@@ -84,7 +84,6 @@ body {
 
     .is-numeric,
     .is-numeric input {
-
         text-align: right;
     }
 
@@ -106,6 +105,11 @@ body {
     > * {
         padding: $rowPadding;
     }
+
+    > *:first-child {
+        padding-left: 20px;
+    }
+
 }
 
 .item-remove {
@@ -125,10 +129,7 @@ body {
     margin-top: 20px;
 
     .add-row {
-        i {
-            font-size: 18px;
-            margin-right: 10px;
-        }
+        font-size: 10px;
     }
 }
 

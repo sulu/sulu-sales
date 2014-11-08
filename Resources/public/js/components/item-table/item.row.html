@@ -5,7 +5,7 @@ disabled =  'disabled';
 %>
 
 <tr id="<%= rowId %>" class="item-table-row <%= rowClass %>" data-id="<%= id %>">
-    <td class="row-number"></td>
+    <td class="row-number grey-font"></td>
     <% if (columns.indexOf('name') > -1) { %>
     <td class="item-name">
         <span title="<%= supplierName %>"><%= name %></span>
@@ -56,7 +56,7 @@ disabled =  'disabled';
             <input class="discount input-field form-element"
                    value="<%= discount %>"
                    data-type="decimal"
-                   data-validation-max="100"
+                   data-validation-max="100.0"
                    data-validation-min="0.0"
             <%= disabled %>/>
         </span>
