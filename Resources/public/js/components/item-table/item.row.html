@@ -13,7 +13,7 @@ disabled =  'disabled';
         <div class="product-search input-field"></div>
     </td>
     <% } if (columns.indexOf('number') > -1) { %>
-    <td class="item-number is-numeric">
+    <td class="item-number is-numeric grey-font">
         <span><%= number %></span>
     </td>
     <% } if (columns.indexOf('description') > -1) { %>
@@ -36,7 +36,7 @@ disabled =  'disabled';
         </span>
     </td>
     <% } if (columns.indexOf('quantityUnit') > -1) { %>
-    <td class="item-quantity-unit is-numeric">
+    <td class="item-quantity-unit is-numeric grey-font">
         <%= quantityUnit %>
     </td>
     <% } if (columns.indexOf('price') > -1) { %>
@@ -62,7 +62,7 @@ disabled =  'disabled';
         </span>
     </td>
     <% } if (columns.indexOf('totalPrice') > -1) { %>
-    <td class="item-overall-price is-numeric">
+    <td class="item-overall-price is-numeric grey-font">
         <span class="overall-price">
             <%= overallPrice %>
         </span>

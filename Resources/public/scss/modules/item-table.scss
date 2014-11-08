@@ -2,7 +2,7 @@
     border-bottom: $size solid #ccc;
 }
 
-$rowPadding : 0 10px;
+$rowPadding : 0 20px 0 0;
 
 body {
     counter-reset: rowcount;
@@ -30,13 +30,19 @@ body {
 
     .header {
         @include border-bottom;
-        height: 50px;
-        padding-top: 10px;
+
         border-color: #ccc;
-        vertical-align: bottom;
-        font-size: 14px;
+        vertical-align: top;
+        font-size: 16px;
         padding: 8px 10px;
 
+        tr {
+           height: 30px;
+
+            > * {
+                padding: $rowPadding;
+            }
+        }
         .input-field {
             display: none;
         }
@@ -53,14 +59,13 @@ body {
     @include border-bottom(1px);
 
     // show row number (but not for first row)
-    &:not(:first-child) {
-        .row-number {
-            &:before {
-                counter-increment: rowcount;
-                content: counter(rowcount);
-            }
+    .row-number {
+        &:before {
+            counter-increment: rowcount;
+            content: counter(rowcount);
         }
     }
+
 
     &:hover {
 //       background-color: rgba(white,0.5);
