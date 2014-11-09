@@ -3,12 +3,19 @@
         <table class="item-table-list"></table>
     </div>
 
-    <div class="item-add grid-col-5">
-        <a href="#" class="add-row"><i class="fa fa-plus-circle"></i><%= addText %></a>
+    <div class="item-add grid-col-5 husky-toolbar small">
+        <ul class="group lef">
+        <li class="toolbar-item">
+            <a href="#" class="add-row"><i class="fa fa-plus-circle"></i></a>
+        </li>
+            <li class="toolbar-item disabled">
+                <a href="#" class="add-row"><i class="fa fa-search"></i></a>
+            </li>
+        </ul>
     </div>
     <% if (columns.indexOf('totalPrice') > -1) { %>
     <div class="grid-col-7 global-price-container">
-        <table class="global-price-table"></table>
+        <table class="global-price-table grey-font"></table>
     </div>
     <% } %>
 </div>
