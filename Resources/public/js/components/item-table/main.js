@@ -480,7 +480,7 @@ define([
                         isEditable: this.options.isEditable,
                         columns: this.options.columns,
                         rowId: constants.rowIdPrefix + this.rowCount,
-                        rowNumber: this.rowCount,
+                        rowNumber: this.rowCount
                     });
 
             data.overallPrice = getOverallPriceString.call(this, data);

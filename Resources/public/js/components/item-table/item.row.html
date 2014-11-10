@@ -7,22 +7,18 @@ disabled =  'disabled';
 <tr id="<%= rowId %>" class="item-table-row <%= rowClass %>" data-id="<%= id %>">
     <td class="row-number grey-font"></td>
     <% if (columns.indexOf('name') > -1) { %>
-    <td class="item-name">
+    <td class="item-name pointer">
         <span title="<%= supplierName %>"><%= name %></span>
 
         <div class="product-search input-field"></div>
     </td>
     <% } if (columns.indexOf('number') > -1) { %>
-    <td class="item-number is-numeric grey-font">
+    <td class="item-number is-numeric pointer">
         <span><%= number %></span>
     </td>
     <% } if (columns.indexOf('description') > -1) { %>
     <td class="description">
         <span><%= description %></span>
-    </td>
-    <% } if (columns.indexOf('settings') > -1) { %>
-    <td class="settings">
-        <i class="fa fa-list"/>
     </td>
     <% } if (columns.indexOf('quantity') > -1) { %>
     <td class="item-quantity is-numeric">

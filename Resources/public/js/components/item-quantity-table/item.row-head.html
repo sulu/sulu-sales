@@ -1,28 +1,28 @@
-<tr id="<%= rowId %>" class="item-table-row <%= rowClass %>" data-id="<%= id %>" >
-    <td class="row-number">
-    </td>
-    <td class="item-name">
-        <span><%= name %></span>
-    </td>
-    <td class="item-number is-numeric">
-        <span><%= number %></span>
-    </td>
-    <td class="item-quantity is-numeric">
-        <span><%= quantity %></span>
-    </td>
-    <td class="item-quantity is-numeric">
-        <span><%= processedQuantity %></span>
-    </td>
-    <td class="item-quantity is-numeric">
-        <span><%= quantityInput %></span>
-    </td>
-    <td class="item-quantity-unit">
-       <span><%= quantityUnit %></span>
-    <td class="settings">
-    </td>
-    </td>
-    <% if (canAddRemove === true) { %>
-    <td class="item-remove">
-    </td>
-    <% } %>
-</tr>
+<thead class="header grey-font">
+    <tr id="<%= rowId %>" class="item-table-row <%= rowClass %>" data-id="<%= id %>">
+        <td>
+        </td>
+        <td class="item-name">
+            <span><%= name %></span>
+        </td>
+        <td class="item-number is-numeric">
+            <span><%= number %></span>
+        </td>
+        <td class="item-quantity is-numeric">
+            <span><%= quantity %></span>
+        </td>
+        <td class="item-quantity is-numeric">
+            <span><%= processedQuantity %></span>
+        </td>
+        <td class="item-quantity is-numeric">
+            <span><%= quantityInput %></span>
+        </td>
+        <td class="item-quantity-unit">
+            <span><%= quantityUnit %></span>
+        </td>
+        <% if (canAddRemove === true) { %>
+        <td class="item-remove">
+        </td>
+        <% } %>
+    </tr>
+</thead>
