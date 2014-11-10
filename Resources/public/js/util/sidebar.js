@@ -133,13 +133,14 @@ define([
                         orderId: data.order.id
                     }
                 });
-
-                this.sandbox.emit('sulu.sidebar.set-widget', url);
+                
                 bindDomEvents.call(this);
                 bindCustomEventsForDetailsSidebar.call(this);
             } else {
-                this.sandbox.logger.error('required values for sidebar not present!');
+                uriTemplate = this.sandbox.uritemplate.parse(constants.widgetUrls.shippingDetail);
+                url = uriTemplate.expand({params: {}});
             }
+            this.sandbox.emit('sulu.sidebar.set-widget', url);
         },
 
         /**
