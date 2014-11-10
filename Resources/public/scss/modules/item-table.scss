@@ -9,6 +9,9 @@ body {
 }
 
 #item-table-form {
+
+    margin-top:20px;
+
     &.disabled {
         .add-row,
         .item-remove {
@@ -37,7 +40,7 @@ body {
 
         border-color: #ccc;
         vertical-align: top;
-        font-size: 16px;
+        font-size: 14px;
         padding: 8px 10px;
 
         tr {
