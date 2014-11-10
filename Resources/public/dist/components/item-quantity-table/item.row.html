@@ -5,19 +5,17 @@ disabled =  'disabled';
 %>
 
 <tr id="<%= rowId %>" class="item-table-row <%= rowClass %>" data-id="<%= id %>">
-    <td class="row-number"></td>
-    <td class="item-name">
+    <td class="row-number grey-font"></td>
+    <td class="item-name pointer">
         <span><%= item.name %></span>
-
-        <div class="product-search input-field"></div>
     </td>
-    <td class="item-number is-numeric">
+    <td class="item-number is-numeric pointer">
         <span><%= item.number %></span>
     </td>
-    <td class="item-quantity is-numeric">
+    <td class="item-quantity is-numeric grey-font">
         <span><%= numberFormat(item.quantity.toFixed(1), 'd') %></span>
     </td>
-    <td class="item-processed-quantity is-numeric">
+    <td class="item-processed-quantity is-numeric  grey-font">
         <span><%= numberFormat(processedQuantity.toFixed(1), 'd')%></span>
     </td>
     <td class="quantity-input is-numeric">
@@ -30,12 +28,12 @@ disabled =  'disabled';
             <%= disabled %>/>
         </span>
     </td>
-    <td class="item-quantity-unit">
+    <td class="item-quantity-unit grey-font">
         <%= item.quantityUnit %>
     </td>
-    <td class="settings">
-        <i class="fa fa-list"/>
-    </td>
+    <!--<td class="settings">-->
+        <!--<i class="fa fa-list"/>-->
+    <!--</td>-->
     <% if (canAddRemove === true) { %>
     <td class="item-remove">
         <a href="#"><i class="fa fa-times remove-row"></i></a>

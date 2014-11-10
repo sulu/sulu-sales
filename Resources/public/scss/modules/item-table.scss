@@ -21,6 +21,10 @@ body {
         input {
             background-color: transparent;
         }
+
+        .husky-toolbar .toolbar-item {
+            display: none;
+        }
     }
 }
 
@@ -46,6 +50,10 @@ body {
         .input-field {
             display: none;
         }
+    }
+    .is-numeric,
+    .is-numeric input {
+        text-align: right;
     }
 }
 
@@ -79,11 +87,6 @@ body {
         .product-search {
             display: block;
         }
-    }
-
-    .is-numeric,
-    .is-numeric input {
-        text-align: right;
     }
 
     .span {
