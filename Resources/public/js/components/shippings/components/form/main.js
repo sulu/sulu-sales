@@ -382,9 +382,8 @@ define([
             this.listenForChange();
 
             // initialize sidebar
-            if (!!this.options.data && !!this.options.data.id) {
-                Sidebar.initForDetail(this.sandbox, this.options.data);
-            }
+            Sidebar.initForDetail(this.sandbox, this.options.data);
+
         },
 
         render: function() {
