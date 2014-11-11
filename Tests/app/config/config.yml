@@ -45,11 +45,9 @@ sulu_core:
         workspace: test
         username: admin
         password: admin
-    webspace:
-        request_analyzer:
-            enabled: false
+    webspace: ~
     content:
-        templates:
+        structure:
             paths:
                 app:
                     path: "%kernel.root_dir%/Resources/templates"
