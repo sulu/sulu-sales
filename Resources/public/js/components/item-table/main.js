@@ -307,7 +307,7 @@ define([
          */
         getFormatedPriceCurrencyString = function(value, currency) {
             currency = !!currency ? currency : rowDefaults.currency;
-            return this.sandbox.numberFormat(value, "n") + ' ' + currency;
+            return this.sandbox.numberFormat(value, 'n') + ' ' + currency;
         },
 
         /**
@@ -321,6 +321,7 @@ define([
             if (!mode || mode === 'default') {
                 if (!!item.price && !!item.quantity) {
 
+                    // TODO numbers should parsed with globalize
                     value = (item.price * item.quantity);
 
                     // discount
