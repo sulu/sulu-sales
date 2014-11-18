@@ -30,7 +30,6 @@ define([
                             'value': ''
                         }).trigger('data-changed');
                     }
-
                 },
 
                 getValue: function() {

@@ -321,7 +321,7 @@ define([
             if (!mode || mode === 'default') {
                 if (!!item.price && !!item.quantity) {
 
-                    // TODO numbers should parsed with globalize
+                    // TODO numbers should parsed with globalize #336
                     value = (item.price * item.quantity);
 
                     // discount
@@ -614,7 +614,7 @@ define([
             if (!!productData.prices && productData.prices.length > 0) {
                 itemData.price = productData.prices[0].price;
 //                for (i = -1, len = productData.price; ++i < len;) {
-//                    // TODO get price with the correct currency
+//                    // TODO get price with the correct currency #337
 //                }
             }
 

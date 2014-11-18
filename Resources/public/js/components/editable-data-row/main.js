@@ -142,6 +142,9 @@ define([
             $overlay = this.sandbox.dom.createElement('<div class="' + constants.overlayContainerClass + '"></div>');
             this.sandbox.dom.append(this.$el, $overlay);
 
+            // FIXME: because the overlay gets started within the element the validation will also affect the labels in
+            // the overlay content
+
             templateData = {
                 data: data,
                 translate: this.sandbox.translate,

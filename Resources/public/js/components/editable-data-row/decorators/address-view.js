@@ -151,8 +151,6 @@ define(['text!sulusalescore/components/editable-data-row/templates/address.form.
                     newData.state = data.state;
                     newData.zip = data.zip;
                     newData.addition = data.addition;
-
-
                 } else {
                     // set to null when all address data has been removed
                     // should show the add icon again
