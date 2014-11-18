@@ -133,12 +133,36 @@ define(['text!sulusalescore/components/editable-data-row/templates/address.form.
                 this.sandbox.emit('husky.overlay.' + this.context.options.instanceName + '.open');
             } else {
                 var data = this.sandbox.form.getData(this.formObject, true),
-                // merge changed address data with old data
-                newData = this.sandbox.util.extend({}, this.context.selectedData, data);
-                this.context.setSelectedData(newData);
+                    fullAddress =getAddressString.call(this, data),
+                    newData;
 
+                if(!!fullAddress){
+                    // overwrite old with new data
+                    // merge should not include data-object because empty strings will not be merged
+                    newData = this.sandbox.util.extend({}, this.context.selectedData);
+                    newData.fullAddress = fullAddress;
+                    newData.street = data.street;
+                    newData.city = data.city;
+                    newData.country = data.country;
+                    newData.number = data.number;
+                    newData.postboxCity = data.postboxCity;
+                    newData.postboxPostcode = data.postboxPostcode;
+                    newData.postboxNumber = data.postboxNumber;
+                    newData.state = data.state;
+                    newData.zip = data.zip;
+                    newData.addition = data.addition;
+
+
+                } else {
+                    // set to null when all address data has been removed
+                    // should show the add icon again
+                    newData = null;
+                }
+
+                this.context.setSelectedData(newData);
                 CHANGED_EVENT.call(this, this.context.selectedData);
                 renderRow.call(this, this.context.selectedData);
+
             }
         },
 

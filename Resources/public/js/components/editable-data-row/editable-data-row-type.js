@@ -25,7 +25,12 @@ define([
                         this.$el.data({
                             'value': data
                         }).trigger('data-changed');
+                    } else {
+                        this.$el.data({
+                            'value': ''
+                        }).trigger('data-changed');
                     }
+
                 },
 
                 getValue: function() {

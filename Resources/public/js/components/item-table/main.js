@@ -604,14 +604,14 @@ define([
                     name: productData.name,
                     number: productData.number,
                     description: productData.shortDescription,
-                    price: productData.price,
-                    product: productData
+                    product: productData,
+                    quantityUnit: !!productData.orderUnit ? productData.orderUnit.name : ''
                 }
             );
 
             // get prices
             if (!!productData.prices && productData.prices.length > 0) {
-                // TODO: get the correct price
+                itemData.price = productData.prices[0].price;
 //                for (i = -1, len = productData.price; ++i < len;) {
 //                    // TODO get price with the correct currency
 //                }
