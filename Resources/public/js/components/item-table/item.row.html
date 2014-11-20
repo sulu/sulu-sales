@@ -7,21 +7,25 @@ disabled =  'disabled';
 <tr id="<%= rowId %>" class="item-table-row <%= rowClass %>" data-id="<%= id %>">
     <td class="row-number grey-font"></td>
     <% if (columns.indexOf('name') > -1) { %>
-    <td class="item-name pointer">
+    <td class="item-name pointer" data-name="name">
         <span title="<%= supplierName %>"><%= name %></span>
 
         <div class="product-search input-field"></div>
     </td>
     <% } if (columns.indexOf('number') > -1) { %>
-    <td class="item-number is-numeric pointer">
+    <td class="number item-number is-numeric pointer" data-name="number">
         <span><%= number %></span>
+    </td>
+    <% } if (columns.indexOf('address') > -1) { %>
+    <td class="address item-address pointer" data-name="address">
+        <span><%= address %></span>
     </td>
     <% } if (columns.indexOf('description') > -1) { %>
     <td class="description">
         <span><%= description %></span>
     </td>
     <% } if (columns.indexOf('quantity') > -1) { %>
-    <td class="item-quantity is-numeric">
+    <td class="item-quantity is-numeric" data-name="quantity">
         <span>
             <input class="input-field form-element"
                    data-validation-required="true"
@@ -32,11 +36,11 @@ disabled =  'disabled';
         </span>
     </td>
     <% } if (columns.indexOf('quantityUnit') > -1) { %>
-    <td class="item-quantity-unit is-numeric grey-font">
+    <td class="item-quantity-unit is-numeric grey-font"  data-name="quantityUnit">
         <%= quantityUnit %>
     </td>
     <% } if (columns.indexOf('price') > -1) { %>
-    <td class="item-price is-numeric">
+    <td class="item-price is-numeric" data-name="price">
         <span>
             <input class="price input-field form-element"
                    data-validation-required="true"
@@ -47,7 +51,7 @@ disabled =  'disabled';
         </span>
     </td>
     <% } if (columns.indexOf('discount') > -1) { %>
-    <td class="item-discount is-numeric">
+    <td class="item-discount is-numeric" data-name="discount">
         <span>
             <input class="discount input-field form-element"
                    value="<%= discount %>"
@@ -58,7 +62,7 @@ disabled =  'disabled';
         </span>
     </td>
     <% } if (columns.indexOf('totalPrice') > -1) { %>
-    <td class="item-overall-price is-numeric grey-font">
+    <td class="item-overall-price is-numeric grey-font" data-name="overallPrice">
         <span class="overall-price">
             <%= overallPrice %>
         </span>

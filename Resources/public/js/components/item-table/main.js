@@ -40,7 +40,14 @@ define([
                 'discount',
                 'totalPrice'
             ],
-            productFilter: null
+            productFilter: null,
+            hasNestedItems: false,
+            defaultData: {},
+            callbacks: {
+                'address' : function(row) {
+                    console.log('hey from', row);
+                }
+            }
         },
 
         constants = {
@@ -68,6 +75,7 @@ define([
             rowClass: null,
             id: null,
             rowNumber: null,
+            address: null,
             description: null,
             rowId: '',
             name: '',
@@ -115,6 +123,7 @@ define([
                 rowClass: 'header',
                 name: this.sandbox.translate('salescore.item.product'),
                 number: this.sandbox.translate('salescore.item.number'),
+                address: this.sandbox.translate('salescore.delivery-address'),
                 description: this.sandbox.translate('salescore.item.description'),
                 quantity: this.sandbox.translate('salescore.item.quantity'),
                 quantityUnit: this.sandbox.translate('salescore.item.unit'),
@@ -141,6 +150,9 @@ define([
             // remove row
             this.sandbox.dom.on(this.$el, 'click', removeRowClicked.bind(this), '.remove-row');
 
+            // add new item
+            this.sandbox.dom.on(this.$el, 'click', rowClicked.bind(this), '.item-table-row td');
+
             this.sandbox.dom.on(this.$el, 'data-changed', function(event) {
                 var items = event.items || [];
                 rerenderItems.call(this, items);
@@ -150,6 +162,20 @@ define([
             this.sandbox.dom.on(this.$el, 'change', quantityChangedHandler.bind(this), constants.quantityInput);
             this.sandbox.dom.on(this.$el, 'change', priceChangedHandler.bind(this), constants.priceInput);
             this.sandbox.dom.on(this.$el, 'change', discountChangedHandler.bind(this), constants.discountInput);
+        },
+
+        /**
+         * triggers callback function if set for column
+         * @param event
+         */
+        rowClicked = function(event) {
+            var name = this.sandbox.dom.data(event.currentTarget, 'name'),
+                rowId = this.sandbox.dom.data(this.sandbox.dom.parent(), 'id');
+            if (name && this.options.callbacks.hasOwnProperty(name)) {
+                this.options.callbacks[name].call(this, event.currentTarget, rowId);
+            } else {
+
+            }
         },
 
         /**
@@ -475,7 +501,7 @@ define([
             }
 
             var rowTpl, $row,
-                data = this.sandbox.util.extend({}, rowDefaults, itemData,
+                data = this.sandbox.util.extend({}, rowDefaults, this.options.defaultData, itemData,
                     {
                         isEditable: this.options.isEditable,
                         columns: this.options.columns,
@@ -494,7 +520,21 @@ define([
          * @param itemData
          */
         addItemRow = function(itemData) {
-            var $row = createItemRow.call(this, itemData);
+            var $row, nested;
+            // if nested, then define item
+            if (this.options.hasNestedItems) {
+                nested = itemData;
+                // get data and merge with data one level above
+                itemData = this.sandbox.util.extend({}, itemData.item, nested);
+                delete itemData.item;
+
+            }
+            if (itemData.hasOwnProperty('address') && typeof itemData.address === 'object') {
+                itemData.address = this.sandbox.sulu.createAddressString(itemData.address);
+            }
+
+            // create row
+            $row = createItemRow.call(this, itemData);
             this.sandbox.dom.append(this.$find(constants.listClass), $row);
             return $row;
         },
@@ -598,8 +638,7 @@ define([
          */
         setItemByProduct = function(productData) {
             // merge with row defaults
-            var i, len,
-                itemData = this.sandbox.util.extend({}, rowDefaults,
+            var itemData = this.sandbox.util.extend({}, rowDefaults,
                 {
                     name: productData.name,
                     number: productData.number,
@@ -612,7 +651,7 @@ define([
             // get prices
             if (!!productData.prices && productData.prices.length > 0) {
                 // TODO: get the correct price
-//                for (i = -1, len = productData.price; ++i < len;) {
+//                for (var i = -1, len = productData.price; ++i < len;) {
 //                    // TODO get price with the correct currency
 //                }
             }
