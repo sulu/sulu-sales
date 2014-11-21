@@ -17,7 +17,7 @@ disabled =  'disabled';
         <span><%= number %></span>
     </td>
     <% } if (columns.indexOf('address') > -1) { %>
-    <td class="address item-address pointer" data-name="address">
+    <td class="address item-address pointer" data-name="address" data-address="<%= addressObject %>">
         <span><%= address %></span>
     </td>
     <% } if (columns.indexOf('description') > -1) { %>

@@ -15,7 +15,12 @@
  * @param {Array}  [options.data] Array of data [string, object]
  * @param {Bool}  [options.isEditable] Defines if component is editable
  * @param {Array}  [options.columns] Defines which columns should be shown. Array of strings
- * @param {Array}  [options.productFilter] Extra parameter for filtering products
+ * @param {Bool}  [options.hasNestedItems] this is used, when data array is merged (must be an object
+ *        containing an attribute called 'item'
+ * @param {Array}  [options.defaultData] can be used to pass extra default parameters to an item
+ * @param {Object}  [options.columnCallbacks] if a specific column is clicked (as name) a callback can be defined
+ *        by provide key with a function
+ * @param {Object}  [options.rowCallback] Is called, when a row is clicked. Passes rowId and rowData
  */
 define([
     'text!sulusalescore/components/item-table/item.form.html',
@@ -40,14 +45,10 @@ define([
                 'discount',
                 'totalPrice'
             ],
-            productFilter: null,
             hasNestedItems: false,
             defaultData: {},
-            callbacks: {
-                'address' : function(row) {
-                    console.log('hey from', row);
-                }
-            }
+            columnCallbacks: {},
+            rowCallback: null
         },
 
         constants = {
@@ -76,6 +77,7 @@ define([
             id: null,
             rowNumber: null,
             address: null,
+            addressObject: null,
             description: null,
             rowId: '',
             name: '',
@@ -113,7 +115,30 @@ define([
          * raised when an item is changed
          * @event sulu.item-table.changed
          */
-        EVENT_CHANGED = eventNamespace + 'changed',
+        EVENT_CHANGED = function() {
+            return eventNamespace + 'changed';
+        },
+
+        /**
+         * Sets new default data
+         *
+         * @param key
+         * @param value
+         *
+         * @event sulu.item-table[.INSTANCENAME].set-default-data
+         */
+        EVENT_SET_DEFAULT_DATA = function() {
+            return getEventName.call(this, 'set-default-data');
+        },
+
+        /**
+         * returns event name
+         * @param suffix
+         * @returns {string}
+         */
+        getEventName = function(suffix) {
+            return 'husky.select.' + this.options.instanceName + '.' + suffix;
+        },
 
         /**
          * data that is shown in header
@@ -123,7 +148,7 @@ define([
                 rowClass: 'header',
                 name: this.sandbox.translate('salescore.item.product'),
                 number: this.sandbox.translate('salescore.item.number'),
-                address: this.sandbox.translate('salescore.delivery-address'),
+                address: this.sandbox.translate('address.delivery'),
                 description: this.sandbox.translate('salescore.item.description'),
                 quantity: this.sandbox.translate('salescore.item.quantity'),
                 quantityUnit: this.sandbox.translate('salescore.item.unit'),
@@ -137,7 +162,7 @@ define([
          * bind custom events
          */
         bindCustomEvents = function() {
-
+            this.sandbox.on(EVENT_SET_DEFAULT_DATA.call(this), setDefaultData.bind(this));
         },
 
         /**
@@ -150,8 +175,10 @@ define([
             // remove row
             this.sandbox.dom.on(this.$el, 'click', removeRowClicked.bind(this), '.remove-row');
 
+            //
+            this.sandbox.dom.on(this.$el, 'click', rowClicked.bind(this), '.item-table-row');
             // add new item
-            this.sandbox.dom.on(this.$el, 'click', rowClicked.bind(this), '.item-table-row td');
+            this.sandbox.dom.on(this.$el, 'click', rowCellClicked.bind(this), '.item-table-row td');
 
             this.sandbox.dom.on(this.$el, 'data-changed', function(event) {
                 var items = event.items || [];
@@ -165,16 +192,34 @@ define([
         },
 
         /**
+         * sets default data
+         * @param key
+         * @param value
+         */
+        setDefaultData = function(key, value) {
+            this.options.defaultData[key] = value;
+        },
+
+        /**
          * triggers callback function if set for column
          * @param event
          */
         rowClicked = function(event) {
+            var rowId = this.sandbox.dom.data(event.currentTarget, 'id');
+            if (!!this.options.rowCallback) {
+                this.options.rowCallback.call(this, rowId, this.items[rowId]);
+            }
+        },
+
+        /**
+         * triggers callback function if set for column
+         * @param event
+         */
+        rowCellClicked = function(event) {
             var name = this.sandbox.dom.data(event.currentTarget, 'name'),
                 rowId = this.sandbox.dom.data(this.sandbox.dom.parent(), 'id');
-            if (name && this.options.callbacks.hasOwnProperty(name)) {
-                this.options.callbacks[name].call(this, event.currentTarget, rowId);
-            } else {
-
+            if (name && this.options.columnCallbacks.hasOwnProperty(name)) {
+                this.options.columnCallbacks[name].call(this, event.currentTarget, rowId);
             }
         },
 
@@ -194,7 +239,7 @@ define([
             // update overall price
             updateGlobalPrice.call(this);
 
-            this.sandbox.emit(EVENT_CHANGED);
+            this.sandbox.emit(EVENT_CHANGED.call(this));
         },
 
         /**
@@ -213,7 +258,7 @@ define([
             // update overall price
             updateGlobalPrice.call(this);
 
-            this.sandbox.emit(EVENT_CHANGED);
+            this.sandbox.emit(EVENT_CHANGED.call(this));
         },
 
         /**
@@ -232,7 +277,7 @@ define([
             // update overall price
             updateGlobalPrice.call(this);
 
-            this.sandbox.emit(EVENT_CHANGED);
+            this.sandbox.emit(EVENT_CHANGED.call(this));
         },
 
         /**
@@ -489,7 +534,7 @@ define([
             // refresh global price
             updateGlobalPrice.call(this);
 
-            this.sandbox.emit(EVENT_CHANGED);
+            this.sandbox.emit(EVENT_CHANGED.call(this));
         },
 
         /**
@@ -508,6 +553,12 @@ define([
                         rowId: constants.rowIdPrefix + this.rowCount,
                         rowNumber: this.rowCount
                     });
+
+            // handle address
+            if (!!data.address && typeof data.address === 'object') {
+                data.addressObject = data.address;
+                data.address = this.sandbox.sulu.createAddressString(data.address);
+            }
 
             data.overallPrice = getOverallPriceString.call(this, data);
             rowTpl = this.sandbox.util.template(RowTpl, data),
@@ -528,9 +579,6 @@ define([
                 itemData = this.sandbox.util.extend({}, itemData.item, nested);
                 delete itemData.item;
 
-            }
-            if (itemData.hasOwnProperty('address') && typeof itemData.address === 'object') {
-                itemData.address = this.sandbox.sulu.createAddressString(itemData.address);
             }
 
             // create row
@@ -554,7 +602,7 @@ define([
             addValidationFields.call(this, $row);
 
             // emit data change
-            this.sandbox.emit(EVENT_CHANGED);
+            this.sandbox.emit(EVENT_CHANGED.call(this));
 
             return $row;
         },
@@ -638,7 +686,7 @@ define([
          */
         setItemByProduct = function(productData) {
             // merge with row defaults
-            var itemData = this.sandbox.util.extend({}, rowDefaults,
+            var itemData = this.sandbox.util.extend({}, rowDefaults, this.options.defaultData,
                 {
                     name: productData.name,
                     number: productData.number,
