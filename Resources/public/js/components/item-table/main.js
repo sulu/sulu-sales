@@ -21,12 +21,14 @@
  * @param {Object}  [options.columnCallbacks] if a specific column is clicked (as name) a callback can be defined
  *        by provide key with a function
  * @param {Object}  [options.rowCallback] Is called, when a row is clicked. Passes rowId and rowData
+ * @param {Bool}  [options.showSettings] If true, the items settings overlay is displayed on click on a row
  */
 define([
     'text!sulusalescore/components/item-table/item.form.html',
     'text!sulusalescore/components/item-table/item.row.html',
-    'text!sulusalescore/components/item-table/item.row-head.html'
-], function(FormTpl, RowTpl, RowHeadTpl) {
+    'text!sulusalescore/components/item-table/item.row-head.html',
+    'text!sulusalescore/components/item-table/item.overlay.html'
+], function(FormTpl, RowTpl, RowHeadTpl, Overlay) {
 
     'use strict';
 
@@ -48,7 +50,8 @@ define([
             hasNestedItems: false,
             defaultData: {},
             columnCallbacks: {},
-            rowCallback: null
+            rowCallback: null,
+            showSettings: false
         },
 
         constants = {
@@ -67,6 +70,11 @@ define([
             discountInput: '.item-discount input',
             globalPriceTableClass: '.global-price-table',
             overallEmptyString: '-'
+        },
+
+        selectors = {
+            overlayClass: 'item-overlay',
+            overlayClassSelector: '.item-overlay'
         },
 
         /**
@@ -205,9 +213,21 @@ define([
          * @param event
          */
         rowClicked = function(event) {
+            // if inupt or link was clicked, do nothing
+            if (event.target.tagName.toUpperCase() === 'INPUT' ||
+                event.target.tagName.toUpperCase() === 'A' ) {
+                return;
+            }
+
             var rowId = this.sandbox.dom.data(event.currentTarget, 'id');
+            // call rowCallback
             if (!!this.options.rowCallback) {
                 this.options.rowCallback.call(this, rowId, this.items[rowId]);
+            }
+
+            // if settings are activated, show them
+            if (this.options.showSettings === true || this.options.showSettings === 'true') {
+                initSettingsOverlay.call(this, this.items[rowId]);
             }
         },
 
@@ -477,6 +497,7 @@ define([
          */
         removeRowClicked = function(event) {
             event.preventDefault();
+            event.stopPropagation();
 
             var $row = this.sandbox.dom.closest(event.currentTarget, '.item-table-row'),
                 rowId = this.sandbox.dom.attr($row, 'id');
@@ -709,6 +730,47 @@ define([
             }
 
             return itemData;
+        },
+
+        /**
+         * Inits the overlay with a specific template
+         */
+        initSettingsOverlay = function(data) {
+            var $overlay, $content;
+
+            data = this.sandbox.util.extend({
+                columns: []
+            }, data);
+
+            // prevent multiple initialization of the overlay
+            this.sandbox.stop(this.sandbox.dom.find(constants.overlayClassSelector, this.$el));
+            this.sandbox.dom.remove(this.sandbox.dom.find(constants.overlayClassSelector, this.$el));
+
+            $content = this.sandbox.util.template(Overlay, data);
+            $overlay = this.sandbox.dom.createElement('<div class="' + constants.overlayClass + '"></div>');
+            this.sandbox.dom.append(this.$el, $overlay);
+
+            this.sandbox.start([
+                {
+                    name: 'overlay@husky',
+                    options: {
+                        el: $overlay,
+                        title: this.sandbox.translate('test 123'),
+                        openOnStart: true,
+                        removeOnClose: false,
+                        skin: 'wide',
+//                        instanceName: this.options.instanceName,
+                        data: $content,
+                        okCallback: function() {
+                            // get selected address
+//                            var address = getSelectedAddress.call(this, $content, data);
+                            console.log("TESTTESTTESTTESTTEST");
+//
+//                            setDefaultAddress.call(this, $container, address);
+                        }.bind(this)
+                    }
+                }
+            ]);
         },
 
         /**
