@@ -523,7 +523,7 @@ define([
             this.sandbox.dom.remove($row);
 
             // decrease row counter
-            this.rowCount--;
+//            this.rowCount--;
 
             // remove from data
             removeItemData.call(this, rowId);
