@@ -223,43 +223,6 @@ define([
             }
         },
 
-//        /**
-//         * Inits the overlay with a specific template
-//         */
-//        initSettingsOverlay = function(data, $container) {
-//            var $overlay, $content;
-//
-//            // prevent multiple initialization of the overlay
-//            this.sandbox.stop(this.sandbox.dom.find(constants.overlayContainerClassSelector, this.$el));
-//            this.sandbox.dom.remove(this.sandbox.dom.find(constants.overlayContainerClassSelector, this.$el));
-//
-//            $overlay = this.sandbox.dom.createElement('<div class="' + constants.overlayContainerClass + '"></div>');
-//            this.sandbox.dom.append(this.$el, $overlay);
-//
-//            $content = createAddressSelect.call(this, data);
-//
-//            this.sandbox.start([
-//                {
-//                    name: 'overlay@husky',
-//                    options: {
-//                        el: $overlay,
-//                        title: this.sandbox.translate('change-address'),
-//                        openOnStart: true,
-//                        removeOnClose: false,
-//                        skin: 'wide',
-//                        instanceName: this.options.instanceName,
-//                        data: $content,
-//                        okCallback: function() {
-//                            // get selected address
-//                            var address = getSelectedAddress.call(this, $content, data);
-//
-//                            setDefaultAddress.call(this, $container, address);
-//                        }.bind(this)
-//                    }
-//                }
-//            ]);
-//        },
-
         /**
          * triggered when quantity is changed
          * @param event
