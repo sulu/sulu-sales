@@ -615,7 +615,6 @@ define([
                 // get data and merge with data one level above
                 itemData = this.sandbox.util.extend({}, itemData.item, nested);
                 delete itemData.item;
-
             }
 
             // create row
