@@ -759,14 +759,9 @@ define([
                         openOnStart: true,
                         removeOnClose: false,
                         skin: 'wide',
-//                        instanceName: this.options.instanceName,
                         data: $content,
                         okCallback: function() {
-                            // get selected address
-//                            var address = getSelectedAddress.call(this, $content, data);
-                            console.log("TESTTESTTESTTESTTEST");
-//
-//                            setDefaultAddress.call(this, $container, address);
+
                         }.bind(this)
                     }
                 }
