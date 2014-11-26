@@ -543,9 +543,6 @@ define([
             // remove from table
             this.sandbox.dom.remove($row);
 
-            // decrease row counter
-//            this.rowCount--;
-
             // remove from data
             removeItemData.call(this, rowId);
 
