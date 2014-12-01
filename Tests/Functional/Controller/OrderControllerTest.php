@@ -405,7 +405,6 @@ class OrderControllerTest extends DatabaseTestCase
         $productStatusTranslation->setStatus($productStatus);
         // product
         $this->product = new Product();
-        $this->product->setCode('EnglishProductCode-1');
         $this->product->setNumber('ProductNumber-1');
         $this->product->setManufacturer('EnglishManufacturer-1');
         $this->product->setType($productType);

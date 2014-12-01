@@ -2,6 +2,7 @@
 
 namespace Sulu\Bundle\Sales\OrderBundle\Controller;
 
+use Sulu\Bundle\ProductBundle\Api\Currency;
 use Sulu\Bundle\Sales\OrderBundle\Api\OrderStatus;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sulu\Component\Rest\RestController;
@@ -37,7 +38,8 @@ class TemplateController extends RestController
                 'systemUser' => $this->getSystemUserArray(),
                 'termsOfPayment' => $this->getTermsArray(self::$termsOfPaymentEntityName),
                 'termsOfDelivery' => $this->getTermsArray(self::$termsOfDeliveryEntityName),
-                'orderStatus' => $this->getOrderStatus()
+                'orderStatus' => $this->getOrderStatus(),
+                'currencies' => $this->getCurrencies($this->getUser()->getLocale())
             )
         );
     }
@@ -98,5 +100,29 @@ class TemplateController extends RestController
             );
         }
         return $statusArray;
+    }
+
+    /**
+     * Returns currencies
+     *
+     * @param $language
+     * @return array
+     */
+    private function getCurrencies($language)
+    {
+        /** @var Currency[] $currencies */
+        $currencies = $this->get('sulu_product.currency_manager')->findAll($language);
+
+        $currencyValues = array();
+
+        foreach ($currencies as $currency) {
+            $currencyValues[] = array(
+                'id' => $currency->getId(),
+                'name' => $currency->getName(),
+                'code' => $currency->getCode()
+            );
+        }
+
+        return $currencyValues;
     }
 }
