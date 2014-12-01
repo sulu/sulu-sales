@@ -579,9 +579,15 @@ define([
                 data.address = this.sandbox.sulu.createAddressString(data.address);
             }
 
-            data.overallPrice = getOverallPriceString.call(this, data);
-            rowTpl = this.sandbox.util.template(RowTpl, data),
-                $row = this.sandbox.dom.createElement(rowTpl);
+            data.overallPrice = this.sandbox.numberFormat(getOverallPriceString.call(this, data));
+
+            // format numbers for cultural differences
+            data.discount = this.sandbox.numberFormat(data.discount,'n');
+            data.price = this.sandbox.numberFormat(data.price,'n');
+            data.quantity = this.sandbox.numberFormat(data.quantity,'n');
+
+            rowTpl = this.sandbox.util.template(RowTpl, data);
+            $row = this.sandbox.dom.createElement(rowTpl);
             return $row;
         },
 
