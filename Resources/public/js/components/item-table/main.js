@@ -614,7 +614,7 @@ define([
             if (!!productData.prices && productData.prices.length > 0) {
                 itemData.price = productData.prices[0].price;
 //                for (i = -1, len = productData.price; ++i < len;) {
-//                    // TODO get price with the correct currency #337
+//                    // TODO get price with the correct currency https://github.com/massiveart/POOL-ALPIN/issues/337
 //                }
             }
 

@@ -21,15 +21,12 @@ define([
 
             typeInterface = {
                 setValue: function(data) {
-                    if (!!data) {
-                        this.$el.data({
-                            'value': data
-                        }).trigger('data-changed');
-                    } else {
-                        this.$el.data({
-                            'value': ''
-                        }).trigger('data-changed');
+                    if (!data) {
+                        data = ''
                     }
+                    this.$el.data({
+                        'value': data
+                    }).trigger('data-changed');
                 },
 
                 getValue: function() {

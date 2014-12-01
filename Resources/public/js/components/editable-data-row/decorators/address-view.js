@@ -133,24 +133,12 @@ define(['text!sulusalescore/components/editable-data-row/templates/address.form.
                 this.sandbox.emit('husky.overlay.' + this.context.options.instanceName + '.open');
             } else {
                 var data = this.sandbox.form.getData(this.formObject, true),
-                    fullAddress =getAddressString.call(this, data),
+                    fullAddress = getAddressString.call(this, data),
                     newData;
 
-                if(!!fullAddress){
-                    // overwrite old with new data
-                    // merge should not include data-object because empty strings will not be merged
-                    newData = this.sandbox.util.extend({}, this.context.selectedData);
+                if (!!fullAddress) {
+                    newData = data;
                     newData.fullAddress = fullAddress;
-                    newData.street = data.street;
-                    newData.city = data.city;
-                    newData.country = data.country;
-                    newData.number = data.number;
-                    newData.postboxCity = data.postboxCity;
-                    newData.postboxPostcode = data.postboxPostcode;
-                    newData.postboxNumber = data.postboxNumber;
-                    newData.state = data.state;
-                    newData.zip = data.zip;
-                    newData.addition = data.addition;
                 } else {
                     // set to null when all address data has been removed
                     // should show the add icon again
@@ -276,13 +264,12 @@ define(['text!sulusalescore/components/editable-data-row/templates/address.form.
             var str = !!address.street ? address.street : '',
                 part = (address.zip + ' ' + address.city).trim();
 
-            str += !!str.length && !!address.number ? ' ' + address.number :address.number;
+            str += !!str.length && !!address.number ? ' ' + address.number : address.number;
             str += !!str.length && !!part ? ', ' + part : part;
             str += !!str.length && !!address.country ? ', ' + address.country : address.country;
 
             return str;
         };
-
 
     return {
 
