@@ -133,12 +133,21 @@ define(['text!sulusalescore/components/editable-data-row/templates/address.form.
                 this.sandbox.emit('husky.overlay.' + this.context.options.instanceName + '.open');
             } else {
                 var data = this.sandbox.form.getData(this.formObject, true),
-                // merge changed address data with old data
-                newData = this.sandbox.util.extend({}, this.context.selectedData, data);
-                this.context.setSelectedData(newData);
+                    fullAddress = getAddressString.call(this, data),
+                    newData;
 
+                if (!!fullAddress) {
+                    newData = this.sandbox.util.extend({}, this.context.selectedData, data);
+                } else {
+                    // set to null when all address data has been removed
+                    // should show the add icon again
+                    newData = null;
+                }
+
+                this.context.setSelectedData(newData);
                 CHANGED_EVENT.call(this, this.context.selectedData);
                 renderRow.call(this, this.context.selectedData);
+
             }
         },
 
@@ -254,13 +263,12 @@ define(['text!sulusalescore/components/editable-data-row/templates/address.form.
             var str = !!address.street ? address.street : '',
                 part = (address.zip + ' ' + address.city).trim();
 
-            str += !!str.length && !!address.number ? ' ' + address.number :address.number;
+            str += !!str.length && !!address.number ? ' ' + address.number : address.number;
             str += !!str.length && !!part ? ', ' + part : part;
             str += !!str.length && !!address.country ? ', ' + address.country : address.country;
 
             return str;
         };
-
 
     return {
 

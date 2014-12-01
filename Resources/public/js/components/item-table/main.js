@@ -398,7 +398,7 @@ define([
          */
         getFormatedPriceCurrencyString = function(value, currency) {
             currency = !!currency ? currency : rowDefaults.currency;
-            return this.sandbox.numberFormat(value, "n") + ' ' + currency;
+            return this.sandbox.numberFormat(value, 'n') + ' ' + currency;
         },
 
         /**
@@ -412,6 +412,7 @@ define([
             if (!mode || mode === 'default') {
                 if (!!item.price && !!item.quantity) {
 
+                    // TODO numbers should parsed with globalize #336
                     value = (item.price * item.quantity);
 
                     // discount
@@ -708,17 +709,17 @@ define([
                     name: productData.name,
                     number: productData.number,
                     description: productData.shortDescription,
-                    price: productData.price,
-                    product: productData
+                    product: productData,
+                    quantityUnit: !!productData.orderUnit ? productData.orderUnit.name : ''
                 }
             );
 
             // get prices
             if (!!productData.prices && productData.prices.length > 0) {
-                // TODO: get the correct price
-//                for (var i = -1, len = productData.price; ++i < len;) {
-//                    // TODO get price with the correct currency
-//                }
+                itemData.price = productData.prices[0].price;
+//                for (i = -1, len = productData.price; ++i < len;) {
+                // TODO get price with the correct currency https://github.com/massiveart/POOL-ALPIN/issues/337
+//            }
             }
 
             // set supplierName as tooltip, if set
