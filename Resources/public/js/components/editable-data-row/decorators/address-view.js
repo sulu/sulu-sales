@@ -137,8 +137,7 @@ define(['text!sulusalescore/components/editable-data-row/templates/address.form.
                     newData;
 
                 if (!!fullAddress) {
-                    newData = data;
-                    newData.fullAddress = fullAddress;
+                    newData = this.sandbox.util.extend({}, this.context.selectedData, data);
                 } else {
                     // set to null when all address data has been removed
                     // should show the add icon again

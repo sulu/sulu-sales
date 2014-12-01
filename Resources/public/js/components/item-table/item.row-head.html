@@ -10,6 +10,10 @@
         <td class="item-number is-numeric">
             <%= header.number %>
         </td>
+        <% } if (columns.indexOf('address') > -1) { %>
+        <td class="item-address">
+            <%= header.address %>
+        </td>
         <% } if (columns.indexOf('description') > -1) { %>
         <td class="item-description">
             <%= header.description %>

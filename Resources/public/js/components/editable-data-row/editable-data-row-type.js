@@ -22,7 +22,7 @@ define([
             typeInterface = {
                 setValue: function(data) {
                     if (!data) {
-                        data = ''
+                        data = '';
                     }
                     this.$el.data({
                         'value': data
