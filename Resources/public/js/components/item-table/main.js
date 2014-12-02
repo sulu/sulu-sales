@@ -227,6 +227,7 @@ define([
                 this.sandbox.dom.when(dfdLoadedProducts, dfdLoaderStarted)
                     .done(function(data) {
                         updatePricesForEachProduct.call(this, data);
+                        updateGlobalPrice.call(this);
                         stopLoader.call(this);
                     }.bind(this))
                     .fail(function(jqXHR, textStatus, error) {
@@ -271,9 +272,12 @@ define([
                         item.price = 0;
                     }
 
-                    // update in dom
+                    // update input in dom
                     $el = this.sandbox.dom.find('.price', this.sandbox.dom.find('#' + prop,this.$list));
                     this.sandbox.dom.val($el, this.sandbox.numberFormat(item.price, 'n'));
+
+                    // update row total price
+                    updateOverallPrice.call(this, prop);
                 }
             }
         },
