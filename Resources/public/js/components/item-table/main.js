@@ -93,7 +93,7 @@ define([
             price: '',
             discount: null,
             overallPrice: '',
-            currency: 'EUR',
+            currency: 'EUR', // TODO overwrite by options
             useProductsPrice: false,
             tax: 0,
             supplierName: ''
@@ -114,7 +114,7 @@ define([
             }
         },
 
-    // event namespace
+        // event namespace
         eventNamespace = 'sulu.item-table.',
 
         /**
@@ -211,36 +211,88 @@ define([
          * @param currency
          */
         changeCurrency = function(currency) {
-            var ids, dfdLoadedProducts,
+            var ids,
+                dfdLoadedProducts,
                 dfdLoaderStarted = new this.sandbox.data.deferred();
 
-            rowDefaults.currency = currency;
+            this.currency = currency;
             ids = getAllProductIds.call(this, this.items);
+
             if (!!ids && ids.length > 0) {
                 startLoader.call(this, dfdLoaderStarted);
                 dfdLoadedProducts = fetchProductData.call(this, ids);
 
-                this.sandbox.dom.when(dfdLoaderStarted.promise(), dfdLoadedProducts)
-                    .then(function(data) {
+                // go on when loader is fully loaded and product data retrieved
+                // dfdLoadedProducts needs to be the first param
+                this.sandbox.dom.when(dfdLoadedProducts, dfdLoaderStarted)
+                    .done(function(data) {
+                        updatePricesForEachProduct.call(this, data);
                         stopLoader.call(this);
-                        this.sandbox.logger.log(data);
                     }.bind(this))
                     .fail(function(jqXHR, textStatus, error) {
                         this.sandbox.logger.error(jqXHR, textStatus, error);
-                    }.bind(this));
+                    }.bind(this)
+                );
             }
 
             // TODO
-            // set new currency
-            // get all product ids
-            // show spinner
-            // fetch products new
-            // update background data (items and data?)
+            // xset new currency
+            // xget all product ids
+            // xshow spinner
+            // xfetch products new
+            // update background data (items and options.data?)
+
+            // get
+
             // set new price
             // update total prices etc
-            // hide spinner
+            // xhide spinner
+        },
 
-            this.sandbox.logger.log(currency);
+        /**
+         * Updates the price for every product and the total
+         * @param data
+         */
+        updatePricesForEachProduct = function(data) {
+            var $el,
+                item,
+                prop,
+                prices = getArrayForProductPrices.call(this, data._embedded.products);
+
+            // update price and input value
+            for (prop in this.items) {
+                if (this.items.hasOwnProperty(prop)) {
+                    item = this.items[prop];
+
+                    // get price
+                    if (!!prices[item.product.id] && !!prices[item.product.id][this.currency]) {
+                        item.price = prices[item.product.id][this.currency];
+                    } else {
+                        item.price = 0;
+                    }
+
+                    // update in dom
+                    $el = this.sandbox.dom.find('.price', this.sandbox.dom.find('#' + prop,this.$list));
+                    this.sandbox.dom.val($el, this.sandbox.numberFormat(item.price, 'n'));
+                }
+            }
+        },
+
+        /**
+         * Returns an associative array of productIds and prices
+         * @param products
+         * @returns Array associative array of productsIds/prices
+         */
+        getArrayForProductPrices = function(products) {
+            var data = {};
+            this.sandbox.util.foreach(products, function(value) {
+                data[value.id] = {};
+                this.sandbox.util.foreach(value.prices, function(price) {
+                    data[value.id][price.currency.code] = price.price || 0;
+                }.bind(this));
+            }.bind(this));
+
+            return data;
         },
 
         /**
@@ -304,8 +356,8 @@ define([
         getAllProductIds = function(items) {
             var ids = [], el;
             for (el in items) {
-                if (!!items[el].hasOwnProperty('id')) {
-                    ids.push(items[el].id);
+                if (!!items[el].hasOwnProperty('product')) {
+                    ids.push(items[el].product.id);
                 }
             }
             return ids;
@@ -509,7 +561,7 @@ define([
          * @returns {string}
          */
         getFormatedPriceCurrencyString = function(value, currency) {
-            currency = !!currency ? currency : rowDefaults.currency;
+            currency = !!currency ? currency : this.currency;
             return this.sandbox.numberFormat(value, 'n') + ' ' + currency;
         },
 
@@ -543,7 +595,7 @@ define([
          * @returns string
          */
         getCurrency = function(item) {
-            return !!item.currency ? item.currency : rowDefaults.currency;
+            return !!item.currency ? item.currency : this.currency;
         },
 
         /**
@@ -649,7 +701,7 @@ define([
 
         /**
          * removes row with
-         * @param id
+         * @param rowId
          * @param $row the row element
          */
         removeItemRow = function(rowId, $row) {
@@ -691,6 +743,7 @@ define([
                 data.address = this.sandbox.sulu.createAddressString(data.address);
             }
 
+            data.currency = this.currency;
             data.overallPrice = this.sandbox.numberFormat(getOverallPriceString.call(this, data));
 
             // format numbers for cultural differences
@@ -822,22 +875,24 @@ define([
          */
         setItemByProduct = function(productData) {
             // merge with row defaults
-            var itemData = this.sandbox.util.extend({}, rowDefaults, this.options.defaultData,
-                {
-                    name: productData.name,
-                    number: productData.number,
-                    description: productData.shortDescription,
-                    product: productData,
-                    quantityUnit: !!productData.orderUnit ? productData.orderUnit.name : ''
-                }
-            );
+            var i, len,
+                itemData = this.sandbox.util.extend({}, rowDefaults, this.options.defaultData,
+                    {
+                        name: productData.name,
+                        number: productData.number,
+                        description: productData.shortDescription,
+                        product: productData,
+                        quantityUnit: !!productData.orderUnit ? productData.orderUnit.name : ''
+                    }
+                );
 
             // get prices
             if (!!productData.prices && productData.prices.length > 0) {
-                itemData.price = productData.prices[0].price;
-//                for (i = -1, len = productData.price; ++i < len;) {
-                // TODO get price with the correct currency https://github.com/massiveart/POOL-ALPIN/issues/337
-//            }
+                for (i = -1, len = productData.prices.length; ++i < len;) {
+                    if (productData.prices[i].currency.code === this.currency) {
+                        itemData.price = productData.prices[i].price;
+                    }
+                }
             }
 
             // set supplierName as tooltip, if set
@@ -916,6 +971,7 @@ define([
             this.items = {};
             this.rowCount = 0;
             this.table = null;
+            this.currency = this.options.currency || rowDefaults.currency;
 
             this.isEmpty = this.items.length;
 
