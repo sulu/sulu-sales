@@ -26,7 +26,9 @@ define([
             deliveryAddressInstanceName: 'delivery-address',
             billingAddressInstanceName: 'billing-address',
             currencySelectInstanceName: 'currency-select',
+            currencySelectSelector: '#currency-select',
             itemTableInstanceName: 'order-items',
+            itemTableSelector: '#order-items',
             paymentTermsInstanceName: 'payment-terms',
             deliveryTermsInstanceName: 'delivery-terms',
             contactSelectId: '#contact-select',
@@ -200,11 +202,20 @@ define([
             this.options.orderStatuses = statuses;
         },
 
+        /**
+         * set currencies
+         * @param currencies
+         */
+        setCurrencies = function(currencies) {
+            this.options.currencies = currencies;
+        },
+
         bindCustomEvents = function() {
             // status change events
             this.sandbox.on('sulu.salesorder.order.edit.clicked', editOrder.bind(this));
             this.sandbox.on('sulu.salesorder.order.confirm.clicked', confirmOrder.bind(this));
             this.sandbox.on('sulu.salesorder.set-order-status', setOrderStatuses.bind(this));
+            this.sandbox.on('sulu.salesorder.set-currencies', setCurrencies.bind(this));
 
             this.sandbox.on('husky.auto-complete.' + this.accountInstanceName + '.initialized', function() {
                 if (!this.isEditable) {
@@ -264,6 +275,10 @@ define([
 
             this.sandbox.on('husky.select.' + constants.currencySelectInstanceName + '.selected.item', function(data) {
                 this.sandbox.emit('sulu.item-table.' + constants.itemTableInstanceName + '.change-currency', data);
+            }, this);
+
+            this.sandbox.on('husky.select.' + constants.currencySelectInstanceName + '.initialized', function() {
+
             }, this);
         },
 
@@ -485,6 +500,20 @@ define([
         },
 
         /**
+         * Returns currency id for currency code
+         */
+        getCurrencyIdForCode = function(code, currencies){
+            var currency = '';
+            this.sandbox.util.each(currencies, function(key){
+                if(currencies[key].code === code){
+                    currency = currencies[key].id;
+                }
+            }.bind(this));
+
+            return currency;
+        },
+
+        /**
          * Find an address where a specific property with a specific value is set
          * @param addresses
          * @param propertyName
@@ -576,6 +605,40 @@ define([
 
             // initialize form
             initForm.call(this, data);
+
+            this.startItemTableAndCurrencySelect();
+        },
+
+        startItemTableAndCurrencySelect: function(){
+
+            this.sandbox.start([
+                {
+                    name: 'item-table@sulusalescore',
+                    options: {
+                        instanceName: constants.itemTableInstanceName,
+                        isEditable: this.isEditable,
+                        remoteUrl: constants.accountUrl,
+                        data: this.options.data.items,
+                        currency: this.options.data.currency,
+                        el: constants.itemTableSelector
+                    }
+                },
+                {
+                    name: 'select@husky',
+                    options: {
+                        el: constants.currencySelectSelector,
+                        instanceName: constants.currencySelectInstanceName,
+                        disabled: this.isEditable,
+                        emitValues: true,
+                        defaultLabel: this.sandbox.translate('dropdown.please-choose'),
+                        multipleSelect: false,
+                        valueName: 'code',
+                        data: this.options.currencies,
+                        preSelectedElements: [getCurrencyIdForCode.call(this, this.options.data.currency, this.options.currencies)]
+
+                    }
+                }
+            ]);
         },
 
         submit: function() {
