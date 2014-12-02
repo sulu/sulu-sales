@@ -25,6 +25,8 @@ define([
             accountInputId: '#account-input',
             deliveryAddressInstanceName: 'delivery-address',
             billingAddressInstanceName: 'billing-address',
+            currencySelectInstanceName: 'currency-select',
+            itemTableInstanceName: 'order-items',
             paymentTermsInstanceName: 'payment-terms',
             deliveryTermsInstanceName: 'delivery-terms',
             contactSelectId: '#contact-select',
@@ -259,6 +261,10 @@ define([
                 setFormData.call(this, this.options.data);
                 changeHandler.call(this);
             }.bind(this));
+
+            this.sandbox.on('husky.select.' + constants.currencySelectInstanceName + '.selected.item', function(data) {
+                this.sandbox.emit('sulu.item-table.' + constants.itemTableInstanceName + '.change-currency', data);
+            }, this);
         },
 
         /**

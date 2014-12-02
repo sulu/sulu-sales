@@ -208,6 +208,7 @@
          data-aura-is-editable="<%= isEditable %>"
          data-form="true"
          data-type="itemTable"
+         data-aura-instance-name="order-items"
          data-mapper-property="items">
     </div>
 </div>
@@ -227,7 +228,7 @@
                  data-aura-default-label="<%=translate('dropdown.please-choose')%>"
                  data-aura-pre-selected-elements="[1]"
                  data-aura-disabled="<%= !isEditable %>"
-                 {#data-validation-required="true"#}
+                 data-aura-emit-values="true"
                  data-type="husky-select"
                  data-mapper-property-type="string"
                  data-mapper-property="currency"
