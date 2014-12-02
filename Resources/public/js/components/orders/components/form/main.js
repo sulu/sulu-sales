@@ -628,14 +628,14 @@ define([
                     options: {
                         el: constants.currencySelectSelector,
                         instanceName: constants.currencySelectInstanceName,
-                        disabled: this.isEditable,
+                        disabled: !this.isEditable,
                         emitValues: true,
                         defaultLabel: this.sandbox.translate('dropdown.please-choose'),
                         multipleSelect: false,
                         valueName: 'code',
                         data: this.options.currencies,
-                        preSelectedElements: [getCurrencyIdForCode.call(this, this.options.data.currency, this.options.currencies)]
-
+//                        preSelectedElements: [getCurrencyIdForCode.call(this, this.options.data.currency, this.options.currencies)]
+                        preSelectedElements: [this.options.data.currency]
                     }
                 }
             ]);
