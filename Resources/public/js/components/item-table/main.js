@@ -250,7 +250,7 @@ define([
         quantityChangedHandler = function(event) {
             var rowId = getRowData.call(this, event).id;
             // update quantity
-            this.items[rowId].quantity = this.sandbox.dom.val(event.target);
+            this.items[rowId].quantity = this.sandbox.parseFloat(this.sandbox.dom.val(event.target));
             refreshItemsData.call(this);
 
             // update rows overall price
@@ -269,7 +269,7 @@ define([
         priceChangedHandler = function(event) {
             var rowId = getRowData.call(this, event).id;
             // update price
-            this.items[rowId].price = this.sandbox.dom.val(event.target);
+            this.items[rowId].price = this.sandbox.parseFloat(this.sandbox.dom.val(event.target));
             refreshItemsData.call(this);
 
             // update rows overall price
@@ -288,7 +288,7 @@ define([
         discountChangedHandler = function(event) {
             var rowId = getRowData.call(this, event).id;
             // update discount
-            this.items[rowId].discount = this.sandbox.dom.val(event.target);
+            this.items[rowId].discount = this.sandbox.parseFloat(this.sandbox.dom.val(event.target));
             refreshItemsData.call(this);
 
             // update rows overall price
@@ -579,9 +579,15 @@ define([
                 data.address = this.sandbox.sulu.createAddressString(data.address);
             }
 
-            data.overallPrice = getOverallPriceString.call(this, data);
-            rowTpl = this.sandbox.util.template(RowTpl, data),
-                $row = this.sandbox.dom.createElement(rowTpl);
+            data.overallPrice = this.sandbox.numberFormat(getOverallPriceString.call(this, data));
+
+            // format numbers for cultural differences
+            data.discount = this.sandbox.numberFormat(data.discount,'n');
+            data.price = this.sandbox.numberFormat(data.price,'n');
+            data.quantity = this.sandbox.numberFormat(data.quantity,'n');
+
+            rowTpl = this.sandbox.util.template(RowTpl, data);
+            $row = this.sandbox.dom.createElement(rowTpl);
             return $row;
         },
 
