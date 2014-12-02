@@ -114,7 +114,7 @@ define([
             }
         },
 
-        // event namespace
+    // event namespace
         eventNamespace = 'sulu.item-table.',
 
         /**
@@ -235,19 +235,6 @@ define([
                     }.bind(this)
                 );
             }
-
-            // TODO
-            // xset new currency
-            // xget all product ids
-            // xshow spinner
-            // xfetch products new
-            // update background data (items and options.data?)
-
-            // get
-
-            // set new price
-            // update total prices etc
-            // xhide spinner
         },
 
         /**
@@ -273,7 +260,7 @@ define([
                     }
 
                     // update input in dom
-                    $el = this.sandbox.dom.find('.price', this.sandbox.dom.find('#' + prop,this.$list));
+                    $el = this.sandbox.dom.find('.price', this.sandbox.dom.find('#' + prop, this.$list));
                     this.sandbox.dom.val($el, this.sandbox.numberFormat(item.price, 'n'));
 
                     // update row total price
