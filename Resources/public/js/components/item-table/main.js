@@ -55,8 +55,9 @@ define([
         },
 
         constants = {
-            formId: '#item-table-form',
+            formId: '#item-table-form', // FIXME should be changed to a unique id when multiple instances are on one page
             listClass: '.item-table-list',
+            formSelector: '.item-table-list-form',
             productSearchClass: '.product-search',
             rowIdPrefix: 'item-table-row-',
             productsUrl: '/admin/api/products?flat=true&searchFields=number,name&fields=id,name,number',
@@ -69,12 +70,9 @@ define([
             discountRowClass: '.item-discount',
             discountInput: '.item-discount input',
             globalPriceTableClass: '.global-price-table',
-            overallEmptyString: '-'
-        },
-
-        selectors = {
-            overlayClass: 'item-overlay',
-            overlayClassSelector: '.item-overlay'
+            overallEmptyString: '-',
+            loaderSelector: '.item-table-loader',
+            loaderClass: 'item-table-loader'
         },
 
         /**
@@ -133,10 +131,18 @@ define([
          * @param key
          * @param value
          *
-         * @event sulu.item-table[.INSTANCENAME].set-default-data
+         * @event sulu.item-table.[INSTANCENAME].set-default-data
          */
         EVENT_SET_DEFAULT_DATA = function() {
             return getEventName.call(this, 'set-default-data');
+        },
+
+        /**
+         * Changes the currency and selects related price if available
+         * @event sulu.item-table.[INSTANCENAME].change-currency
+         */
+        EVENT_CHANGE_CURRENCY = function() {
+            return getEventName.call(this, 'change-currency');
         },
 
         /**
@@ -171,6 +177,7 @@ define([
          */
         bindCustomEvents = function() {
             this.sandbox.on(EVENT_SET_DEFAULT_DATA.call(this), setDefaultData.bind(this));
+            this.sandbox.on(EVENT_CHANGE_CURRENCY.call(this), changeCurrency.bind(this));
         },
 
         /**
@@ -200,6 +207,111 @@ define([
         },
 
         /**
+         * Changes currency for item table
+         * @param currency
+         */
+        changeCurrency = function(currency) {
+            var ids, dfdLoadedProducts,
+                dfdLoaderStarted = new this.sandbox.data.deferred();
+
+            rowDefaults.currency = currency;
+            ids = getAllProductIds.call(this, this.items);
+            if (!!ids && ids.length > 0) {
+                startLoader.call(this, dfdLoaderStarted);
+                dfdLoadedProducts = fetchProductData.call(this, ids);
+
+                this.sandbox.dom.when(dfdLoaderStarted.promise(), dfdLoadedProducts)
+                    .then(function(data) {
+                        stopLoader.call(this);
+                        this.sandbox.logger.log(data);
+                    }.bind(this))
+                    .fail(function(jqXHR, textStatus, error) {
+                        this.sandbox.logger.error(jqXHR, textStatus, error);
+                    }.bind(this));
+            }
+
+            // TODO
+            // set new currency
+            // get all product ids
+            // show spinner
+            // fetch products new
+            // update background data (items and data?)
+            // set new price
+            // update total prices etc
+            // hide spinner
+
+            this.sandbox.logger.log(currency);
+        },
+
+        /**
+         * Loads product data
+         * @param ids
+         */
+        fetchProductData = function(ids) {
+            var url = '/admin/api/products?ids=' + ids.join(',');
+            return this.sandbox.util.load(url);
+        },
+
+        /**
+         * Stops the loader component and shows the list again
+         */
+        stopLoader = function() {
+            this.sandbox.stop(this.$loader);
+            this.sandbox.dom.show(this.$list);
+        },
+
+        /**
+         * Shows and starts a loader
+         * @param dfdLoaderStarted
+         */
+        startLoader = function(dfdLoaderStarted) {
+            prepareDomForLoader.call(this);
+            this.sandbox.start([
+                    {
+                        name: 'loader@husky',
+                        options: {
+                            el: this.$loader,
+                            size: '40px',
+                            hidden: false
+                        }
+                    }
+                ]
+            ).done(function() {
+                    dfdLoaderStarted.resolve();
+                }.bind(this));
+        },
+
+        /**
+         * Creats dom element for loader and appends it to
+         */
+        prepareDomForLoader = function() {
+            var height = this.sandbox.dom.height(this.$el);
+
+            this.$loader = this.sandbox.dom.createElement('<div style="display:hidden" class="grid-row ' + constants.loaderClass + '"></div>');
+            this.$list = this.sandbox.dom.find(constants.formSelector, this.$el);
+
+            this.sandbox.dom.append(this.$el, this.$loader);
+            this.sandbox.dom.height(this.$loader, height);
+            this.sandbox.dom.hide(this.$list);
+            this.sandbox.dom.show(this.$loader);
+        },
+
+        /**
+         * Retrievs all product ids from all products currently in the table
+         * @param items
+         * @returns {Array} of ids
+         */
+        getAllProductIds = function(items) {
+            var ids = [], el;
+            for (el in items) {
+                if (!!items[el].hasOwnProperty('id')) {
+                    ids.push(items[el].id);
+                }
+            }
+            return ids;
+        },
+
+        /**
          * sets default data
          * @param key
          * @param value
@@ -213,9 +325,9 @@ define([
          * @param event
          */
         rowClicked = function(event) {
-            // if inupt or link was clicked, do nothing
+            // if input or link was clicked, do nothing
             if (event.target.tagName.toUpperCase() === 'INPUT' ||
-                event.target.tagName.toUpperCase() === 'A' ) {
+                event.target.tagName.toUpperCase() === 'A') {
                 return;
             }
 
@@ -582,9 +694,9 @@ define([
             data.overallPrice = this.sandbox.numberFormat(getOverallPriceString.call(this, data));
 
             // format numbers for cultural differences
-            data.discount = this.sandbox.numberFormat(data.discount,'n');
-            data.price = this.sandbox.numberFormat(data.price,'n');
-            data.quantity = this.sandbox.numberFormat(data.quantity,'n');
+            data.discount = this.sandbox.numberFormat(data.discount, 'n');
+            data.price = this.sandbox.numberFormat(data.price, 'n');
+            data.quantity = this.sandbox.numberFormat(data.quantity, 'n');
 
             rowTpl = this.sandbox.util.template(RowTpl, data);
             $row = this.sandbox.dom.createElement(rowTpl);
