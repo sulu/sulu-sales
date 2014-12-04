@@ -102,7 +102,7 @@ class OrderManager
      * Creates a new Order Entity
      *
      * @param array $data The data array, which will be used for setting the orders data
-     * @param $locale Locale
+     * @param string $locale Locale
      * @param int $userId Id of the User, which is is saved as creator / changer
      * @param int|null $id If defined, the Order with the given ID will be updated
      * @param int|null $statusId if defined, the status will be set to the given value
@@ -612,7 +612,7 @@ class OrderManager
     private function addContactRelation(array $data, $dataKey, $addCallback)
     {
         $contact = null;
-        if (array_key_exists($dataKey, $data) && array_key_exists('id', $data[$dataKey])) {
+        if (array_key_exists($dataKey, $data) && is_array($data[$dataKey]) && array_key_exists('id', $data[$dataKey])) {
             /** @var Contact $contact */
             $contactId = $data[$dataKey]['id'];
             $contact = $this->em->getRepository(self::$contactEntityName)->find($contactId);
