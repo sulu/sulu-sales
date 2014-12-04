@@ -64,7 +64,7 @@ class ItemManager
      * @internal param null $id
      * @return null|\Sulu\Bundle\Sales\CoreBundle\Api\Item
      */
-    public function save(array $data, $locale, $userId, Item $item = null, $itemStatusId = null)
+    public function save(array $data, $locale, $userId = null, Item $item = null, $itemStatusId = null)
     {
 
         // check requiresd data
@@ -76,7 +76,7 @@ class ItemManager
         }
 
         // get user
-        $user = $this->userRepository->findUserById($userId);
+        $user = $userId ? $this->userRepository->findUserById($userId) : null;
 
         // get product and set Product's data to item
         $product = $this->setItemByProductData($data, $item, $locale);
