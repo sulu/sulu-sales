@@ -31,6 +31,15 @@ class OrderDependencyManager extends AbstractSalesDependency implements SalesDep
     }
 
     /**
+     * return url to generate Pdf's
+     * @return mixed
+     */
+    public function getPdfUrl()
+    {
+        return '/admin/order/pdf/';
+    }
+
+    /**
      * returns array of parameters
      * @param Order $order
      * @return bool
