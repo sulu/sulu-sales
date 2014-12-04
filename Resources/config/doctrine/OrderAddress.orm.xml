@@ -6,6 +6,7 @@
         <id name="id" type="integer" column="id">
             <generator strategy="AUTO"/>
         </id>
+        <field name="salutation" type="string" column="salutation" length="255" nullable="true"/>
         <field name="firstName" type="string" column="firstName" length="255" nullable="false"/>
         <field name="lastName" type="string" column="lastName" length="255" nullable="false"/>
         <field name="accountName" type="string" column="accountName" length="255" nullable="true"/>
