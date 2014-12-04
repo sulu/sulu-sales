@@ -17,7 +17,7 @@
         <default key="_controller">SuluSalesOrderBundle:Template:orderForm</default>
     </route>
 
-    <route id="order_test" path="/order/pdf">
+    <route id="order_test" path="/pdf/order-confirmation">
         <default key="_controller">SuluSalesOrderBundle:Pdf:orderConfirmation</default>
     </route>
 
