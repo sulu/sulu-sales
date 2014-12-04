@@ -11,6 +11,7 @@
 namespace Sulu\Bundle\Sales\OrderBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\Response;
 
 class PdfController extends Controller
 {
@@ -19,12 +20,14 @@ class PdfController extends Controller
         return $this->get('massive_pdf.pdf_manager');
     }
 
-    public function testAction() {
-        return $this->getPdfManager()->convertToPdf(
+    public function orderConfirmationAction() {
+        $pdf = $this->getPdfManager()->convertToPdf(
             'SuluSalesOrderBundle:Template:order.confirmation.pdf.html.twig',
             array(),
             false
         );
+
+        return new Response($pdf);
     }
 
 }
