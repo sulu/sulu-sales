@@ -77,6 +77,11 @@ class OrderAddress
     /**
      * @var string
      */
+    private $email;
+
+    /**
+     * @var string
+     */
     private $phone;
 
     /**
@@ -527,11 +532,6 @@ class OrderAddress
     {
         return $this->postboxPostcode;
     }
-    /**
-     * @var string
-     */
-    private $email;
-
 
     /**
      * Set email
