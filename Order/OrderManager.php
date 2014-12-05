@@ -674,6 +674,8 @@ class OrderManager
         $orderAddress->setZip($this->getProperty($addressData, 'zip', ''));
         $orderAddress->setState($this->getProperty($addressData, 'state', ''));
         $orderAddress->setCountry($this->getProperty($addressData, 'country', ''));
+        $orderAddress->setEmail($this->getProperty($addressData, 'email', ''));
+        $orderAddress->setPhone($this->getProperty($addressData, 'phone', ''));
 
         $orderAddress->setPostboxCity($this->getProperty($addressData, 'postboxCity', ''));
         $orderAddress->setPostboxPostcode($this->getProperty($addressData, 'postboxPostcode', ''));

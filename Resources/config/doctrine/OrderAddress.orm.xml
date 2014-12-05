@@ -18,6 +18,7 @@
         <field name="zip" type="string" column="zip" length="10" nullable="false"/>
         <field name="state" type="string" column="state" length="255" nullable="true"/>
         <field name="country" type="string" column="country" length="255" nullable="false"/>
+        <field name="email" type="string" column="email" length="255" nullable="false"/>
         <field name="postboxCity" type="string" column="postboxCity" length="255" nullable="true"/>
         <field name="postboxNumber" type="string" column="postboxNumber" length="255" nullable="true"/>
         <field name="postboxPostcode" type="string" column="postboxPostcode" length="255" nullable="true"/>
