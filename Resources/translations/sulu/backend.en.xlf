@@ -142,6 +142,10 @@
                 <source>salescore.validation-warning</source>
                 <target>Die eingegebenen Daten sind ungültig. Bitte überprüfe deine Eingabe.</target>
             </trans-unit>
+            <trans-unit id="a50accg2ac221350142c0b4720e29a36" resname="salescore.delivery-cost">
+                <source>salescore.delivery-cost</source>
+                <target>Delivery costs</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>
