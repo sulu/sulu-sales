@@ -147,6 +147,7 @@ class OrderControllerTest extends SuluTestCase
         $this->testUser->setUsername('test');
         $this->testUser->setPassword('test');
         $this->testUser->setLocale('en');
+        $this->em->persist($this->testUser);
 
         // country
         $country = new Country();
