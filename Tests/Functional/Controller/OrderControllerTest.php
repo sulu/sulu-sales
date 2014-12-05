@@ -208,6 +208,10 @@ class OrderControllerTest extends SuluTestCase
         $this->createStatusTranslation($this->em, $status, 'Created', 'en');
         $this->createStatusTranslation($this->em, $status, 'Erfasst', 'de');
         $this->em->persist($status);
+
+        $metadata = $this->em->getClassMetaData(get_class($status));
+        $metadata->setIdGeneratorType(\Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_NONE);
+
         $this->orderStatus = $status;
         // cart
         $status = new OrderStatus();
@@ -215,18 +219,27 @@ class OrderControllerTest extends SuluTestCase
         $this->createStatusTranslation($this->em, $status, 'In Cart', 'en');
         $this->createStatusTranslation($this->em, $status, 'Im Warenkorb', 'de');
         $this->em->persist($status);
+
+        $metadata = $this->em->getClassMetaData(get_class($status));
+        $metadata->setIdGeneratorType(\Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_NONE);
         // confirmed
         $status = new OrderStatus();
         $status->setId(OrderStatus::STATUS_CONFIRMED);
         $this->createStatusTranslation($this->em, $status, 'Order confirmed', 'en');
         $this->createStatusTranslation($this->em, $status, 'Auftragsbestätigung erstellt', 'de');
         $this->em->persist($status);
+
+        $metadata = $this->em->getClassMetaData(get_class($status));
+        $metadata->setIdGeneratorType(\Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_NONE);
         // confirmed
         $status = new OrderStatus();
         $status->setId(OrderStatus::STATUS_CLOSED_MANUALLY);
         $this->createStatusTranslation($this->em, $status, 'Order closed', 'en');
         $this->createStatusTranslation($this->em, $status, 'Auftragsbestätigung erstellt', 'de');
         $this->em->persist($status);
+
+        $metadata = $this->em->getClassMetaData(get_class($status));
+        $metadata->setIdGeneratorType(\Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_NONE);
 
 
         // order address
