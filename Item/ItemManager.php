@@ -387,8 +387,6 @@ class ItemManager
                 );
             }
         } catch (\Exception $e) {
-            echo $e->getMessage();
-            exit;
             throw new ItemException('Error while creating attributes: ' . $e->getMessage());
         }
         return $result;
