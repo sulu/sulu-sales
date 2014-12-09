@@ -150,6 +150,10 @@
                 <source>salescore.item-table.error.changing-currency</source>
                 <target>Beim Ändern der Währung ist ein Fehler aufgetreten.</target>
             </trans-unit>
+            <trans-unit id="a50accg2ac221350142c0b4720e29a38" resname="salescore.delivery-cost">
+                <source>salescore.delivery-cost</source>
+                <target>Lieferkosten</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>
