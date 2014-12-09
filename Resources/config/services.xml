@@ -10,6 +10,7 @@
         <parameter key="sulu_sales_core.item_repository.class">Sulu\Bundle\Sales\CoreBundle\Entity\ItemRepository</parameter>
         <parameter key="sulu_sales_core.widgets.simple_account.class">Sulu\Bundle\Sales\CoreBundle\Widgets\SimpleAccount</parameter>
         <parameter key="sulu_sales_core.widgets.simple_contact.class">Sulu\Bundle\Sales\CoreBundle\Widgets\SimpleContact</parameter>
+        <parameter key="sulu_sales_core.widgets.multiple_accounts.class">Sulu\Bundle\Sales\CoreBundle\Widgets\MultipleAccounts</parameter>
     </parameters>
 
     <services>
@@ -18,15 +19,22 @@
             <argument>%sulu_admin.name%</argument>
         </service>
 
+        <service id="sulu_sales_core.item_manager" class="%sulu_sales_core.item_manager.class%">
+            <argument type="service" id="doctrine.orm.entity_manager" />
+            <argument type="service" id="sulu_sales_core.item_repository" />
+            <argument type="service" id="sulu_security.user_repository" />
+        </service>
+
+        <!--REPOSITORIES-->
         <service id="sulu_sales_core.item_repository" class="%sulu_sales_core.item_repository.class%"
                  factory-method="getRepository" factory-service="doctrine.orm.entity_manager">
             <argument>SuluSalesCoreBundle:Item</argument>
         </service>
 
-        <service id="sulu_sales_core.item_manager" class="%sulu_sales_core.item_manager.class%">
-            <argument type="service" id="doctrine.orm.entity_manager" />
-            <argument type="service" id="sulu_sales_core.item_repository" />
-            <argument type="service" id="sulu_security.user_repository" />
+        <!--WIDGETS-->
+        <service id="sulu_sales_core.widget.multiple_accounts" class="%sulu_sales_core.widgets.multiple_accounts.class%">
+            <tag name="sulu.widget" alias="sulu-sales-core-multiple-accounts"/>
+            <argument type="service" id="doctrine.orm.entity_manager"/>
         </service>
 
         <service id="sulu_sales_core.widget.simple_account" class="%sulu_sales_core.widgets.simple_account.class%">
