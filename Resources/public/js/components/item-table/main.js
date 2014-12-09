@@ -60,7 +60,7 @@ define([
             formSelector: '.item-table-list-form',
             productSearchClass: '.product-search',
             rowIdPrefix: 'item-table-row-',
-            productsUrl: '/admin/api/products?flat=true&searchFields=number,name&fields=id,name,number',
+            productsUrl: '/admin/api/products?flat=true&searchFields=number,name&fields=id,name,number,manufacturer',
             productUrl: '/admin/api/products/',
             rowClass: '.item-table-row',
             quantityRowClass: '.item-quantity',
@@ -656,7 +656,20 @@ define([
                         instanceName: 'products',
                         valueKey: 'name',
                         noNewValues: true,
-                        selectCallback: productSelected.bind(this)
+                        selectCallback: productSelected.bind(this),
+                        fields: [
+                            {
+                                id: 'number',
+                                width: '60px'
+                            },
+                            {
+                                id: 'name',
+                                width: '150px'
+                            },
+                            {
+                                id: 'manufacturer'
+                            }
+                        ]
                     }
                 }
             ]);
