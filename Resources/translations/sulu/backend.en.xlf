@@ -142,6 +142,14 @@
                 <source>salescore.validation-warning</source>
                 <target>Die eingegebenen Daten sind ungültig. Bitte überprüfe deine Eingabe.</target>
             </trans-unit>
+            <trans-unit id="a50accg2ac221350142c0b4720e29a36" resname="salescore.item-table.error.loading-product">
+                <source>salescore.item-table.error.loading-product</source>
+                <target>Product could not be loaded.</target>
+            </trans-unit>
+            <trans-unit id="a50accg2ac221350142c0b4720e29a37" resname="salescore.item-table.error.changing-currency">
+                <source>salescore.item-table.error.changing-currency</source>
+                <target>Error while changing the currency.</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>

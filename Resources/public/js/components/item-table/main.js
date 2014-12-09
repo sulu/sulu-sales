@@ -93,7 +93,7 @@ define([
             price: '',
             discount: null,
             overallPrice: '',
-            currency: 'EUR', // TODO overwrite by options
+            currency: 'EUR',
             useProductsPrice: false,
             tax: 0,
             supplierName: ''
@@ -111,10 +111,13 @@ define([
                     '   </td>',
                     '</tr>'
                 ].join('');
+            },
+            loader: function(classes) {
+                return '<div style="display:hidden" class="grid-row ' + classes + '"></div>';
             }
         },
 
-    // event namespace
+        // event namespace
         eventNamespace = 'sulu.item-table.',
 
         /**
@@ -131,7 +134,7 @@ define([
          * @param key
          * @param value
          *
-         * @event sulu.item-table.[INSTANCENAME].set-default-data
+         * @event sulu.item-table[.INSTANCENAME].set-default-data
          */
         EVENT_SET_DEFAULT_DATA = function() {
             return getEventName.call(this, 'set-default-data');
@@ -139,7 +142,7 @@ define([
 
         /**
          * Changes the currency and selects related price if available
-         * @event sulu.item-table.[INSTANCENAME].change-currency
+         * @event sulu.item-table[.INSTANCENAME].change-currency
          */
         EVENT_CHANGE_CURRENCY = function() {
             return getEventName.call(this, 'change-currency');
@@ -231,6 +234,11 @@ define([
                         stopLoader.call(this);
                     }.bind(this))
                     .fail(function(jqXHR, textStatus, error) {
+                        this.sandbox.emit('sulu.labels.error.show',
+                            this.sandbox.translate('salescore.item-table.error.changing-currency'),
+                            'labels.error',
+                            ''
+                        );
                         this.sandbox.logger.error(jqXHR, textStatus, error);
                     }.bind(this)
                 );
@@ -260,7 +268,7 @@ define([
                     }
 
                     // update input in dom
-                    $el = this.sandbox.dom.find('.price', this.sandbox.dom.find('#' + prop, this.$list));
+                    $el = this.sandbox.dom.find(constants.priceInput, this.sandbox.dom.find('#' + prop, this.$list));
                     this.sandbox.dom.val($el, this.sandbox.numberFormat(item.price, 'n'));
 
                     // update row total price
@@ -291,6 +299,7 @@ define([
          * @param ids
          */
         fetchProductData = function(ids) {
+            // TODO could be replaced by a product collection
             var url = '/admin/api/products?ids=' + ids.join(',');
             return this.sandbox.util.load(url);
         },
@@ -330,7 +339,7 @@ define([
         prepareDomForLoader = function() {
             var height = this.sandbox.dom.height(this.$el);
 
-            this.$loader = this.sandbox.dom.createElement('<div style="display:hidden" class="grid-row ' + constants.loaderClass + '"></div>');
+            this.$loader = this.sandbox.dom.createElement(templates.loader.call(this, constants.loaderClass + '"></div>'));
             this.$list = this.sandbox.dom.find(constants.formSelector, this.$el);
 
             this.sandbox.dom.append(this.$el, this.$loader);
@@ -619,7 +628,12 @@ define([
                     updateItemRow.call(this, rowId, itemData);
                 }.bind(this))
                 .fail(function(request, message, error) {
-                    this.sandbox.logger.warn(request, message, error);
+                        this.sandbox.emit('sulu.labels.error.show',
+                            this.sandbox.translate('salescore.item-table.error.loading-product'),
+                            'labels.error',
+                            ''
+                        );
+                        this.sandbox.logger.error(request, message, error);
                 }.bind(this));
         },
 
@@ -770,6 +784,7 @@ define([
         /**
          * updates a specific row
          * @param rowId
+         * @param itemData
          */
         updateItemRow = function(rowId, itemData) {
             var $row = createItemRow.call(this, itemData, false);
