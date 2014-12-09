@@ -339,7 +339,7 @@ define([
         prepareDomForLoader = function() {
             var height = this.sandbox.dom.height(this.$el);
 
-            this.$loader = this.sandbox.dom.createElement(templates.loader.call(this, constants.loaderClass + '"></div>'));
+            this.$loader = this.sandbox.dom.createElement(templates.loader.call(this, constants.loaderClass));
             this.$list = this.sandbox.dom.find(constants.formSelector, this.$el);
 
             this.sandbox.dom.append(this.$el, this.$loader);
