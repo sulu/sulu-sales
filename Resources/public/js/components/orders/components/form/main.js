@@ -275,6 +275,7 @@ define([
 
             this.sandbox.on('husky.select.' + constants.currencySelectInstanceName + '.selected.item', function(data) {
                 this.sandbox.emit('sulu.item-table.' + constants.itemTableInstanceName + '.change-currency', data);
+                this.currency = data;
             }, this);
         },
 
@@ -499,10 +500,11 @@ define([
          * Returns currency id for currency code
          */
         getCurrencyIdForCode = function(code, currencies){
-            var currency = '';
+            var currency = [];
             this.sandbox.util.each(currencies, function(key){
                 if(currencies[key].code === code){
-                    currency = currencies[key].id;
+                    currency.push(currencies[key].id);
+                    return false;
                 }
             }.bind(this));
 
@@ -630,10 +632,10 @@ define([
                         emitValues: true,
                         defaultLabel: this.sandbox.translate('dropdown.please-choose'),
                         multipleSelect: false,
+                        repeatSelect: false,
                         valueName: 'code',
                         data: this.options.currencies,
-//                        preSelectedElements: [getCurrencyIdForCode.call(this, this.options.data.currency, this.options.currencies)]
-                        preSelectedElements: [this.options.data.currency]
+                        preSelectedElements: getCurrencyIdForCode.call(this, this.options.data.currency, this.options.currencies)
                     }
                 }
             ]);
@@ -649,6 +651,11 @@ define([
                 if (data.id === '') {
                     delete data.id;
                 }
+
+                // because the preselected option of the select conflicts with the data mapper
+                // the data mapper property is not used and therefore the data.currency property
+                // has to be set this way
+                data.currency = !!this.currency ? this.currency : this.options.data.currency;
 
                 // FIXME auto complete in mapper
                 // only get id, if auto-complete is not empty:
