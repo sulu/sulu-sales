@@ -55,8 +55,9 @@ define([
         },
 
         constants = {
-            formId: '#item-table-form',
+            formId: '#item-table-form', // FIXME should be changed to a unique id when multiple instances are on one page
             listClass: '.item-table-list',
+            formSelector: '.item-table-list-form',
             productSearchClass: '.product-search',
             rowIdPrefix: 'item-table-row-',
             productsUrl: '/admin/api/products?flat=true&searchFields=number,name&fields=id,name,number',
@@ -69,12 +70,9 @@ define([
             discountRowClass: '.item-discount',
             discountInput: '.item-discount input',
             globalPriceTableClass: '.global-price-table',
-            overallEmptyString: '-'
-        },
-
-        selectors = {
-            overlayClass: 'item-overlay',
-            overlayClassSelector: '.item-overlay'
+            overallEmptyString: '-',
+            loaderSelector: '.item-table-loader',
+            loaderClass: 'item-table-loader'
         },
 
         /**
@@ -113,10 +111,13 @@ define([
                     '   </td>',
                     '</tr>'
                 ].join('');
+            },
+            loader: function(classes) {
+                return '<div style="display:hidden" class="grid-row ' + classes + '"></div>';
             }
         },
 
-    // event namespace
+        // event namespace
         eventNamespace = 'sulu.item-table.',
 
         /**
@@ -137,6 +138,14 @@ define([
          */
         EVENT_SET_DEFAULT_DATA = function() {
             return getEventName.call(this, 'set-default-data');
+        },
+
+        /**
+         * Changes the currency and selects related price if available
+         * @event sulu.item-table[.INSTANCENAME].change-currency
+         */
+        EVENT_CHANGE_CURRENCY = function() {
+            return getEventName.call(this, 'change-currency');
         },
 
         /**
@@ -171,6 +180,7 @@ define([
          */
         bindCustomEvents = function() {
             this.sandbox.on(EVENT_SET_DEFAULT_DATA.call(this), setDefaultData.bind(this));
+            this.sandbox.on(EVENT_CHANGE_CURRENCY.call(this), changeCurrency.bind(this));
         },
 
         /**
@@ -200,6 +210,160 @@ define([
         },
 
         /**
+         * Changes currency for item table
+         * @param currency
+         */
+        changeCurrency = function(currency) {
+            var ids,
+                dfdLoadedProducts,
+                dfdLoaderStarted = new this.sandbox.data.deferred();
+
+            this.currency = currency;
+            ids = getAllProductIds.call(this, this.items);
+
+            if (!!ids && ids.length > 0) {
+                startLoader.call(this, dfdLoaderStarted);
+                dfdLoadedProducts = fetchProductData.call(this, ids);
+
+                // go on when loader is fully loaded and product data retrieved
+                // dfdLoadedProducts needs to be the first param
+                this.sandbox.dom.when(dfdLoadedProducts, dfdLoaderStarted)
+                    .done(function(data) {
+                        updatePricesForEachProduct.call(this, data);
+                        updateGlobalPrice.call(this);
+                        stopLoader.call(this);
+                    }.bind(this))
+                    .fail(function(jqXHR, textStatus, error) {
+                        this.sandbox.emit('sulu.labels.error.show',
+                            this.sandbox.translate('salescore.item-table.error.changing-currency'),
+                            'labels.error',
+                            ''
+                        );
+                        this.sandbox.logger.error(jqXHR, textStatus, error);
+                    }.bind(this)
+                );
+            }
+        },
+
+        /**
+         * Updates the price for every product and the total
+         * @param data
+         */
+        updatePricesForEachProduct = function(data) {
+            var $el,
+                item,
+                prop,
+                prices = getArrayForProductPrices.call(this, data._embedded.products);
+
+            // update price and input value
+            for (prop in this.items) {
+                if (this.items.hasOwnProperty(prop)) {
+                    item = this.items[prop];
+
+                    // get price
+                    if (!!prices[item.product.id] && !!prices[item.product.id][this.currency]) {
+                        item.price = prices[item.product.id][this.currency];
+                    } else {
+                        item.price = 0;
+                    }
+
+                    // update input in dom
+                    $el = this.sandbox.dom.find(constants.priceInput, this.sandbox.dom.find('#' + prop, this.$list));
+                    this.sandbox.dom.val($el, this.sandbox.numberFormat(item.price, 'n'));
+
+                    // update row total price
+                    updateOverallPrice.call(this, prop);
+                }
+            }
+        },
+
+        /**
+         * Returns an associative array of productIds and prices
+         * @param products
+         * @returns Array associative array of productsIds/prices
+         */
+        getArrayForProductPrices = function(products) {
+            var data = {};
+            this.sandbox.util.foreach(products, function(value) {
+                data[value.id] = {};
+                this.sandbox.util.foreach(value.prices, function(price) {
+                    data[value.id][price.currency.code] = price.price || 0;
+                }.bind(this));
+            }.bind(this));
+
+            return data;
+        },
+
+        /**
+         * Loads product data
+         * @param ids
+         */
+        fetchProductData = function(ids) {
+            // TODO could be replaced by a product collection
+            var url = '/admin/api/products?ids=' + ids.join(',');
+            return this.sandbox.util.load(url);
+        },
+
+        /**
+         * Stops the loader component and shows the list again
+         */
+        stopLoader = function() {
+            this.sandbox.stop(this.$loader);
+            this.sandbox.dom.show(this.$list);
+        },
+
+        /**
+         * Shows and starts a loader
+         * @param dfdLoaderStarted
+         */
+        startLoader = function(dfdLoaderStarted) {
+            prepareDomForLoader.call(this);
+            this.sandbox.start([
+                    {
+                        name: 'loader@husky',
+                        options: {
+                            el: this.$loader,
+                            size: '40px',
+                            hidden: false
+                        }
+                    }
+                ]
+            ).done(function() {
+                    dfdLoaderStarted.resolve();
+                }.bind(this));
+        },
+
+        /**
+         * Creats dom element for loader and appends it to
+         */
+        prepareDomForLoader = function() {
+            var height = this.sandbox.dom.height(this.$el);
+
+            this.$loader = this.sandbox.dom.createElement(templates.loader.call(this, constants.loaderClass));
+            this.$list = this.sandbox.dom.find(constants.formSelector, this.$el);
+
+            this.sandbox.dom.append(this.$el, this.$loader);
+            this.sandbox.dom.height(this.$loader, height);
+            this.sandbox.dom.hide(this.$list);
+            this.sandbox.dom.show(this.$loader);
+        },
+
+        /**
+         * Retrievs all product ids from all products currently in the table
+         * @param items
+         * @returns {Array} of ids
+         */
+        getAllProductIds = function(items) {
+            var ids = [], el;
+            for (el in items) {
+                if (!!items[el].hasOwnProperty('product')) {
+                    ids.push(items[el].product.id);
+                }
+            }
+            return ids;
+        },
+
+        /**
          * sets default data
          * @param key
          * @param value
@@ -213,9 +377,9 @@ define([
          * @param event
          */
         rowClicked = function(event) {
-            // if inupt or link was clicked, do nothing
+            // if input or link was clicked, do nothing
             if (event.target.tagName.toUpperCase() === 'INPUT' ||
-                event.target.tagName.toUpperCase() === 'A' ) {
+                event.target.tagName.toUpperCase() === 'A') {
                 return;
             }
 
@@ -397,7 +561,7 @@ define([
          * @returns {string}
          */
         getFormatedPriceCurrencyString = function(value, currency) {
-            currency = !!currency ? currency : rowDefaults.currency;
+            currency = !!currency ? currency : this.currency;
             return this.sandbox.numberFormat(value, 'n') + ' ' + currency;
         },
 
@@ -431,7 +595,7 @@ define([
          * @returns string
          */
         getCurrency = function(item) {
-            return !!item.currency ? item.currency : rowDefaults.currency;
+            return !!item.currency ? item.currency : this.currency;
         },
 
         /**
@@ -464,7 +628,12 @@ define([
                     updateItemRow.call(this, rowId, itemData);
                 }.bind(this))
                 .fail(function(request, message, error) {
-                    this.sandbox.logger.warn(request, message, error);
+                        this.sandbox.emit('sulu.labels.error.show',
+                            this.sandbox.translate('salescore.item-table.error.loading-product'),
+                            'labels.error',
+                            ''
+                        );
+                        this.sandbox.logger.error(request, message, error);
                 }.bind(this));
         },
 
@@ -537,7 +706,7 @@ define([
 
         /**
          * removes row with
-         * @param id
+         * @param rowId
          * @param $row the row element
          */
         removeItemRow = function(rowId, $row) {
@@ -579,12 +748,13 @@ define([
                 data.address = this.sandbox.sulu.createAddressString(data.address);
             }
 
+            data.currency = this.currency;
             data.overallPrice = this.sandbox.numberFormat(getOverallPriceString.call(this, data));
 
             // format numbers for cultural differences
-            data.discount = this.sandbox.numberFormat(data.discount,'n');
-            data.price = this.sandbox.numberFormat(data.price,'n');
-            data.quantity = this.sandbox.numberFormat(data.quantity,'n');
+            data.discount = this.sandbox.numberFormat(data.discount, 'n');
+            data.price = this.sandbox.numberFormat(data.price, 'n');
+            data.quantity = this.sandbox.numberFormat(data.quantity, 'n');
 
             rowTpl = this.sandbox.util.template(RowTpl, data);
             $row = this.sandbox.dom.createElement(rowTpl);
@@ -614,6 +784,7 @@ define([
         /**
          * updates a specific row
          * @param rowId
+         * @param itemData
          */
         updateItemRow = function(rowId, itemData) {
             var $row = createItemRow.call(this, itemData, false);
@@ -710,22 +881,24 @@ define([
          */
         setItemByProduct = function(productData) {
             // merge with row defaults
-            var itemData = this.sandbox.util.extend({}, rowDefaults, this.options.defaultData,
-                {
-                    name: productData.name,
-                    number: productData.number,
-                    description: productData.shortDescription,
-                    product: productData,
-                    quantityUnit: !!productData.orderUnit ? productData.orderUnit.name : ''
-                }
-            );
+            var i, len,
+                itemData = this.sandbox.util.extend({}, rowDefaults, this.options.defaultData,
+                    {
+                        name: productData.name,
+                        number: productData.number,
+                        description: productData.shortDescription,
+                        product: productData,
+                        quantityUnit: !!productData.orderUnit ? productData.orderUnit.name : ''
+                    }
+                );
 
             // get prices
             if (!!productData.prices && productData.prices.length > 0) {
-                itemData.price = productData.prices[0].price;
-//                for (i = -1, len = productData.price; ++i < len;) {
-                // TODO get price with the correct currency https://github.com/massiveart/POOL-ALPIN/issues/337
-//            }
+                for (i = -1, len = productData.prices.length; ++i < len;) {
+                    if (productData.prices[i].currency.code === this.currency) {
+                        itemData.price = productData.prices[i].price;
+                    }
+                }
             }
 
             // set supplierName as tooltip, if set
@@ -804,6 +977,7 @@ define([
             this.items = {};
             this.rowCount = 0;
             this.table = null;
+            this.currency = this.options.currency || rowDefaults.currency;
 
             this.isEmpty = this.items.length;
 
