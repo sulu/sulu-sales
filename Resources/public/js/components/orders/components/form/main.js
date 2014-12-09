@@ -276,10 +276,6 @@ define([
             this.sandbox.on('husky.select.' + constants.currencySelectInstanceName + '.selected.item', function(data) {
                 this.sandbox.emit('sulu.item-table.' + constants.itemTableInstanceName + '.change-currency', data);
             }, this);
-
-            this.sandbox.on('husky.select.' + constants.currencySelectInstanceName + '.initialized', function() {
-
-            }, this);
         },
 
         /**
@@ -605,10 +601,12 @@ define([
 
             // initialize form
             initForm.call(this, data);
-
             this.startItemTableAndCurrencySelect();
         },
 
+        /**
+         * Initializes the item-table and the select component
+         */
         startItemTableAndCurrencySelect: function(){
 
             this.sandbox.start([
