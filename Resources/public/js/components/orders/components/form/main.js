@@ -333,7 +333,16 @@ define([
                         value: !!data.account ? data.account : '',
                         instanceName: this.accountInstanceName,
                         valueKey: 'name',
-                        noNewValues: true
+                        noNewValues: true,
+                        fields: [
+                            {
+                                id: 'id',
+                                width: '60px'
+                            },
+                            {
+                                id: 'name'
+                            }
+                        ]
                     }
                 }
             ]);
