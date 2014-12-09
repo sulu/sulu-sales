@@ -204,12 +204,9 @@
 
 <div class="changeListener grid-row">
     <div id="order-items"
-         data-aura-component="item-table@sulusalescore"
-         data-aura-is-editable="<%= isEditable %>"
          data-form="true"
          data-type="itemTable"
-         data-mapper-property="items">
-    </div>
+         data-mapper-property="items"></div>
 </div>
 
 <h2 class="divider m-top-40"><%=translate('public.details')%></h2>
@@ -219,20 +216,10 @@
         <div class="form-group">
             <label for="currency-select" class="required"><%=translate('salescore.currency')%></label>
             <div id="currency-select"
-                 data-aura-component="select@husky"
-                 data-aura-data="{{ currencies|json_encode() }}"
-                 data-aura-instance-name="currency-select"
-                 data-aura-value-name="code"
-                 data-aura-multiple-select="false"
-                 data-aura-default-label="<%=translate('dropdown.please-choose')%>"
-                 data-aura-pre-selected-elements="[1]"
-                 data-aura-disabled="<%= !isEditable %>"
-                 {#data-validation-required="true"#}
                  data-type="husky-select"
                  data-mapper-property-type="string"
-                 data-mapper-property="currency"
                  data-form="true">
-             </div>
+            </div>
         </div>
     </div>
     <div class="grid-col-6">
@@ -283,6 +270,7 @@
     <script type="text/javascript">
         (function() {
             App.emit('sulu.salesorder.set-order-status', {{ orderStatus |json_encode()|raw }});
+            App.emit('sulu.salesorder.set-currencies', {{  currencies |json_encode()|raw }});
         })();
     </script>
 {% endblock %}

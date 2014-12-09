@@ -25,6 +25,10 @@ define([
             accountInputId: '#account-input',
             deliveryAddressInstanceName: 'delivery-address',
             billingAddressInstanceName: 'billing-address',
+            currencySelectInstanceName: 'currency-select',
+            currencySelectSelector: '#currency-select',
+            itemTableInstanceName: 'order-items',
+            itemTableSelector: '#order-items',
             paymentTermsInstanceName: 'payment-terms',
             deliveryTermsInstanceName: 'delivery-terms',
             contactSelectId: '#contact-select',
@@ -198,11 +202,20 @@ define([
             this.options.orderStatuses = statuses;
         },
 
+        /**
+         * set currencies
+         * @param currencies
+         */
+        setCurrencies = function(currencies) {
+            this.options.currencies = currencies;
+        },
+
         bindCustomEvents = function() {
             // status change events
             this.sandbox.on('sulu.salesorder.order.edit.clicked', editOrder.bind(this));
             this.sandbox.on('sulu.salesorder.order.confirm.clicked', confirmOrder.bind(this));
             this.sandbox.on('sulu.salesorder.set-order-status', setOrderStatuses.bind(this));
+            this.sandbox.on('sulu.salesorder.set-currencies', setCurrencies.bind(this));
 
             this.sandbox.on('husky.auto-complete.' + this.accountInstanceName + '.initialized', function() {
                 if (!this.isEditable) {
@@ -259,6 +272,11 @@ define([
                 setFormData.call(this, this.options.data);
                 changeHandler.call(this);
             }.bind(this));
+
+            this.sandbox.on('husky.select.' + constants.currencySelectInstanceName + '.selected.item', function(data) {
+                this.sandbox.emit('sulu.item-table.' + constants.itemTableInstanceName + '.change-currency', data);
+                this.currency = data;
+            }, this);
         },
 
         /**
@@ -479,6 +497,21 @@ define([
         },
 
         /**
+         * Returns currency id for currency code
+         */
+        getCurrencyIdForCode = function(code, currencies){
+            var currency = [];
+            this.sandbox.util.each(currencies, function(key){
+                if(currencies[key].code === code){
+                    currency.push(currencies[key].id);
+                    return false;
+                }
+            }.bind(this));
+
+            return currency;
+        },
+
+        /**
          * Find an address where a specific property with a specific value is set
          * @param addresses
          * @param propertyName
@@ -570,6 +603,42 @@ define([
 
             // initialize form
             initForm.call(this, data);
+            this.startItemTableAndCurrencySelect();
+        },
+
+        /**
+         * Initializes the item-table and the select component
+         */
+        startItemTableAndCurrencySelect: function(){
+
+            this.sandbox.start([
+                {
+                    name: 'item-table@sulusalescore',
+                    options: {
+                        instanceName: constants.itemTableInstanceName,
+                        isEditable: this.isEditable,
+                        remoteUrl: constants.accountUrl,
+                        data: this.options.data.items,
+                        currency: this.options.data.currency,
+                        el: constants.itemTableSelector
+                    }
+                },
+                {
+                    name: 'select@husky',
+                    options: {
+                        el: constants.currencySelectSelector,
+                        instanceName: constants.currencySelectInstanceName,
+                        disabled: !this.isEditable,
+                        emitValues: true,
+                        defaultLabel: this.sandbox.translate('dropdown.please-choose'),
+                        multipleSelect: false,
+                        repeatSelect: false,
+                        valueName: 'code',
+                        data: this.options.currencies,
+                        preSelectedElements: getCurrencyIdForCode.call(this, this.options.data.currency, this.options.currencies)
+                    }
+                }
+            ]);
         },
 
         submit: function() {
@@ -582,6 +651,11 @@ define([
                 if (data.id === '') {
                     delete data.id;
                 }
+
+                // because the preselected option of the select conflicts with the data mapper
+                // the data mapper property is not used and therefore the data.currency property
+                // has to be set this way
+                data.currency = !!this.currency ? this.currency : this.options.data.currency;
 
                 // FIXME auto complete in mapper
                 // only get id, if auto-complete is not empty:
