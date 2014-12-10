@@ -305,5 +305,4 @@ class OrderController extends RestController implements ClassResourceInterface, 
     {
         return 'sulu.sales_order.orders';
     }
-
 }
