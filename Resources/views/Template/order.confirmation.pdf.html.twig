@@ -1,73 +1,60 @@
 {% extends "PoolAlpinBaseBundle:Default:pdf-base.html.twig" %}
+{% import "PoolAlpinBaseBundle:Default:pdf-macros.html.twig" as macros %}
 
-{% block supplier %}
+{% block recipient %}
     <div class="">
-        Oberndorfer Druckerei GmbH<br>
-        Member of Qebecor World Inc<br>
-        <span class="bold">Herr Johann Lachmayr</span><br>
-        Mittergöming 12<br>
-        5110 Oberndorf bei Salzburg<br>
-        ÖSTERREICH
+        {{ recipient.getAccountName() }}<br/>
+        <span class="bold">{{ recipient.getFirstName() }} {{ recipient.getLastName() }}</span><br/>
+        {{ recipient.getStreet() }} {{ recipient.getNumber() }}<br/>
+        {{ recipient.getZip() }} {{ recipient.getCity() }}<br/>
+        {{ recipient.getCountry() |upper }}
     </div>
 {% endblock %}
 
 {% block responsibleperson  %}
     <div class="">
-        SachbearbeiterIn:<br>
-        Anja Franke<br>
-        Tel: +43 (5522) 240 40-108<br>
-        Fax: +43 (5522) 240 40-106<br>
-        E-Mail: anja.franke@pool-alpin.com
+        <b>SachbearbeiterIn:</b><br>
+        {{ responsibleContact.getFullName() |default('-') }}<br/>
+        Tel: {{ responsibleContact.getMainPhone() |default('-') }}<br/>
+        Fax: {{ responsibleContact.getMainFax() |default('-') }}<br/>
+        E-Mail: {{ responsibleContact.getMainEmail() |default('-') }}
     </div>
 {% endblock %}
 
-{% block pdf_title %}Bestellung für Partenkirchner Bergbahnen{% endblock %}
-
-{% block customer %}
-    <p class="paragraph">
-        <span class="bold">Rechnungsadresse:</span><br>
-        Partenkirchner Bergbahnen GmbH & Co KG<br>
-        <span class="bold">Herr Bernhard Schrallhammer</span><br>
-        Karl und Martin Neuner - Platz 2<br>
-        82467 Garmisch-Partenkirchen<br>
-        DEUTSCHLAND<br>
-    </p>
-    <p>
-        UID: DE 813602657<br>
-        Tel: +49 8821 3469
-    </p>
+{% block pdf_title %}
+    Auftragsbestätigung für {{ recipient.getAccountName() }}
 {% endblock %}
 
+{% block invoice_address %}{% endblock %}
+
 {% block orderdetails %}
-    <p>
-        <span class="bold">
+    <div class="grid__item four-tenths">
+        <p>
             Auftragsnummer:<br>
-            AT-2014-3793
-        </span>
-    </p>
-    <p>
-        Angebotsnummer:<br>
-        AT-2014-3791
-    </p>
-    <p>
-        Kundennummer:<br>
-        1234567890
-    </p>
+            {{ order.getNumber() |default('-') }}
+        </p>
+        <p>
+            Angebotsnummer:<br>
+            {{ order.getOrderNumber() |default('-') }}
+        </p>
+    </div>
 {% endblock %}
 
 {% block shippingdetails %}
-    <p>
-        Bestelldatum:<br>
-        28.10.2014
-    </p>
-    <p>
-        Kostenstelle:<br>
-        987654321
-    </p>
-    <p>
-        Kommission:<br>
-        Bergstation B-Lif
-    </p>
+    <div class="grid__item three-tenths">
+        <p>
+            Datum:<br/>
+            {{ order.getCreated() |date('d.m.Y') }}
+        </p>
+        <p>
+            Kostenstelle:<br/>
+            {{ order.getCostCentre() |default('-') }}
+        </p>
+        <p>
+            Kommission:<br/>
+            {{ order.getCommission() |default('-') }}
+        </p>
+    </div>
 {% endblock %}
 
 {% block shippingdetails_addressnote_title %}
@@ -75,66 +62,20 @@
 {% endblock %}
 
 {% block shippingdetails_addressnote_content %}
-    Partenkirchner Bergbahnen GmbH & Co KG<br>
-    Karl und Martin Neuner - Platz 2 | 82467 Garmisch-Partenkirchen | DEUTSCHLAND
+    {{ recipient.getAccountName() }}<br/>
+    {{ recipient.getFirstName() }} {{ recipient.getLastName() }} - {{ recipient.getStreet() }} {{ recipient.getNumber() }} | {{ recipient.getZip() }} {{ recipient.getCity() }} {{ recipient.getCountry() |upper }}
 {% endblock %}
 
-{% block productlist_item %}
-    <div class="grid__item one-half">
-        <div class="grid">
-            <div class="grid__item one-tenth">
-                1
-            </div>
-            <div class="grid__item nine-tenths">
-                <p>
-                    <span class="bold">Aufkleber Eckbauerbahn</span><br>
-                    Größe: 13,5 x 6,5 cm<br/>
-                    Umfang: einseitig<br>
-                    Druck: 4c Digitaldruck<br/>
-                    Material: Papieraufkleber, Bilderdruck glänzend, selbstklebend (dient zum Überkleben auf Papierflyern)<br/>
-                </p>
-                <p class="paragraph">
-                    Verarbeitung: auf Format geschnitten, in handliche Kartons verpackt
-                </p>
-            </div>
-        </div>
-    </div>
-    <div class="grid__item one-half">
-        <div class="grid">
-            <div class="grid__item one-quarter text-align-right">
-                123456789
-            </div>
-            <div class="grid__item one-quarter">
-                26.600 Stück
-            </div>
-            <div class="grid__item one-quarter text-align-right">
-                0,02176
-            </div>
-            <div class="grid__item one-quarter text-align-right">
-                <span class="bold">578,82</span>
-            </div>
-        </div>
-    </div>
-    <div class="grid__item one-half">
-        <div class="grid">
-            <div class="grid__item two-tenths">
-            </div>
-            <div class="grid__item eight-tenths">
-                <div class="pbottom">
-                    <span class="bold">Abweichende Lieferadresse:</span><br>
-                    Hosenstraße 12<br>
-                    12345 Hemddorf<br>
-                    DEUTSCHLAND
-                </div>
-            </div>
-        </div>
-    </div>
+{% block productlist_items %}
+    {% for item in items %}
+        {{ macros.item(loop.index, item) }}
+    {% endfor %}
 {% endblock %}
 
 {% block productlist_footer_shippingcost_value %}
-    12,50
+    {{ order.getDeliveryCost() |default('-') }}
 {% endblock %}
 
 {% block productlist_footer_total_value %}
-    1142,47
+    {{ order.getTotalPrice() |default('-') }}
 {% endblock %}

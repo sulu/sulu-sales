@@ -12,22 +12,84 @@ namespace Sulu\Bundle\Sales\OrderBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Request;
+use Sulu\Component\Rest\RestController;
 
-class PdfController extends Controller
+class PdfController extends RestController
 {
+
+    /**
+     * @return OrderManager
+     */
+    private function getOrderManager()
+    {
+        return $this->get('sulu_sales_order.order_manager');
+    }
+
+    /**
+     * @return PdfMananger
+     */
     private function getPdfManager()
     {
         return $this->get('massive_pdf.pdf_manager');
     }
 
-    public function orderConfirmationAction() {
-        $pdf = $this->getPdfManager()->convertToPdf(
-            'SuluSalesOrderBundle:Template:order.confirmation.pdf.html.twig',
-            array(),
-            false
-        );
-
-        return new Response($pdf);
+    /**
+     * returns a baseURL for the current host
+     * @param request
+     * @return string
+     */
+    public function getBaseUrl($request)
+    {
+        return $request->getScheme() . '://' . $request->getHost();
     }
 
+    /**
+     * Finds a order object by a given id from the url
+     * and returns a rendered pdf in a download window
+     * @param Request $request
+     * @param $id
+     * @return Response
+     */
+    public function orderConfirmationAction(Request $request, $id)
+    {
+        $locale = $this->getLocale($request);
+        $order = $this->getOrderManager()->findByIdAndLocale($id, $locale)->getEntity();
+
+        if (!$order) {
+            return new Response('', 404);
+        }
+
+        $data = array(
+            'baseUrl' => $this->getBaseUrl($request),
+            'recipient' => $order->getInvoiceAddress(),
+            'responsibleContact' => $order->getResponsibleContact(),
+            'deliveryAddress' => $order->getInvoiceAddress(),
+            'items' => $order->getItems(),
+            'order' => $order
+        );
+
+        $footer = $this->getPdfManager()->renderTemplate(
+            'PoolAlpinBaseBundle:Default:pdf-base-footer.html.twig',
+            array(
+                'baseUrl' => $this->getBaseUrl($request),
+            )
+        );
+
+        $pdf = $this->getPdfManager()->convertToPdf(
+            'SuluSalesOrderBundle:Template:order.confirmation.pdf.html.twig',
+            $data,
+            false,
+            array('footer-html' => $footer)
+        );
+
+        return new Response(
+            $pdf,
+            200,
+            array(
+                'Content-Type'        => 'application/pdf',
+                'Content-Disposition' => 'attachment; filename="file.pdf"'
+            )
+        );
+    }
 }
