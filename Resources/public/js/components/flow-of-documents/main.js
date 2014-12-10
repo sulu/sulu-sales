@@ -201,7 +201,7 @@ define([], function() {
 
             this.sandbox.dom.on(this.$el, 'click', function(event) {
                 event.stopPropagation();
-                var $tr = this.sandbox.dom.createElement(event.currentTarget).closest('tr'),
+                var $tr = this.sandbox.dom.closest(this.sandbox.dom.createElement(event.currentTarget), 'tr'),
                     id = this.sandbox.dom.data($tr, 'id'),
                     pdfBaseUrl = this.sandbox.dom.data($tr, 'pdfBaseUrl'),
                     url = pdfBaseUrl + constants.pdfOrderConfirmUrlSlug + '/' + id;
