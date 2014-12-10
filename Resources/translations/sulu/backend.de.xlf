@@ -140,7 +140,19 @@
             </trans-unit>
             <trans-unit id="a50accg2ac221350142c0b4720e29a35" resname="salescore.validation-warning">
                 <source>salescore.validation-warning</source>
-                <target>The provided data is not valid. Please recheck your submission.</target>
+                <target>Die eingegebenen Daten sind ungültig.</target>
+            </trans-unit>
+            <trans-unit id="a50accg2ac221350142c0b4720e29a36" resname="salescore.item-table.error.loading-product">
+                <source>salescore.item-table.error.loading-product</source>
+                <target>Die Produktdaten konnten nicht geladen werden.</target>
+            </trans-unit>
+            <trans-unit id="a50accg2ac221350142c0b4720e29a37" resname="salescore.item-table.error.changing-currency">
+                <source>salescore.item-table.error.changing-currency</source>
+                <target>Beim Ändern der Währung ist ein Fehler aufgetreten.</target>
+            </trans-unit>
+            <trans-unit id="a50accg2ac221350142c0b4720e29a38" resname="salescore.delivery-cost">
+                <source>salescore.delivery-cost</source>
+                <target>Lieferkosten</target>
             </trans-unit>
         </body>
     </file>
