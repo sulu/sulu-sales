@@ -24,6 +24,8 @@ use DateTime;
  */
 class Order extends ApiWrapper implements SalesDocument
 {
+    public static $pdfBaseUrl = '/admin/order/pdf/';
+
     private $permissions = array();
     private $workflows = array();
 
@@ -761,7 +763,8 @@ class Order extends ApiWrapper implements SalesDocument
             'number' => $this->getNumber(),
             'data' => $this->getOrderDate(),
             'type' => 'order',
-            'id' => $this->getId()
+            'id' => $this->getId(),
+            'pdfBaseUrl' => $this->getPdfBaseUrl(),
         );
     }
 
@@ -806,4 +809,14 @@ class Order extends ApiWrapper implements SalesDocument
     {
         return $this->$workflows;
     }
+
+    /**
+     * Returns url for generating the documents pdf
+     * @return string
+     */
+    public function getPdfBaseUrl()
+    {
+        return self::$pdfBaseUrl;
+    }
+
 }

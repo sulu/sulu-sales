@@ -1,0 +1,81 @@
+{% extends "PoolAlpinBaseBundle:Default:pdf-base.html.twig" %}
+{% import "PoolAlpinBaseBundle:Default:pdf-macros.html.twig" as macros %}
+
+{% block recipient %}
+    <div class="">
+        {{ recipient.getAccountName() }}<br/>
+        <span class="bold">{{ recipient.getFirstName() }} {{ recipient.getLastName() }}</span><br/>
+        {{ recipient.getStreet() }} {{ recipient.getNumber() }}<br/>
+        {{ recipient.getZip() }} {{ recipient.getCity() }}<br/>
+        {{ recipient.getCountry() |upper }}
+    </div>
+{% endblock %}
+
+{% block responsibleperson  %}
+    <div class="">
+        <b>SachbearbeiterIn:</b><br>
+        {{ responsibleContact.getFullName() |default('-') }}<br/>
+        Tel: {{ responsibleContact.getMainPhone() |default('-') }}<br/>
+        Fax: {{ responsibleContact.getMainFax() |default('-') }}<br/>
+        E-Mail: {{ responsibleContact.getMainEmail() |default('-') }}
+    </div>
+{% endblock %}
+
+{% block pdf_title %}
+    Auftragsbestätigung für {{ recipient.getAccountName() }}
+{% endblock %}
+
+{% block invoice_address %}{% endblock %}
+
+{% block orderdetails %}
+    <div class="grid__item four-tenths">
+        <p>
+            Auftragsnummer:<br>
+            {{ order.getNumber() |default('-') }}
+        </p>
+        <p>
+            Angebotsnummer:<br>
+            {{ order.getOrderNumber() |default('-') }}
+        </p>
+    </div>
+{% endblock %}
+
+{% block shippingdetails %}
+    <div class="grid__item three-tenths">
+        <p>
+            Datum:<br/>
+            {{ order.getCreated() |date('d.m.Y') }}
+        </p>
+        <p>
+            Kostenstelle:<br/>
+            {{ order.getCostCentre() |default('-') }}
+        </p>
+        <p>
+            Kommission:<br/>
+            {{ order.getCommission() |default('-') }}
+        </p>
+    </div>
+{% endblock %}
+
+{% block shippingdetails_addressnote_title %}
+    <span class="bold">Standard-Lieferadresse:</span>
+{% endblock %}
+
+{% block shippingdetails_addressnote_content %}
+    {{ recipient.getAccountName() }}<br/>
+    {{ recipient.getFirstName() }} {{ recipient.getLastName() }} - {{ recipient.getStreet() }} {{ recipient.getNumber() }} | {{ recipient.getZip() }} {{ recipient.getCity() }} {{ recipient.getCountry() |upper }}
+{% endblock %}
+
+{% block productlist_items %}
+    {% for item in items %}
+        {{ macros.item(loop.index, item) }}
+    {% endfor %}
+{% endblock %}
+
+{% block productlist_footer_shippingcost_value %}
+    {{ order.getDeliveryCost() |default('-') }}
+{% endblock %}
+
+{% block productlist_footer_total_value %}
+    {{ order.getTotalPrice() |default('-') }}
+{% endblock %}
