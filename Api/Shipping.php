@@ -23,6 +23,8 @@ use Sulu\Bundle\Sales\ShippingBundle\Entity\ShippingItem as ShippingItemEntity;
  */
 class Shipping extends ApiWrapper implements SalesDocument
 {
+    public static $pdfBaseUrl = '/admin/shipping/pdf/';
+
     /**
      * @Exclude
      */
@@ -667,4 +669,14 @@ class Shipping extends ApiWrapper implements SalesDocument
             'id' => $this->getId()
         );
     }
+
+    /**
+     * Returns url for generating the documents pdf
+     * @return string
+     */
+    public function getPdfBaseUrl()
+    {
+        return self::$pdfBaseUrl;
+    }
+
 }
