@@ -666,7 +666,8 @@ class Shipping extends ApiWrapper implements SalesDocument
             'number' => $this->getNumber(),
             'type' => 'shipping',
             'date' => $this->getExpectedDeliveryDate(),
-            'id' => $this->getId()
+            'id' => $this->getId(),
+            'pdfBaseUrl' => $this->getPdfBaseUrl()
         );
     }
 
