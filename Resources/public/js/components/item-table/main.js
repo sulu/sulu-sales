@@ -644,20 +644,9 @@ define([
          * @param $row
          */
         initProductSearch = function($row) {
-
-            var options = {};
-
-            if (!!Config.get('suluproduct.components.autocomplete.default')) {
-                options = Config.get('suluproduct.components.autocomplete.default');
-                options.el = this.sandbox.dom.find(constants.productSearchClass, $row);
-                options.selectCallback = productSelected.bind(this);
-            } else {
-                this.sandbox.emit('sulu.labels.error.show',
-                    this.sandbox.translate('salescore.item-table.error.loading-product'),
-                    'labels.error',
-                    ''
-                );
-            }
+            var options = Config.get('suluproduct.components.autocomplete.default');
+            options.el = this.sandbox.dom.find(constants.productSearchClass, $row);
+            options.selectCallback = productSelected.bind(this);
 
             // initialize auto-complete when adding a new Item
             this.sandbox.start([
