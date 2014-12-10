@@ -324,7 +324,7 @@ class ItemManager
             $item->setName(null);
             $item->setProduct(null);
         }
-        return null;
 
+        return null;
     }
 }
