@@ -42,6 +42,10 @@ define([], function() {
                 {
                     property: 'date',
                     type: 'date'
+                },
+                {
+                    property: 'pdfBaseUrl',
+                    type: 'download'
                 }
             ]
         },
@@ -53,14 +57,15 @@ define([], function() {
             table: function() {
                 return '<table class="' + constants.tableClass + '"></table>';
             },
-            row: function(id, route) {
-                return '<tr data-id="' + id + '" data-route="' + route + '" class="pointer"></tr>';
+            row: function(id, route, pdfBaseUrl) {
+                return '<tr data-id="' + id + '" data-route="' + route + '" data-pdf-base-url="' + pdfBaseUrl + '" class="pointer"></tr>';
             }
         },
 
         constants = {
             titleClass: 'sidebar-table-title',
-            tableClass: 'sidebar-table'
+            tableClass: 'sidebar-table',
+            pdfOrderConfirmUrlSlug: 'order-confirmation'
         },
 
         eventNamespace = 'sulu.flow-of-documents.',
@@ -106,7 +111,8 @@ define([], function() {
         },
 
         renderRow = function(data) {
-            var $row = this.sandbox.dom.createElement(templates.row.call(this, data.id, data.route));
+            var pdfBaseUrl = data.pdfBaseUrl || '',
+                $row = this.sandbox.dom.createElement(templates.row.call(this, data.id, data.route, pdfBaseUrl));
             this.sandbox.util.foreach(this.options.columnDefinition, function(definition) {
                 renderCell.call(this, data, $row, definition);
             }.bind(this));
@@ -123,6 +129,7 @@ define([], function() {
             var value,
                 cssClass,
                 prefix = '',
+                downloadIcon = '',
                 $td;
 
             // TODO refactor when more abstraction is needed and more time available
@@ -132,6 +139,12 @@ define([], function() {
                     value = data[definition.property];
                     cssClass = getCssClassForValue.call(this, value);
                     $td = this.sandbox.dom.createElement('<td class="icon-cell"><span class="fa ' + cssClass + ' icon"></span></td>');
+                    break;
+                case 'download':
+                    if (data.type === 'order') {
+                        downloadIcon = '<span class="fa fa-file-pdf-o icon pdf-download"></span>';
+                    }
+                    $td = this.sandbox.dom.createElement('<td class="icon-cell">' + downloadIcon + '</td>');
                     break;
                 case 'number':
                     if (!!data[definition.prefixProperty]) {
@@ -185,6 +198,16 @@ define([], function() {
                 this.sandbox.emit(EVENT_CLICKED_ROW.call(this),{id: id, route: route});
 
             }.bind(this), 'tr');
+
+            this.sandbox.dom.on(this.$el, 'click', function(event) {
+                event.stopPropagation();
+                var $tr = this.sandbox.dom.closest(this.sandbox.dom.createElement(event.currentTarget), 'tr'),
+                    id = this.sandbox.dom.data($tr, 'id'),
+                    pdfBaseUrl = this.sandbox.dom.data($tr, 'pdfBaseUrl'),
+                    url = pdfBaseUrl + constants.pdfOrderConfirmUrlSlug + '/' + id;
+
+                window.open(url, 'Download');
+            }.bind(this), '.pdf-download');
         },
 
         /**
