@@ -11,8 +11,9 @@ define([
     'sulusalesorder/util/sidebar',
     'sulusalesorder/util/orderStatus',
     'sulusalescore/util/helper',
-    'sulucontact/model/account'
-], function(Sidebar, OrderStatus, CoreHelper, Account) {
+    'sulucontact/model/account',
+    'config'
+], function(Sidebar, OrderStatus, CoreHelper, Account, Config) {
 
     'use strict';
 
@@ -21,7 +22,6 @@ define([
         constants = {
             accountContactsUrl: '/admin/api/accounts/<%= id %>/contacts?flat=true',
             accountAddressesUrl: '/admin/api/accounts/<%= id %>/addresses',
-            accountUrl: '/admin/api/accounts?searchFields=name&flat=true&fields=id,name',
             accountInputId: '#account-input',
             deliveryAddressInstanceName: 'delivery-address',
             billingAddressInstanceName: 'billing-address',
@@ -321,29 +321,16 @@ define([
                 initSelectsByAccountId.call(this, data.account.id, data);
             }
 
+            var options = Config.get('sulucontact.components.autocomplete.default.account');
+            options.el = constants.accountInputId;
+            options.value = !!data.account ? data.account : '';
+            options.instanceName= this.accountInstanceName;
+
             // starts form components
             this.sandbox.start([
                 {
                     name: 'auto-complete@husky',
-                    options: {
-                        el: constants.accountInputId,
-                        remoteUrl: constants.accountUrl,
-                        resultKey: 'accounts',
-                        getParameter: 'search',
-                        value: !!data.account ? data.account : '',
-                        instanceName: this.accountInstanceName,
-                        valueKey: 'name',
-                        noNewValues: true,
-                        fields: [
-                            {
-                                id: 'id',
-                                width: '60px'
-                            },
-                            {
-                                id: 'name'
-                            }
-                        ]
-                    }
+                    options: options
                 }
             ]);
         },
