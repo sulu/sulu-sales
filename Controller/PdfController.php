@@ -14,6 +14,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Sulu\Component\Rest\RestController;
+use Sulu\Bundle\Sales\OrderBundle\Order\Exception\OrderNotFoundException;
 
 class PdfController extends RestController
 {
@@ -54,10 +55,11 @@ class PdfController extends RestController
     public function orderConfirmationAction(Request $request, $id)
     {
         $locale = $this->getLocale($request);
-        $order = $this->getOrderManager()->findByIdAndLocale($id, $locale)->getEntity();
 
-        if (!$order) {
-            return new Response('', 404);
+        try {
+            $order = $this->getOrderManager()->findByIdAndLocale($id, $locale)->getEntity();
+        } catch(OrderNotFoundException $exc) {
+            throw new OrderNotFoundException($id);
         }
 
         $data = array(
