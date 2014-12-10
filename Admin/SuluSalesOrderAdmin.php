@@ -13,25 +13,35 @@ namespace Sulu\Bundle\Sales\OrderBundle\Admin;
 use Sulu\Bundle\AdminBundle\Admin\Admin;
 use Sulu\Bundle\AdminBundle\Navigation\Navigation;
 use Sulu\Bundle\AdminBundle\Navigation\NavigationItem;
+use Sulu\Bundle\SecurityBundle\Permission\SecurityCheckerInterface;
 
 class SuluSalesOrderAdmin extends Admin
 {
+    /**
+     * @var SecurityCheckerInterface
+     */
+    private $securityChecker;
 
-    public function __construct($title)
+    public function __construct(SecurityCheckerInterface $securityChecker, $title)
     {
-        $rootNavigationItem = new NavigationItem($title);
+        $this->securityChecker = $securityChecker;
 
+        $rootNavigationItem = new NavigationItem($title);
         $section = new NavigationItem('');
 
         $sales = new NavigationItem('navigation.sales');
         $sales->setIcon('shopping-cart');
-        $section->addChild($sales);
 
-        $order = new NavigationItem('navigation.sales.order');
-        $order->setAction('sales/orders');
-        $sales->addChild($order);
+        if ($this->securityChecker->hasPermission('sulu.sales_order.orders', 'view')) {
+            $order = new NavigationItem('navigation.sales.order', $sales);
+            $order->setAction('sales/orders');
+        }
 
-        $rootNavigationItem->addChild($section);
+        if ($sales->hasChildren()) {
+            $section->addChild($sales);
+            $rootNavigationItem->addChild($section);
+        }
+
         $this->setNavigation(new Navigation($rootNavigationItem));
     }
 
@@ -49,5 +59,19 @@ class SuluSalesOrderAdmin extends Admin
     public function getJsBundleName()
     {
         return 'sulusalesorder';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getSecurityContexts()
+    {
+        return array(
+            'Sulu' => array(
+                'SalesOrder' => array(
+                    'sulu.sales_order.orders',
+                )
+            )
+        );
     }
 }
