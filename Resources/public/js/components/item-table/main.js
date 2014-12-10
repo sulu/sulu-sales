@@ -61,7 +61,6 @@ define([
             formSelector: '.item-table-list-form',
             productSearchClass: '.product-search',
             rowIdPrefix: 'item-table-row-',
-            productsUrl: '/admin/api/products?flat=true&searchFields=number,name&fields=id,name,number,manufacturer',
             productUrl: '/admin/api/products/',
             rowClass: '.item-table-row',
             quantityRowClass: '.item-quantity',
