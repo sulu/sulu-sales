@@ -85,12 +85,14 @@ class PdfController extends RestController
             array('footer-html' => $footer)
         );
 
+        $pdfName = 'PA_OrderConfirmation-' . $order->getNumber() . '.pdf';
+
         return new Response(
             $pdf,
             200,
             array(
                 'Content-Type'        => 'application/pdf',
-                'Content-Disposition' => 'attachment; filename="file.pdf"'
+                'Content-Disposition' => 'attachment; filename="' . $pdfName . '"'
             )
         );
     }
