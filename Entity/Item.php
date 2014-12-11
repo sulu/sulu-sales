@@ -687,7 +687,7 @@ class Item
      * Set totalNetPrice
      *
      * @param float $totalNetPrice
-     * @return Order
+     * @return Item
      */
     private function setTotalNetPrice($totalNetPrice)
     {
