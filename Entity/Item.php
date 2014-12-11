@@ -714,6 +714,6 @@ class Item
     {
         $quantityPrice = $this->price * $this->quantity;
         $total = $quantityPrice - ($quantityPrice * ($this->discount / 100));
-        $this->setTotalNetPrice($total);
+        $this->setTotalNetPrice(round($total, 2));
     }
- }
+}
