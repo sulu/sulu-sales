@@ -134,13 +134,18 @@ class Item
     private $bitmaskStatus;
 
     /**
+     * @var float
+     */
+    private $totalNetPrice;
+
+    /**
      * Constructor
      */
     public function __construct()
     {
         $this->attributes = new \Doctrine\Common\Collections\ArrayCollection();
     }
-    
+
     /**
      * Set name
      *
@@ -150,14 +155,14 @@ class Item
     public function setName($name)
     {
         $this->name = $name;
-    
+
         return $this;
     }
 
     /**
      * Get name
      *
-     * @return string 
+     * @return string
      */
     public function getName()
     {
@@ -173,14 +178,14 @@ class Item
     public function setNumber($number)
     {
         $this->number = $number;
-    
+
         return $this;
     }
 
     /**
      * Get number
      *
-     * @return string 
+     * @return string
      */
     public function getNumber()
     {
@@ -196,14 +201,16 @@ class Item
     public function setQuantity($quantity)
     {
         $this->quantity = $quantity;
-    
+
+        $this->updateTotalNetPrice();
+
         return $this;
     }
 
     /**
      * Get quantity
      *
-     * @return float 
+     * @return float
      */
     public function getQuantity()
     {
@@ -219,14 +226,14 @@ class Item
     public function setQuantityUnit($quantityUnit)
     {
         $this->quantityUnit = $quantityUnit;
-    
+
         return $this;
     }
 
     /**
      * Get quantityUnit
      *
-     * @return string 
+     * @return string
      */
     public function getQuantityUnit()
     {
@@ -242,14 +249,14 @@ class Item
     public function setUseProductsPrice($useProductsPrice)
     {
         $this->useProductsPrice = $useProductsPrice;
-    
+
         return $this;
     }
 
     /**
      * Get useProductsPrice
      *
-     * @return boolean 
+     * @return boolean
      */
     public function getUseProductsPrice()
     {
@@ -265,14 +272,14 @@ class Item
     public function setTax($tax)
     {
         $this->tax = $tax;
-    
+
         return $this;
     }
 
     /**
      * Get tax
      *
-     * @return float 
+     * @return float
      */
     public function getTax()
     {
@@ -288,14 +295,16 @@ class Item
     public function setPrice($price)
     {
         $this->price = $price;
-    
+
+        $this->updateTotalNetPrice();
+
         return $this;
     }
 
     /**
      * Get price
      *
-     * @return float 
+     * @return float
      */
     public function getPrice()
     {
@@ -311,14 +320,16 @@ class Item
     public function setDiscount($discount)
     {
         $this->discount = $discount;
-    
+
+        $this->updateTotalNetPrice();
+
         return $this;
     }
 
     /**
      * Get discount
      *
-     * @return float 
+     * @return float
      */
     public function getDiscount()
     {
@@ -334,14 +345,14 @@ class Item
     public function setDescription($description)
     {
         $this->description = $description;
-    
+
         return $this;
     }
 
     /**
      * Get description
      *
-     * @return string 
+     * @return string
      */
     public function getDescription()
     {
@@ -357,14 +368,14 @@ class Item
     public function setWeight($weight)
     {
         $this->weight = $weight;
-    
+
         return $this;
     }
 
     /**
      * Get weight
      *
-     * @return float 
+     * @return float
      */
     public function getWeight()
     {
@@ -380,14 +391,14 @@ class Item
     public function setWidth($width)
     {
         $this->width = $width;
-    
+
         return $this;
     }
 
     /**
      * Get width
      *
-     * @return float 
+     * @return float
      */
     public function getWidth()
     {
@@ -403,14 +414,14 @@ class Item
     public function setHeight($height)
     {
         $this->height = $height;
-    
+
         return $this;
     }
 
     /**
      * Get height
      *
-     * @return float 
+     * @return float
      */
     public function getHeight()
     {
@@ -426,14 +437,14 @@ class Item
     public function setLength($length)
     {
         $this->length = $length;
-    
+
         return $this;
     }
 
     /**
      * Get length
      *
-     * @return float 
+     * @return float
      */
     public function getLength()
     {
@@ -449,14 +460,14 @@ class Item
     public function setSupplierName($supplierName)
     {
         $this->supplierName = $supplierName;
-    
+
         return $this;
     }
 
     /**
      * Get supplierName
      *
-     * @return string 
+     * @return string
      */
     public function getSupplierName()
     {
@@ -472,14 +483,14 @@ class Item
     public function setCreated($created)
     {
         $this->created = $created;
-    
+
         return $this;
     }
 
     /**
      * Get created
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getCreated()
     {
@@ -495,14 +506,14 @@ class Item
     public function setChanged($changed)
     {
         $this->changed = $changed;
-    
+
         return $this;
     }
 
     /**
      * Get changed
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getChanged()
     {
@@ -512,7 +523,7 @@ class Item
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
     public function getId()
     {
@@ -528,7 +539,7 @@ class Item
     public function addAttribute(\Sulu\Bundle\Sales\CoreBundle\Entity\ItemAttribute $attributes)
     {
         $this->attributes[] = $attributes;
-    
+
         return $this;
     }
 
@@ -545,7 +556,7 @@ class Item
     /**
      * Get attributes
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return \Doctrine\Common\Collections\Collection
      */
     public function getAttributes()
     {
@@ -561,14 +572,14 @@ class Item
     public function setProduct(\Sulu\Bundle\ProductBundle\Entity\Product $product = null)
     {
         $this->product = $product;
-    
+
         return $this;
     }
 
     /**
      * Get product
      *
-     * @return \Sulu\Bundle\ProductBundle\Entity\Product 
+     * @return \Sulu\Bundle\ProductBundle\Entity\Product
      */
     public function getProduct()
     {
@@ -584,14 +595,14 @@ class Item
     public function setChanger(UserInterface $changer = null)
     {
         $this->changer = $changer;
-    
+
         return $this;
     }
 
     /**
      * Get changer
      *
-     * @return UserInterface 
+     * @return UserInterface
      */
     public function getChanger()
     {
@@ -607,14 +618,14 @@ class Item
     public function setCreator(UserInterface $creator = null)
     {
         $this->creator = $creator;
-    
+
         return $this;
     }
 
     /**
      * Get creator
      *
-     * @return UserInterface 
+     * @return UserInterface
      */
     public function getCreator()
     {
@@ -635,14 +646,14 @@ class Item
     public function setSupplier(\Sulu\Bundle\ContactBundle\Entity\Account $supplier = null)
     {
         $this->supplier = $supplier;
-    
+
         return $this;
     }
 
     /**
      * Get supplier
      *
-     * @return \Sulu\Bundle\ContactBundle\Entity\Account 
+     * @return \Sulu\Bundle\ContactBundle\Entity\Account
      */
     public function getSupplier()
     {
@@ -658,17 +669,51 @@ class Item
     public function setBitmaskStatus($bitmaskStatus)
     {
         $this->bitmaskStatus = $bitmaskStatus;
-    
+
         return $this;
     }
 
     /**
      * Get bitmaskStatus
      *
-     * @return integer 
+     * @return integer
      */
     public function getBitmaskStatus()
     {
         return $this->bitmaskStatus;
     }
-}
+
+    /**
+     * Set totalNetPrice
+     *
+     * @param float $totalNetPrice
+     * @return Item
+     */
+    private function setTotalNetPrice($totalNetPrice)
+    {
+        $this->totalNetPrice = $totalNetPrice;
+
+        return $this;
+    }
+
+    /**
+     * Get totalNetPrice
+     *
+     * @return float
+     */
+    public function getTotalNetPrice()
+    {
+        return $this->totalNetPrice;
+    }
+
+    /**
+     * Updates and sets the total net price
+     *
+     */
+    private function updateTotalNetPrice()
+    {
+        $quantityPrice = $this->price * $this->quantity;
+        $total = $quantityPrice - ($quantityPrice * ($this->discount / 100));
+        $this->setTotalNetPrice($total);
+    }
+ }
