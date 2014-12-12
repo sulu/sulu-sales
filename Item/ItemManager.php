@@ -20,12 +20,14 @@ use Sulu\Bundle\Sales\CoreBundle\Entity\ItemRepository;
 use Sulu\Bundle\Sales\CoreBundle\Item\Exception\ItemException;
 use Sulu\Bundle\Sales\CoreBundle\Item\Exception\ItemNotFoundException;
 use Sulu\Bundle\Sales\CoreBundle\Item\Exception\MissingItemAttributeException;
-use Sulu\Component\Rest\RestHelperInterface;
+use Sulu\Component\Persistence\RelationTrait;
 use Sulu\Component\Security\UserRepositoryInterface;
 use DateTime;
 
 class ItemManager
 {
+    use RelationTrait;
+
     protected static $productEntityName = 'SuluProductBundle:Product';
     protected static $itemEntityName = 'SuluSalesCoreBundle:Item';
 
@@ -44,22 +46,15 @@ class ItemManager
      */
     private $userRepository;
 
-    /**
-     * @var RestHelperInterface
-     */
-    private $restHelper;
-
     public function __construct(
         ObjectManager $em,
         ItemRepository $itemRepository,
-        UserRepositoryInterface $userRepository,
-        RestHelperInterface $restHelper
+        UserRepositoryInterface $userRepository
     )
     {
         $this->em = $em;
         $this->itemRepository = $itemRepository;
         $this->userRepository = $userRepository;
-        $this->restHelper = $restHelper;
     }
 
     /**
@@ -375,7 +370,7 @@ class ItemManager
                     return $item->addAttribute($itemAttribute);
                 };
 
-                $result = $this->restHelper->processSubEntities(
+                $result = $this->processSubEntities(
                     $item->getAttributes(),
                     isset($data['attributes']) ? $data['attributes'] : array(),
                     $get,
