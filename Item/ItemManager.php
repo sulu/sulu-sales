@@ -95,6 +95,7 @@ class ItemManager
             $item->setUseProductsPrice(false);
             // TODO: set supplier based on if its a string  or object (fetch account and set it to setSupplier)
             $item->setSupplierName($this->getProperty($data, 'supplierName', $item->getSupplierName()));
+            // set quantity unit
             $item->setQuantityUnit($this->getProperty($data, 'quantityUnit', $item->getQuantityUnit()));
             $item->setTax($this->getProperty($data, 'tax', $item->getTax()));
         }
@@ -325,13 +326,14 @@ class ItemManager
             $item->setSupplier($product->getSupplier());
             $item->setSupplierName($product->getSupplier()->getName());
 
+            // set order unit
             if ($product->getOrderUnit()) {
                 $item->setQuantityUnit($product->getOrderUnit()->getTranslation($locale)->getName());
             }
 
             // TODO: get tax from product
             $item->setTax(20);
-//            $item->setTax($product->getTaxClass());
+//            $item->setTax($product->getTaxClass()->getTax($locale));
 
             if ($item->getUseProductsPrice() === true) {
                 $item->setPrice($product->getPrice());
