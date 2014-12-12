@@ -11,6 +11,7 @@
 namespace Sulu\Bundle\ProductBundle\Tests\Functional\Controller;
 
 use DateTime;
+use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Tools\SchemaTool;
 
 use Sulu\Bundle\ContactBundle\Entity\Account;
@@ -36,29 +37,15 @@ use Sulu\Bundle\Sales\OrderBundle\Entity\OrderAddress;
 use Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatus;
 use Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatusTranslation;
 use Sulu\Bundle\TestBundle\Entity\TestUser;
-use Sulu\Bundle\TestBundle\Testing\DatabaseTestCase;
+use Sulu\Bundle\TestBundle\Testing\SuluTestCase;
 use Symfony\Component\HttpKernel\Client;
 
 
-class OrderControllerTest extends DatabaseTestCase
+class OrderControllerTest extends SuluTestCase
 {
-    /**
-     * @var array
-     */
-    protected static $entities;
-
-    /**
-     * @var Client
-     */
-    private $client;
-
-    /**
-     * @var TestUser
-     */
-    private $testUser;
-
     private $locale = 'en';
 
+    private $testUser;
     /**
      * @var Account
      */
@@ -104,9 +91,9 @@ class OrderControllerTest extends DatabaseTestCase
      */
     private $termsOfPayment;
     /**
-     * @var OrderStatusTranslation
+     * @var OrderStatusTranslation[]
      */
-    private $orderStatusTranslation;
+    private $orderStatusTranslations;
     /**
      * @var Item
      */
@@ -132,114 +119,17 @@ class OrderControllerTest extends DatabaseTestCase
      */
     private $phone;
 
+    /**
+     * @var EntityManager
+     */
+    protected $em;
+
     public function setUp()
     {
-        $this->setUpTestUser();
-        $this->setUpClient();
-        $this->setUpSchema();
+        parent::setUp();
+        $this->em = $this->db('ORM')->getOm();
+        $this->purgeDatabase();
         $this->setUpTestData();
-    }
-
-    private function setUpTestUser()
-    {
-        $this->testUser = new TestUser();
-        $this->testUser->setUsername('test');
-        $this->testUser->setPassword('test');
-        $this->testUser->setLocale($this->locale);
-    }
-
-    private function setUpClient()
-    {
-        $this->client = static::createClient(
-            array(),
-            array(
-                'PHP_AUTH_USER' => $this->testUser->getUsername(),
-                'PHP_AUTH_PW' => $this->testUser->getPassword()
-            )
-        );
-    }
-
-    private function setUpSchema()
-    {
-         self::$tool = new SchemaTool(self::$em);
-
-        self::$entities = array(
-            self::$em->getClassMetadata('Sulu\Bundle\TestBundle\Entity\TestUser'),
-            // SalesOrderBundle
-            self::$em->getClassMetadata('Sulu\Bundle\Sales\OrderBundle\Entity\Order'),
-            self::$em->getClassMetadata('Sulu\Bundle\Sales\OrderBundle\Entity\OrderAddress'),
-            self::$em->getClassMetadata('Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatus'),
-            self::$em->getClassMetadata('Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatusTranslation'),
-            self::$em->getClassMetadata('Sulu\Bundle\Sales\OrderBundle\Entity\OrderActivityLog'),
-            // SalesCoreBundle
-            self::$em->getClassMetadata('Sulu\Bundle\Sales\CoreBundle\Entity\Item'),
-            self::$em->getClassMetadata('Sulu\Bundle\Sales\CoreBundle\Entity\ItemAttribute'),
-            // ProductBundle
-            self::$em->getClassMetadata('Sulu\Bundle\ProductBundle\Entity\Product'),
-            self::$em->getClassMetadata('Sulu\Bundle\ProductBundle\Entity\DeliveryStatus'),
-            self::$em->getClassMetadata('Sulu\Bundle\ProductBundle\Entity\ProductPrice'),
-            self::$em->getClassMetadata('Sulu\Bundle\ProductBundle\Entity\Type'),
-            self::$em->getClassMetadata('Sulu\Bundle\ProductBundle\Entity\TypeTranslation'),
-            self::$em->getClassMetadata('Sulu\Bundle\ProductBundle\Entity\TaxClass'),
-            self::$em->getClassMetadata('Sulu\Bundle\ProductBundle\Entity\TaxClassTranslation'),
-            self::$em->getClassMetadata('Sulu\Bundle\ProductBundle\Entity\Currency'),
-            self::$em->getClassMetadata('Sulu\Bundle\ProductBundle\Entity\Status'),
-            self::$em->getClassMetadata('Sulu\Bundle\ProductBundle\Entity\StatusTranslation'),
-            self::$em->getClassMetadata('Sulu\Bundle\ProductBundle\Entity\AttributeSet'),
-            self::$em->getClassMetadata('Sulu\Bundle\ProductBundle\Entity\AttributeSetTranslation'),
-            self::$em->getClassMetadata('Sulu\Bundle\ProductBundle\Entity\Attribute'),
-            self::$em->getClassMetadata('Sulu\Bundle\ProductBundle\Entity\AttributeTranslation'),
-            self::$em->getClassMetadata('Sulu\Bundle\ProductBundle\Entity\ProductTranslation'),
-            self::$em->getClassMetadata('Sulu\Bundle\ProductBundle\Entity\ProductAttribute'),
-            self::$em->getClassMetadata('Sulu\Bundle\ProductBundle\Entity\Addon'),
-            self::$em->getClassMetadata('Sulu\Bundle\ProductBundle\Entity\AttributeType'),
-            // ContactBundle
-            self::$em->getClassMetadata('Sulu\Bundle\ContactBundle\Entity\Account'),
-            self::$em->getClassMetadata('Sulu\Bundle\ContactBundle\Entity\AccountContact'),
-            self::$em->getClassMetadata('Sulu\Bundle\ContactBundle\Entity\AccountAddress'),
-            self::$em->getClassMetadata('Sulu\Bundle\ContactBundle\Entity\AccountCategory'),
-            self::$em->getClassMetadata('Sulu\Bundle\ContactBundle\Entity\Activity'),
-            self::$em->getClassMetadata('Sulu\Bundle\ContactBundle\Entity\ActivityStatus'),
-            self::$em->getClassMetadata('Sulu\Bundle\ContactBundle\Entity\ActivityPriority'),
-            self::$em->getClassMetadata('Sulu\Bundle\ContactBundle\Entity\ActivityType'),
-            self::$em->getClassMetadata('Sulu\Bundle\ContactBundle\Entity\Address'),
-            self::$em->getClassMetadata('Sulu\Bundle\ContactBundle\Entity\AddressType'),
-            self::$em->getClassMetadata('Sulu\Bundle\ContactBundle\Entity\BankAccount'),
-            self::$em->getClassMetadata('Sulu\Bundle\ContactBundle\Entity\Contact'),
-            self::$em->getClassMetadata('Sulu\Bundle\ContactBundle\Entity\ContactTitle'),
-            self::$em->getClassMetadata('Sulu\Bundle\ContactBundle\Entity\Position'),
-            self::$em->getClassMetadata('Sulu\Bundle\ContactBundle\Entity\ContactLocale'),
-            self::$em->getClassMetadata('Sulu\Bundle\ContactBundle\Entity\Country'),
-            self::$em->getClassMetadata('Sulu\Bundle\ContactBundle\Entity\ContactAddress'),
-            self::$em->getClassMetadata('Sulu\Bundle\ContactBundle\Entity\Email'),
-            self::$em->getClassMetadata('Sulu\Bundle\ContactBundle\Entity\EmailType'),
-            self::$em->getClassMetadata('Sulu\Bundle\ContactBundle\Entity\Note'),
-            self::$em->getClassMetadata('Sulu\Bundle\ContactBundle\Entity\Fax'),
-            self::$em->getClassMetadata('Sulu\Bundle\ContactBundle\Entity\FaxType'),
-            self::$em->getClassMetadata('Sulu\Bundle\ContactBundle\Entity\Phone'),
-            self::$em->getClassMetadata('Sulu\Bundle\ContactBundle\Entity\PhoneType'),
-            self::$em->getClassMetadata('Sulu\Bundle\ContactBundle\Entity\Url'),
-            self::$em->getClassMetadata('Sulu\Bundle\ContactBundle\Entity\UrlType'),
-            self::$em->getClassMetadata('Sulu\Bundle\TagBundle\Entity\Tag'),
-            self::$em->getClassMetadata('Sulu\Bundle\ContactBundle\Entity\TermsOfPayment'),
-            self::$em->getClassMetadata('Sulu\Bundle\ContactBundle\Entity\TermsOfDelivery'),
-            self::$em->getClassMetadata('Sulu\Bundle\MediaBundle\Entity\Collection'),
-            self::$em->getClassMetadata('Sulu\Bundle\MediaBundle\Entity\CollectionType'),
-            self::$em->getClassMetadata('Sulu\Bundle\MediaBundle\Entity\CollectionMeta'),
-            self::$em->getClassMetadata('Sulu\Bundle\MediaBundle\Entity\Media'),
-            self::$em->getClassMetadata('Sulu\Bundle\MediaBundle\Entity\MediaType'),
-            self::$em->getClassMetadata('Sulu\Bundle\MediaBundle\Entity\File'),
-            self::$em->getClassMetadata('Sulu\Bundle\MediaBundle\Entity\FileVersion'),
-            self::$em->getClassMetadata('Sulu\Bundle\MediaBundle\Entity\FileVersionMeta'),
-            self::$em->getClassMetadata('Sulu\Bundle\MediaBundle\Entity\FileVersionContentLanguage'),
-            self::$em->getClassMetadata('Sulu\Bundle\MediaBundle\Entity\FileVersionPublishLanguage'),
-            self::$em->getClassMetadata('Sulu\Bundle\CategoryBundle\Entity\Category'),
-            self::$em->getClassMetadata('Sulu\Bundle\CategoryBundle\Entity\CategoryMeta'),
-            self::$em->getClassMetadata('Sulu\Bundle\CategoryBundle\Entity\CategoryTranslation')
-        );
-
-        self::$tool->dropSchema(self::$entities);
-        self::$tool->createSchema(self::$entities);
     }
 
     private function setUpTestData()
@@ -252,6 +142,12 @@ class OrderControllerTest extends DatabaseTestCase
         $this->account->setType(Account::TYPE_BASIC);
         $this->account->setUid('uid-123');
         $this->account->setDisabled(0);
+
+        $this->testUser = new TestUser();
+        $this->testUser->setUsername('test');
+        $this->testUser->setPassword('test');
+        $this->testUser->setLocale('en');
+        $this->em->persist($this->testUser);
 
         // country
         $country = new Country();
@@ -310,28 +206,41 @@ class OrderControllerTest extends DatabaseTestCase
         // created
         $status = new OrderStatus();
         $status->setId(OrderStatus::STATUS_CREATED);
-        $this->createStatusTranslation(self::$em, $status, 'Created', 'en');
-        $this->createStatusTranslation(self::$em, $status, 'Erfasst', 'de');
-        self::$em->persist($status);
+        $this->createStatusTranslation($this->em, $status, 'Created', 'en');
+        $this->createStatusTranslation($this->em, $status, 'Erfasst', 'de');
+        $this->em->persist($status);
+
+        $metadata = $this->em->getClassMetaData(get_class($status));
+        $metadata->setIdGeneratorType(\Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_NONE);
+
         $this->orderStatus = $status;
         // cart
         $status = new OrderStatus();
         $status->setId(OrderStatus::STATUS_IN_CART);
-        $this->createStatusTranslation(self::$em, $status, 'In Cart', 'en');
-        $this->createStatusTranslation(self::$em, $status, 'Im Warenkorb', 'de');
-        self::$em->persist($status);
+        $this->createStatusTranslation($this->em, $status, 'In Cart', 'en');
+        $this->createStatusTranslation($this->em, $status, 'Im Warenkorb', 'de');
+        $this->em->persist($status);
+
+        $metadata = $this->em->getClassMetaData(get_class($status));
+        $metadata->setIdGeneratorType(\Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_NONE);
         // confirmed
         $status = new OrderStatus();
         $status->setId(OrderStatus::STATUS_CONFIRMED);
-        $this->createStatusTranslation(self::$em, $status, 'Order confirmed', 'en');
-        $this->createStatusTranslation(self::$em, $status, 'Auftragsbestätigung erstellt', 'de');
-        self::$em->persist($status);
+        $this->createStatusTranslation($this->em, $status, 'Order confirmed', 'en');
+        $this->createStatusTranslation($this->em, $status, 'Auftragsbestätigung erstellt', 'de');
+        $this->em->persist($status);
+
+        $metadata = $this->em->getClassMetaData(get_class($status));
+        $metadata->setIdGeneratorType(\Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_NONE);
         // confirmed
         $status = new OrderStatus();
         $status->setId(OrderStatus::STATUS_CLOSED_MANUALLY);
-        $this->createStatusTranslation(self::$em, $status, 'Order closed', 'en');
-        $this->createStatusTranslation(self::$em, $status, 'Auftragsbestätigung erstellt', 'de');
-        self::$em->persist($status);
+        $this->createStatusTranslation($this->em, $status, 'Order closed', 'en');
+        $this->createStatusTranslation($this->em, $status, 'Auftragsbestätigung erstellt', 'de');
+        $this->em->persist($status);
+
+        $metadata = $this->em->getClassMetaData(get_class($status));
+        $metadata->setIdGeneratorType(\Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_NONE);
 
 
         // order address
@@ -442,31 +351,32 @@ class OrderControllerTest extends DatabaseTestCase
 
         $this->order->addItem($this->item);
 
-        self::$em->persist($this->account);
-        self::$em->persist($title);
-        self::$em->persist($country);
-        self::$em->persist($this->termsOfPayment);
-        self::$em->persist($this->termsOfDelivery);
-        self::$em->persist($country);
-        self::$em->persist($addressType);
-        self::$em->persist($this->address);
-        self::$em->persist($this->address2);
-        self::$em->persist($phoneType);
-        self::$em->persist($this->phone);
-        self::$em->persist($this->contact);
-        self::$em->persist($this->contact2);
-        self::$em->persist($this->order);
-        self::$em->persist($order2);
-        self::$em->persist($this->orderAddressDelivery);
-        self::$em->persist($this->orderAddressInvoice);
-        self::$em->persist($this->item);
-        self::$em->persist($this->product);
-        self::$em->persist($this->productTranslation);
-        self::$em->persist($productType);
-        self::$em->persist($productTypeTranslation);
-        self::$em->persist($productStatus);
-        self::$em->persist($productStatusTranslation);
-        self::$em->flush();
+        $this->em->persist($this->account);
+        $this->em->persist($title);
+        $this->em->persist($this->testUser);
+        $this->em->persist($country);
+        $this->em->persist($this->termsOfPayment);
+        $this->em->persist($this->termsOfDelivery);
+        $this->em->persist($country);
+        $this->em->persist($addressType);
+        $this->em->persist($this->address);
+        $this->em->persist($this->address2);
+        $this->em->persist($phoneType);
+        $this->em->persist($this->phone);
+        $this->em->persist($this->contact);
+        $this->em->persist($this->contact2);
+        $this->em->persist($this->order);
+        $this->em->persist($order2);
+        $this->em->persist($this->orderAddressDelivery);
+        $this->em->persist($this->orderAddressInvoice);
+        $this->em->persist($this->item);
+        $this->em->persist($this->product);
+        $this->em->persist($this->productTranslation);
+        $this->em->persist($productType);
+        $this->em->persist($productTypeTranslation);
+        $this->em->persist($productStatus);
+        $this->em->persist($productStatusTranslation);
+        $this->em->flush();
     }
 
     private function createStatusTranslation($manager, $status, $translation, $locale) {
@@ -481,15 +391,16 @@ class OrderControllerTest extends DatabaseTestCase
     public function tearDown()
     {
         parent::tearDown();
-        self::$tool->dropSchema(self::$entities);
     }
 
     public function testGetById()
     {
-        $this->client->request('GET', '/api/orders/1');
-        $response = json_decode($this->client->getResponse()->getContent());
+        $client = $this->createAuthenticatedClient();
 
-        $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
+        $client->request('GET', '/api/orders/' . $this->order->getId());
+        $response = json_decode($client->getResponse()->getContent());
+
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $this->assertEquals('1234', $response->number);
         $this->assertEquals('EUR', $response->currency);
         $this->assertEquals('abcd1234', $response->sessionId);
@@ -533,16 +444,17 @@ class OrderControllerTest extends DatabaseTestCase
         $item = $response->items[0];
         $this->assertEquals($this->item->getId(), $item->id);
         // item product
-        $this->assertEquals($this->item->getProduct()->getId(), $item->productRelation->id);
+        $this->assertEquals($this->item->getProduct()->getId(), $item->product->id);
     }
 
     public function testGetAll()
     {
-        $this->client->request('GET', '/api/orders');
-        $response = json_decode($this->client->getResponse()->getContent());
+        $client = $this->createAuthenticatedClient();
+        $client->request('GET', '/api/orders');
+        $response = json_decode($client->getResponse()->getContent());
         $items = $response->_embedded->orders;
 
-        $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $this->assertEquals(2, count($items));
 
         // TODO: extend test
@@ -555,11 +467,12 @@ class OrderControllerTest extends DatabaseTestCase
 
     public function testGetAllFlat()
     {
-        $this->client->request('GET', '/api/orders?flat=true');
-        $response = json_decode($this->client->getResponse()->getContent());
+        $client = $this->createAuthenticatedClient();
+        $client->request('GET', '/api/orders?flat=true');
+        $response = json_decode($client->getResponse()->getContent());
         $items = $response->_embedded->orders;
 
-        $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $this->assertEquals(2, count($items));
 
         // TODO: extend test
@@ -572,16 +485,17 @@ class OrderControllerTest extends DatabaseTestCase
 
     public function testPut()
     {
-        $this->client->request(
+        $client = $this->createAuthenticatedClient();
+        $client->request(
             'PUT',
-            '/api/orders/1',
+            '/api/orders/' . $this->order->getId(),
             array(
                 'orderNumber' => 'EvilNumber',
                 'contact' => array(
-                    'id' => 2
+                    'id' =>  $this->contact->getId()
                 ),
                 'account' => array(
-                    'id' => 1
+                    'id' =>  $this->account->getId()
                 ),
                 'invoiceAddress' => array(
                     'street' => 'Sample-Street',
@@ -604,11 +518,11 @@ class OrderControllerTest extends DatabaseTestCase
                 ),
             )
         );
-        $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
 
-        $this->client->request('GET', '/api/orders/1');
-        $response = json_decode($this->client->getResponse()->getContent());
-        $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
+        $client->request('GET', '/api/orders/' . $this->order->getId());
+        $response = json_decode($client->getResponse()->getContent());
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $this->assertEquals('EvilNumber', $response->orderNumber);
 
         $this->checkOrderAddress($response->invoiceAddress, $this->address, $this->contact2, $this->account);
@@ -618,10 +532,11 @@ class OrderControllerTest extends DatabaseTestCase
 
     public function testPutNotExisting()
     {
-        $this->client->request('PUT', '/api/orders/666', array('number' => '123'));
-        $response = json_decode($this->client->getResponse()->getContent());
+        $client = $this->createAuthenticatedClient();
+        $client->request('PUT', '/api/orders/666', array('number' => '123'));
+        $response = json_decode($client->getResponse()->getContent());
 
-        $this->assertEquals(404, $this->client->getResponse()->getStatusCode());
+        $this->assertEquals(404, $client->getResponse()->getStatusCode());
 
         $this->assertEquals(
             'Entity with the type "SuluSalesOrderBundle:Order" and the id "666" not found.',
@@ -635,10 +550,10 @@ class OrderControllerTest extends DatabaseTestCase
             'orderNumber' => 'NUMBER:0815',
             'supplierName' => $this->account->getName(),
             'account' => array(
-                'id' => 1
+                'id' => $this->account->getId()
             ),
             'contact' => array(
-                'id' => 1
+                'id' => $this->contact->getId()
             ),
             'invoiceAddress' => array(
                 'street' => 'Sample-Street',
@@ -660,19 +575,20 @@ class OrderControllerTest extends DatabaseTestCase
                 'country' => 'Country'
             ),
             'termsOfDelivery' => array(
-                'id' => 1
+                'id' => $this->termsOfDelivery->getId()
             ),
             'termsOfPayment' => array(
-                'id' => 1
+                'id' => $this->termsOfPayment->getId()
             ),
         );
+        $client = $this->createAuthenticatedClient();
 
-        $this->client->request('POST', '/api/orders', $data);
-        $response = json_decode($this->client->getResponse()->getContent());
+        $client->request('POST', '/api/orders', $data);
+        $response = json_decode($client->getResponse()->getContent());
 
-        $this->client->request('GET', '/api/orders/' . $response->id);
-        $response = json_decode($this->client->getResponse()->getContent());
-        $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
+        $client->request('GET', '/api/orders/' . $response->id);
+        $response = json_decode($client->getResponse()->getContent());
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
 
         $this->assertEquals('NUMBER:0815', $response->orderNumber);
         $this->assertEquals('Created', $response->status->status);
@@ -687,10 +603,10 @@ class OrderControllerTest extends DatabaseTestCase
             'orderNumber' => 'NUMBER:0815',
             'supplierName' => $this->account->getName(),
             'account' => array(
-                'id' => 1
+                'id' => $this->account->getId()
             ),
             'contact' => array(
-                'id' => 1
+                'id' => $this->contact->getId()
             ),
             'invoiceAddress' => array(
                 'street' => 'Sample-Street',
@@ -733,31 +649,33 @@ class OrderControllerTest extends DatabaseTestCase
                 )
             )
         );
+        $client = $this->createAuthenticatedClient();
 
-        $this->client->request('POST', '/api/orders', $data);
-        $response = json_decode($this->client->getResponse()->getContent());
+        $client->request('POST', '/api/orders', $data);
+        $response = json_decode($client->getResponse()->getContent());
 
-        $this->client->request('GET', '/api/orders/' . $response->id);
-        $response = json_decode($this->client->getResponse()->getContent());
-        $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
+        $client->request('GET', '/api/orders/' . $response->id);
+        $response = json_decode($client->getResponse()->getContent());
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
     }
 
     public function testStatusChange()
     {
-        $this->client->request('POST', '/api/orders/1', array(
+        $client = $this->createAuthenticatedClient();
+        $client->request('POST', '/api/orders/' . $this->order->getId(), array(
             'action' => 'confirm'
         ));
-        $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
-        $response = json_decode($this->client->getResponse()->getContent());
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        $response = json_decode($client->getResponse()->getContent());
         $this->assertEquals(1, $response->id);
         $this->assertEquals(OrderStatus::STATUS_CREATED | OrderStatus::STATUS_CONFIRMED, $response->bitmaskStatus);
         $this->assertEquals(OrderStatus::STATUS_CONFIRMED, $response->status->id);
 
-        $this->client->request('POST', '/api/orders/1', array(
+        $client->request('POST', '/api/orders/' . $this->order->getId(), array(
             'action' => 'edit'
         ));
-        $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
-        $response = json_decode($this->client->getResponse()->getContent());
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        $response = json_decode($client->getResponse()->getContent());
         $this->assertEquals(1, $response->id);
         $this->assertEquals(OrderStatus::STATUS_CREATED & ~OrderStatus::STATUS_CONFIRMED, $response->bitmaskStatus);
         $this->assertEquals(OrderStatus::STATUS_CREATED, $response->status->id);
@@ -765,11 +683,12 @@ class OrderControllerTest extends DatabaseTestCase
 
     public function testDeleteById()
     {
-        $this->client->request('DELETE', '/api/orders/1');
-        $this->assertEquals('204', $this->client->getResponse()->getStatusCode());
+        $client = $this->createAuthenticatedClient();
+        $client->request('DELETE', '/api/orders/' . $this->order->getId());
+        $this->assertEquals('204', $client->getResponse()->getStatusCode());
 
-        $this->client->request('GET', '/api/orders/1');
-        $this->assertEquals('404', $this->client->getResponse()->getStatusCode());
+        $client->request('GET', '/api/orders/' . $this->order->getId());
+        $this->assertEquals('404', $client->getResponse()->getStatusCode());
     }
 
     /**

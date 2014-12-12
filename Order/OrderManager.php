@@ -102,7 +102,7 @@ class OrderManager
      * Creates a new Order Entity
      *
      * @param array $data The data array, which will be used for setting the orders data
-     * @param $locale Locale
+     * @param string $locale Locale
      * @param int $userId Id of the User, which is is saved as creator / changer
      * @param int|null $id If defined, the Order with the given ID will be updated
      * @param int|null $statusId if defined, the status will be set to the given value
@@ -114,7 +114,7 @@ class OrderManager
     public function save(
         array $data,
         $locale,
-        $userId,
+        $userId = null,
         $id = null,
         $statusId = null,
         $flush = true
@@ -133,7 +133,7 @@ class OrderManager
         // check for data
         $this->checkRequiredData($data, $id === null);
 
-        $user = $this->userRepository->findUserById($userId);
+        $user = $userId ? $this->userRepository->findUserById($userId) : null;
 
         $order->setOrderNumber($this->getProperty($data, 'orderNumber', $order->getOrderNumber()));
         $order->setCurrency($this->getProperty($data, 'currency', $order->getCurrency()));
@@ -141,8 +141,13 @@ class OrderManager
         $order->setCommission($this->getProperty($data, 'commission', $order->getCommission()));
         $order->setTaxfree($this->getProperty($data, 'taxfree', $order->getTaxfree()));
 
-        $this->setDate($data, 'desiredDeliveryDate', $order->getDesiredDeliveryDate(), array($order,'setDesiredDeliveryDate'));
-        $this->setDate($data, 'orderDate', $order->getOrderDate(), array($order,'setOrderDate'));
+        $this->setDate(
+            $data,
+            'desiredDeliveryDate',
+            $order->getDesiredDeliveryDate(),
+            array($order, 'setDesiredDeliveryDate')
+        );
+        $this->setDate($data, 'orderDate', $order->getOrderDate(), array($order, 'setOrderDate'));
 
         $this->setTermsOfDelivery($data, $order);
         $this->setTermsOfPayment($data, $order);
@@ -153,17 +158,22 @@ class OrderManager
 //        $order->setSessionId($this->getProperty($data, 'number', $order->getNumber()));
 
         // add contact
-        $contact = $this->addContactRelation($data, 'contact', function ($contact) use ($order){
-            $order->setContact($contact);
-        });
-        if (!$contact) {
-            throw new OrderDependencyNotFoundException(self::$contactEntityName, '');
-        }
+        $contact = $this->addContactRelation(
+            $data,
+            'contact',
+            function ($contact) use ($order) {
+                $order->setContact($contact);
+            }
+        );
 
         // add contact
-        $this->addContactRelation($data, 'responsibleContact', function ($contact) use ($order){
-            $order->setResponsibleContact($contact);
-        });
+        $this->addContactRelation(
+            $data,
+            'responsibleContact',
+            function ($contact) use ($order) {
+                $order->setResponsibleContact($contact);
+            }
+        );
 
         // create order (POST)
         if ($order->getId() == null) {
@@ -193,12 +203,13 @@ class OrderManager
         }
 
         // set customer name to account if set, otherwise to contact
-        $customerName = $account !== null ? $account->getName() : $contact->getFullName();
+        $contactFullName = $this->getContactData($data['invoiceAddress'], $contact)['fullName'];
+        $customerName = $account !== null ? $account->getName() : $contactFullName;
         $order->setCustomerName($customerName);
 
         // set OrderAddress data
-        $this->setOrderAddress($order->getDeliveryAddress(), $data['deliveryAddress'], $contact, $account);
         $this->setOrderAddress($order->getInvoiceAddress(), $data['invoiceAddress'], $contact, $account);
+        $this->setOrderAddress($order->getDeliveryAddress(), $data['deliveryAddress'], $contact, $account);
 
         // handle items
         if (!$this->processItems($data, $order, $locale, $userId)) {
@@ -213,6 +224,40 @@ class OrderManager
         }
 
         return $order;
+    }
+
+    /**
+     * returns contact data as an array. either by provided address or contact
+     */
+    public function getContactData($addressData, $contact)
+    {
+        $result = array();
+        // if account is set, take account's name
+        if (isset($addressData['firstName']) && isset($addressData['lastName'])) {
+            $result['firstName'] = $addressData['firstName'];
+            $result['lastName'] = $addressData['lastName'];
+            $result['fullName'] = $result['firstName'] . ' ' . $result['lastName'];
+            if (isset($addressData['title'])) {
+                $result['title'] = $addressData['title'];
+            }
+            if (isset($addressData['salutation'])) {
+                $result['salutation'] = $addressData['salutation'];
+            }
+        } else {
+            if ($contact) {
+                $result['firstName'] = $contact->getFirstName();
+                $result['lastName'] = $contact->getLastName();
+                $result['fullName'] = $contact->getFullName();
+                $result['salutation'] = $contact->getFormOfAddress();
+                if ($contact->getTitle() !== null) {
+                    $result['title'] = $contact->getTitle()->getTitle();
+                }
+            } else {
+                throw new MissingOrderAttributeException('firstName, lastName or contact');
+            }
+        }
+
+        return $result;
     }
 
     /**
@@ -383,7 +428,7 @@ class OrderManager
         if ($order) {
             array_walk(
                 $order,
-                function (&$order) use ($locale){
+                function (&$order) use ($locale) {
                     $order = new Order($order, $locale);
                 }
             );
@@ -414,16 +459,31 @@ class OrderManager
      */
     private function initializeFieldDescriptors($locale)
     {
-        $this->fieldDescriptors['id'] = new DoctrineFieldDescriptor('id', 'id', self::$orderEntityName, 'public.id', array(), true);
-        $this->fieldDescriptors['number'] = new DoctrineFieldDescriptor('number', 'number', self::$orderEntityName, 'salesorder.orders.number', array(), false, true);
+        $this->fieldDescriptors['id'] = new DoctrineFieldDescriptor(
+            'id',
+            'id',
+            self::$orderEntityName,
+            'public.id',
+            array(),
+            true
+        );
+        $this->fieldDescriptors['number'] = new DoctrineFieldDescriptor(
+            'number',
+            'number',
+            self::$orderEntityName,
+            'salesorder.orders.number',
+            array(),
+            false,
+            true
+        );
 
         // TODO: get customer from order-address
 
         $contactJoin = array(
             self::$orderAddressEntityName => new DoctrineJoinDescriptor(
-                    self::$orderAddressEntityName,
-                    self::$orderEntityName . '.invoiceAddress'
-                )
+                self::$orderAddressEntityName,
+                self::$orderEntityName . '.invoiceAddress'
+            )
         );
 
         $this->fieldDescriptors['account'] = new DoctrineConcatenationFieldDescriptor(
@@ -480,14 +540,14 @@ class OrderManager
             'salesorder.orders.status',
             array(
                 self::$orderStatusEntityName => new DoctrineJoinDescriptor(
-                        self::$orderStatusEntityName,
-                        self::$orderEntityName . '.status'
-                    ),
+                    self::$orderStatusEntityName,
+                    self::$orderEntityName . '.status'
+                ),
                 self::$orderStatusTranslationEntityName => new DoctrineJoinDescriptor(
-                        self::$orderStatusTranslationEntityName,
-                        self::$orderStatusEntityName . '.translations',
-                        self::$orderStatusTranslationEntityName . ".locale = '" . $locale . "'"
-                    )
+                    self::$orderStatusTranslationEntityName,
+                    self::$orderStatusEntityName . '.translations',
+                    self::$orderStatusTranslationEntityName . ".locale = '" . $locale . "'"
+                )
             )
         );
     }
@@ -499,8 +559,6 @@ class OrderManager
      */
     private function checkRequiredData($data, $isNew)
     {
-        // check if contact and status are set
-        $this->checkDataSet($data, 'contact', $isNew) && $this->checkDataSet($data['contact'], 'id', $isNew);
         $this->checkDataSet($data, 'deliveryAddress', $isNew);
         $this->checkDataSet($data, 'invoiceAddress', $isNew);
     }
@@ -524,6 +582,12 @@ class OrderManager
         return $keyExists;
     }
 
+    /**
+     * checks if data is set
+     * @param $key
+     * @param $data
+     * @return bool
+     */
     private function checkIfSet($key, $data)
     {
         $keyExists = array_key_exists($key, $data);
@@ -543,7 +607,7 @@ class OrderManager
     private function addContactRelation(array $data, $dataKey, $addCallback)
     {
         $contact = null;
-        if (array_key_exists($dataKey, $data) && array_key_exists('id', $data[$dataKey])) {
+        if (array_key_exists($dataKey, $data) && is_array($data[$dataKey]) && array_key_exists('id', $data[$dataKey])) {
             /** @var Contact $contact */
             $contactId = $data[$dataKey]['id'];
             $contact = $this->em->getRepository(self::$contactEntityName)->find($contactId);
@@ -562,14 +626,19 @@ class OrderManager
      * @param Account|null $account
      * @throws OrderDependencyNotFoundException
      */
-    private function setOrderAddress(OrderAddress $orderAddress, $addressData, $contact, $account = null)
+    private function setOrderAddress(OrderAddress $orderAddress, $addressData, $contact = null, $account = null)
     {
         // check if address with id can be found
+
+        $contactData = $this->getContactData($addressData, $contact);
         // add contact data
-        $orderAddress->setFirstName($contact->getFirstName());
-        $orderAddress->setLastName($contact->getLastName());
-        if ($contact->getTitle() !== null) {
-            $orderAddress->setTitle($contact->getTitle()->getTitle());
+        $orderAddress->setFirstName($contactData['firstName']);
+        $orderAddress->setLastName($contactData['lastName']);
+        if (isset($contactData['title'])) {
+            $orderAddress->setTitle($contactData['title']);
+        }
+        if (isset($contactData['salutation'])) {
+            $orderAddress->setSalutation($contactData['salutation']);
         }
 
         // add account data
@@ -600,6 +669,8 @@ class OrderManager
         $orderAddress->setZip($this->getProperty($addressData, 'zip', ''));
         $orderAddress->setState($this->getProperty($addressData, 'state', ''));
         $orderAddress->setCountry($this->getProperty($addressData, 'country', ''));
+        $orderAddress->setEmail($this->getProperty($addressData, 'email', ''));
+        $orderAddress->setPhone($this->getProperty($addressData, 'phone', ''));
 
         $orderAddress->setPostboxCity($this->getProperty($addressData, 'postboxCity', ''));
         $orderAddress->setPostboxPostcode($this->getProperty($addressData, 'postboxPostcode', ''));
@@ -638,7 +709,9 @@ class OrderManager
             // TODO: inject repository class
             $terms = $this->em->getRepository(self::$termsOfDeliveryEntityName)->find($termsOfDeliveryData['id']);
             if (!$terms) {
-                throw new OrderDependencyNotFoundException(self::$termsOfDeliveryEntityName, $termsOfDeliveryData['id']);
+                throw new OrderDependencyNotFoundException(
+                    self::$termsOfDeliveryEntityName, $termsOfDeliveryData['id']
+                );
             }
             $order->setTermsOfDelivery($terms);
             $order->setTermsOfDeliveryContent($terms->getTerms());
@@ -726,7 +799,7 @@ class OrderManager
      * @return bool
      * @throws Exception\OrderException
      */
-    private function processItems($data, Order $order, $locale, $userId)
+    private function processItems($data, Order $order, $locale, $userId = null)
     {
         $result = true;
         try {
@@ -738,11 +811,11 @@ class OrderManager
 
                 $items = $data['items'];
 
-                $get = function ($item){
+                $get = function ($item) {
                     return $item->getId();
                 };
 
-                $delete = function ($item) use ($order){
+                $delete = function ($item) use ($order) {
                     $entity = $item->getEntity();
                     // remove from order
                     $order->removeItem($entity);
@@ -750,17 +823,24 @@ class OrderManager
                     $this->em->remove($entity);
                 };
 
-                $update = function ($item, $matchedEntry) use ($locale, $userId, $order){
+                $update = function ($item, $matchedEntry) use ($locale, $userId, $order) {
                     $itemEntity = $this->itemManager->save($matchedEntry, $locale, $userId, $item);
                     return $itemEntity ? true : false;
                 };
 
-                $add = function ($itemData) use ($locale, $userId, $order){
+                $add = function ($itemData) use ($locale, $userId, $order) {
                     $item = $this->itemManager->save($itemData, $locale, $userId);
                     return $order->addItem($item->getEntity());
                 };
 
-                $result = $this->restHelper->processSubEntities($order->getItems(), $items, $get, $add, $update, $delete);
+                $result = $this->restHelper->processSubEntities(
+                    $order->getItems(),
+                    $items,
+                    $get,
+                    $add,
+                    $update,
+                    $delete
+                );
 
             }
         } catch (\Exception $e) {
