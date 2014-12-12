@@ -26,23 +26,28 @@ class ItemManager
     protected static $productEntityName = 'SuluProductBundle:Product';
     protected static $itemEntityName = 'SuluSalesCoreBundle:Item';
 
-    private $currentLocale;
-
     /**
      * @var ObjectManager
      */
-    private $em;
+    protected $em;
 
     /**
      * @var ItemRepository
      */
-    private $itemRepository;
+    protected $itemRepository;
 
     /**
      * @var UserRepositoryInterface
      */
-    private $userRepository;
+    protected $userRepository;
 
+    /**
+     * constructor
+     *
+     * @param ObjectManager $em
+     * @param ItemRepository $itemRepository
+     * @param UserRepositoryInterface $userRepository
+     */
     public function __construct(
         ObjectManager $em,
         ItemRepository $itemRepository,
@@ -84,7 +89,9 @@ class ItemManager
         if (!$product) {
             $item->setName($this->getProperty($data, 'name', $item->getName()));
             $item->setUseProductsPrice(false);
-            $item->setQuantityUnit($this->getProperty($data, 'quantityUnit', null));
+            // TODO: set supplier based on if its a string  or object (fetch account and set it to setSupplier)
+            $item->setSupplierName($this->getProperty($data, 'supplierName', $item->getSupplierName()));
+            $item->setQuantityUnit($this->getProperty($data, 'quantityUnit', $item->getQuantityUnit()));
             $item->setTax($this->getProperty($data, 'tax', $item->getTax()));
         }
         $item->setPrice($this->getProperty($data, 'price', $item->getPrice()));
@@ -307,13 +314,17 @@ class ItemManager
             $item->setUseProductsPrice($this->getProperty($data, 'useProductsPrice', true));
             $item->setNumber($product->getNumber());
 
-            // TODO: get products supplier and set it (when product has supplier relation)
-//            $item->setSupplier($product->getSupplier);
+            // get products supplier
+            $item->setSupplier($product->getSupplier());
+            $item->setSupplierName($product->getSupplier()->getName());
 
-            // TODO: get unit from product
-            $item->setQuantityUnit('pc');
+            if ($product->getOrderUnit()) {
+                $item->setQuantityUnit($product->getOrderUnit()->getTranslation($locale)->getName());
+            }
+
             // TODO: get tax from product
             $item->setTax(20);
+//            $item->setTax($product->getTaxClass());
 
             if ($item->getUseProductsPrice() === true) {
                 $item->setPrice($product->getPrice());
