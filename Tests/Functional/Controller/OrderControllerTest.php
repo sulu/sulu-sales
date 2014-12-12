@@ -391,7 +391,6 @@ class OrderControllerTest extends SuluTestCase
     public function tearDown()
     {
         parent::tearDown();
-        //self::$tool->dropSchema(self::$entities);
     }
 
     public function testGetById()

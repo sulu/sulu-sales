@@ -165,9 +165,6 @@ class OrderManager
                 $order->setContact($contact);
             }
         );
-//        if (!$contact) {
-//            throw new OrderDependencyNotFoundException(self::$contactEntityName, '');
-//        }
 
         // add contact
         $this->addContactRelation(
@@ -562,8 +559,6 @@ class OrderManager
      */
     private function checkRequiredData($data, $isNew)
     {
-        // check if contact and status are set
-//        $this->checkDataSet($data, 'contact', $isNew) && $this->checkDataSet($data['contact'], 'id', $isNew);
         $this->checkDataSet($data, 'deliveryAddress', $isNew);
         $this->checkDataSet($data, 'invoiceAddress', $isNew);
     }
