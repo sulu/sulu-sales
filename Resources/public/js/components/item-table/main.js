@@ -89,7 +89,7 @@ define([
             name: '',
             number: '',
             quantity: '',
-            quantityUnit: 'pc',
+            quantityUnit: '',
             price: '',
             discount: null,
             overallPrice: '',
