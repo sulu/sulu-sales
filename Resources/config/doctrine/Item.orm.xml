@@ -23,6 +23,7 @@
         <field name="created" type="datetime" column="created"></field>
         <field name="changed" type="datetime" column="changed"></field>
         <field name="bitmaskStatus" type="integer" column="bitmaskStatus" nullable="true"/>
+        <field name="totalNetPrice" type="float" column="totalNetPrice" nullable="true"></field>
 
         <one-to-many field="attributes" target-entity="Sulu\Bundle\Sales\CoreBundle\Entity\ItemAttribute" mapped-by="item"/>
 
