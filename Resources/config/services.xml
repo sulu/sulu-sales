@@ -32,11 +32,14 @@
             <argument type="service" id="sulu_sales_order.order_repository" />
             <argument type="service" id="sulu_security.user_repository" />
             <argument type="service" id="sulu_sales_core.item_manager" />
-            <argument type="service" id="sulu_core.rest_helper" strict="false"/>
         </service>
 
         <service id="sulu_sales_order.order_listener" class="%sulu_sales_order.order_listener.class%">
+            <argument type="service" id="service_container" />
+            <tag name="kernel.event_subscriber"/>
             <tag name="doctrine.event_listener" event="postPersist" method="postPersist"/>
+            <tag name="doctrine.event_listener" event="postDelete" method="postDelete"/>
+            <tag name="doctrine.event_listener" event="preUpdate" method="postFlush"/>
         </service>
 
         <service id="sulu_sales_order.order_dependency_manager" class="%sulu_sales_order.order_dependency_manager.class%" />

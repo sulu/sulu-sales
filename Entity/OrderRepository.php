@@ -31,6 +31,24 @@ class OrderRepository extends EntityRepository
     }
 
     /**
+     * @param $id
+     * @return Order|null
+     */
+    public function findOrderForItemWithId($id)
+    {
+        try {
+            $qb = $this->createQueryBuilder('o')
+                ->join('o.items', 'items')
+                ->where('items.id = :id')
+                ->setParameter('id', $id);
+
+            return $qb->getQuery()->getSingleResult();
+        } catch (NoResultException $exc) {
+            return null;
+        }
+    }
+
+    /**
      * Returns all orders in the given locale
      * @param string $locale The locale of the order to load
      * @return Order[]|null

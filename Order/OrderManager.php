@@ -36,9 +36,12 @@ use Sulu\Component\Rest\ListBuilder\Doctrine\FieldDescriptor\DoctrineJoinDescrip
 use Sulu\Component\Rest\RestHelperInterface;
 use Sulu\Component\Security\UserRepositoryInterface;
 use DateTime;
+use Sulu\Component\Persistence\RelationTrait;
 
 class OrderManager
 {
+    use RelationTrait;
+
     protected static $orderEntityName = 'SuluSalesOrderBundle:Order';
     protected static $contactEntityName = 'SuluContactBundle:Contact';
     protected static $addressEntityName = 'SuluContactBundle:Address';
@@ -78,6 +81,11 @@ class OrderManager
     private $restHelper;
 
     /**
+     * @var Array
+     */
+    private $scheduledIds;
+
+    /**
      * Describes the fields, which are handled by this controller
      * @var DoctrineFieldDescriptor[]
      */
@@ -87,15 +95,14 @@ class OrderManager
         ObjectManager $em,
         OrderRepository $orderRepository,
         UserRepositoryInterface $userRepository,
-        ItemManager $itemManager,
-        RestHelperInterface $restHelper
+        ItemManager $itemManager
     )
     {
         $this->orderRepository = $orderRepository;
         $this->userRepository = $userRepository;
         $this->em = $em;
         $this->itemManager = $itemManager;
-        $this->restHelper = $restHelper;
+        $this->scheduledIds = [];
     }
 
     /**
@@ -325,6 +332,24 @@ class OrderManager
                 ->find($id);
         } catch (NoResultException $nre) {
             throw new EntityNotFoundException(self::$orderEntityName, $id);
+        }
+    }
+
+    /**
+     * find order for item with id
+     * @param $id
+     * @throws \Sulu\Component\Rest\Exception\EntityNotFoundException
+     * @internal param $statusId
+     * @return OrderEntity
+     */
+    public function findOrderEntityForItemWithId($id)
+    {
+        try {
+            return $this->em
+                ->getRepository(self::$orderEntityName)
+                ->findOrderForItemWithId($id);
+        } catch (NoResultException $nre) {
+            throw new EntityNotFoundException(self::$itemEntity, $id);
         }
     }
 
@@ -760,12 +785,44 @@ class OrderManager
                     return $order->addItem($item->getEntity());
                 };
 
-                $result = $this->restHelper->processSubEntities($order->getItems(), $items, $get, $add, $update, $delete);
+                $result = $this->processSubEntities($order->getItems(), $items, $get, $add, $update, $delete);
 
             }
         } catch (\Exception $e) {
             throw new OrderException('Error while creating items: ' . $e->getMessage());
         }
         return $result;
+    }
+
+    /**
+     * Offers depending to an id are going to be updated
+     * if processIds() is called.
+     *
+     * @param string $id
+     */
+    public function scheduleForUpdate($id)
+    {
+        if ($id) {
+            $this->scheduledIds[] = $id;
+        }
+    }
+
+    /**
+     * Process (update total net price) all offers
+     * for the scheduled Items.
+     */
+    public function processIds()
+    {
+        $orders = [];
+        foreach ($this->scheduledIds as $id) {
+            $order = $this->findOrderEntityForItemWithId($id);
+            if (!in_array($order, $orders)) {
+                $orders[] = $order;
+                $order->updateTotalNetPrice();
+            }
+        }
+        unset($this->scheduledIds);
+        $this->scheduledIds = [];
+        $this->em->flush();
     }
 }

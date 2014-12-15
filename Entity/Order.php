@@ -150,7 +150,7 @@ class Order
     /**
      * @var float
      */
-    private $totalPrice;
+    private $totalNetPrice;
 
     /**
      * @var \DateTime
@@ -769,14 +769,14 @@ class Order
     public function setBitmaskStatus($bitmaskStatus)
     {
         $this->bitmaskStatus = $bitmaskStatus;
-    
+
         return $this;
     }
 
     /**
      * Get bitmaskStatus
      *
-     * @return integer 
+     * @return integer
      */
     public function getBitmaskStatus()
     {
@@ -784,26 +784,26 @@ class Order
     }
 
     /**
-     * Set totalPrice
+     * Set totalNetPrice
      *
-     * @param float $totalPrice
+     * @param float $totalNetPrice
      * @return Order
      */
-    public function setTotalPrice($totalPrice)
+    private function setTotalNetPrice($totalNetPrice)
     {
-        $this->totalPrice = $totalPrice;
-    
+        $this->totalNetPrice = $totalNetPrice;
+
         return $this;
     }
 
     /**
-     * Get totalPrice
+     * Get totalNetPrice
      *
-     * @return float 
+     * @return float
      */
-    public function getTotalPrice()
+    public function getTotalNetPrice()
     {
-        return $this->totalPrice;
+        return $this->totalNetPrice;
     }
 
     /**
@@ -815,17 +815,30 @@ class Order
     public function setOrderDate($orderDate)
     {
         $this->orderDate = $orderDate;
-    
+
         return $this;
     }
 
     /**
      * Get orderDate
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getOrderDate()
     {
         return $this->orderDate;
+    }
+
+    /**
+     * Updates the total net price
+     *
+     */
+    public function updateTotalNetPrice()
+    {
+        $sum = 0;
+        foreach ($this->getItems() as $item) {
+            $sum += $item->getTotalNetPrice();
+        }
+        $this->setTotalNetPrice($sum);
     }
 }

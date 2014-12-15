@@ -724,11 +724,11 @@ class Order extends ApiWrapper implements SalesDocument
     /**
      * @return float
      * @VirtualProperty
-     * @SerializedName("totalPrice")
+     * @SerializedName("totalNetPrice")
      */
-    public function getTotalPrice()
+    public function getTotalNetPrice()
     {
-        return $this->entity->getTotalPrice();
+        return $this->entity->getTotalNetPrice();
     }
 
     /**
