@@ -17,6 +17,7 @@ use Sulu\Bundle\Sales\OrderBundle\Order\OrderManager;
 use Doctrine\ORM\Event\PostFlushEventArgs;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\KernelEvents;
+use Symfony\Component\HttpKernel\Event\PostResponseEvent;
 
 /**
  * Class AccountListener
@@ -36,9 +37,9 @@ class OrderListener implements EventSubscriberInterface
         $this->container = $container;
     }
 
-    private function getOrderManager()
+    private function getOrderUpdater()
     {
-        return $this->container->get('sulu_sales_order.order_manager');
+        return $this->container->get('sulu_sales_order.order_updater');
     }
 
     /**
@@ -63,22 +64,22 @@ class OrderListener implements EventSubscriberInterface
             }
         }
 
-        $this->getOrderManager()->scheduleForUpdate($this->getItemId($args));
+        $this->getOrderUpdater()->scheduleForUpdate($this->getItemId($args));
     }
 
     public function preUpdate(LifecycleEventArgs $args)
     {
-        $this->getOrderManager()->scheduleForUpdate($this->getItemId($args));
+        $this->getOrderUpdater()->scheduleForUpdate($this->getItemId($args));
     }
 
     public function postDelete(LifecycleEventArgs $args)
     {
-        $this->getOrderManager()->scheduleForUpdate($this->getItemId($args));
+        $this->getOrderUpdater()->scheduleForUpdate($this->getItemId($args));
     }
 
-    public function onKernelTerminate()
+    public function onKernelTerminate(PostResponseEvent $event)
     {
-        $this->getOrderManager()->processIds();
+        $this->getOrderUpdater()->processIds();
     }
 
     /**

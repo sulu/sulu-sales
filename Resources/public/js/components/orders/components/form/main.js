@@ -645,7 +645,7 @@ define([
             this.dfdFormSaved = this.sandbox.data.deferred();
             this.sandbox.logger.log('save Model');
 
-            if (this.sandbox.form.validate(form)) {
+            // if (this.sandbox.form.validate(form)) {
                 var data = this.sandbox.form.getData(form);
 
                 if (data.id === '') {
@@ -665,10 +665,10 @@ define([
 
                 this.sandbox.logger.log('log data', data);
                 this.sandbox.emit('sulu.salesorder.order.save', data);
-            } else {
-                this.sandbox.emit('sulu.labels.warning.show', this.sandbox.translate(constants.validateWarningTranslation));
-                this.dfdFormSaved.reject();
-            }
+            // } else {
+            //     this.sandbox.emit('sulu.labels.warning.show', this.sandbox.translate(constants.validateWarningTranslation));
+            //     this.dfdFormSaved.reject();
+            // }
             return this.dfdFormSaved;
         },
 

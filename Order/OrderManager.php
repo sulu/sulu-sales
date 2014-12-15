@@ -76,16 +76,6 @@ class OrderManager
     private $userRepository;
 
     /**
-     * @var RestHelperInterface
-     */
-    private $restHelper;
-
-    /**
-     * @var Array
-     */
-    private $scheduledIds;
-
-    /**
      * Describes the fields, which are handled by this controller
      * @var DoctrineFieldDescriptor[]
      */
@@ -101,7 +91,6 @@ class OrderManager
         $this->userRepository = $userRepository;
         $this->em = $em;
         $this->itemManager = $itemManager;
-        $this->scheduledIds = [];
     }
 
     /**
@@ -857,7 +846,7 @@ class OrderManager
                     return $order->addItem($item->getEntity());
                 };
 
-                $result = $this->restHelper->processSubEntities(
+                $result = $this->processSubEntities(
                     $order->getItems(),
                     $items,
                     $get,
@@ -870,37 +859,5 @@ class OrderManager
             throw new OrderException('Error while creating items: ' . $e->getMessage());
         }
         return $result;
-    }
-
-    /**
-     * Offers depending to an id are going to be updated
-     * if processIds() is called.
-     *
-     * @param string $id
-     */
-    public function scheduleForUpdate($id)
-    {
-        if ($id) {
-            $this->scheduledIds[] = $id;
-        }
-    }
-
-    /**
-     * Process (update total net price) all offers
-     * for the scheduled Items.
-     */
-    public function processIds()
-    {
-        $orders = [];
-        foreach ($this->scheduledIds as $id) {
-            $order = $this->findOrderEntityForItemWithId($id);
-            if (!in_array($order, $orders)) {
-                $orders[] = $order;
-                $order->updateTotalNetPrice();
-            }
-        }
-        unset($this->scheduledIds);
-        $this->scheduledIds = [];
-        // $this->em->flush();
     }
 }
