@@ -323,8 +323,13 @@ class ItemManager
             $item->setNumber($product->getNumber());
 
             // get products supplier
-            $item->setSupplier($product->getSupplier());
-            $item->setSupplierName($product->getSupplier()->getName());
+            if ($product->getSupplier()) {
+                $item->setSupplier($product->getSupplier());
+                $item->setSupplierName($product->getSupplier()->getName());
+            } else {
+                $item->setSupplier(null);
+                $item->setSupplierName('');
+            }
 
             // set order unit
             if ($product->getOrderUnit()) {
