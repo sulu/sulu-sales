@@ -1,6 +1,13 @@
 {% extends "PoolAlpinBaseBundle:Default:pdf-base.html.twig" %}
 {% import "PoolAlpinBaseBundle:Default:pdf-macros.html.twig" as macros %}
 
+{% block recipient_business_info %}
+    {% if order.getAccount().getUid() %}
+        UID: {{ order.getAccount().getUid() |default('-') }} |
+        TEL: {{ order.getAccount().getMainPhone() |default('-') }}
+    {% endif %}
+{% endblock %}
+
 {% block recipient %}
     <div class="">
         {{ recipient.getAccountName() }}<br/>
@@ -22,7 +29,7 @@
 {% endblock %}
 
 {% block pdf_title %}
-    Auftragsbestätigung für {{ recipient.getAccountName() }}
+    Bestellung {{ order.getNumber() }}
 {% endblock %}
 
 {% block invoice_address %}{% endblock %}
@@ -30,22 +37,22 @@
 {% block orderdetails %}
     <div class="grid__item four-tenths">
         <p>
-            Auftragsnummer:<br>
-            {{ order.getNumber() |default('-') }}
-        </p>
-        <p>
             Angebotsnummer:<br>
             {{ order.getOrderNumber() |default('-') }}
+        </p>
+        <p>
+            Kundennummer:<br>
+            {{ order.getAccountNumber() |default('-') }}
+        </p>
+        <p>
+            Bestelldatum:<br/>
+            {{ order.getOrderDate().date |date('d.m.Y') }}
         </p>
     </div>
 {% endblock %}
 
 {% block shippingdetails %}
     <div class="grid__item three-tenths">
-        <p>
-            Datum:<br/>
-            {{ order.getCreated() |date('d.m.Y') }}
-        </p>
         <p>
             Kostenstelle:<br/>
             {{ order.getCostCentre() |default('-') }}

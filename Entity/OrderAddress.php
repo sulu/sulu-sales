@@ -12,6 +12,11 @@ class OrderAddress
     /**
      * @var string
      */
+    private $salutation;
+
+    /**
+     * @var string
+     */
     private $firstName;
 
     /**
@@ -72,6 +77,11 @@ class OrderAddress
     /**
      * @var string
      */
+    private $email;
+
+    /**
+     * @var string
+     */
     private $phone;
 
     /**
@@ -100,6 +110,29 @@ class OrderAddress
     private $postboxPostcode;
 
     /**
+     * Set salutation
+     *
+     * @param string $salutation
+     * @return OrderAddress
+     */
+    public function setSalutation($salutation)
+    {
+        $this->salutation = $salutation;
+    
+        return $this;
+    }
+
+    /**
+     * Get salutation
+     *
+     * @return string 
+     */
+    public function getSalutation()
+    {
+        return $this->salutation;
+    }
+
+    /**
      * Set firstName
      *
      * @param string $firstName
@@ -108,14 +141,14 @@ class OrderAddress
     public function setFirstName($firstName)
     {
         $this->firstName = $firstName;
-    
+
         return $this;
     }
 
     /**
      * Get firstName
      *
-     * @return string 
+     * @return string
      */
     public function getFirstName()
     {
@@ -498,5 +531,28 @@ class OrderAddress
     public function getPostboxPostcode()
     {
         return $this->postboxPostcode;
+    }
+
+    /**
+     * Set email
+     *
+     * @param string $email
+     * @return OrderAddress
+     */
+    public function setEmail($email)
+    {
+        $this->email = $email;
+
+        return $this;
+    }
+
+    /**
+     * Get email
+     *
+     * @return string 
+     */
+    public function getEmail()
+    {
+        return $this->email;
     }
 }

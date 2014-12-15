@@ -32,6 +32,7 @@ use Sulu\Component\Rest\ListBuilder\Doctrine\FieldDescriptor\DoctrineJoinDescrip
 use Sulu\Component\Rest\ListBuilder\ListRepresentation;
 use Sulu\Component\Rest\RestController;
 use Sulu\Component\Rest\RestHelperInterface;
+use Sulu\Component\Security\SecuredControllerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use FOS\RestBundle\Controller\Annotations\Post;
 
@@ -40,7 +41,7 @@ use FOS\RestBundle\Controller\Annotations\Post;
  *
  * @package Sulu\Bundle\Sales\OrderBundle\Controller
  */
-class OrderController extends RestController implements ClassResourceInterface
+class OrderController extends RestController implements ClassResourceInterface, SecuredControllerInterface
 {
 
     protected static $orderEntityName = 'SuluSalesOrderBundle:Order';
@@ -297,4 +298,11 @@ class OrderController extends RestController implements ClassResourceInterface
         );
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    public function getSecurityContext()
+    {
+        return 'sulu.sales_order.orders';
+    }
 }

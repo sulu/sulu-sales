@@ -71,6 +71,13 @@ class PdfController extends RestController
             'order' => $order
         );
 
+        $header = $this->getPdfManager()->renderTemplate(
+            'PoolAlpinBaseBundle:Default:pdf-base-header.html.twig',
+            array(
+                'baseUrl' => $this->getBaseUrl($request),
+            )
+        );
+
         $footer = $this->getPdfManager()->renderTemplate(
             'PoolAlpinBaseBundle:Default:pdf-base-footer.html.twig',
             array(
@@ -82,7 +89,8 @@ class PdfController extends RestController
             'SuluSalesOrderBundle:Template:order.confirmation.pdf.html.twig',
             $data,
             false,
-            array('footer-html' => $footer)
+            array('footer-html' => $footer,
+            'header-html' => $header)
         );
 
         $pdfName = 'PA_OrderConfirmation-' . $order->getNumber() . '.pdf';
