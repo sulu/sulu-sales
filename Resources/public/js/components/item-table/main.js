@@ -970,11 +970,10 @@ define([
 
     return {
         initialize: function() {
-
-            this.selectorFormId = '#'+ this.options.formId;
-
             // load defaults
             this.options = this.sandbox.util.extend({}, defaults, this.options);
+
+            this.selectorFormId = '#'+ this.options.formId;
 
             // variables
             this.items = {};
