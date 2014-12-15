@@ -901,6 +901,6 @@ class OrderManager
         }
         unset($this->scheduledIds);
         $this->scheduledIds = [];
-        $this->em->flush();
+        // $this->em->flush();
     }
 }
