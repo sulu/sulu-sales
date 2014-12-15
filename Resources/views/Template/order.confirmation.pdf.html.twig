@@ -84,5 +84,5 @@
 {% endblock %}
 
 {% block productlist_footer_total_value %}
-    {{ order.getTotalPrice() |default('-') }}
+    {{ order.getTotalNetPrice() |default('-') }}
 {% endblock %}

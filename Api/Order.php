@@ -711,17 +711,6 @@ class Order extends ApiWrapper implements SalesDocument
     }
 
     /**
-     * @param $totalPrice
-     * @return Order
-     */
-    public function setTotalPrice($totalPrice)
-    {
-        $this->entity->setTotalPrice($totalPrice);
-
-        return $this;
-    }
-
-    /**
      * @return float
      * @VirtualProperty
      * @SerializedName("totalNetPrice")
@@ -818,5 +807,4 @@ class Order extends ApiWrapper implements SalesDocument
     {
         return self::$pdfBaseUrl;
     }
-
 }
