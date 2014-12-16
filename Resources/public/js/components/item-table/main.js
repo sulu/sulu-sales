@@ -28,8 +28,9 @@ define([
     'text!sulusalescore/components/item-table/item.form.html',
     'text!sulusalescore/components/item-table/item.row.html',
     'text!sulusalescore/components/item-table/item.row-head.html',
-    'text!sulusalescore/components/item-table/item.overlay.html'
-], function(FormTpl, RowTpl, RowHeadTpl, Overlay) {
+    'text!sulusalescore/components/item-table/item.overlay.html',
+    'config'
+], function(FormTpl, RowTpl, RowHeadTpl, Overlay, Config) {
 
     'use strict';
 
@@ -652,23 +653,18 @@ define([
          * @param $row
          */
         initProductSearch = function($row) {
+            var options = Config.get('suluproduct.components.autocomplete.default');
+            options.el = this.sandbox.dom.find(constants.productSearchClass, $row);
+            options.selectCallback = productSelected.bind(this);
+            options.remoteUrl = this.sandbox.uritemplate.parse(urls.productsFlat).expand({
+                filter: this.options.urlFilter
+            });
+
             // initialize auto-complete when adding a new Item
             this.sandbox.start([
                 {
                     name: 'auto-complete@husky',
-                    options: {
-                        el: this.sandbox.dom.find(constants.productSearchClass, $row),
-                        remoteUrl: this.sandbox.uritemplate.parse(urls.productsFlat).expand({
-                            filter: this.options.urlFilter
-                        }),
-                        resultKey: 'products',
-                        getParameter: 'search',
-                        value: '',
-                        instanceName: 'products',
-                        valueKey: 'name',
-                        noNewValues: true,
-                        selectCallback: productSelected.bind(this)
-                    }
+                    options: options
                 }
             ]);
         },
