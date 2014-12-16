@@ -19,7 +19,8 @@ define([
         var defaults = {
                 id: 'id',
                 label: 'value',
-                required: false
+                required: false,
+                formId : '#item-table-form'
             },
 
             typeInterface = {
@@ -46,7 +47,7 @@ define([
                 },
 
                 validate: function() {
-                    return App.form.validate('#item-table-form');
+                    return App.form.validate(this.options.formId);
                 }
             };
 

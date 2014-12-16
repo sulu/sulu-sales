@@ -15,34 +15,44 @@ use Sulu\Bundle\ProductBundle\Entity\Product;
 use Sulu\Bundle\ProductBundle\Product\Exception\ProductNotFoundException;
 use Sulu\Bundle\Sales\CoreBundle\Api\Item;
 use Sulu\Bundle\Sales\CoreBundle\Entity\Item as ItemEntity;
+use Sulu\Bundle\Sales\CoreBundle\Entity\ItemAttribute;
 use Sulu\Bundle\Sales\CoreBundle\Entity\ItemRepository;
+use Sulu\Bundle\Sales\CoreBundle\Item\Exception\ItemException;
 use Sulu\Bundle\Sales\CoreBundle\Item\Exception\ItemNotFoundException;
 use Sulu\Bundle\Sales\CoreBundle\Item\Exception\MissingItemAttributeException;
+use Sulu\Component\Persistence\RelationTrait;
 use Sulu\Component\Security\UserRepositoryInterface;
 use DateTime;
 
 class ItemManager
 {
+    use RelationTrait;
+
     protected static $productEntityName = 'SuluProductBundle:Product';
     protected static $itemEntityName = 'SuluSalesCoreBundle:Item';
-
-    private $currentLocale;
 
     /**
      * @var ObjectManager
      */
-    private $em;
+    protected $em;
 
     /**
      * @var ItemRepository
      */
-    private $itemRepository;
+    protected $itemRepository;
 
     /**
      * @var UserRepositoryInterface
      */
-    private $userRepository;
+    protected $userRepository;
 
+    /**
+     * constructor
+     *
+     * @param ObjectManager $em
+     * @param ItemRepository $itemRepository
+     * @param UserRepositoryInterface $userRepository
+     */
     public function __construct(
         ObjectManager $em,
         ItemRepository $itemRepository,
@@ -66,7 +76,6 @@ class ItemManager
      */
     public function save(array $data, $locale, $userId = null, Item $item = null, $itemStatusId = null)
     {
-
         // check requiresd data
         $this->checkRequiredData($data, !!$item);
 
@@ -84,7 +93,10 @@ class ItemManager
         if (!$product) {
             $item->setName($this->getProperty($data, 'name', $item->getName()));
             $item->setUseProductsPrice(false);
-            $item->setQuantityUnit($this->getProperty($data, 'quantityUnit', null));
+            // TODO: set supplier based on if its a string  or object (fetch account and set it to setSupplier)
+            $item->setSupplierName($this->getProperty($data, 'supplierName', $item->getSupplierName()));
+            // set quantity unit
+            $item->setQuantityUnit($this->getProperty($data, 'quantityUnit', $item->getQuantityUnit()));
             $item->setTax($this->getProperty($data, 'tax', $item->getTax()));
         }
         $item->setPrice($this->getProperty($data, 'price', $item->getPrice()));
@@ -107,6 +119,9 @@ class ItemManager
         if ($itemStatusId) {
             $this->addStatus($item, $itemStatusId);
         }
+
+        // handle attributes
+        $this->processAttributes($data, $item, $locale);
 
         $item->setChanged(new DateTime());
         $item->setChanger($user);
@@ -307,13 +322,23 @@ class ItemManager
             $item->setUseProductsPrice($this->getProperty($data, 'useProductsPrice', true));
             $item->setNumber($product->getNumber());
 
-            // TODO: get products supplier and set it (when product has supplier relation)
-//            $item->setSupplier($product->getSupplier);
+            // get products supplier
+            if ($product->getSupplier()) {
+                $item->setSupplier($product->getSupplier());
+                $item->setSupplierName($product->getSupplier()->getName());
+            } else {
+                $item->setSupplier(null);
+                $item->setSupplierName('');
+            }
 
-            // TODO: get unit from product
-            $item->setQuantityUnit('pc');
+            // set order unit
+            if ($product->getOrderUnit()) {
+                $item->setQuantityUnit($product->getOrderUnit()->getTranslation($locale)->getName());
+            }
+
             // TODO: get tax from product
             $item->setTax(20);
+//            $item->setTax($product->getTaxClass()->getTax($locale));
 
             if ($item->getUseProductsPrice() === true) {
                 $item->setPrice($product->getPrice());
@@ -325,6 +350,58 @@ class ItemManager
             $item->setProduct(null);
         }
         return null;
+    }
 
+    /**
+     * @param array $data
+     * @param Item $item
+     * @return bool
+     * @throws ItemException
+     */
+    private function processAttributes($data, Item $item)
+    {
+        $result = true;
+        try {
+            if (isset($data['attributes']) && is_array($data['attributes'])) {
+                /** @var ItemAttribute $itemAttribute */
+                $get = function ($itemAttribute) {
+                    return $itemAttribute->getId();
+                };
+
+                /** @var Item $item */
+                $delete = function ($itemAttribute) use ($item) {
+                    // delete item
+                    $this->em->remove($itemAttribute);
+                };
+
+                /** @var ItemAttribute $itemAttribute */
+                $update = function ($itemAttribute, $matchedEntry) use ($item) {
+                    $itemAttribute->setAttribute($matchedEntry['attribute']);
+                    $itemAttribute->setValue($matchedEntry['value']);
+                    return $itemAttribute ? true : false;
+                };
+
+                $add = function ($itemData) use ($item) {
+                    $itemAttribute = new ItemAttribute();
+                    $itemAttribute->setAttribute($itemData['attribute']);
+                    $itemAttribute->setValue($itemData['value']);
+                    $itemAttribute->setItem($item->getEntity());
+                    $this->em->persist($itemAttribute);
+                    return $item->addAttribute($itemAttribute);
+                };
+
+                $result = $this->processSubEntities(
+                    $item->getAttributes(),
+                    isset($data['attributes']) ? $data['attributes'] : array(),
+                    $get,
+                    $add,
+                    $update,
+                    $delete
+                );
+            }
+        } catch (\Exception $e) {
+            throw new ItemException('Error while creating attributes: ' . $e->getMessage());
+        }
+        return $result;
     }
 }

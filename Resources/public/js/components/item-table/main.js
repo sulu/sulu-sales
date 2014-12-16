@@ -36,6 +36,7 @@ define([
     // TODO: implement taxfree
 
     var defaults = {
+            formId: 'item-table-form',
             data: [],
             isEditable: true,
             columns: [
@@ -56,7 +57,6 @@ define([
         },
 
         constants = {
-            formId: '#item-table-form', // FIXME should be changed to a unique id when multiple instances are on one page
             listClass: '.item-table-list',
             formSelector: '.item-table-list-form',
             productSearchClass: '.product-search',
@@ -89,7 +89,7 @@ define([
             name: '',
             number: '',
             quantity: '',
-            quantityUnit: 'pc',
+            quantityUnit: '',
             price: '',
             discount: null,
             overallPrice: '',
@@ -802,13 +802,13 @@ define([
          */
         addValidationFields = function($row) {
             if (this.options.columns.indexOf('quantity') > 0) {
-                this.sandbox.form.addField(constants.formId, this.sandbox.dom.find(constants.quantityInput, $row));
+                this.sandbox.form.addField(this.selectorFormId, this.sandbox.dom.find(constants.quantityInput, $row));
             }
             if (this.options.columns.indexOf('price') > 0) {
-                this.sandbox.form.addField(constants.formId, this.sandbox.dom.find(constants.priceInput, $row));
+                this.sandbox.form.addField(this.selectorFormId, this.sandbox.dom.find(constants.priceInput, $row));
             }
             if (this.options.columns.indexOf('discount') > 0) {
-                this.sandbox.form.addField(constants.formId, this.sandbox.dom.find(constants.discountInput, $row));
+                this.sandbox.form.addField(this.selectorFormId, this.sandbox.dom.find(constants.discountInput, $row));
             }
         },
 
@@ -818,13 +818,13 @@ define([
          */
         removeValidationFields = function($row) {
             if (this.options.columns.indexOf('quantity') > 0) {
-                this.sandbox.form.removeField(constants.formId, this.sandbox.dom.find(constants.quantityInput, $row));
+                this.sandbox.form.removeField(this.selectorFormId, this.sandbox.dom.find(constants.quantityInput, $row));
             }
             if (this.options.columns.indexOf('price') > 0) {
-                this.sandbox.form.removeField(constants.formId, this.sandbox.dom.find(constants.priceInput, $row));
+                this.sandbox.form.removeField(this.selectorFormId, this.sandbox.dom.find(constants.priceInput, $row));
             }
             if (this.options.columns.indexOf('discount') > 0) {
-                this.sandbox.form.removeField(constants.formId, this.sandbox.dom.find(constants.discountInput, $row));
+                this.sandbox.form.removeField(this.selectorFormId, this.sandbox.dom.find(constants.discountInput, $row));
             }
         },
 
@@ -959,13 +959,15 @@ define([
          * initialize husky-validation
          */
         initializeForm = function() {
-            this.sandbox.form.create(constants.formId);
+            this.sandbox.form.create(this.selectorFormId);
         };
 
     return {
         initialize: function() {
             // load defaults
             this.options = this.sandbox.util.extend({}, defaults, this.options);
+
+            this.selectorFormId = '#'+ this.options.formId;
 
             // variables
             this.items = {};
@@ -994,6 +996,7 @@ define([
             // add translations for template
             var templateData = this.sandbox.util.extend({},
                 {
+                    formId: this.options.formId,
                     addText: this.sandbox.translate('salescore.item.add'),
                     isEditable: this.options.isEditable,
                     columns: this.options.columns
