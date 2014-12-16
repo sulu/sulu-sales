@@ -22,6 +22,7 @@
  *        by provide key with a function
  * @param {Object}  [options.rowCallback] Is called, when a row is clicked. Passes rowId and rowData
  * @param {Bool}  [options.showSettings] If true, the items settings overlay is displayed on click on a row
+ * @param {Object}  [options.urlFilter] Object containing key value pairs to extend the url
  */
 define([
     'text!sulusalescore/components/item-table/item.form.html',
@@ -35,6 +36,7 @@ define([
     // TODO: implement taxfree
 
     var defaults = {
+            urlFilter: {},
             formId: 'item-table-form',
             data: [],
             isEditable: true,
@@ -55,13 +57,17 @@ define([
             showSettings: false
         },
 
+        urls = {
+            products: '/admin/api/products{?filter*}',
+            productsFlat: '/admin/api/products?flat=true&searchFields=number,name&fields=id,name,number{&filter*}',
+            product: '/admin/api/products/'
+        },
+
         constants = {
             listClass: '.item-table-list',
             formSelector: '.item-table-list-form',
             productSearchClass: '.product-search',
             rowIdPrefix: 'item-table-row-',
-            productsUrl: '/admin/api/products?flat=true&searchFields=number,name&fields=id,name,number',
-            productUrl: '/admin/api/products/',
             rowClass: '.item-table-row',
             quantityRowClass: '.item-quantity',
             quantityInput: '.item-quantity input',
@@ -299,8 +305,11 @@ define([
          * @param ids
          */
         fetchProductData = function(ids) {
-            // TODO could be replaced by a product collection
-            var url = '/admin/api/products?ids=' + ids.join(',');
+            var url = this.sandbox.uritemplate.parse(urls.products).expand({
+                filter: {
+                    'ids': ids.join(',')
+                }
+            });
             return this.sandbox.util.load(url);
         },
 
@@ -621,7 +630,7 @@ define([
             ]);
 
             // load product details
-            this.sandbox.util.load(constants.productUrl + product.id)
+            this.sandbox.util.load(urls.product + product.id)
                 .then(function(response) {
                     // set item to product
                     itemData = setItemByProduct.call(this, response);
@@ -649,7 +658,9 @@ define([
                     name: 'auto-complete@husky',
                     options: {
                         el: this.sandbox.dom.find(constants.productSearchClass, $row),
-                        remoteUrl: constants.productsUrl,
+                        remoteUrl: this.sandbox.uritemplate.parse(urls.productsFlat).expand({
+                            filter: this.options.urlFilter
+                        }),
                         resultKey: 'products',
                         getParameter: 'search',
                         value: '',
