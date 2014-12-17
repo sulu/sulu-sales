@@ -1,24 +1,100 @@
 <form class="settings-overlay">
-    <% if (columns.indexOf('address') > -1) { %>
-    <!--<div class="grid-row">-->
-        <!--<div class="grid-col-12">-->
-            <!--<div class="form-group">-->
-                <!--<label>Adresse</label>-->
-                <!--<select class="address" data-type="address-select" data-mapper-property="address">-->
-                    <!--<% _.each(addresses, function(address) { %>-->
-                    <!--<option value="<%=address.id%>"><%= convertAddressString(address) %></option>-->
-                    <!--<% }); %>-->
-                <!--</select>-->
-            <!--</div>-->
-        <!--</div>-->
-    <!--</div>-->
-    <% } %>
+    <% if (settings.columns.indexOf('addresses') > -1) { %>
     <div class="grid-row">
         <div class="grid-col-12">
             <div class="form-group-vertical">
-                <label>Notiz</label>
-                <textarea class="form-group"></textarea>
+                <label><%= translate('address.delivery') %></label>
+                <select class="address form-element" data-type="select" data-mapper-property="deliveryAddress">
+                    <option value="-1"><%= translate('public.please-choose') %></option>
+                    <% _.each(settings.addresses, function(address) { %>
+                    <option value="<%=address.id%>"
+                    <% if (address.id == deliveryAddress.id){%> selected="selected"<%}%> >
+                    <%= createAddressString(address) %>
+                    </option>
+                    <% }); %>
+                </select>
             </div>
         </div>
     </div>
+    <% } %>
+    <% if (settings.columns.indexOf('description') > -1) { %>
+    <div class="grid-row">
+        <div class="grid-col-12">
+            <div class="form-group-vertical">
+                <label><%= translate('salescore.item.description') %></label>
+                <textarea class="form-element" data-mapper-property="description"><%= description %></textarea>
+            </div>
+        </div>
+    </div>
+    <% } %>
+    <% if (settings.columns.indexOf('quantity') > -1 || settings.columns.indexOf('single-price') > -1) { %>
+    <div class="grid-row">
+        <% if (settings.columns.indexOf('quantity') > -1) { %>
+        <div class="grid-col-3">
+            <div class="form-group-vertical">
+                <label><%= translate('salescore.item.quantity') %></label>
+                <input class="form-element" type="text" data-mapper-property="quantity" value="<%= quantity %>"/>
+            </div>
+        </div>
+        <div class="grid-col-3">
+            <div class="form-group-vertical">
+                <label><%= translate('salescore.item.unit') %></label>
+                <span><%= quantityUnit %></span>
+            </div>
+        </div>
+        <% } %>
+        <% if (settings.columns.indexOf('single-price') > -1) { %>
+        <div class="grid-col-6">
+            <div class="form-group-vertical">
+                <label><%= translate('salescore.item.price') %></label>
+                <input class="form-element" type="text" data-mapper-property="price" value="<%= price %>"/>
+            </div>
+        </div>
+        <% } %>
+    </div>
+    <% } %>
+    <% if (settings.columns.indexOf('delivery-date') > -1 || settings.columns.indexOf('cost-center') > -1) { %>
+    <div class="grid-row">
+        <% if (settings.columns.indexOf('delivery-date') > -1) { %>
+        <div class="grid-col-6">
+            <div class="form-group-vertical">
+                <label><%= translate('salescore.item.delivery-date') %></label>
+
+                <div id="delivery-date"
+                     data-mapper-property="deliveryDate"
+                     data-type="husky-input"
+                     data-form="true"></div>
+            </div>
+        </div>
+        <% } %>
+        <% if (settings.columns.indexOf('cost-center') > -1) { %>
+        <div class="grid-col-6">
+            <div class="form-group-vertical">
+                <label><%= translate('salesorder.orders.costCentre') %></label>
+                <input class="form-element" type="text" data-mapper-property="costCenter" value="<%= costCenter %>"/>
+            </div>
+        </div>
+        <% } %>
+    </div>
+    <% } %>
+    <% if (settings.columns.indexOf('discount') > -1 || settings.columns.indexOf('tax-rate') > -1) { %>
+    <div class="grid-row">
+        <% if (settings.columns.indexOf('discount') > -1) { %>
+        <div class="grid-col-6">
+            <div class="form-group-vertical">
+                <label><%= translate('salescore.item.discount') %></label>
+                <input class="form-element" type="text" data-mapper-property="discount" value="<%= discount %>"/>
+            </div>
+        </div>
+        <% } %>
+        <% if (settings.columns.indexOf('tax-rate') > -1) { %>
+        <div class="grid-col-6">
+            <div class="form-group-vertical">
+                <label><%= translate('salescore.item.tax-rate') %></label>
+                <span><%= tax %></span>
+            </div>
+        </div>
+        <% } %>
+    </div>
+    <% } %>
 </form>
