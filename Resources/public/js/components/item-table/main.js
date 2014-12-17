@@ -55,7 +55,7 @@ define([
             defaultData: {},
             columnCallbacks: {},
             rowCallback: null,
-            showSettings: false
+            settings: false
         },
 
         urls = {
@@ -79,7 +79,8 @@ define([
             globalPriceTableClass: '.global-price-table',
             overallEmptyString: '-',
             loaderSelector: '.item-table-loader',
-            loaderClass: 'item-table-loader'
+            loaderClass: 'item-table-loader',
+            overlayClassSelector: '.settings-overlay'
         },
 
         /**
@@ -156,6 +157,17 @@ define([
         },
 
         /**
+         * Set addresses of overlay select
+         *
+         * @param addresses
+         *
+         * @event sulu.item-table[.INSTANCENAME].set-addresses
+         */
+        EVENT_SET_ADRESSES = function() {
+            return getEventName.call(this, 'set-addresses');
+        },
+
+        /**
          * returns event name
          * @param suffix
          * @returns {string}
@@ -188,6 +200,7 @@ define([
         bindCustomEvents = function() {
             this.sandbox.on(EVENT_SET_DEFAULT_DATA.call(this), setDefaultData.bind(this));
             this.sandbox.on(EVENT_CHANGE_CURRENCY.call(this), changeCurrency.bind(this));
+            this.sandbox.on(EVENT_SET_ADRESSES.call(this), setAddresses.bind(this))
         },
 
         /**
@@ -214,6 +227,16 @@ define([
             this.sandbox.dom.on(this.$el, 'change', quantityChangedHandler.bind(this), constants.quantityInput);
             this.sandbox.dom.on(this.$el, 'change', priceChangedHandler.bind(this), constants.priceInput);
             this.sandbox.dom.on(this.$el, 'change', discountChangedHandler.bind(this), constants.discountInput);
+        },
+
+        /**
+         * Set addresses of settings overlay
+         * @param addresses
+         */
+        setAddresses = function(addresses) {
+            if (!!this.options.settings) {
+                this.options.settings.addresses = addresses;
+            }
         },
 
         /**
@@ -393,15 +416,15 @@ define([
                 return;
             }
 
-            var rowId = this.sandbox.dom.data(event.currentTarget, 'id');
+            var rowId = this.sandbox.dom.attr(event.currentTarget, 'id');
             // call rowCallback
             if (!!this.options.rowCallback) {
                 this.options.rowCallback.call(this, rowId, this.items[rowId]);
             }
 
             // if settings are activated, show them
-            if (this.options.showSettings === true || this.options.showSettings === 'true') {
-                initSettingsOverlay.call(this, this.items[rowId]);
+            if (!!this.options.settings && this.options.settings !== 'false') {
+                initSettingsOverlay.call(this, this.items[rowId], this.options.settings, rowId);
             }
         },
 
@@ -919,11 +942,21 @@ define([
         /**
          * Inits the overlay with a specific template
          */
-        initSettingsOverlay = function(data) {
-            var $overlay, $content;
+        initSettingsOverlay = function(data, settings, rowId) {
+            var $overlay, $content, title, subTitle;
+
+            settings = this.sandbox.util.extend({
+                columns: [],
+                addresses: []
+            }, settings);
 
             data = this.sandbox.util.extend({
-                columns: []
+                settings: settings,
+                createAddressString: this.sandbox.sulu.createAddressString,
+                translate: this.sandbox.translate,
+                deliveryDate: null,
+                deliveryAddress: {id: null},
+                costCenter: null
             }, data);
 
             // prevent multiple initialization of the overlay
@@ -934,19 +967,51 @@ define([
             $overlay = this.sandbox.dom.createElement('<div class="' + constants.overlayClass + '"></div>');
             this.sandbox.dom.append(this.$el, $overlay);
 
+            title = data.name;
+            subTitle = '#' + data.number;
+            if (data.supplierName !== '') {
+                subTitle += '<br/>' + data.supplierName;
+            }
+
             this.sandbox.start([
                 {
                     name: 'overlay@husky',
                     options: {
                         el: $overlay,
-                        title: this.sandbox.translate('test 123'),
+                        title: title,
+                        subTitle: subTitle,
+                        instanceName: 'settings',
                         openOnStart: true,
                         removeOnClose: false,
                         skin: 'wide',
                         data: $content,
                         okCallback: function() {
+                            var deliveryAddress = this.sandbox.dom.val(constants.overlayClassSelector + ' *[data-mapper-property="deliveryAddress"]'),
+                                deliveryDate = this.sandbox.dom.val(constants.overlayClassSelector + ' *[data-mapper-property="deliveryDate"] input'),
+                                costCenter = this.sandbox.dom.val(constants.overlayClassSelector + ' *[data-mapper-property="costCenter"]');
 
+                            this.items[rowId].description = this.sandbox.dom.val(constants.overlayClassSelector + ' *[data-mapper-property="description"]');
+                            this.items[rowId].quantity = this.sandbox.dom.val(constants.overlayClassSelector + ' *[data-mapper-property="quantity"]');
+                            this.items[rowId].price = this.sandbox.dom.val(constants.overlayClassSelector + ' *[data-mapper-property="price"]');
+                            this.items[rowId].discount = this.sandbox.dom.val(constants.overlayClassSelector + ' *[data-mapper-property="discount"]');
+
+                            this.items[rowId].deliveryAddress = deliveryAddress !== '-1' ? deliveryAddress : {id: null};
+                            this.items[rowId].deliveryDate = deliveryDate !== '' ? deliveryDate : null;
+                            this.items[rowId].costCenter = costCenter !== '' ? costCenter : null;
+
+                            updateItemRow.call(this, rowId, this.items[rowId]);
+                            updateGlobalPrice.call(this, rowId);
+                            refreshItemsData.call(this);
                         }.bind(this)
+                    }
+                },
+                {
+                    name: 'input@husky',
+                    options: {
+                        el: '#delivery-date',
+                        skin: 'date',
+                        instanceName: 'settings-delivery-date',
+                        inputId: 'settings-delivery-date'
                     }
                 }
             ]);
