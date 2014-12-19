@@ -11,8 +11,9 @@ define([
     'sulusalesorder/util/sidebar',
     'sulusalesorder/util/orderStatus',
     'sulusalescore/util/helper',
-    'sulucontact/model/account'
-], function(Sidebar, OrderStatus, CoreHelper, Account) {
+    'sulucontact/model/account',
+    'config'
+], function(Sidebar, OrderStatus, CoreHelper, Account, Config) {
 
     'use strict';
 
@@ -21,7 +22,6 @@ define([
         constants = {
             accountContactsUrl: '/admin/api/accounts/<%= id %>/contacts?flat=true',
             accountAddressesUrl: '/admin/api/accounts/<%= id %>/addresses',
-            accountUrl: '/admin/api/accounts?searchFields=name&flat=true&fields=id,name',
             accountInputId: '#account-input',
             deliveryAddressInstanceName: 'delivery-address',
             billingAddressInstanceName: 'billing-address',
@@ -321,20 +321,16 @@ define([
                 initSelectsByAccountId.call(this, data.account.id, data);
             }
 
+            var options = Config.get('sulucontact.components.autocomplete.default.account');
+            options.el = constants.accountInputId;
+            options.value = !!data.account ? data.account : '';
+            options.instanceName = this.accountInstanceName;
+
             // starts form components
             this.sandbox.start([
                 {
                     name: 'auto-complete@husky',
-                    options: {
-                        el: constants.accountInputId,
-                        remoteUrl: constants.accountUrl,
-                        resultKey: 'accounts',
-                        getParameter: 'search',
-                        value: !!data.account ? data.account : '',
-                        instanceName: this.accountInstanceName,
-                        valueKey: 'name',
-                        noNewValues: true
-                    }
+                    options: options
                 }
             ]);
         },
@@ -379,6 +375,15 @@ define([
         },
 
         /**
+         * set addresses for settings overlay
+         * @param addresses
+         * @param preselect
+         */
+        setSettingsOverlayAdresses = function(addresses, preselect) {
+            this.sandbox.emit('sulu.item-table.' + constants.itemTableInstanceName + '.set-addresses', addresses, preselect);
+        },
+
+        /**
          * called when account auto-complete is changed
          * @param event
          */
@@ -396,6 +401,8 @@ define([
                     initContactSelect.call(this, []);
                     initAddressComponents.call(this, [], constants.deliveryAddressInstanceName);
                     initAddressComponents.call(this, [], constants.billingAddressInstanceName);
+
+                    setSettingsOverlayAdresses.call(this, []);
                 }
             }
         },
@@ -454,6 +461,7 @@ define([
                         }
                         this.sandbox.data.when(this.dfdDeliveryAddressInitialized).then(function() {
                             initAddressComponents.call(this, addressData, constants.deliveryAddressInstanceName, preselect);
+                            setSettingsOverlayAdresses.call(this, addressData, preselect);
                             this.options.data.deliveryAddress = preselect;
 //                            setFormData.call(this, this.options.data);
                         }.bind(this));
@@ -499,10 +507,10 @@ define([
         /**
          * Returns currency id for currency code
          */
-        getCurrencyIdForCode = function(code, currencies){
+        getCurrencyIdForCode = function(code, currencies) {
             var currency = [];
-            this.sandbox.util.each(currencies, function(key){
-                if(currencies[key].code === code){
+            this.sandbox.util.each(currencies, function(key) {
+                if (currencies[key].code === code) {
                     currency.push(currencies[key].id);
                     return false;
                 }
@@ -609,7 +617,7 @@ define([
         /**
          * Initializes the item-table and the select component
          */
-        startItemTableAndCurrencySelect: function(){
+        startItemTableAndCurrencySelect: function() {
 
             this.sandbox.start([
                 {
@@ -620,7 +628,10 @@ define([
                         remoteUrl: constants.accountUrl,
                         data: this.options.data.items,
                         currency: this.options.data.currency,
-                        el: constants.itemTableSelector
+                        el: constants.itemTableSelector,
+                        settings: {
+                            columns: ['addresses', 'description', 'quantity', 'single-price', 'delivery-date', 'cost-center', 'discount', 'tax-rate']
+                        }
                     }
                 },
                 {
@@ -679,16 +690,16 @@ define([
 
                 // when input changes
                 this.sandbox.dom.on(form, 'change', changeHandler.bind(this),
-                        '.changeListener select, ' +
-                        '.changeListener input, ' +
-                        '.changeListener .husky-select, ' +
-                        '.changeListener textarea');
+                    '.changeListener select, ' +
+                    '.changeListener input, ' +
+                    '.changeListener .husky-select, ' +
+                    '.changeListener textarea');
 
                 // on keyup
                 this.sandbox.dom.on(form, 'keyup', changeHandler.bind(this),
-                        '.changeListener select, ' +
-                        '.changeListener input, ' +
-                        '.changeListener textarea');
+                    '.changeListener select, ' +
+                    '.changeListener input, ' +
+                    '.changeListener textarea');
 
                 // change in item-table
                 this.sandbox.on('sulu.item-table.changed', changeHandler.bind(this));
