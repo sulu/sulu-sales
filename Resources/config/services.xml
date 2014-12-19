@@ -47,7 +47,7 @@
             <tag name="kernel.event_subscriber"/>
             <tag name="doctrine.event_listener" event="postPersist" method="postPersist"/>
             <tag name="doctrine.event_listener" event="postDelete" method="postDelete"/>
-            <tag name="doctrine.event_listener" event="preUpdate" method="postFlush"/>
+            <tag name="doctrine.event_listener" event="preUpdate" method="preUpdate"/>
         </service>
 
         <service id="sulu_sales_order.order_dependency_manager" class="%sulu_sales_order.order_dependency_manager.class%" />

@@ -831,10 +831,13 @@ class Order
 
     /**
      * Updates the total net price
-     *
      */
     public function updateTotalNetPrice()
     {
+        if (!$this->getItems()) {
+            return;
+        }
+
         $sum = 0;
         foreach ($this->getItems() as $item) {
             $sum += $item->getTotalNetPrice();

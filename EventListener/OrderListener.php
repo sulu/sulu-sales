@@ -80,13 +80,8 @@ class OrderListener implements EventSubscriberInterface
     public function onKernelTerminate(PostResponseEvent $event)
     {
         $requestMethod = $event->getRequest()->getMethod();
-        $match = false;
         $requestUri = $event->getRequest()->getRequestUri();
-        if (strpos($requestUri, '/api/orders')) {
-            $match = true;
-        }
-
-        if ($match && $requestMethod == 'PUT' || $requestMethod == 'POST') {
+        if (strpos($requestUri, '/api/orders') && ($requestMethod == 'PUT' || $requestMethod == 'POST')) {
             $this->getOrderUpdater()->processIds();
         }
     }
