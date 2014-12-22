@@ -74,7 +74,7 @@ class FlowOfDocuments extends FlowOfDocumentsBase
             'order',
             new DateTime($options['orderDate']),
             parent::getRoute($options['orderId'], 'order', 'details'),
-            Order::$pdfBaseUrl
+            parent::getRoute($options['orderId'], 'order', 'pdf')
         );
     }
 
