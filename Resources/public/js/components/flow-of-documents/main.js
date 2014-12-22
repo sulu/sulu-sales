@@ -130,7 +130,8 @@ define([], function() {
                 cssClass,
                 prefix = '',
                 downloadIcon = '',
-                $td;
+                $td,
+                type;
 
             // TODO refactor when more abstraction is needed and more time available
 
@@ -148,7 +149,8 @@ define([], function() {
                     break;
                 case 'number':
                     if (!!data[definition.prefixProperty]) {
-                        prefix = getPrefixForType.call(this, data[definition.prefixProperty]) + ' ';
+                        type = !!data.translationKey ? data.translationKey : data[definition.prefixProperty];
+                        prefix = getPrefixForType.call(this, type) + ' ';
                     }
                     if (!!definition.prefix) {
                         prefix += definition.prefix;
@@ -184,8 +186,7 @@ define([], function() {
                 case 'invoice':
                     return this.sandbox.translate('salescore.invoice');
                 default:
-                    this.sandbox.logger.warn('flow-of-documents: No prefix for type found!');
-                    return '';
+                    return this.sandbox.translate(type);
             }
         },
 
