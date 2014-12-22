@@ -27,6 +27,7 @@
         </div>
     </div>
     <% } %>
+    <% if (settings.columns.indexOf('quantity') > -1 || settings.columns.indexOf('single-price') > -1) { %>
     <div class="grid-row">
         <% if (settings.columns.indexOf('quantity') > -1) { %>
         <div class="grid-col-3">
@@ -51,6 +52,8 @@
         </div>
         <% } %>
     </div>
+    <% } %>
+    <% if (settings.columns.indexOf('delivery-date') > -1 || settings.columns.indexOf('cost-center') > -1) { %>
     <div class="grid-row">
         <% if (settings.columns.indexOf('delivery-date') > -1) { %>
         <div class="grid-col-6">
@@ -73,6 +76,8 @@
         </div>
         <% } %>
     </div>
+    <% } %>
+    <% if (settings.columns.indexOf('discount') > -1 || settings.columns.indexOf('tax-rate') > -1) { %>
     <div class="grid-row">
         <% if (settings.columns.indexOf('discount') > -1) { %>
         <div class="grid-col-6">
@@ -91,4 +96,5 @@
         </div>
         <% } %>
     </div>
+    <% } %>
 </form>

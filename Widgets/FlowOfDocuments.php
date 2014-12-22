@@ -43,8 +43,9 @@ abstract class FlowOfDocuments implements WidgetInterface
      * @param DateTime $date
      * @param String $route
      * @param String $pdfBaseUrl
+     * @param String $translationKey
      */
-    protected function addEntry($id, $number, $type, DateTime $date, $route, $pdfBaseUrl)
+    protected function addEntry($id, $number, $type, DateTime $date, $route, $pdfBaseUrl, $translationKey = '')
     {
         $this->entries[] = array(
             'id' => $id,
@@ -52,7 +53,8 @@ abstract class FlowOfDocuments implements WidgetInterface
             'type' => $type,
             'date' => $date,
             'route' => $route,
-            'pdfBaseUrl' => $pdfBaseUrl
+            'pdfBaseUrl' => $pdfBaseUrl,
+            'translationKey' => $translationKey
         );
     }
 

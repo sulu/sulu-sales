@@ -130,7 +130,8 @@ define([], function() {
                 cssClass,
                 prefix = '',
                 downloadIcon = '',
-                $td;
+                $td,
+                type;
 
             // TODO refactor when more abstraction is needed and more time available
 
@@ -141,14 +142,15 @@ define([], function() {
                     $td = this.sandbox.dom.createElement('<td class="icon-cell"><span class="fa ' + cssClass + ' icon"></span></td>');
                     break;
                 case 'download':
-                    if (data.type === 'order') {
+                    if (data.type === 'order' && !!data.pdfBaseUrl) {
                         downloadIcon = '<span class="fa fa-file-pdf-o icon pdf-download"></span>';
                     }
                     $td = this.sandbox.dom.createElement('<td class="icon-cell">' + downloadIcon + '</td>');
                     break;
                 case 'number':
                     if (!!data[definition.prefixProperty]) {
-                        prefix = getPrefixForType.call(this, data[definition.prefixProperty]) + ' ';
+                        type = !!data.translationKey ? data.translationKey : data[definition.prefixProperty];
+                        prefix = getPrefixForType.call(this, type) + ' ';
                     }
                     if (!!definition.prefix) {
                         prefix += definition.prefix;
@@ -184,8 +186,7 @@ define([], function() {
                 case 'invoice':
                     return this.sandbox.translate('salescore.invoice');
                 default:
-                    this.sandbox.logger.warn('flow-of-documents: No prefix for type found!');
-                    return '';
+                    return this.sandbox.translate(type);
             }
         },
 
