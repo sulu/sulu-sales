@@ -53,7 +53,8 @@ class SuluSalesCoreExtension extends Extension
                     'base' => 'sales/orders',
                     'details' => 'sales/orders/edit:[id]/details',
                     'add' => 'sales/orders/edit:[id]/add',
-                    'shippings' => 'sales/orders/edit:[id]/shippings/add'
+                    'shippings' => 'sales/orders/edit:[id]/shippings/add',
+                    'pdf' => 'admin/order/pdf/order-confirmation/[id]'
                 ),
                 'shipping' => array(
                     'base' => 'sales/shippings',
