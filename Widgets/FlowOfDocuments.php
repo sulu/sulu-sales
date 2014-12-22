@@ -16,7 +16,6 @@ use Sulu\Bundle\AdminBundle\Widgets\WidgetParameterException;
 use Sulu\Bundle\Sales\CoreBundle\Core\SalesDocument;
 use Sulu\Bundle\Sales\CoreBundle\SalesDependency\SalesDependencyClassInterface;
 use Sulu\Bundle\Sales\CoreBundle\Widgets\FlowOfDocuments as FlowOfDocumentsBase;
-use Sulu\Bundle\Sales\OrderBundle\Api\Order;
 
 class FlowOfDocuments extends FlowOfDocumentsBase
 {
@@ -81,7 +80,7 @@ class FlowOfDocuments extends FlowOfDocumentsBase
             'order',
             new DateTime($options['orderDate']),
             parent::getRoute($options['orderId'], 'order', 'details'),
-            Order::$pdfBaseUrl
+            parent::getRoute($options['orderId'], 'order', 'pdf')
         );
     }
 

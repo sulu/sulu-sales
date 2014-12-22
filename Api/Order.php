@@ -24,8 +24,6 @@ use DateTime;
  */
 class Order extends ApiWrapper implements SalesDocument
 {
-    public static $pdfBaseUrl = '/admin/order/pdf/';
-
     private $permissions = array();
     private $workflows = array();
 
