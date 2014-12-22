@@ -142,7 +142,7 @@ define([], function() {
                     $td = this.sandbox.dom.createElement('<td class="icon-cell"><span class="fa ' + cssClass + ' icon"></span></td>');
                     break;
                 case 'download':
-                    if (data.type === 'order') {
+                    if (data.type === 'order' && !!data.pdfBaseUrl) {
                         downloadIcon = '<span class="fa fa-file-pdf-o icon pdf-download"></span>';
                     }
                     $td = this.sandbox.dom.createElement('<td class="icon-cell">' + downloadIcon + '</td>');
