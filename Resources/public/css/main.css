@@ -4,24 +4,24 @@ body {
 }
 
 /* line 11, ../scss/modules/item-table.scss */
-#item-table-form {
+.item-table-list-form {
   margin-top: 20px;
 }
 /* line 17, ../scss/modules/item-table.scss */
-#item-table-form.disabled .add-row,
-#item-table-form.disabled .item-remove {
+.item-table-list-form.disabled .add-row,
+.item-table-list-form.disabled .item-remove {
   display: none;
 }
 /* line 20, ../scss/modules/item-table.scss */
-#item-table-form.disabled .global-price-table {
+.item-table-list-form.disabled .global-price-table {
   margin-right: 0;
 }
 /* line 24, ../scss/modules/item-table.scss */
-#item-table-form.disabled input {
+.item-table-list-form.disabled input {
   background-color: transparent;
 }
 /* line 28, ../scss/modules/item-table.scss */
-#item-table-form.disabled .husky-toolbar .toolbar-item {
+.item-table-list-form.disabled .husky-toolbar .toolbar-item {
   display: none;
 }
 
