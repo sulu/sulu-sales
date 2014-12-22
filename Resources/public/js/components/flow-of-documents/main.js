@@ -57,15 +57,14 @@ define([], function() {
             table: function() {
                 return '<table class="' + constants.tableClass + '"></table>';
             },
-            row: function(id, route, pdfBaseUrl) {
-                return '<tr data-id="' + id + '" data-route="' + route + '" data-pdf-base-url="' + pdfBaseUrl + '" class="pointer"></tr>';
+            row: function(id, route, pdfUrl) {
+                return '<tr data-id="' + id + '" data-route="' + route + '" data-pdf-url="' + pdfUrl + '" class="pointer"></tr>';
             }
         },
 
         constants = {
             titleClass: 'sidebar-table-title',
-            tableClass: 'sidebar-table',
-            pdfOrderConfirmUrlSlug: 'order-confirmation'
+            tableClass: 'sidebar-table'
         },
 
         eventNamespace = 'sulu.flow-of-documents.',
@@ -111,8 +110,8 @@ define([], function() {
         },
 
         renderRow = function(data) {
-            var pdfBaseUrl = data.pdfBaseUrl || '',
-                $row = this.sandbox.dom.createElement(templates.row.call(this, data.id, data.route, pdfBaseUrl));
+            var pdfUrl = data.pdfUrl || '',
+                $row = this.sandbox.dom.createElement(templates.row.call(this, data.id, data.route, pdfUrl));
             this.sandbox.util.foreach(this.options.columnDefinition, function(definition) {
                 renderCell.call(this, data, $row, definition);
             }.bind(this));
@@ -142,7 +141,7 @@ define([], function() {
                     $td = this.sandbox.dom.createElement('<td class="icon-cell"><span class="fa ' + cssClass + ' icon"></span></td>');
                     break;
                 case 'download':
-                    if (data.type === 'order' && !!data.pdfBaseUrl) {
+                    if (data.type === 'order' && !!data.pdfUrl) {
                         downloadIcon = '<span class="fa fa-file-pdf-o icon pdf-download"></span>';
                     }
                     $td = this.sandbox.dom.createElement('<td class="icon-cell">' + downloadIcon + '</td>');
@@ -203,11 +202,9 @@ define([], function() {
             this.sandbox.dom.on(this.$el, 'click', function(event) {
                 event.stopPropagation();
                 var $tr = this.sandbox.dom.closest(this.sandbox.dom.createElement(event.currentTarget), 'tr'),
-                    id = this.sandbox.dom.data($tr, 'id'),
-                    pdfBaseUrl = this.sandbox.dom.data($tr, 'pdfBaseUrl'),
-                    url = pdfBaseUrl + constants.pdfOrderConfirmUrlSlug + '/' + id;
+                    url = this.sandbox.dom.data($tr, 'pdf-url');
 
-                window.open(url, 'Download');
+                window.open('/'+url, 'Download');
             }.bind(this), '.pdf-download');
         },
 
