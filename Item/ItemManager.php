@@ -12,6 +12,7 @@ namespace Sulu\Bundle\Sales\CoreBundle\Item;
 
 use Doctrine\Common\Persistence\ObjectManager;
 use Sulu\Bundle\ProductBundle\Entity\Product;
+use Sulu\Bundle\ProductBundle\Product\Exception\ProductException;
 use Sulu\Bundle\ProductBundle\Product\Exception\ProductNotFoundException;
 use Sulu\Bundle\Sales\CoreBundle\Api\Item;
 use Sulu\Bundle\Sales\CoreBundle\Entity\Item as ItemEntity;
@@ -150,6 +151,7 @@ class ItemManager
             $this->em->flush();
         }
     }
+
     /**
      * converts status of an item
      * @param Item $item
@@ -236,7 +238,7 @@ class ItemManager
 
         array_walk(
             $items,
-            function (&$item) use ($locale){
+            function (&$item) use ($locale) {
                 $item = new Item($item, $locale);
             }
         );
@@ -298,9 +300,10 @@ class ItemManager
      * @param $data
      * @param Item $item
      * @param $locale
-     * @throws Exception\MissingItemAttributeException
-     * @throws \Sulu\Bundle\ProductBundle\Product\Exception\ProductNotFoundException
      * @return null|object
+     * @throws MissingItemAttributeException
+     * @throws ProductException
+     * @throws ProductNotFoundException
      */
     private function setItemByProductData($data, Item $item, $locale)
     {
@@ -317,6 +320,18 @@ class ItemManager
             }
             $item->setProduct($product);
             $translation = $product->getTranslation($locale);
+
+            // when the product is not available in the current language choose the first translation you find
+            // FIXME: should be changed when products have a language fallback
+            // https://github.com/massiveart/POOL-ALPIN/issues/611
+            if (is_null($translation)) {
+                if (count($product->getTranslations()) > 0) {
+                    $translation = $product->getTranslations()[0];
+                } else {
+                    throw new ProductException('Product '.$product->getId().' has no translations!');
+                }
+            }
+
             $item->setName($translation->getName());
             $item->setDescription($translation->getLongDescription());
             $item->setUseProductsPrice($this->getProperty($data, 'useProductsPrice', true));
