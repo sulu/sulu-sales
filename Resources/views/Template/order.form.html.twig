@@ -271,6 +271,7 @@
         (function() {
             App.emit('sulu.salesorder.set-order-status', {{ orderStatus |json_encode()|raw }});
             App.emit('sulu.salesorder.set-currencies', {{  currencies |json_encode()|raw }});
+            App.emit('sulu.salesorder.set-customer-id', {{ customerId }});
         })();
     </script>
 {% endblock %}

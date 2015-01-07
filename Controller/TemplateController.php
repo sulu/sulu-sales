@@ -2,6 +2,7 @@
 
 namespace Sulu\Bundle\Sales\OrderBundle\Controller;
 
+use Sulu\Bundle\ContactBundle\Entity\Account;
 use Sulu\Bundle\ProductBundle\Api\Currency;
 use Sulu\Bundle\Sales\OrderBundle\Api\OrderStatus;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -39,7 +40,8 @@ class TemplateController extends RestController
                 'termsOfPayment' => $this->getTermsArray(self::$termsOfPaymentEntityName),
                 'termsOfDelivery' => $this->getTermsArray(self::$termsOfDeliveryEntityName),
                 'orderStatus' => $this->getOrderStatus(),
-                'currencies' => $this->getCurrencies($this->getUser()->getLocale())
+                'currencies' => $this->getCurrencies($this->getUser()->getLocale()),
+                'customerId' => Account::TYPE_CUSTOMER,
             )
         );
     }

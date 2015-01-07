@@ -277,6 +277,10 @@ define([
                 this.sandbox.emit('sulu.item-table.' + constants.itemTableInstanceName + '.change-currency', data);
                 this.currency = data;
             }, this);
+
+            this.sandbox.on('sulu.salesorder.set-customer-id', function(customerId) {
+                this.customerId = customerId;
+            }, this);
         },
 
         /**
@@ -325,6 +329,7 @@ define([
             options.el = constants.accountInputId;
             options.value = !!data.account ? data.account : '';
             options.instanceName = this.accountInstanceName;
+            options.remoteUrl += '&type=' + this.customerId;
 
             // starts form components
             this.sandbox.start([
