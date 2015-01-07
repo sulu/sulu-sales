@@ -154,6 +154,10 @@
                 <source>salescore.delivery-cost</source>
                 <target>Delivery costs</target>
             </trans-unit>
+            <trans-unit id="1" resname="salescore.change-address">
+                <source>salescore.change-address</source>
+                <target>Change address</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>
