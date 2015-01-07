@@ -7,21 +7,21 @@ disabled =  'disabled';
 <tr id="<%= rowId %>" class="item-table-row <%= rowClass %>" data-id="<%= id %>">
     <td class="row-number grey-font"></td>
     <% if (columns.indexOf('name') > -1) { %>
-    <td class="item-name pointer" data-name="name">
+    <td class="item-name <%= !!disabled ? 'grey-font' : 'pointer' %>" data-name="name">
         <span title="<%= supplierName %>"><%= name %></span>
 
         <div class="product-search input-field"></div>
     </td>
     <% } if (columns.indexOf('number') > -1) { %>
-    <td class="number item-number is-numeric pointer" data-name="number">
+    <td class="number item-number is-numeric <%= !!disabled ? 'grey-font' : 'pointer' %>" data-name="number">
         <span><%= number %></span>
     </td>
     <% } if (columns.indexOf('address') > -1) { %>
-    <td class="address item-address pointer" data-name="address" data-address="<%= addressObject %>">
+    <td class="address item-address <%= !!disabled ? 'grey-font' : 'pointer' %>" data-name="address" data-address="<%= addressObject %>">
         <span><%= address %></span>
     </td>
     <% } if (columns.indexOf('description') > -1) { %>
-    <td class="description">
+    <td class="description grey-font">
         <span><%= description %></span>
     </td>
     <% } if (columns.indexOf('quantity') > -1) { %>
