@@ -6,10 +6,10 @@ disabled =  'disabled';
 
 <tr id="<%= rowId %>" class="item-table-row <%= rowClass %>" data-id="<%= id %>">
     <td class="row-number grey-font"></td>
-    <td class="item-name pointer">
+    <td class="item-name <%= !!disabled ? 'grey-font' : 'pointer' %>">
         <span><%= item.name %></span>
     </td>
-    <td class="item-number is-numeric pointer">
+    <td class="item-number is-numeric <%= !!disabled ? 'grey-font' : 'pointer' %>">
         <span><%= item.number %></span>
     </td>
     <td class="item-quantity is-numeric grey-font">
