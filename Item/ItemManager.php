@@ -328,7 +328,7 @@ class ItemManager
                 if (count($product->getTranslations()) > 0) {
                     $translation = $product->getTranslations()[0];
                 } else {
-                    throw new ProductException('Product '.$product->getId().' has no translations!');
+                    throw new ProductException('Product ' . $product->getId() . ' has no translations!');
                 }
             }
 
