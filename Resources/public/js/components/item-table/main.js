@@ -200,7 +200,7 @@ define([
         bindCustomEvents = function() {
             this.sandbox.on(EVENT_SET_DEFAULT_DATA.call(this), setDefaultData.bind(this));
             this.sandbox.on(EVENT_CHANGE_CURRENCY.call(this), changeCurrency.bind(this));
-            this.sandbox.on(EVENT_SET_ADRESSES.call(this), setAddresses.bind(this))
+            this.sandbox.on(EVENT_SET_ADRESSES.call(this), setAddresses.bind(this));
         },
 
         /**
@@ -412,7 +412,8 @@ define([
         rowClicked = function(event) {
             // if input or link was clicked, do nothing
             if (event.target.tagName.toUpperCase() === 'INPUT' ||
-                event.target.tagName.toUpperCase() === 'A') {
+                event.target.tagName.toUpperCase() === 'A' ||
+                !this.options.isEditable) {
                 return;
             }
 
