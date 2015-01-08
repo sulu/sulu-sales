@@ -129,6 +129,14 @@ define([
         eventNamespace = 'sulu.item-table.',
 
         /**
+         * raised when item-table is initialized
+         * @event sulu.item-table[.INSTANCENAME].initialized
+         */
+        EVENT_INITIALIZED = function() {
+            return getEventName.call(this, 'initialized');
+        },
+
+        /**
          * raised when an item is changed
          * @event sulu.item-table.changed
          */
@@ -1097,6 +1105,8 @@ define([
 
             // set global price
             updateGlobalPrice.call(this);
+
+            this.sandbox.emit(EVENT_INITIALIZED.call(this));
         },
 
         /**
