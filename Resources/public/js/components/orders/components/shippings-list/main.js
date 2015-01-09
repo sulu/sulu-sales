@@ -1,37 +1,72 @@
 /*
-* This file is part of the Sulu CMS.
-*
-* (c) MASSIVE ART WebServices GmbH
-*
-* This source file is subject to the MIT license that is bundled
-* with this source code in the file LICENSE.
-*/
+ * This file is part of the Sulu CMS.
+ *
+ * (c) MASSIVE ART WebServices GmbH
+ *
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
+ */
 
 define([
     'app-config',
-    'sulusalesorder/util/sidebar'
-], function(AppConfig, Sidebar) {
+    'sulusalesorder/util/sidebar',
+    'sulusalesorder/util/orderStatus'
+], function(AppConfig, Sidebar, OrderStatus) {
 
     'use strict';
 
     var bindCustomEvents = function() {
-        // delete clicked
-        this.sandbox.on('sulu.list-toolbar.delete', function() {
-            this.sandbox.emit('husky.datagrid.items.get-selected', function(ids) {
-                this.sandbox.emit('sulu.salesshipping.shipping.delete', ids);
-            }.bind(this));
-        }, this);
+            // delete clicked
+            this.sandbox.on('sulu.list-toolbar.delete', function() {
+                this.sandbox.emit('husky.datagrid.items.get-selected', function(ids) {
+                    this.sandbox.emit('sulu.salesshipping.shipping.delete', ids);
+                }.bind(this));
+            }, this);
 
-        // add clicked
-        this.sandbox.on('sulu.list-toolbar.add', function() {
-            this.sandbox.emit('sulu.salesshipping.shipping.new', this.orderId);
-        }, this);
+            // add clicked
+            this.sandbox.on('sulu.list-toolbar.add', function() {
+                this.sandbox.emit('sulu.salesshipping.shipping.new', this.orderId);
+            }, this);
 
-        // back to list
-        this.sandbox.on('sulu.header.back', function() {
-            this.sandbox.emit('sulu.salesshipping.orders.list');
-        }, this);
-    };
+            // back to list
+            this.sandbox.on('sulu.header.back', function() {
+                this.sandbox.emit('sulu.salesshipping.orders.list');
+            }, this);
+        },
+
+        getListToolbarTemplate = function() {
+            return [
+                {
+                    id: 'add',
+                    icon: 'plus-circle',
+                    class: 'highlight-white',
+                    disabled: this.options.data.status.id < OrderStatus.CONFIRMED,
+                    position: 1,
+                    title: this.sandbox.translate('sulu.list-toolbar.add'),
+                    callback: function() {
+                        this.sandbox.emit('sulu.list-toolbar.add');
+                    }.bind(this)
+                },
+                {
+                    id: 'delete',
+                    icon: 'trash-o',
+                    position: 2,
+                    title: this.sandbox.translate('sulu.list-toolbar.delete'),
+                    callback: function() {
+                        this.sandbox.emit('sulu.list-toolbar.delete');
+                    }.bind(this)
+                },
+                {
+                    id: 'settings',
+                    icon: 'gear',
+                    items: [
+                        {
+                            type: 'columnOptions'
+                        }
+                    ]
+                }
+            ];
+        };
 
     return {
         view: true,
@@ -66,7 +101,7 @@ define([
                     el: this.$find('#list-toolbar-container'),
                     instanceName: 'shippings',
                     inHeader: true,
-                    template: 'default'
+                    template: getListToolbarTemplate.call(this)
                 },
                 {
                     el: this.sandbox.dom.find('#shippings-list', this.$el),
