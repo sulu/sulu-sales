@@ -10,11 +10,8 @@
 
 namespace Sulu\Bundle\Sales\ShippingBundle\Dependencies;
 
-use Sulu\Bundle\Sales\ShippingBundle\Api\Shipping;
 use Sulu\Bundle\Sales\OrderBundle\Api\Order;
 use Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatus;
-use Sulu\Bundle\Sales\OrderBundle\Order\OrderManager;
-use Sulu\Bundle\Sales\ShippingBundle\Entity\Shipping as ShippingEntity;
 use Sulu\Bundle\Sales\ShippingBundle\Entity\ShippingStatus;
 use Sulu\Bundle\Sales\CoreBundle\SalesDependency\SalesDependencyClassInterface;
 use Sulu\Bundle\Sales\ShippingBundle\Shipping\ShippingManager;
@@ -91,6 +88,16 @@ class ShippingOrderDependencyClass implements SalesDependencyClassInterface
         }
 
         return true;
+    }
+
+    /**
+     * defines if shipping can be added
+     *
+     * @param $order
+     * @return bool
+     */
+    public function allowShippingAdd($order) {
+        return ($order->getStatus()->getId() === OrderStatus::STATUS_CONFIRMED);
     }
 
     /**
