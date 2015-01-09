@@ -35,6 +35,7 @@ class AppKernel extends SuluKernel
             new \Sulu\Bundle\WebsiteBundle\SuluWebsiteBundle(),
             new \Sulu\Bundle\MediaBundle\SuluMediaBundle(),
             new \Sulu\Bundle\CategoryBundle\SuluCategoryBundle(),
+            new Sulu\Bundle\SecurityBundle\SuluSecurityBundle(),
 
         );
 
