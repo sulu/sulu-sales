@@ -9,7 +9,6 @@
 
         <field name="number" type="string" column="number" length="255" nullable="true"/>
         <field name="orderNumber" type="string" column="orderNumber" nullable="true"/>
-        <field name="type" type="integer" column="type" nullable="true"/>
         <field name="sessionId" type="string" column="sessionId" length="255" nullable="true"/>
         <field name="currency" type="string" column="currency" length="255" nullable="true"/>
         <field name="taxfree" type="boolean" column="taxfree" nullable="true"></field>
@@ -51,6 +50,11 @@
         <many-to-one field="status" target-entity="Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatus" inversed-by="order">
             <join-columns>
                 <join-column name="idOrderStatus" referenced-column-name="id" nullable="false"/>
+            </join-columns>
+        </many-to-one>
+        <many-to-one field="type" target-entity="Sulu\Bundle\Sales\OrderBundle\Entity\OrderType" inversed-by="order">
+            <join-columns>
+                <join-column name="idOrderType" referenced-column-name="id" nullable="false"/>
             </join-columns>
         </many-to-one>
         <many-to-one field="account" target-entity="Sulu\Bundle\ContactBundle\Entity\Account">

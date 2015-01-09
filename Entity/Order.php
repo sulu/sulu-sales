@@ -23,11 +23,6 @@ class Order
     private $orderNumber;
 
     /**
-     * @var int
-     */
-    private $type;
-
-    /**
      * @var string
      */
     private $sessionId;
@@ -158,6 +153,11 @@ class Order
     private $orderDate;
 
     /**
+     * @var \Sulu\Bundle\Sales\OrderBundle\Entity\OrderType
+     */
+    private $type;
+
+    /**
      * Constructor
      */
     public function __construct()
@@ -209,29 +209,6 @@ class Order
     public function getOrderNumber()
     {
         return $this->orderNumber;
-    }
-
-    /**
-     * Set type
-     *
-     * @param integer $type
-     * @return Order
-     */
-    public function setType($type)
-    {
-        $this->type = $type;
-
-        return $this;
-    }
-
-    /**
-     * Get type
-     *
-     * @return integer
-     */
-    public function getType()
-    {
-        return $this->type;
     }
 
     /**
@@ -843,5 +820,29 @@ class Order
             $sum += $item->getTotalNetPrice();
         }
         $this->setTotalNetPrice($sum);
+    }
+
+
+    /**
+     * Set type
+     *
+     * @param \Sulu\Bundle\Sales\OrderBundle\Entity\OrderType $type
+     * @return Order
+     */
+    public function setType(\Sulu\Bundle\Sales\OrderBundle\Entity\OrderType $type)
+    {
+        $this->type = $type;
+
+        return $this;
+    }
+
+    /**
+     * Get type
+     *
+     * @return \Sulu\Bundle\Sales\OrderBundle\Entity\OrderType 
+     */
+    public function getType()
+    {
+        return $this->type;
     }
 }
