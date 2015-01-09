@@ -23,7 +23,7 @@ class LoadOrderTypes extends AbstractFixture implements OrderedFixtureInterface
     public function load(ObjectManager $manager)
     {
         // force id = 1
-        $metadata = $manager->getClassMetaData(get_class(new OrderTypes()));
+        $metadata = $manager->getClassMetaData(get_class(new OrderType()));
         $metadata->setIdGeneratorType(\Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_NONE);
 
         // manual
@@ -63,7 +63,7 @@ class LoadOrderTypes extends AbstractFixture implements OrderedFixtureInterface
         $typeTranslation = new \Sulu\Bundle\Sales\OrderBundle\Entity\OrderTypeTranslation();
         $typeTranslation->setName($translation);
         $typeTranslation->setLocale($locale);
-        $typeTranslation->setStatus($type);
+        $typeTranslation->setType($type);
         $manager->persist($typeTranslation);
         return $typeTranslation;
     }

@@ -11,6 +11,7 @@
 namespace Sulu\Bundle\Sales\OrderBundle\Order;
 
 use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\NoResultException;
 use Sulu\Bundle\ContactBundle\Entity\Account;
 use Sulu\Bundle\ContactBundle\Entity\Address;
@@ -71,12 +72,12 @@ class OrderManager
     private $orderRepository;
 
     /**
-     * @var OrderTypeRepository
+     * @var EntityRepository
      */
     private $orderTypeRepository;
 
     /**
-     * @var OrderStatusRepository
+     * @var EntityRepository
      */
     private $orderStatusRepository;
 
@@ -96,8 +97,8 @@ class OrderManager
         OrderRepository $orderRepository,
         UserRepositoryInterface $userRepository,
         ItemManager $itemManager,
-        OrderStatusRepository $orderStatusRepository,
-        OrderTypeRepository $orderTypeRepository
+        EntityRepository $orderStatusRepository,
+        EntityRepository $orderTypeRepository
     ) {
         $this->orderRepository = $orderRepository;
         $this->userRepository = $userRepository;
