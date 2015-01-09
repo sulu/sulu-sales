@@ -91,16 +91,6 @@ class ShippingOrderDependencyClass implements SalesDependencyClassInterface
     }
 
     /**
-     * defines if shipping can be added
-     *
-     * @param $order
-     * @return bool
-     */
-    public function allowShippingAdd($order) {
-        return ($order->getStatus()->getId() === OrderStatus::STATUS_CONFIRMED);
-    }
-
-    /**
      * Returns shippings which are associated with an order
      *
      * @param $orderId
