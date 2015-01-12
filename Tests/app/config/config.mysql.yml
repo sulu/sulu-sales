@@ -20,8 +20,3 @@ doctrine:
                 dir: "%kernel.root_dir%/../../vendor/gedmo/doctrine-extensions/lib/Gedmo/Tree/Entity"
                 alias: GedmoTree # this one is optional and will default to the name set for the mapping
                 is_bundle: false
-        resolve_target_entities:
-            Sulu\Component\Security\UserInterface: Sulu\Bundle\TestBundle\Entity\TestUser
-            Sulu\Bundle\ProductBundle\Entity\ProductInterface: Sulu\Bundle\ProductBundle\Entity\Product
-            Sulu\Bundle\MediaBundle\Entity\CollectionInterface: Sulu\Bundle\MediaBundle\Entity\Collection
-            Sulu\Bundle\SecurityBundle\Entity\RoleInterface: Sulu\Bundle\SecurityBundle\Entity\Role
