@@ -11,11 +11,11 @@
 namespace Sulu\Bundle\Sales\OrderBundle\Order;
 
 use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\NoResultException;
 use Sulu\Bundle\ContactBundle\Entity\Account;
 use Sulu\Bundle\ContactBundle\Entity\Address;
 use Sulu\Bundle\ContactBundle\Entity\Contact;
-use Sulu\Bundle\ContactBundle\Entity\ContactRepository;
 use Sulu\Bundle\ContactBundle\Entity\TermsOfDelivery;
 use Sulu\Bundle\Sales\CoreBundle\Item\ItemManager;
 use Sulu\Bundle\Sales\OrderBundle\Entity\OrderActivityLog;
@@ -24,6 +24,7 @@ use Sulu\Bundle\Sales\OrderBundle\Entity\OrderRepository;
 use Sulu\Bundle\Sales\OrderBundle\Entity\Order as OrderEntity;
 use Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatus as OrderStatusEntity;
 use Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatus;
+use Sulu\Bundle\Sales\OrderBundle\Entity\OrderType;
 use Sulu\Bundle\Sales\OrderBundle\Order\Exception\MissingOrderAttributeException;
 use Sulu\Bundle\Sales\OrderBundle\Order\Exception\OrderDependencyNotFoundException;
 use Sulu\Bundle\Sales\OrderBundle\Order\Exception\OrderException;
@@ -33,7 +34,6 @@ use Sulu\Component\Rest\ListBuilder\Doctrine\FieldDescriptor\DoctrineConcatenati
 use Sulu\Component\Rest\ListBuilder\Doctrine\FieldDescriptor\DoctrineFieldDescriptor;
 use Sulu\Bundle\Sales\OrderBundle\Api\Order;
 use Sulu\Component\Rest\ListBuilder\Doctrine\FieldDescriptor\DoctrineJoinDescriptor;
-use Sulu\Component\Rest\RestHelperInterface;
 use Sulu\Component\Security\UserRepositoryInterface;
 use DateTime;
 use Sulu\Component\Persistence\RelationTrait;
@@ -47,6 +47,8 @@ class OrderManager
     protected static $addressEntityName = 'SuluContactBundle:Address';
     protected static $accountEntityName = 'SuluContactBundle:Account';
     protected static $orderStatusEntityName = 'SuluSalesOrderBundle:OrderStatus';
+    protected static $orderTypeEntityName = 'SuluSalesOrderBundle:OrderType';
+    protected static $orderTypeTranslationEntityName = 'SuluSalesOrderBundle:OrderTypeTranslation';
     protected static $orderAddressEntityName = 'SuluSalesOrderBundle:OrderAddress';
     protected static $orderStatusTranslationEntityName = 'SuluSalesOrderBundle:OrderStatusTranslation';
     protected static $itemEntityName = 'SuluSalesCoreBundle:Item';
@@ -71,6 +73,16 @@ class OrderManager
     private $orderRepository;
 
     /**
+     * @var EntityRepository
+     */
+    private $orderTypeRepository;
+
+    /**
+     * @var EntityRepository
+     */
+    private $orderStatusRepository;
+
+    /**
      * @var UserRepositoryInterface
      */
     private $userRepository;
@@ -85,12 +97,16 @@ class OrderManager
         ObjectManager $em,
         OrderRepository $orderRepository,
         UserRepositoryInterface $userRepository,
-        ItemManager $itemManager
+        ItemManager $itemManager,
+        EntityRepository $orderStatusRepository,
+        EntityRepository $orderTypeRepository
     ) {
         $this->orderRepository = $orderRepository;
         $this->userRepository = $userRepository;
         $this->em = $em;
         $this->itemManager = $itemManager;
+        $this->orderStatusRepository = $orderStatusRepository;
+        $this->orderTypeRepository = $orderTypeRepository;
     }
 
     /**
@@ -134,6 +150,9 @@ class OrderManager
         $order->setCostCentre($this->getProperty($data, 'costCentre', $order->getCostCentre()));
         $order->setCommission($this->getProperty($data, 'commission', $order->getCommission()));
         $order->setTaxfree($this->getProperty($data, 'taxfree', $order->getTaxfree()));
+
+        // set type of order (if set)
+        $this->setOrderType($data, $order);
 
         $this->setDate(
             $data,
@@ -270,6 +289,15 @@ class OrderManager
 
         $this->em->remove($order);
         $this->em->flush();
+    }
+
+    public function getOrderTypeEntityById($typeId) {
+        // get desired status
+        $typeEntity= $this->orderTypeRepository->find($typeId);
+        if (!$typeEntity) {
+            throw new EntityNotFoundException($typeEntity, $typeId);
+        }
+        return $typeEntity;
     }
 
     /**
@@ -467,6 +495,41 @@ class OrderManager
     }
 
     /**
+     * Sets OrderType on an order
+     * @param $data
+     * @param $order
+     * @throws EntityNotFoundException
+     * @throws OrderException
+     */
+    private function setOrderType($data, $order)
+    {
+        // get OrderType
+        $type = $this->getProperty($data, 'type', null);
+        if (!is_null($type)) {
+            if (is_array($type) && isset($type['id'])) {
+                // if provided as array
+                $typeId = $type['id'];
+            } else if(is_numeric($type)) {
+                // if is numeric
+                $typeId = $type;
+            } else {
+                throw new OrderException('No typeid given');
+            }
+        } else {
+            // default type is manual
+            $typeId = OrderType::MANUAL;
+        }
+        // get entity
+        $orderType = $this->getOrderTypeEntityById($typeId);
+        if (!$orderType) {
+            throw new EntityNotFoundException(self::$orderTypeEntityName, $typeId);
+        }
+
+        // set order type
+        $order->setType($orderType);
+    }
+
+    /**
      * initializes field descriptors
      */
     private function initializeFieldDescriptors($locale)
@@ -559,6 +622,24 @@ class OrderManager
                     self::$orderStatusTranslationEntityName,
                     self::$orderStatusEntityName . '.translations',
                     self::$orderStatusTranslationEntityName . ".locale = '" . $locale . "'"
+                )
+            )
+        );
+
+        $this->fieldDescriptors['type'] = new DoctrineFieldDescriptor(
+            'name',
+            'type',
+            self::$orderTypeTranslationEntityName,
+            'salesorder.orders.type',
+            array(
+                self::$orderTypeEntityName => new DoctrineJoinDescriptor(
+                    self::$orderTypeEntityName,
+                    self::$orderEntityName . '.type'
+                ),
+                self::$orderTypeTranslationEntityName => new DoctrineJoinDescriptor(
+                    self::$orderTypeTranslationEntityName,
+                    self::$orderTypeEntityName . '.translations',
+                    self::$orderTypeTranslationEntityName . ".locale = '" . $locale . "'"
                 )
             )
         );

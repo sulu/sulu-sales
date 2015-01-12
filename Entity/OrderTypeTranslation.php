@@ -5,9 +5,9 @@ namespace Sulu\Bundle\Sales\OrderBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * OrderStatusTranslation
+ * OrderTypeTranslation
  */
-class OrderStatusTranslation
+class OrderTypeTranslation
 {
     /**
      * @var string
@@ -25,21 +25,21 @@ class OrderStatusTranslation
     private $id;
 
     /**
-     * @var \Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatus
+     * @var \Sulu\Bundle\Sales\OrderBundle\Entity\OrderType
      */
-    private $status;
+    private $type;
 
 
     /**
      * Set name
      *
      * @param string $name
-     * @return OrderStatusTranslation
+     * @return OrderTypeTranslation
      */
     public function setName($name)
     {
         $this->name = $name;
-    
+
         return $this;
     }
 
@@ -57,12 +57,12 @@ class OrderStatusTranslation
      * Set locale
      *
      * @param string $locale
-     * @return OrderStatusTranslation
+     * @return OrderTypeTranslation
      */
     public function setLocale($locale)
     {
         $this->locale = $locale;
-    
+
         return $this;
     }
 
@@ -87,25 +87,25 @@ class OrderStatusTranslation
     }
 
     /**
-     * Set status
+     * Set type
      *
-     * @param \Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatus $status
-     * @return OrderStatusTranslation
+     * @param \Sulu\Bundle\Sales\OrderBundle\Entity\OrderType $type
+     * @return OrderTypeTranslation
      */
-    public function setStatus(\Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatus $status = null)
+    public function setType(\Sulu\Bundle\Sales\OrderBundle\Entity\OrderType $type)
     {
-        $this->status = $status;
-    
+        $this->type = $type;
+
         return $this;
     }
 
     /**
-     * Get status
+     * Get type
      *
-     * @return \Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatus 
+     * @return \Sulu\Bundle\Sales\OrderBundle\Entity\OrderType 
      */
-    public function getStatus()
+    public function getType()
     {
-        return $this->status;
+        return $this->type;
     }
 }

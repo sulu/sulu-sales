@@ -7,6 +7,8 @@
         <parameter key="sulu_sales_order.admin.class">Sulu\Bundle\Sales\OrderBundle\Admin\SuluSalesOrderAdmin</parameter>
         <parameter key="sulu_sales_order.admin.content_navigation.class">Sulu\Bundle\Sales\OrderBundle\Admin\SuluSalesOrderContentNavigation</parameter>
         <parameter key="sulu_sales_order.order_repository.class">Sulu\Bundle\Sales\OrderBundle\Entity\OrderRepository</parameter>
+        <parameter key="sulu_sales_order.order_status_repository.class">Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatusRepository</parameter>
+        <parameter key="sulu_sales_order.order_type_repository.class">Sulu\Bundle\Sales\OrderBundle\Entity\OrderTypeRepository</parameter>
         <parameter key="sulu_sales_order.order_manager.class">Sulu\Bundle\Sales\OrderBundle\Order\OrderManager</parameter>
         <parameter key="sulu_sales_order.order_listener.class">Sulu\Bundle\Sales\OrderBundle\EventListener\OrderListener</parameter>
         <parameter key="sulu_sales_order.widgets.order_details.class">Sulu\Bundle\Sales\OrderBundle\Widgets\OrderDetails</parameter>
@@ -15,6 +17,8 @@
         <parameter key="sulu_sales_order.order_updater.class">Sulu\Bundle\Sales\OrderBundle\Order\OrderUpdater</parameter>
     </parameters>
     <services>
+        <!--ADMIN-->
+
         <service id="sulu_sales_order.admin" class="%sulu_sales_order.admin.class%">
             <tag name="sulu.admin" />
             <tag name="sulu.context" context="admin"/>
@@ -25,17 +29,37 @@
         <service id="sulu_sales_order.admin.content_navigation" class="%sulu_sales_order.admin.content_navigation.class%">
         </service>
 
+        <!--REPOSITORIES-->
+
         <service id="sulu_sales_order.order_repository" class="%sulu_sales_order.order_repository.class%"
                  factory-method="getRepository" factory-service="doctrine.orm.entity_manager">
             <argument>SuluSalesOrderBundle:Order</argument>
         </service>
+
+        <service id="sulu_sales_order.order_status_repository" class="%sulu_sales_order.order_status_repository.class%"
+                 factory-method="getRepository" factory-service="doctrine.orm.entity_manager">
+            <argument>SuluSalesOrderBundle:OrderStatus</argument>
+        </service>
+
+        <service id="sulu_sales_order.order_type_repository" class="%sulu_sales_order.order_type_repository.class%"
+                 factory-method="getRepository" factory-service="doctrine.orm.entity_manager">
+            <argument>SuluSalesOrderBundle:OrderType</argument>
+        </service>
+
+        <!--MANAGERS-->
 
         <service id="sulu_sales_order.order_manager" class="%sulu_sales_order.order_manager.class%">
             <argument type="service" id="doctrine.orm.entity_manager" />
             <argument type="service" id="sulu_sales_order.order_repository" />
             <argument type="service" id="sulu_security.user_repository" />
             <argument type="service" id="sulu_sales_core.item_manager" />
+            <argument type="service" id="sulu_sales_order.order_status_repository" />
+            <argument type="service" id="sulu_sales_order.order_type_repository" />
         </service>
+
+        <service id="sulu_sales_order.order_dependency_manager" class="%sulu_sales_order.order_dependency_manager.class%" />
+
+        <!--LISTENERS-->
 
         <service id="sulu_sales_order.order_updater" class="%sulu_sales_order.order_updater.class%">
             <argument type="service" id="doctrine.orm.entity_manager" />
@@ -50,7 +74,8 @@
             <tag name="doctrine.event_listener" event="preUpdate" method="preUpdate"/>
         </service>
 
-        <service id="sulu_sales_order.order_dependency_manager" class="%sulu_sales_order.order_dependency_manager.class%" />
+
+        <!--WIDGETS-->
 
         <service id="sulu_sales_order.widget.order_details" class="%sulu_sales_order.widgets.order_details.class%">
             <tag name="sulu.widget" alias="sulu-sales-order-order-details"/>

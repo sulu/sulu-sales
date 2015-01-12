@@ -169,15 +169,42 @@ class Order extends ApiWrapper implements SalesDocument
     }
 
     /**
-     * Get sessionId
+     * Get order status
      * @return OrderStatus
      * @VirtualProperty
-     * @SerializedName("changed")
+     * @SerializedName("status")
      */
     public function getStatus()
     {
         if ($this->entity && $this->entity->getStatus()) {
             return new OrderStatus($this->entity->getStatus(), $this->locale);
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * Set type
+     * @param OrderType
+     * @return Order
+     */
+    public function setType($type)
+    {
+        $this->entity->setType($type);
+
+        return $this;
+    }
+
+    /**
+     * Get order tpye
+     * @return OrderType
+     * @VirtualProperty
+     * @SerializedName("type")
+     */
+    public function getType()
+    {
+        if ($this->entity && $this->entity->getType()) {
+            return new OrderType($this->entity->getType(), $this->locale);
         } else {
             return null;
         }

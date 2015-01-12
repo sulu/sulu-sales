@@ -86,6 +86,10 @@
                 <source>salesorder.orders.delete</source>
                 <target>Auftrag löschen</target>
             </trans-unit>
+            <trans-unit id="30" resname="salesorder.orders.type">
+                <source>salesorder.orders.type</source>
+                <target>Typ</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>
