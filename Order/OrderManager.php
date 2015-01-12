@@ -48,6 +48,7 @@ class OrderManager
     protected static $accountEntityName = 'SuluContactBundle:Account';
     protected static $orderStatusEntityName = 'SuluSalesOrderBundle:OrderStatus';
     protected static $orderTypeEntityName = 'SuluSalesOrderBundle:OrderType';
+    protected static $orderTypeTranslationEntityName = 'SuluSalesOrderBundle:OrderTypeTranslation';
     protected static $orderAddressEntityName = 'SuluSalesOrderBundle:OrderAddress';
     protected static $orderStatusTranslationEntityName = 'SuluSalesOrderBundle:OrderStatusTranslation';
     protected static $itemEntityName = 'SuluSalesCoreBundle:Item';
@@ -150,6 +151,7 @@ class OrderManager
         $order->setCommission($this->getProperty($data, 'commission', $order->getCommission()));
         $order->setTaxfree($this->getProperty($data, 'taxfree', $order->getTaxfree()));
 
+        // set type of order (if set)
         $this->setOrderType($data, $order);
 
         $this->setDate(
@@ -185,10 +187,6 @@ class OrderManager
                 $order->setResponsibleContact($contact);
             }
         );
-
-        if ($type = $this->getProperty($data, 'type', null)) {
-
-        }
 
         // create order (POST)
         if ($order->getId() == null) {
@@ -506,7 +504,8 @@ class OrderManager
     private function setOrderType($data, $order)
     {
         // get OrderType
-        if (!is_null($type = ($this->getProperty($data, 'type', null)))) {
+        $type = $this->getProperty($data, 'type', null);
+        if (!is_null($type)) {
             if (is_array($type) && isset($type['id'])) {
                 // if provided as array
                 $typeId = $type['id'];
@@ -623,6 +622,24 @@ class OrderManager
                     self::$orderStatusTranslationEntityName,
                     self::$orderStatusEntityName . '.translations',
                     self::$orderStatusTranslationEntityName . ".locale = '" . $locale . "'"
+                )
+            )
+        );
+
+        $this->fieldDescriptors['type'] = new DoctrineFieldDescriptor(
+            'name',
+            'type',
+            self::$orderTypeTranslationEntityName,
+            'salesorder.orders.type',
+            array(
+                self::$orderTypeEntityName => new DoctrineJoinDescriptor(
+                    self::$orderTypeEntityName,
+                    self::$orderEntityName . '.type'
+                ),
+                self::$orderTypeTranslationEntityName => new DoctrineJoinDescriptor(
+                    self::$orderTypeTranslationEntityName,
+                    self::$orderTypeEntityName . '.translations',
+                    self::$orderTypeTranslationEntityName . ".locale = '" . $locale . "'"
                 )
             )
         );

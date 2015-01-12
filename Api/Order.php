@@ -204,7 +204,7 @@ class Order extends ApiWrapper implements SalesDocument
     public function getType()
     {
         if ($this->entity && $this->entity->getType()) {
-            return new OrderStatus($this->entity->getType(), $this->locale);
+            return new OrderType($this->entity->getType(), $this->locale);
         } else {
             return null;
         }

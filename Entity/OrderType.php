@@ -9,9 +9,9 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class OrderType
 {
-    const MANUAL = 0;
-    const SHOP = 1;
-    const ANONYMOUS = 2;
+    const MANUAL = 1;
+    const SHOP = 2;
+    const ANONYMOUS = 3;
 
     /**
      * @var integer
