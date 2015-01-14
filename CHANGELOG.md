@@ -2,19 +2,23 @@
 unreleased:
 ===========
 
-= 2015-01-12 =
+2015-01-12
 
-Introduced order type
-    To be able to set your own order type your data array in OrderManagers save() method must contain either
+Introduced order type:
 
-    * $data['type'] = {ID}
-        or
-    * $data['type']['id] = {ID}
+to set your own order type, your data array in OrderManagers save() method must contain either
 
-    All available Types are listed in Sulu/Bundle/Sales/OrderBundle/Entity/OrderType.php
+* $data['type'] = {ID}
+    or
+* $data['type']['id] = {ID}
 
-    * DEPLOY (console):
-        app/console doctrine:fixtures:load --fixtures vendor/sulu/sales-order-bundle/Sulu/Bundle/Sales/OrderBundle/DataFixtures/ORM/OrderTypes --append
+All available Types are listed in Sulu/Bundle/Sales/OrderBundle/Entity/OrderType.php
 
-    * DEPLOY (sql):
-        UPDATE so_orders SET idOrderTypes = 1;
+* DEPLOY (console):
+```
+    app/console doctrine:fixtures:load --fixtures vendor/sulu/sales-order-bundle/Sulu/Bundle/Sales/OrderBundle/DataFixtures/ORM/OrderTypes --append
+```
+* DEPLOY (sql):
+```
+    UPDATE so_orders SET idOrderTypes = 1;
+```
