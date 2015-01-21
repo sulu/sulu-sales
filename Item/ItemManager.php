@@ -48,6 +48,11 @@ class ItemManager
     protected $userRepository;
 
     /**
+     * @var ProductRepositoryInterface
+     */
+    protected $productRepository;
+
+    /**
      * constructor
      *
      * @param ObjectManager $em
@@ -57,12 +62,14 @@ class ItemManager
     public function __construct(
         ObjectManager $em,
         ItemRepository $itemRepository,
-        UserRepositoryInterface $userRepository
+        UserRepositoryInterface $userRepository,
+        ProductRepositoryInterface $productRepository
     )
     {
         $this->em = $em;
         $this->itemRepository = $itemRepository;
         $this->userRepository = $userRepository;
+        $this->productRepository = $productRepository;
     }
 
     /**
@@ -314,7 +321,7 @@ class ItemManager
                 throw new MissingItemAttributeException('product.id');
             }
             /** @var Product $product */
-            $product = $this->em->getRepository(self::$productEntityName)->find($productData['id']);
+            $product = $this->productRepository->find($productData['id']);
             if (!$product) {
                 throw new ProductNotFoundException(self::$productEntityName, $productData['id']);
             }
