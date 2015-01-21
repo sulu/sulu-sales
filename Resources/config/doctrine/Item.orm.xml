@@ -27,7 +27,7 @@
 
         <one-to-many field="attributes" target-entity="Sulu\Bundle\Sales\CoreBundle\Entity\ItemAttribute" mapped-by="item"/>
 
-        <many-to-one field="product" target-entity="Sulu\Bundle\ProductBundle\Entity\Product">
+        <many-to-one field="product" target-entity="Sulu\Bundle\ProductBundle\Entity\ProductInterface">
             <join-columns>
                 <join-column name="idProducts" referenced-column-name="id" on-delete="SET NULL" nullable="true"/>
             </join-columns>

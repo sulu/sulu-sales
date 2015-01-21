@@ -23,6 +23,7 @@
             <argument type="service" id="doctrine.orm.entity_manager" />
             <argument type="service" id="sulu_sales_core.item_repository" />
             <argument type="service" id="sulu_security.user_repository" />
+            <argument type="service" id="sulu_product.product_repository" />
         </service>
 
         <!--REPOSITORIES-->
