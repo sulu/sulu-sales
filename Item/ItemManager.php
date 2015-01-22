@@ -99,6 +99,9 @@ class ItemManager
             // set quantity unit
             $item->setQuantityUnit($this->getProperty($data, 'quantityUnit', $item->getQuantityUnit()));
             $item->setTax($this->getProperty($data, 'tax', $item->getTax()));
+            $item->setNumber($this->getProperty($data, 'number', $item->getNumber()));
+            $item->setDescription($this->getProperty($data, 'description', $item->getDescription()));
+            $item->setTax($this->getProperty($data, 'tax', $item->getTax()));
         }
         $item->setPrice($this->getProperty($data, 'price', $item->getPrice()));
 
