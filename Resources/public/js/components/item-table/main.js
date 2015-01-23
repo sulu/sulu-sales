@@ -21,7 +21,7 @@
  * @param {Object}  [options.columnCallbacks] if a specific column is clicked (as name) a callback can be defined
  *        by provide key with a function
  * @param {Object}  [options.rowCallback] Is called, when a row is clicked. Passes rowId and rowData
- * @param {Bool}  [options.showSettings] If true, the items settings overlay is displayed on click on a row
+ * @param {Object}  [options.settings] Configuration Object for displaying Options overlay
  * @param {Object}  [options.urlFilter] Object containing key value pairs to extend the url
  */
 define([
@@ -978,7 +978,7 @@ define([
 
             title = data.name;
             subTitle = '#' + data.number;
-            if (data.supplierName !== '') {
+            if (data.supplierName && data.supplierName !== '') {
                 subTitle += '<br/>' + data.supplierName;
             }
 

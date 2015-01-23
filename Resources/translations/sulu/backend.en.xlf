@@ -158,6 +158,10 @@
                 <source>salescore.change-address</source>
                 <target>Change address</target>
             </trans-unit>
+            <trans-unit id="2" resname="salescore.delivery-date">
+                <source>salescore.delivery-date</source>
+                <target>Delivery date</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>
