@@ -80,7 +80,8 @@ define([
             overallEmptyString: '-',
             loaderSelector: '.item-table-loader',
             loaderClass: 'item-table-loader',
-            overlayClassSelector: '.settings-overlay'
+            overlayClassSelector: '.settings-overlay',
+            autocompleteLimit: 20
         },
 
         /**
@@ -688,9 +689,11 @@ define([
             var options = Config.get('suluproduct.components.autocomplete.default');
             options.el = this.sandbox.dom.find(constants.productSearchClass, $row);
             options.selectCallback = productSelected.bind(this);
-            options.remoteUrl = this.sandbox.uritemplate.parse(urls.productsFlat).expand({
+            var remoteUrl = this.sandbox.uritemplate.parse(urls.productsFlat).expand({
                 filter: this.options.urlFilter
             });
+            options.remoteUrl = remoteUrl + '&limit=' + constants.autocompleteLimit;
+            options.limit = constants.autocompleteLimit;
 
             // initialize auto-complete when adding a new Item
             this.sandbox.start([
