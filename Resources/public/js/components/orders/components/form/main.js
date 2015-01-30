@@ -34,7 +34,8 @@ define([
             contactSelectId: '#contact-select',
             validateWarningTranslation: 'form.validation-warning',
             translationConversionFailed: 'salescore.conversion-failed',
-            translationShippingFailed: 'salescore.shipping-failed'
+            translationShippingFailed: 'salescore.shipping-failed',
+            autocompleteLimit: 20
         },
 
         /**
@@ -329,7 +330,8 @@ define([
             options.el = constants.accountInputId;
             options.value = !!data.account ? data.account : '';
             options.instanceName = this.accountInstanceName;
-            options.remoteUrl += '&type=' + this.customerId;
+            options.remoteUrl += '&type=' + this.customerId + '&limit=' + constants.autocompleteLimit;
+            options.limit = constants.autocompleteLimit;
 
             // starts form components
             this.sandbox.start([
