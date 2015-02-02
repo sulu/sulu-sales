@@ -5,7 +5,7 @@
             <div class="form-group-vertical">
                 <label><%= translate('address.delivery') %></label>
                 <select class="address form-element" data-type="select" data-mapper-property="deliveryAddress">
-                    <option value="-1"><%= translate('salescore.use-main-delivery-address') %></option>
+                    <option value="-1"><%= defaultAddressLabel %></option>
                     <% _.each(settings.addresses, function(address) { %>
                     <option value="<%=address.id%>"
                     <% if (address.id == deliveryAddress.id){%> selected="selected"<%}%> >
