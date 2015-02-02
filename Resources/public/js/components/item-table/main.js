@@ -1055,7 +1055,7 @@ define([
                             if (deliveryAddress !== '-1') {
                                 // TODO: set whole order-address (contact-data as well)
                                 this.items[rowId][this.options.addressKey] = getAddressById.call(this, deliveryAddress);
-                                delete this.items[rowId][this.options.addressKey].id; // delete reference to contact-address
+                                //delete this.items[rowId][this.options.addressKey].id; // delete reference to contact-address
                             }
                             this.items[rowId].deliveryDate = deliveryDate !== '' ? deliveryDate : null;
                             this.items[rowId].costCenter = costCenter !== '' ? costCenter : null;
