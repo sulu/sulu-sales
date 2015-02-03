@@ -29,8 +29,9 @@ define([
     'text!sulusalescore/components/item-table/item.row.html',
     'text!sulusalescore/components/item-table/item.row-head.html',
     'text!sulusalescore/components/item-table/item.overlay.html',
-    'config'
-], function(FormTpl, RowTpl, RowHeadTpl, Overlay, Config) {
+    'config',
+    'suluproduct/components/price-calculation-util'
+], function(FormTpl, RowTpl, RowHeadTpl, Overlay, Config, PriceCalcUtil) {
 
     'use strict';
 
@@ -93,7 +94,7 @@ define([
             rowNumber: null,
             address: null,
             addressObject: null,
-            description: null,
+            description: '',
             rowId: '',
             name: '',
             number: '',
@@ -538,45 +539,40 @@ define([
          * updates row with global prices
          */
         updateGlobalPrice = function() {
-            var tax, item, price, taxPrice,
-                $table,
-                taxCategory = {},
-                netPrice = 0,
-                globalPrice = 0;
 
-            for (var i in this.items) {
-                item = this.items[i];
-                price = parseFloat(getOverallPrice.call(this, item));
-                taxPrice = 0;
-
-                if (!!item.tax && item.tax > 0 && item.tax <= 100) {
-                    tax = parseFloat(item.tax);
-                    taxPrice = (price / 100) * tax;
-                    // tax group
-                    taxCategory[tax] = !taxCategory[tax] ? taxPrice : taxCategory[tax] + taxPrice;
-                }
-
-                // sum up prices
-                // net
-                netPrice += price;
-                // overall
-                globalPrice += price + taxPrice;
-            }
+            var result = PriceCalcUtil.getTotalPricesAndTaxes(this.sandbox, this.items),
+                $table, i;
 
             // visualize
-            $table = this.$find(constants.globalPriceTableClass);
-            this.sandbox.dom.html($table, '');
+            if (!!result) {
+                $table = this.$find(constants.globalPriceTableClass);
+                this.sandbox.dom.html($table, '');
 
-            if (Object.keys(this.items).length > 0) {
                 // add net price
-                addPriceRow.call(this, $table, this.sandbox.translate('salescore.item.net-price'), getFormatedPriceCurrencyString.call(this, netPrice));
+                addPriceRow.call(
+                    this,
+                    $table,
+                    this.sandbox.translate('salescore.item.net-price'),
+                    PriceCalcUtil.getFormattedAmountAndUnit(this.sandbox, result.netPrice, this.currency)
+                );
 
                 // add row for every tax group
-                for (var i in taxCategory) {
-                    addPriceRow.call(this, $table, this.sandbox.translate('salescore.item.vat') + '.(' + i + '%)', getFormatedPriceCurrencyString.call(this, taxCategory[i]));
+                for (i in result.taxes) {
+                    addPriceRow.call(
+                        this,
+                        $table,
+                        this.sandbox.translate('salescore.item.vat') + '.(' + i + '%)',
+                        PriceCalcUtil.getFormattedAmountAndUnit(this.sandbox, result.taxes[i], this.currency)
+                    );
                 }
 
-                addPriceRow.call(this, $table, this.sandbox.translate('salescore.item.overall-price'), getFormatedPriceCurrencyString.call(this, globalPrice));
+                addPriceRow.call(
+                    this,
+                    $table,
+                    this.sandbox.translate('salescore.item.overall-price'),
+                    PriceCalcUtil.getFormattedAmountAndUnit(this.sandbox, result.grossPrice, this.currency)
+                );
+
             }
         },
 
@@ -588,16 +584,34 @@ define([
         /**
          * returns formated overallPrice + currency as string (based on item)
          * @param item
-         * @param mode
          * @returns {string}
          */
-        getOverallPriceString = function(item, mode) {
-            return getFormatedPriceCurrencyString.call(this,
-                getOverallPrice.call(this, item, mode),
-                getCurrency.call(this, item));
+        getOverallPriceString = function(item) {
+            setItemDefaults(item);
+            return PriceCalcUtil.getTotalPrice(
+                this.sandbox,
+                item.price,
+                getCurrency.call(this, item),
+                item.discount,
+                item.quantity,
+                item.tax,
+                true
+            );
         },
 
         /**
+         * Sets defaults for items for proper calculation
+         * @param item
+         */
+        setItemDefaults = function(item) {
+            item.price = item.price || 0;
+            item.discount = item.discount || 0;
+            item.quantity = item.quantity || 0;
+            item.tax = item.tax || 0;
+        },
+
+        /**
+         * TODO old code remove?
          * returns formated overallprice + currency as string (based on value)
          * @param value
          * @param currency
@@ -609,6 +623,7 @@ define([
         },
 
         /**
+         * TODO old code remove?
          * returns the overall price
          * @param item
          * @param mode
