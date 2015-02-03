@@ -158,6 +158,14 @@
                 <source>salescore.change-address</source>
                 <target>Change address</target>
             </trans-unit>
+            <trans-unit id="2" resname="salescore.item.tax-rate">
+                <source>salescore.item.tax-rate</source>
+                <target>Tax class</target>
+            </trans-unit>
+            <trans-unit id="3" resname="salescore.item.delivery-date">
+                <source>salescore.item.delivery-date</source>
+                <target>Delivery date</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>

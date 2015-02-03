@@ -544,10 +544,10 @@ define([
                 $table, i;
 
             // visualize
-            if (!!result) {
-                $table = this.$find(constants.globalPriceTableClass);
-                this.sandbox.dom.html($table, '');
+            $table = this.$find(constants.globalPriceTableClass);
+            this.sandbox.dom.empty($table);
 
+            if (!!result) {
                 // add net price
                 addPriceRow.call(
                     this,
@@ -608,43 +608,6 @@ define([
             item.discount = item.discount || 0;
             item.quantity = item.quantity || 0;
             item.tax = item.tax || 0;
-        },
-
-        /**
-         * TODO old code remove?
-         * returns formated overallprice + currency as string (based on value)
-         * @param value
-         * @param currency
-         * @returns {string}
-         */
-        getFormatedPriceCurrencyString = function(value, currency) {
-            currency = !!currency ? currency : this.currency;
-            return this.sandbox.numberFormat(value, 'n') + ' ' + currency;
-        },
-
-        /**
-         * TODO old code remove?
-         * returns the overall price
-         * @param item
-         * @param mode
-         * @returns number
-         */
-        getOverallPrice = function(item, mode) {
-            var value = 0;
-            if (!mode || mode === 'default') {
-                if (!!item.price && !!item.quantity) {
-
-                    // TODO numbers should parsed with globalize #336
-                    value = (item.price * item.quantity);
-
-                    // discount
-                    if (!!item.discount && item.discount > 0 && item.discount <= 100) {
-                        value -= (value / 100) * item.discount;
-                    }
-                }
-            }
-
-            return value;
         },
 
         /**
