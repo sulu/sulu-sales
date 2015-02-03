@@ -158,6 +158,14 @@
                 <source>salescore.change-address</source>
                 <target>Adresse ändern</target>
             </trans-unit>
+            <trans-unit id="2" resname="salescore.delivery-date">
+                <source>salescore.delivery-date</source>
+                <target>Lieferdatum</target>
+            </trans-unit>
+            <trans-unit id="3" resname="salescore.use-main-delivery-address">
+                <source>salescore.use-main-delivery-address</source>
+                <target>Wie Lieferadresse</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>
