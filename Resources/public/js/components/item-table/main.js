@@ -30,7 +30,7 @@ define([
     'text!sulusalescore/components/item-table/item.row-head.html',
     'text!sulusalescore/components/item-table/item.overlay.html',
     'config',
-    'suluproduct/components/price-calculation-util'
+    'suluproduct/util/price-calculation-util'
 ], function(FormTpl, RowTpl, RowHeadTpl, Overlay, Config, PriceCalcUtil) {
 
     'use strict';
