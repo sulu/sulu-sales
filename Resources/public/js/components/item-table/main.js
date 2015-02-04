@@ -21,8 +21,9 @@
  * @param {Object}  [options.columnCallbacks] if a specific column is clicked (as name) a callback can be defined
  *        by provide key with a function
  * @param {Object}  [options.rowCallback] Is called, when a row is clicked. Passes rowId and rowData
- * @param {Bool}  [options.showSettings] If true, the items settings overlay is displayed on click on a row
+ * @param {Object}  [options.settings] Configuration Object for displaying Options overlay
  * @param {Object}  [options.urlFilter] Object containing key value pairs to extend the url
+ * @param {String}  [options.addressKey] Defines how to access address value over api
  */
 define([
     'text!sulusalescore/components/item-table/item.form.html',
@@ -36,6 +37,7 @@ define([
     'use strict';
 
     // TODO: implement taxfree
+    // TODO: order-address handling: set contact-data as well
 
     var defaults = {
             urlFilter: {},
@@ -56,7 +58,8 @@ define([
             defaultData: {},
             columnCallbacks: {},
             rowCallback: null,
-            settings: false
+            settings: false,
+            addressKey: 'deliveryAddress'
         },
 
         urls = {
@@ -83,6 +86,10 @@ define([
             loaderClass: 'item-table-loader',
             overlayClassSelector: '.settings-overlay',
             autocompleteLimit: 20
+        },
+        
+        translations = {
+            defaultAddress: 'salescore.use-main-delivery-address'
         },
 
         /**
@@ -159,6 +166,17 @@ define([
         },
 
         /**
+         * TODO: Reset all addresses to a certain address
+         *
+         * @param {object} address
+         *
+         * @event sulu.item-table[.INSTANCENAME].reset-item-addresses
+         */
+        EVENT_RESET_ITEM_ADDRESSES = function() {
+            return getEventName.call(this, 'reset-item-addresses');
+        },
+
+        /**
          * Changes the currency and selects related price if available
          * @event sulu.item-table[.INSTANCENAME].change-currency
          */
@@ -211,6 +229,7 @@ define([
             this.sandbox.on(EVENT_SET_DEFAULT_DATA.call(this), setDefaultData.bind(this));
             this.sandbox.on(EVENT_CHANGE_CURRENCY.call(this), changeCurrency.bind(this));
             this.sandbox.on(EVENT_SET_ADRESSES.call(this), setAddresses.bind(this));
+            this.sandbox.on(EVENT_RESET_ITEM_ADDRESSES.call(this), resetItemAddresses.bind(this));
         },
 
         /**
@@ -246,6 +265,25 @@ define([
         setAddresses = function(addresses) {
             if (!!this.options.settings) {
                 this.options.settings.addresses = addresses;
+            }
+        },
+
+        /**
+         * Resets addresses of all items to a certain address
+         * @param address
+         */
+        resetItemAddresses = function(address) {
+            var i, item;
+            
+            // reset default address
+            setDefaultData.call(this, 'address', address);
+            
+            // reset addresses of all items
+            for (i in this.items) {
+                if (this.items.hasOwnProperty(i)) {
+                    item = this.items[i];
+                    item.address = address;
+                }
             }
         },
 
@@ -934,21 +972,30 @@ define([
          * Inits the overlay with a specific template
          */
         initSettingsOverlay = function(data, settings, rowId) {
-            var $overlay, $content, title, subTitle;
+            var $overlay, $content, title, subTitle,
+                defaultAddressLabel = this.sandbox.translate(translations.defaultAddress);
 
             settings = this.sandbox.util.extend({
                 columns: [],
                 addresses: []
             }, settings);
 
+            if (!!data[this.options.addressKey]) {
+                defaultAddressLabel = this.sandbox.sulu.createAddressString(data[this.options.addressKey]);
+            }
+
             data = this.sandbox.util.extend({
                 settings: settings,
+                defaultAddressLabel: defaultAddressLabel,
                 createAddressString: this.sandbox.sulu.createAddressString,
                 translate: this.sandbox.translate,
                 deliveryDate: null,
-                deliveryAddress: {id: null},
                 costCenter: null
             }, data);
+            
+            if (!data.hasOwnProperty(this.options.addressKey) || !data[this.options.addressKey]) {
+                data[this.options.addressKey] = {id: null};
+            }
 
             // prevent multiple initialization of the overlay
             this.sandbox.stop(this.sandbox.dom.find(constants.overlayClassSelector, this.$el));
@@ -960,7 +1007,7 @@ define([
 
             title = data.name;
             subTitle = '#' + data.number;
-            if (data.supplierName !== '') {
+            if (data.supplierName && data.supplierName !== '') {
                 subTitle += '<br/>' + data.supplierName;
             }
 
@@ -986,7 +1033,12 @@ define([
                             this.items[rowId].price = this.sandbox.dom.val(constants.overlayClassSelector + ' *[data-mapper-property="price"]');
                             this.items[rowId].discount = this.sandbox.dom.val(constants.overlayClassSelector + ' *[data-mapper-property="discount"]');
 
-                            this.items[rowId].deliveryAddress = deliveryAddress !== '-1' ? deliveryAddress : {id: null};
+                            // set address
+                            if (deliveryAddress !== '-1') {
+                                // TODO: set whole order-address (contact-data as well)
+                                this.items[rowId][this.options.addressKey] = getAddressById.call(this, deliveryAddress);
+                                //delete this.items[rowId][this.options.addressKey].id; // delete reference to contact-address
+                            }
                             this.items[rowId].deliveryDate = deliveryDate !== '' ? deliveryDate : null;
                             this.items[rowId].costCenter = costCenter !== '' ? costCenter : null;
 
@@ -1006,6 +1058,17 @@ define([
                     }
                 }
             ]);
+        },
+        
+        getAddressById = function(id) {
+            var i,len,
+                addresses = this.options.settings.addresses;
+            for (i = -1, len = addresses.length; ++i < len;) {
+                if (addresses[i].id.toString() === id.toString()) {
+                    return addresses[i];
+                }
+            }
+            return null;
         },
 
         /**
