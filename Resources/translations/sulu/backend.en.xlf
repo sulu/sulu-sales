@@ -158,11 +158,19 @@
                 <source>salescore.change-address</source>
                 <target>Change address</target>
             </trans-unit>
-            <trans-unit id="2" resname="salescore.delivery-date">
+            <trans-unit id="2" resname="salescore.item.tax-rate">
+                <source>salescore.item.tax-rate</source>
+                <target>Tax class</target>
+            </trans-unit>
+            <trans-unit id="3" resname="salescore.item.delivery-date">
+                <source>salescore.item.delivery-date</source>
+                <target>Delivery date</target>
+            </trans-unit>
+            <trans-unit id="4" resname="salescore.delivery-date">
                 <source>salescore.delivery-date</source>
                 <target>Delivery date</target>
             </trans-unit>
-            <trans-unit id="3" resname="salescore.use-main-delivery-address">
+            <trans-unit id="5" resname="salescore.use-main-delivery-address">
                 <source>salescore.use-main-delivery-address</source>
                 <target>Same as delivery address</target>
             </trans-unit>
