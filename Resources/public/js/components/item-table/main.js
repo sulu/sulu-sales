@@ -578,39 +578,41 @@ define([
          * updates row with global prices
          */
         updateGlobalPrice = function() {
+            var items = this.getItems(), result, $table, i;
 
-            var result = PriceCalcUtil.getTotalPricesAndTaxes(this.sandbox, this.items),
-                $table, i;
+            if (!!items && items.length > 0 && !!items[0].price) {
+                result = PriceCalcUtil.getTotalPricesAndTaxes(this.sandbox, this.items);
 
-            // visualize
-            $table = this.$find(constants.globalPriceTableClass);
-            this.sandbox.dom.empty($table);
+                // visualize
+                $table = this.$find(constants.globalPriceTableClass);
+                this.sandbox.dom.empty($table);
 
-            if (!!result) {
-                // add net price
-                addPriceRow.call(
-                    this,
-                    $table,
-                    this.sandbox.translate('salescore.item.net-price'),
-                    PriceCalcUtil.getFormattedAmountAndUnit(this.sandbox, result.netPrice, this.currency)
-                );
-
-                // add row for every tax group
-                for (i in result.taxes) {
+                if (!!result) {
+                    // add net price
                     addPriceRow.call(
                         this,
                         $table,
-                        this.sandbox.translate('salescore.item.vat') + '.(' + i + '%)',
-                        PriceCalcUtil.getFormattedAmountAndUnit(this.sandbox, result.taxes[i], this.currency)
+                        this.sandbox.translate('salescore.item.net-price'),
+                        PriceCalcUtil.getFormattedAmountAndUnit(this.sandbox, result.netPrice, this.currency)
+                    );
+
+                    // add row for every tax group
+                    for (i in result.taxes) {
+                        addPriceRow.call(
+                            this,
+                            $table,
+                            this.sandbox.translate('salescore.item.vat') + '.(' + i + '%)',
+                            PriceCalcUtil.getFormattedAmountAndUnit(this.sandbox, result.taxes[i], this.currency)
+                        );
+                    }
+
+                    addPriceRow.call(
+                        this,
+                        $table,
+                        this.sandbox.translate('salescore.item.overall-price'),
+                        PriceCalcUtil.getFormattedAmountAndUnit(this.sandbox, result.grossPrice, this.currency)
                     );
                 }
-
-                addPriceRow.call(
-                    this,
-                    $table,
-                    this.sandbox.translate('salescore.item.overall-price'),
-                    PriceCalcUtil.getFormattedAmountAndUnit(this.sandbox, result.grossPrice, this.currency)
-                );
 
             }
         },

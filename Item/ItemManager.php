@@ -360,7 +360,7 @@ class ItemManager
             }
 
             // TODO: get tax from product
-//            $item->setTax(20);
+            $item->setTax(0);
 //            $item->setTax($product->getTaxClass()->getTax($locale));
 
             if ($item->getUseProductsPrice() === true) {
