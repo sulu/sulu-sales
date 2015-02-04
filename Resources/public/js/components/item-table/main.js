@@ -427,14 +427,15 @@ define([
                 return;
             }
 
-            var rowId = this.sandbox.dom.attr(event.currentTarget, 'id');
+            var rowId = this.sandbox.dom.attr(event.currentTarget, 'id'),
+                dataId = this.sandbox.dom.data(event.currentTarget, 'id');
             // call rowCallback
             if (!!this.options.rowCallback) {
                 this.options.rowCallback.call(this, rowId, this.items[rowId]);
             }
 
             // if settings are activated, show them
-            if (!!this.options.settings && this.options.settings !== 'false') {
+            if (!!this.options.settings && this.options.settings !== 'false' && (!!dataId || dataId === 0)) {
                 initSettingsOverlay.call(this, this.items[rowId], this.options.settings, rowId);
             }
         },
