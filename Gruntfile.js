@@ -49,7 +49,7 @@ module.exports = function(grunt) {
 
         clean: {
             options: { force: true },
-            hooks: ['.git/hooks/*'],
+            hooks: ['.git/hooks/*']
         },
 
         watch: {
