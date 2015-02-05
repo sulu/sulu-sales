@@ -47,6 +47,11 @@ module.exports = function(grunt) {
             }
         },
 
+        clean: {
+            options: { force: true },
+            hooks: ['.git/hooks/*'],
+        },
+
         watch: {
             options: {
                 nospawn: true
@@ -112,6 +117,7 @@ module.exports = function(grunt) {
     ]);
 
     grunt.registerTask('install:hooks', [
+        'clean:hooks',
         'copy:hooks',
         'exec:hookrights'
     ]);
