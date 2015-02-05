@@ -52,18 +52,6 @@ module.exports = function(grunt) {
             }
         },
 
-        clean: {
-            options: { force: true },
-            hooks: ['.git/hooks/*'],
-            public: {
-                files: [
-                    {
-                        dot: true,
-                        src: ['../../../../../../../web/bundles/'+bundleName+'/']
-                    }
-                ]
-            }
-        },
         watch: {
             options: {
                 nospawn: true
@@ -119,7 +107,6 @@ module.exports = function(grunt) {
     grunt.registerTask('publish', [
         'compass:dev',
         'cssmin',
-        'clean:public',
         'copy:public'
     ]);
 
@@ -131,13 +118,11 @@ module.exports = function(grunt) {
     ]);
 
     grunt.registerTask('default', [
-        'clean:public',
         'copy:public',
         'watch'
     ]);
 
     grunt.registerTask('install:hooks', [
-        'clean:hooks',
         'copy:hooks',
         'exec:hookrights'
     ]);
