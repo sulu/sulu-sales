@@ -22,11 +22,6 @@ module.exports = function(grunt) {
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
         copy: {
-            public: {
-                files: [
-                    {expand: true, cwd: 'Resources/public', src: ['**', '!**/scss/**'], dest: '../../../../../../../web/bundles/'+bundleName+'/'}
-                ]
-            },
             templates: {
                 files: [
                     {expand: true, cwd: srcpath, src: ['**/*.html'], dest: destpath}
@@ -104,21 +99,15 @@ module.exports = function(grunt) {
         }
     });
 
-    grunt.registerTask('publish', [
-        'compass:dev',
-        'cssmin',
-        'copy:public'
-    ]);
-
     grunt.registerTask('build', [
         'uglify',
         'replace:build',
         'copy:templates',
-        'publish'
+        'compass:dev',
+        'cssmin'
     ]);
 
     grunt.registerTask('default', [
-        'copy:public',
         'watch'
     ]);
 
