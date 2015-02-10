@@ -74,15 +74,15 @@
 {% endblock %}
 
 {% block productlist_items %}
-    {% for item in items %}
-        {{ macros.item(loop.index, item) }}
+    {% for item in itemApiEntities %}
+        {{ macros.item(loop.index, item, website_locale) }}
     {% endfor %}
 {% endblock %}
 
 {% block productlist_footer_shippingcost_value %}
-    {{ order.getDeliveryCost() |default('-') }}
+    {{ orderApiEntity.getDeliveryCostFormatted(website_locale) |default('-') }}
 {% endblock %}
 
 {% block productlist_footer_total_value %}
-    {{ order.getTotalNetPrice() |default('-') }}
+    {{ orderApiEntity.getTotalNetPriceFormatted(website_locale) |default('-') }}
 {% endblock %}

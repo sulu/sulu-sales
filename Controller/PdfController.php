@@ -57,18 +57,21 @@ class PdfController extends RestController
         $locale = $this->getLocale($request);
 
         try {
-            $order = $this->getOrderManager()->findByIdAndLocale($id, $locale)->getEntity();
+            $orderApiEntity = $this->getOrderManager()->findByIdAndLocale($id, $locale);
+            $order = $orderApiEntity->getEntity();
         } catch(OrderNotFoundException $exc) {
             throw new OrderNotFoundException($id);
         }
 
         $data = array(
             'baseUrl' => $this->getBaseUrl($request),
-            'recipient' => $order->getInvoiceAddress(),
+            'recipient' => $order->getDeliveryAddress(),
             'responsibleContact' => $order->getResponsibleContact(),
             'deliveryAddress' => $order->getInvoiceAddress(),
-            'items' => $order->getItems(),
-            'order' => $order
+            'order' => $order,
+            'orderApiEntity' => $orderApiEntity,
+            'itemApiEntities' => $orderApiEntity->getItems(),
+            'website_locale' => $this->container->getParameter('website_locale')
         );
 
         $header = $this->getPdfManager()->renderTemplate(
