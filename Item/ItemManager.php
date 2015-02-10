@@ -112,6 +112,7 @@ class ItemManager
 
         // set item data
         $item->setQuantity($this->getProperty($data, 'quantity', null));
+        $item->setQuantityUnit($this->getProperty($data, 'quantityUnit', $item->getQuantityUnit()));
         $item->setDiscount($this->getProperty($data, 'discount', $item->getDiscount()));
 
         // create new item
