@@ -12,8 +12,8 @@ namespace Sulu\Bundle\ProductBundle\Tests\Functional\Controller;
 
 use DateTime;
 use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\Tools\SchemaTool;
 
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Sulu\Bundle\ContactBundle\Entity\Account;
 use Sulu\Bundle\ContactBundle\Entity\Address;
 use Sulu\Bundle\ContactBundle\Entity\AddressType;
@@ -36,16 +36,22 @@ use Sulu\Bundle\Sales\OrderBundle\Entity\Order;
 use Sulu\Bundle\Sales\OrderBundle\Entity\OrderAddress;
 use Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatus;
 use Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatusTranslation;
-use Sulu\Bundle\TestBundle\Entity\TestUser;
+use Sulu\Bundle\Sales\OrderBundle\Entity\OrderType;
+use Sulu\Bundle\Sales\OrderBundle\Entity\OrderTypeTranslation;
 use Sulu\Bundle\TestBundle\Testing\SuluTestCase;
 use Symfony\Component\HttpKernel\Client;
-
 
 class OrderControllerTest extends SuluTestCase
 {
     private $locale = 'en';
 
-    private $testUser;
+    /**
+     * @var OrderType
+     */
+    protected $orderTypeManual;
+    protected $orderTypeShop;
+    protected $orderTypeAnon;
+
     /**
      * @var Account
      */
@@ -91,10 +97,6 @@ class OrderControllerTest extends SuluTestCase
      */
     private $termsOfPayment;
     /**
-     * @var OrderStatusTranslation[]
-     */
-    private $orderStatusTranslations;
-    /**
      * @var Item
      */
     private $item;
@@ -102,14 +104,7 @@ class OrderControllerTest extends SuluTestCase
      * @var Product
      */
     private $product;
-    /**
-     * @var ProductType
-     */
-    private $productType;
-    /**
-     * @var ProductTypeTranslation
-     */
-    private $productTypeTranslation;
+
     /**
      * @var ProductTranslation
      */
@@ -136,18 +131,12 @@ class OrderControllerTest extends SuluTestCase
     {
         // account
         $this->account = new Account();
-         $this->account->setName('Company');
+        $this->account->setName('Company');
         $this->account->setCreated(new DateTime());
         $this->account->setChanged(new DateTime());
         $this->account->setType(Account::TYPE_BASIC);
         $this->account->setUid('uid-123');
         $this->account->setDisabled(0);
-
-        $this->testUser = new TestUser();
-        $this->testUser->setUsername('test');
-        $this->testUser->setPassword('test');
-        $this->testUser->setLocale('en');
-        $this->em->persist($this->testUser);
 
         // country
         $country = new Country();
@@ -188,6 +177,7 @@ class OrderControllerTest extends SuluTestCase
         // title
         $title = new ContactTitle();
         $title->setTitle('Dr');
+
         // contact
         $this->contact = new Contact();
         $this->contact->setFirstName('John');
@@ -211,7 +201,7 @@ class OrderControllerTest extends SuluTestCase
         $this->em->persist($status);
 
         $metadata = $this->em->getClassMetaData(get_class($status));
-        $metadata->setIdGeneratorType(\Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_NONE);
+        $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_NONE);
 
         $this->orderStatus = $status;
         // cart
@@ -222,7 +212,7 @@ class OrderControllerTest extends SuluTestCase
         $this->em->persist($status);
 
         $metadata = $this->em->getClassMetaData(get_class($status));
-        $metadata->setIdGeneratorType(\Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_NONE);
+        $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_NONE);
         // confirmed
         $status = new OrderStatus();
         $status->setId(OrderStatus::STATUS_CONFIRMED);
@@ -231,7 +221,7 @@ class OrderControllerTest extends SuluTestCase
         $this->em->persist($status);
 
         $metadata = $this->em->getClassMetaData(get_class($status));
-        $metadata->setIdGeneratorType(\Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_NONE);
+        $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_NONE);
         // confirmed
         $status = new OrderStatus();
         $status->setId(OrderStatus::STATUS_CLOSED_MANUALLY);
@@ -240,14 +230,14 @@ class OrderControllerTest extends SuluTestCase
         $this->em->persist($status);
 
         $metadata = $this->em->getClassMetaData(get_class($status));
-        $metadata->setIdGeneratorType(\Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_NONE);
+        $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_NONE);
 
 
         // order address
         $this->orderAddressDelivery = new OrderAddress();
         $this->orderAddressDelivery->setFirstName($this->contact->getFirstName());
         $this->orderAddressDelivery->setLastName($this->contact->getLastName());
-        $this->orderAddressDelivery->setTitle($this->contact->getTitle()->getTitle());
+        $this->orderAddressDelivery->setTitle($title->getTitle());
         $this->orderAddressDelivery->setStreet($this->address->getStreet());
         $this->orderAddressDelivery->setNumber($this->address->getNumber());
         $this->orderAddressDelivery->setAddition($this->address->getAddition());
@@ -320,6 +310,7 @@ class OrderControllerTest extends SuluTestCase
         $this->product->setStatus($productStatus);
         $this->product->setCreated(new DateTime());
         $this->product->setChanged(new DateTime());
+
         // product translation
         $this->productTranslation = new ProductTranslation();
         $this->productTranslation->setProduct($this->product);
@@ -349,11 +340,54 @@ class OrderControllerTest extends SuluTestCase
         $this->item->setChanged(new DateTime());
         $this->item->setProduct($this->product);
 
-        $this->order->addItem($this->item);
+        $orderTypeTranslationManual = new OrderTypeTranslation();
+        $orderTypeTranslationManual->setLocale('en');
+        $orderTypeTranslationManual->setName('order type translation manual');
 
+        $orderTypeTranslationShop = new OrderTypeTranslation();
+        $orderTypeTranslationShop->setLocale('en');
+        $orderTypeTranslationShop->setName('order type translation shop');
+
+        $orderTypeTranslationAnon = new OrderTypeTranslation();
+        $orderTypeTranslationAnon->setLocale('en');
+        $orderTypeTranslationAnon->setName('order type translation anon');
+
+        $this->orderTypeManual = new OrderType();
+        $metadata = $this->em->getClassMetaData(get_class($this->orderTypeManual));
+        $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_NONE);
+
+        $this->orderTypeManual->setId(OrderType::MANUAL);
+        $this->orderTypeManual->addTranslation($orderTypeTranslationManual);
+        $orderTypeTranslationManual->setType($this->orderTypeManual);
+
+        $this->orderTypeShop = new OrderType();
+        $metadata = $this->em->getClassMetaData(get_class($this->orderTypeShop));
+        $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_NONE);
+
+        $this->orderTypeShop->setId(OrderType::SHOP);
+        $this->orderTypeShop->addTranslation($orderTypeTranslationShop);
+        $orderTypeTranslationShop->setType($this->orderTypeShop);
+
+        $this->orderTypeAnon = new OrderType();
+        $metadata = $this->em->getClassMetaData(get_class($this->orderTypeAnon));
+        $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_NONE);
+
+        $this->orderTypeAnon->setId(OrderType::ANONYMOUS);
+        $this->orderTypeAnon->addTranslation($orderTypeTranslationAnon);
+        $orderTypeTranslationAnon->setType($this->orderTypeAnon);
+
+        $this->order->addItem($this->item);
+        $this->order->setType($this->orderTypeManual);
+        $order2->setType($this->orderTypeManual);
+
+        $this->em->persist($this->orderTypeManual);
+        $this->em->persist($this->orderTypeShop);
+        $this->em->persist($this->orderTypeAnon);
+        $this->em->persist($orderTypeTranslationManual);
+        $this->em->persist($orderTypeTranslationShop);
+        $this->em->persist($orderTypeTranslationAnon);
         $this->em->persist($this->account);
         $this->em->persist($title);
-        $this->em->persist($this->testUser);
         $this->em->persist($country);
         $this->em->persist($this->termsOfPayment);
         $this->em->persist($this->termsOfDelivery);
@@ -379,18 +413,13 @@ class OrderControllerTest extends SuluTestCase
         $this->em->flush();
     }
 
-    private function createStatusTranslation($manager, $status, $translation, $locale) {
-        $statusTranslation = new \Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatusTranslation();
+    private function createStatusTranslation(EntityManager $manager, $status, $translation, $locale) {
+        $statusTranslation = new OrderStatusTranslation();
         $statusTranslation->setName($translation);
         $statusTranslation->setLocale($locale);
         $statusTranslation->setStatus($status);
         $manager->persist($statusTranslation);
         return $statusTranslation;
-    }
-
-    public function tearDown()
-    {
-        parent::tearDown();
     }
 
     public function testGetById()
@@ -525,8 +554,8 @@ class OrderControllerTest extends SuluTestCase
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $this->assertEquals('EvilNumber', $response->orderNumber);
 
-        $this->checkOrderAddress($response->invoiceAddress, $this->address, $this->contact2, $this->account);
-        $this->checkOrderAddress($response->deliveryAddress, $this->address2, $this->contact2, $this->account);
+        $this->checkOrderAddress($response->invoiceAddress, $this->address, $this->contact, $this->account);
+        $this->checkOrderAddress($response->deliveryAddress, $this->address2, $this->contact, $this->account);
 
     }
 
@@ -605,6 +634,9 @@ class OrderControllerTest extends SuluTestCase
             'account' => array(
                 'id' => $this->account->getId()
             ),
+            'orderType' => array(
+              'id' => $this->orderTypeManual->getId()
+            ),
             'contact' => array(
                 'id' => $this->contact->getId()
             ),
@@ -655,7 +687,6 @@ class OrderControllerTest extends SuluTestCase
         $response = json_decode($client->getResponse()->getContent());
 
         $client->request('GET', '/api/orders/' . $response->id);
-        $response = json_decode($client->getResponse()->getContent());
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
     }
 
@@ -667,7 +698,7 @@ class OrderControllerTest extends SuluTestCase
         ));
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $response = json_decode($client->getResponse()->getContent());
-        $this->assertEquals(1, $response->id);
+        $this->assertEquals($this->order->getId(), $response->id);
         $this->assertEquals(OrderStatus::STATUS_CREATED | OrderStatus::STATUS_CONFIRMED, $response->bitmaskStatus);
         $this->assertEquals(OrderStatus::STATUS_CONFIRMED, $response->status->id);
 
@@ -676,7 +707,7 @@ class OrderControllerTest extends SuluTestCase
         ));
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $response = json_decode($client->getResponse()->getContent());
-        $this->assertEquals(1, $response->id);
+        $this->assertEquals($this->order->getId(), $response->id);
         $this->assertEquals(OrderStatus::STATUS_CREATED & ~OrderStatus::STATUS_CONFIRMED, $response->bitmaskStatus);
         $this->assertEquals(OrderStatus::STATUS_CREATED, $response->status->id);
     }

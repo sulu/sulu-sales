@@ -24,19 +24,20 @@
         "sulu/product-bundle": "dev-develop",
         "sulu/contact-bundle": "dev-develop",
         "sulu/security-bundle": "dev-develop",
-        "sulu/sales-core-bundle": "dev-develop"
+        "sulu/sales-core-bundle": "dev-develop",
+        "sulu/tag-bundle": "dev-develop",
+        "sulu/website-bundle": "dev-develop",
+        "sulu/category-bundle": "dev-develop",
+        "sulu/media-bundle": "dev-develop"
     },
     "require-dev": {
         "sensio/framework-extra-bundle":  "~3.0",
         "symfony/symfony": "2.6.*",
+        "symfony-cmf/testing": "~1.2",
         "doctrine/doctrine-bundle": "1.2.*",
         "symfony/monolog-bundle": "2.4.*",
         "phpunit/phpunit": "4.0.*",
         "sulu/test-bundle": "dev-develop",
-        "sulu/tag-bundle": "dev-develop",
-        "sulu/website-bundle": "dev-develop",
-        "sulu/category-bundle": "dev-develop",
-        "sulu/media-bundle": "dev-develop",
 
         "symfony-cmf/routing-bundle": "1.2.*",
         "liip/theme-bundle": "1.1.*"

@@ -3,5 +3,4 @@ doctrine:
         auto_generate_proxy_classes: %kernel.debug%
         auto_mapping: true
         resolve_target_entities:
-            Sulu\Component\Security\UserInterface: Sulu\Bundle\TestBundle\Entity\TestUser
             Sulu\Bundle\ProductBundle\Entity\ProductInterface: Sulu\Bundle\ProductBundle\Entity\Product
