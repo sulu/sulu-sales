@@ -746,6 +746,18 @@ class Order extends ApiWrapper implements SalesDocument
     }
 
     /**
+     * @VirtualProperty
+     * @SerializedName("totalNetPriceFormatted")
+     *
+     * @return string
+     */
+    public function getTotalNetPriceFormatted($locale=null)
+    {
+        $formatter = $this->getFormatter($locale);
+        return $formatter->format((float)$this->entity->getTotalNetPrice());
+    }
+
+    /**
      * @param DateTime
      * @return Order
      */
@@ -831,5 +843,15 @@ class Order extends ApiWrapper implements SalesDocument
     public function getPdfBaseUrl()
     {
         return self::$pdfBaseUrl;
+    }
+
+    /**
+     * @param $locale
+     * @return Formatter
+     */
+    private function getFormatter($locale)
+    {
+        $sysLocale = $locale ? $locale : 'de-AT';
+        return new \NumberFormatter($sysLocale, \NumberFormatter::CURRENCY);
     }
 }
