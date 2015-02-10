@@ -55,6 +55,7 @@ class OrderListener implements EventSubscriberInterface
     {
         $entity = $args->getEntity();
 
+        // TODO: refactor orders and use order interface
         if ($entity instanceof Order) {
             $entityManager = $args->getEntityManager();
             // after saving check if number is set, else set a new one
