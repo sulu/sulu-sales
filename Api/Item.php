@@ -12,6 +12,7 @@ use Hateoas\Configuration\Annotation\Relation;
 use JMS\Serializer\Annotation\SerializedName;
 use DateTime;
 use Sulu\Component\Security\UserInterface;
+use Symfony\Component\Intl\NumberFormatter\NumberFormatter;
 
 /**
  * The item class which will be exported to the API
@@ -286,6 +287,30 @@ class Item extends ApiWrapper
     }
 
     /**
+     * @VirtualProperty
+     * @SerializedName("priceFormatted")
+     *
+     * @return string
+     */
+    public function getPriceFormatted($locale=null)
+    {
+        $formatter = $this->getFormatter($locale);
+        return $formatter->format((float)$this->entity->getPrice());
+    }
+
+    /**
+     * @VirtualProperty
+     * @SerializedName("totalNetPriceFormatted")
+     *
+     * @return string
+     */
+    public function getTotalNetPriceFormatted($locale=null)
+    {
+        $formatter = $this->getFormatter($locale);
+        return $formatter->format((float)$this->entity->getTotalNetPrice());
+    }
+
+    /**
      * @param float
      * @return Item
      */
@@ -517,5 +542,15 @@ class Item extends ApiWrapper
             );
         }
         return null;
+    }
+
+    /**
+     * @param $locale
+     * @return Formatter
+     */
+    private function getFormatter($locale)
+    {
+        $sysLocale = $locale ? $locale : 'de-AT';
+        return new \NumberFormatter($sysLocale, \NumberFormatter::CURRENCY);
     }
 }
