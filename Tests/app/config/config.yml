@@ -4,3 +4,7 @@ doctrine:
         auto_mapping: true
         resolve_target_entities:
             Sulu\Bundle\ProductBundle\Entity\ProductInterface: Sulu\Bundle\ProductBundle\Entity\Product
+
+framework:
+    router: 
+        resource: %kernel.root_dir%/config/routing.xml
