@@ -121,10 +121,10 @@ class OrderControllerTest extends SuluTestCase
 
     public function setUp()
     {
-        parent::setUp();
         $this->em = $this->db('ORM')->getOm();
         $this->purgeDatabase();
         $this->setUpTestData();
+        $this->em->flush();
     }
 
     private function setUpTestData()
@@ -410,7 +410,6 @@ class OrderControllerTest extends SuluTestCase
         $this->em->persist($productTypeTranslation);
         $this->em->persist($productStatus);
         $this->em->persist($productStatusTranslation);
-        $this->em->flush();
     }
 
     private function createStatusTranslation(EntityManager $manager, $status, $translation, $locale) {
