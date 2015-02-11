@@ -83,112 +83,112 @@ class ShippingControllerTest extends SuluTestCase
      * @var Account
      */
     private $account;
-    
+
     /**
      * @var Address
      */
     private $address;
-    
+
     /**
      * @var Address
      */
     private $address2;
-    
+
     /**
      * @var Contact
      */
     private $contact;
-    
+
     /**
      * @var Contact
      */
     private $contact2;
-    
+
     /**
      * @var Order
      */
     private $order;
-    
+
     /**
      * @var OrderAddress
      */
     private $orderAddressDelivery;
-    
+
     /**
      * @var OrderAddress
      */
     private $orderAddressInvoice;
-    
+
     /**
      * @var OrderStatus
      */
     private $orderStatus;
-    
+
     /**
      * @var TermsOfDelivery
      */
     private $termsOfDelivery;
-    
+
     /**
      * @var TermsOfPayment
      */
     private $termsOfPayment;
-    
+
     /**
      * @var OrderStatusTranslation
      */
     private $orderStatusTranslation;
-    
+
     /**
      * @var Item
      */
     private $item;
-    
+
     /**
      * @var Product
      */
     private $product;
-    
+
     /**
      * @var ProductTranslation
      */
     private $productTranslation;
-    
+
     /**
      * @var Phone
      */
     private $phone;
-    
+
     /**
      * @var Shipping
      */
     private $shipping;
-    
+
     /**
      * @var Shipping
      */
     private $shipping2;
-    
+
     /**
      * @var ShippingStatus
      */
     private $shippingStatus;
-    
+
     /**
      * @var ShippingItem
      */
     private $shippingItem;
-    
+
     /**
      * @var OrderAddress
      */
     private $shippingAddress;
-    
+
     /**
      * @var OrderAddress
      */
     private $shippingAddress2;
-    
+
     /**
      * @var ShippingStatusTranslation
      */
@@ -485,7 +485,8 @@ class ShippingControllerTest extends SuluTestCase
         $this->em->persist($this->shippingAddress2);
     }
 
-    private function createStatusTranslation($status, $translation, $locale) {
+    private function createStatusTranslation($status, $translation, $locale)
+    {
         $statusTranslation = new ShippingStatusTranslation();
         $statusTranslation->setName($translation);
         $statusTranslation->setLocale($locale);
@@ -497,7 +498,7 @@ class ShippingControllerTest extends SuluTestCase
     public function testGetById()
     {
         $client = $this->createAuthenticatedClient();
-        $client->request('GET', '/api/shippings/'.$this->shipping->getId());
+        $client->request('GET', '/api/shippings/' . $this->shipping->getId());
         $response = json_decode($client->getResponse()->getContent());
 
         // shipping
@@ -618,12 +619,12 @@ class ShippingControllerTest extends SuluTestCase
         $client = $this->createAuthenticatedClient();
         $client->request(
             'PUT',
-            '/api/shippings/'.$this->shipping->getId(),
+            '/api/shippings/' . $this->shipping->getId(),
             $data
         );
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
 
-        $client->request('GET', '/api/shippings/'.$this->shipping->getId());
+        $client->request('GET', '/api/shippings/' . $this->shipping->getId());
         $response = json_decode($client->getResponse()->getContent());
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $this->assertEquals('sh01', $response->shippingNumber);
