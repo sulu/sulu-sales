@@ -104,14 +104,13 @@ class ItemManager
             $item->setUseProductsPrice(false);
             // TODO: set supplier based on if its a string  or object (fetch account and set it to setSupplier)
             $item->setSupplierName($this->getProperty($data, 'supplierName', $item->getSupplierName()));
-            // set quantity unit
-            $item->setQuantityUnit($this->getProperty($data, 'quantityUnit', $item->getQuantityUnit()));
             $item->setTax($this->getProperty($data, 'tax', $item->getTax()));
         }
         $item->setPrice($this->getProperty($data, 'price', $item->getPrice()));
 
         // set item data
         $item->setQuantity($this->getProperty($data, 'quantity', null));
+        $item->setQuantityUnit($this->getProperty($data, 'quantityUnit', $item->getQuantityUnit()));
         $item->setDiscount($this->getProperty($data, 'discount', $item->getDiscount()));
 
         // create new item
