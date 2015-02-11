@@ -11,8 +11,9 @@
 namespace Sulu\Bundle\ProductBundle\Tests\Functional\Controller;
 
 use DateTime;
-use Doctrine\ORM\Tools\SchemaTool;
+use Doctrine\ORM\EntityManager;
 
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Sulu\Bundle\ContactBundle\Entity\Account;
 use Sulu\Bundle\ContactBundle\Entity\Address;
 use Sulu\Bundle\ContactBundle\Entity\AddressType;
@@ -39,11 +40,9 @@ use Sulu\Bundle\Sales\ShippingBundle\Entity\Shipping;
 use Sulu\Bundle\Sales\ShippingBundle\Entity\ShippingItem;
 use Sulu\Bundle\Sales\ShippingBundle\Entity\ShippingStatus;
 use Sulu\Bundle\Sales\ShippingBundle\Entity\ShippingStatusTranslation;
-use Sulu\Bundle\TestBundle\Entity\TestUser;
-use Sulu\Bundle\TestBundle\Testing\DatabaseTestCase;
-use Symfony\Component\HttpKernel\Client;
+use Sulu\Bundle\TestBundle\Testing\SuluTestCase;
 
-class ShippingControllerTest extends DatabaseTestCase
+class ShippingControllerTest extends SuluTestCase
 {
     /**
      * @var array
@@ -51,231 +50,151 @@ class ShippingControllerTest extends DatabaseTestCase
     protected static $entities;
 
     /**
-     * @var Client
+     * @var EntityManager
      */
-    private $client;
+    protected $em;
 
     /**
-     * @var TestUser
+     * @var ShippingStatus
      */
-    private $testUser;
+    protected $statusCreated;
 
+    /**
+     * @var ShippingStatus
+     */
+    protected $statusDeliverNote;
+
+    /**
+     * @var ShippingStatus
+     */
+    protected $statusShipped;
+
+    /**
+     * @var ShippingStatus
+     */
+    protected $statusCancled;
+
+    /**
+     * @var string
+     */
     private $locale = 'en';
 
     /**
      * @var Account
      */
     private $account;
+
     /**
      * @var Address
      */
     private $address;
+
     /**
      * @var Address
      */
     private $address2;
+
     /**
      * @var Contact
      */
     private $contact;
+
     /**
      * @var Contact
      */
     private $contact2;
+
     /**
      * @var Order
      */
     private $order;
+
     /**
      * @var OrderAddress
      */
     private $orderAddressDelivery;
+
     /**
      * @var OrderAddress
      */
     private $orderAddressInvoice;
+
     /**
      * @var OrderStatus
      */
     private $orderStatus;
+
     /**
      * @var TermsOfDelivery
      */
     private $termsOfDelivery;
+
     /**
      * @var TermsOfPayment
      */
     private $termsOfPayment;
+
     /**
      * @var OrderStatusTranslation
      */
     private $orderStatusTranslation;
+
     /**
      * @var Item
      */
     private $item;
+
     /**
      * @var Product
      */
     private $product;
-    /**
-     * @var ProductType
-     */
-    private $productType;
-    /**
-     * @var ProductTypeTranslation
-     */
-    private $productTypeTranslation;
+
     /**
      * @var ProductTranslation
      */
     private $productTranslation;
+
     /**
      * @var Phone
      */
     private $phone;
+
     /**
      * @var Shipping
      */
     private $shipping;
+
     /**
      * @var Shipping
      */
     private $shipping2;
+
     /**
      * @var ShippingStatus
      */
     private $shippingStatus;
+
     /**
      * @var ShippingItem
      */
     private $shippingItem;
+
     /**
      * @var OrderAddress
      */
     private $shippingAddress;
+
     /**
      * @var OrderAddress
      */
     private $shippingAddress2;
-    /**
-     * @var ShippingStatusTranslation
-     */
-    private $shippingStatusTranslation;
 
     public function setUp()
     {
-        $this->setUpTestUser();
-        $this->setUpClient();
-        $this->setUpSchema();
+        $this->em = $this->db('ORM')->getOm();
+        $this->purgeDatabase();
         $this->setUpTestData();
-    }
-
-    private function setUpTestUser()
-    {
-        $this->testUser = new TestUser();
-        $this->testUser->setUsername('test');
-        $this->testUser->setPassword('test');
-        $this->testUser->setLocale($this->locale);
-    }
-
-    private function setUpClient()
-    {
-        $this->client = static::createClient(
-            array(),
-            array(
-                'PHP_AUTH_USER' => $this->testUser->getUsername(),
-                'PHP_AUTH_PW' => $this->testUser->getPassword()
-            )
-        );
-    }
-
-    private function setUpSchema()
-    {
-        self::$tool = new SchemaTool(self::$em);
-
-        self::$entities = array(
-            self::$em->getClassMetadata('Sulu\Bundle\TestBundle\Entity\TestUser'),
-            // SalesOrderBundle
-            self::$em->getClassMetadata('Sulu\Bundle\Sales\OrderBundle\Entity\Order'),
-            self::$em->getClassMetadata('Sulu\Bundle\Sales\OrderBundle\Entity\OrderAddress'),
-            self::$em->getClassMetadata('Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatus'),
-            self::$em->getClassMetadata('Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatusTranslation'),
-            // SalesCoreBundle
-            self::$em->getClassMetadata('Sulu\Bundle\Sales\CoreBundle\Entity\Item'),
-            self::$em->getClassMetadata('Sulu\Bundle\Sales\CoreBundle\Entity\ItemAttribute'),
-            // SalesShippingBundle
-            self::$em->getClassMetadata('Sulu\Bundle\Sales\ShippingBundle\Entity\Shipping'),
-            self::$em->getClassMetadata('Sulu\Bundle\Sales\ShippingBundle\Entity\ShippingItem'),
-            self::$em->getClassMetadata('Sulu\Bundle\Sales\ShippingBundle\Entity\ShippingActivityLog'),
-            self::$em->getClassMetadata('Sulu\Bundle\Sales\ShippingBundle\Entity\ShippingStatus'),
-            self::$em->getClassMetadata('Sulu\Bundle\Sales\ShippingBundle\Entity\ShippingStatusTranslation'),
-            // ProductBundle
-            self::$em->getClassMetadata('Sulu\Bundle\ProductBundle\Entity\Product'),
-            self::$em->getClassMetadata('Sulu\Bundle\ProductBundle\Entity\DeliveryStatus'),
-            self::$em->getClassMetadata('Sulu\Bundle\ProductBundle\Entity\ProductPrice'),
-            self::$em->getClassMetadata('Sulu\Bundle\ProductBundle\Entity\Type'),
-            self::$em->getClassMetadata('Sulu\Bundle\ProductBundle\Entity\TypeTranslation'),
-            self::$em->getClassMetadata('Sulu\Bundle\ProductBundle\Entity\TaxClass'),
-            self::$em->getClassMetadata('Sulu\Bundle\ProductBundle\Entity\TaxClassTranslation'),
-            self::$em->getClassMetadata('Sulu\Bundle\ProductBundle\Entity\Currency'),
-            self::$em->getClassMetadata('Sulu\Bundle\ProductBundle\Entity\Status'),
-            self::$em->getClassMetadata('Sulu\Bundle\ProductBundle\Entity\StatusTranslation'),
-            self::$em->getClassMetadata('Sulu\Bundle\ProductBundle\Entity\AttributeSet'),
-            self::$em->getClassMetadata('Sulu\Bundle\ProductBundle\Entity\AttributeSetTranslation'),
-            self::$em->getClassMetadata('Sulu\Bundle\ProductBundle\Entity\Attribute'),
-            self::$em->getClassMetadata('Sulu\Bundle\ProductBundle\Entity\AttributeTranslation'),
-            self::$em->getClassMetadata('Sulu\Bundle\ProductBundle\Entity\ProductTranslation'),
-            self::$em->getClassMetadata('Sulu\Bundle\ProductBundle\Entity\ProductAttribute'),
-            self::$em->getClassMetadata('Sulu\Bundle\ProductBundle\Entity\Addon'),
-            self::$em->getClassMetadata('Sulu\Bundle\ProductBundle\Entity\AttributeType'),
-            // ContactBundle
-            self::$em->getClassMetadata('Sulu\Bundle\ContactBundle\Entity\Account'),
-            self::$em->getClassMetadata('Sulu\Bundle\ContactBundle\Entity\AccountContact'),
-            self::$em->getClassMetadata('Sulu\Bundle\ContactBundle\Entity\AccountAddress'),
-            self::$em->getClassMetadata('Sulu\Bundle\ContactBundle\Entity\AccountCategory'),
-            self::$em->getClassMetadata('Sulu\Bundle\ContactBundle\Entity\Activity'),
-            self::$em->getClassMetadata('Sulu\Bundle\ContactBundle\Entity\ActivityStatus'),
-            self::$em->getClassMetadata('Sulu\Bundle\ContactBundle\Entity\ActivityPriority'),
-            self::$em->getClassMetadata('Sulu\Bundle\ContactBundle\Entity\ActivityType'),
-            self::$em->getClassMetadata('Sulu\Bundle\ContactBundle\Entity\Address'),
-            self::$em->getClassMetadata('Sulu\Bundle\ContactBundle\Entity\AddressType'),
-            self::$em->getClassMetadata('Sulu\Bundle\ContactBundle\Entity\BankAccount'),
-            self::$em->getClassMetadata('Sulu\Bundle\ContactBundle\Entity\Contact'),
-            self::$em->getClassMetadata('Sulu\Bundle\ContactBundle\Entity\ContactTitle'),
-            self::$em->getClassMetadata('Sulu\Bundle\ContactBundle\Entity\Position'),
-            self::$em->getClassMetadata('Sulu\Bundle\ContactBundle\Entity\ContactLocale'),
-            self::$em->getClassMetadata('Sulu\Bundle\ContactBundle\Entity\Country'),
-            self::$em->getClassMetadata('Sulu\Bundle\ContactBundle\Entity\ContactAddress'),
-            self::$em->getClassMetadata('Sulu\Bundle\ContactBundle\Entity\Email'),
-            self::$em->getClassMetadata('Sulu\Bundle\ContactBundle\Entity\EmailType'),
-            self::$em->getClassMetadata('Sulu\Bundle\ContactBundle\Entity\Note'),
-            self::$em->getClassMetadata('Sulu\Bundle\ContactBundle\Entity\Fax'),
-            self::$em->getClassMetadata('Sulu\Bundle\ContactBundle\Entity\FaxType'),
-            self::$em->getClassMetadata('Sulu\Bundle\ContactBundle\Entity\Phone'),
-            self::$em->getClassMetadata('Sulu\Bundle\ContactBundle\Entity\PhoneType'),
-            self::$em->getClassMetadata('Sulu\Bundle\ContactBundle\Entity\Url'),
-            self::$em->getClassMetadata('Sulu\Bundle\ContactBundle\Entity\UrlType'),
-            self::$em->getClassMetadata('Sulu\Bundle\TagBundle\Entity\Tag'),
-            self::$em->getClassMetadata('Sulu\Bundle\ContactBundle\Entity\TermsOfPayment'),
-            self::$em->getClassMetadata('Sulu\Bundle\ContactBundle\Entity\TermsOfDelivery'),
-            self::$em->getClassMetadata('Sulu\Bundle\MediaBundle\Entity\Collection'),
-            self::$em->getClassMetadata('Sulu\Bundle\MediaBundle\Entity\CollectionType'),
-            self::$em->getClassMetadata('Sulu\Bundle\MediaBundle\Entity\CollectionMeta'),
-            self::$em->getClassMetadata('Sulu\Bundle\MediaBundle\Entity\Media'),
-            self::$em->getClassMetadata('Sulu\Bundle\MediaBundle\Entity\MediaType'),
-            self::$em->getClassMetadata('Sulu\Bundle\MediaBundle\Entity\File'),
-            self::$em->getClassMetadata('Sulu\Bundle\MediaBundle\Entity\FileVersion'),
-            self::$em->getClassMetadata('Sulu\Bundle\MediaBundle\Entity\FileVersionMeta'),
-            self::$em->getClassMetadata('Sulu\Bundle\MediaBundle\Entity\FileVersionContentLanguage'),
-            self::$em->getClassMetadata('Sulu\Bundle\MediaBundle\Entity\FileVersionPublishLanguage'),
-            self::$em->getClassMetadata('Sulu\Bundle\CategoryBundle\Entity\Category'),
-            self::$em->getClassMetadata('Sulu\Bundle\CategoryBundle\Entity\CategoryMeta'),
-            self::$em->getClassMetadata('Sulu\Bundle\CategoryBundle\Entity\CategoryTranslation')
-        );
-
-        self::$tool->dropSchema(self::$entities);
-        self::$tool->createSchema(self::$entities);
+        $this->em->flush();
     }
 
     private function setUpTestData()
@@ -459,18 +378,43 @@ class ShippingControllerTest extends DatabaseTestCase
         $this->order->addItem($this->item);
 
         // shipping
-        $this->shippingStatus = new ShippingStatus();
-        $this->shippingStatus->setId(1);
-        $this->shippingStatusTranslation = new ShippingStatusTranslation();
-        $this->shippingStatusTranslation->setName('English-Shipping-Status-1');
-        $this->shippingStatusTranslation->setLocale($this->locale);
-        $this->shippingStatusTranslation->setStatus($this->shippingStatus);
+        $metadata = $this->em->getClassMetaData(get_class(new ShippingStatus()));
+        $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_NONE);
+
+        // created
+        $this->statusCreated = new ShippingStatus();
+        $this->statusCreated->setId(ShippingStatus::STATUS_CREATED);
+        $this->createStatusTranslation($this->statusCreated, 'Created', 'en');
+        $this->createStatusTranslation($this->statusCreated, 'Erfasst', 'de');
+
+        // delivery note
+        $this->statusDeliverNote = new ShippingStatus();
+        $this->statusDeliverNote->setId(ShippingStatus::STATUS_DELIVERY_NOTE);
+        $this->createStatusTranslation($this->statusDeliverNote, 'Delivery note created', 'en');
+        $this->createStatusTranslation($this->statusDeliverNote, 'Lieferschein erstellt', 'de');
+
+        // shipped
+        $this->statusShipped = new ShippingStatus();
+        $this->statusShipped->setId(ShippingStatus::STATUS_SHIPPED);
+        $this->createStatusTranslation($this->statusShipped, 'Shipped', 'en');
+        $this->createStatusTranslation($this->statusShipped, 'Versandt', 'de');
+
+        // canceled
+        $this->statusCancled = new ShippingStatus();
+        $this->statusCancled->setId(ShippingStatus::STATUS_CANCELED);
+        $this->createStatusTranslation($this->statusCancled, 'Canceled', 'en');
+        $this->createStatusTranslation($this->statusCancled, 'Storniert', 'de');
+
+        $this->em->persist($this->statusCancled);
+        $this->em->persist($this->statusShipped);
+        $this->em->persist($this->statusDeliverNote);
+        $this->em->persist($this->statusCreated);
 
         $this->shippingAddress = clone $this->orderAddressDelivery;
         $this->shipping = new Shipping();
         $this->shipping->setNumber('00001');
         $this->shipping->setShippingNumber('432');
-        $this->shipping->setStatus($this->shippingStatus);
+        $this->shipping->setStatus($this->statusCreated);
         $this->shipping->setOrder($this->order);
         $this->shipping->setChanged(new DateTime());
         $this->shipping->setCreated(new DateTime());
@@ -486,10 +430,12 @@ class ShippingControllerTest extends DatabaseTestCase
         $this->shipping->setTermsOfPaymentContent($this->termsOfPayment->getTerms());
         $this->shipping->setTrackingId('abcd1234');
         $this->shipping->setTrackingUrl('http://www.tracking.url?token=abcd1234');
-        $this->shipping->setBitmaskStatus($this->shippingStatus->getId());
+        $this->shipping->setBitmaskStatus($this->statusCreated->getId());
 
         $this->shipping2 = clone $this->shipping;
         $this->shipping2->setNumber('00002');
+        $this->shipping2->setStatus($this->statusCreated);
+        $this->shipping2->setBitmaskStatus($this->statusCreated->getId());
         $this->shippingAddress2 = clone $this->shippingAddress;
         $this->shipping2->setDeliveryAddress($this->shippingAddress2);
 
@@ -501,55 +447,57 @@ class ShippingControllerTest extends DatabaseTestCase
         $this->shipping->addShippingItem($this->shippingItem);
 
         // persist
-        self::$em->persist($this->account);
-        self::$em->persist($title);
-        self::$em->persist($country);
-        self::$em->persist($this->termsOfPayment);
-        self::$em->persist($this->termsOfDelivery);
-        self::$em->persist($country);
-        self::$em->persist($addressType);
-        self::$em->persist($this->address);
-        self::$em->persist($this->address2);
-        self::$em->persist($phoneType);
-        self::$em->persist($this->phone);
-        self::$em->persist($this->contact);
-        self::$em->persist($this->contact2);
-        self::$em->persist($this->order);
-        self::$em->persist($order2);
-        self::$em->persist($this->orderStatus);
-        self::$em->persist($this->orderAddressDelivery);
-        self::$em->persist($this->orderAddressInvoice);
-        self::$em->persist($this->orderStatusTranslation);
-        self::$em->persist($this->item);
-        self::$em->persist($this->product);
-        self::$em->persist($this->productTranslation);
-        self::$em->persist($productType);
-        self::$em->persist($productTypeTranslation);
-        self::$em->persist($productStatus);
-        self::$em->persist($productStatusTranslation);
-        self::$em->persist($this->shipping);
-        self::$em->persist($this->shipping2);
-        self::$em->persist($this->shippingStatus);
-        self::$em->persist($this->shippingStatusTranslation);
-        self::$em->persist($this->shippingItem);
-        self::$em->persist($this->shippingAddress);
-        self::$em->persist($this->shippingAddress2);
-        self::$em->flush();
+        $this->em->persist($this->account);
+        $this->em->persist($title);
+        $this->em->persist($country);
+        $this->em->persist($this->termsOfPayment);
+        $this->em->persist($this->termsOfDelivery);
+        $this->em->persist($country);
+        $this->em->persist($addressType);
+        $this->em->persist($this->address);
+        $this->em->persist($this->address2);
+        $this->em->persist($phoneType);
+        $this->em->persist($this->phone);
+        $this->em->persist($this->contact);
+        $this->em->persist($this->contact2);
+        $this->em->persist($this->order);
+        $this->em->persist($order2);
+        $this->em->persist($this->orderStatus);
+        $this->em->persist($this->orderAddressDelivery);
+        $this->em->persist($this->orderAddressInvoice);
+        $this->em->persist($this->orderStatusTranslation);
+        $this->em->persist($this->item);
+        $this->em->persist($this->product);
+        $this->em->persist($this->productTranslation);
+        $this->em->persist($productType);
+        $this->em->persist($productTypeTranslation);
+        $this->em->persist($productStatus);
+        $this->em->persist($productStatusTranslation);
+        $this->em->persist($this->shipping);
+        $this->em->persist($this->shipping2);
+        $this->em->persist($this->shippingItem);
+        $this->em->persist($this->shippingAddress);
+        $this->em->persist($this->shippingAddress2);
     }
 
-    public function tearDown()
+    private function createStatusTranslation($status, $translation, $locale)
     {
-        parent::tearDown();
-        self::$tool->dropSchema(self::$entities);
+        $statusTranslation = new ShippingStatusTranslation();
+        $statusTranslation->setName($translation);
+        $statusTranslation->setLocale($locale);
+        $statusTranslation->setStatus($status);
+        $this->em->persist($statusTranslation);
+        return $statusTranslation;
     }
 
     public function testGetById()
     {
-        $this->client->request('GET', '/api/shippings/1');
-        $response = json_decode($this->client->getResponse()->getContent());
+        $client = $this->createAuthenticatedClient();
+        $client->request('GET', '/api/shippings/' . $this->shipping->getId());
+        $response = json_decode($client->getResponse()->getContent());
 
         // shipping
-        $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $this->assertEquals('00001', $response->number);
         $this->assertEquals('432', $response->shippingNumber);
         $this->assertEquals('shipping-commission', $response->commission);
@@ -560,10 +508,13 @@ class ShippingControllerTest extends DatabaseTestCase
         $this->assertEquals('abcd1234', $response->trackingId);
         $this->assertEquals('http://www.tracking.url?token=abcd1234', $response->trackingUrl);
         $this->assertEquals('simple shipping note', $response->note);
-        $this->assertEquals((new DateTime('2015-01-01'))->getTimestamp(), (new DateTime($response->expectedDeliveryDate))->getTimestamp());
+        $this->assertEquals(
+            (new DateTime('2015-01-01'))->getTimestamp(),
+            (new DateTime($response->expectedDeliveryDate))->getTimestamp()
+        );
 
         // shipping status
-        $this->assertEquals('English-Shipping-Status-1', $response->status->status);
+        $this->assertEquals($this->shipping->getStatus()->getId(), $response->status->id);
 
         // order
         $this->assertEquals($this->order->getId(), $response->order->id);
@@ -571,7 +522,7 @@ class ShippingControllerTest extends DatabaseTestCase
         // shipping item
         $this->assertEquals(1, count($response->items));
         $item = $response->items[0];
-        $this->assertEquals($this->item->getId(), $item->id);
+        $this->assertEquals($this->shippingItem->getId(), $item->id);
         $this->assertEquals(1, $item->quantity);
         $this->assertEquals('shipping-item-note', $item->note);
 
@@ -603,11 +554,12 @@ class ShippingControllerTest extends DatabaseTestCase
 
     public function testGetAll()
     {
-        $this->client->request('GET', '/api/shippings');
-        $response = json_decode($this->client->getResponse()->getContent());
+        $client = $this->createAuthenticatedClient();
+        $client->request('GET', '/api/shippings');
+        $response = json_decode($client->getResponse()->getContent());
         $items = $response->_embedded->shippings;
 
-        $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $this->assertEquals(2, count($items));
 
         $item = $items[0];
@@ -619,11 +571,12 @@ class ShippingControllerTest extends DatabaseTestCase
 
     public function testGetAllFlat()
     {
-        $this->client->request('GET', '/api/shippings?flat=true');
-        $response = json_decode($this->client->getResponse()->getContent());
+        $client = $this->createAuthenticatedClient();
+        $client->request('GET', '/api/shippings?flat=true');
+        $response = json_decode($client->getResponse()->getContent());
         $items = $response->_embedded->shippings;
 
-        $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $this->assertEquals(2, count($items));
 
         $item = $items[0];
@@ -638,7 +591,7 @@ class ShippingControllerTest extends DatabaseTestCase
         $data = array(
             'shippingNumber' => 'sh01',
             'order' => array(
-                'id' => 2
+                'id' => $this->order->getId()
             ),
             'deliveryAddress' => array(
                 'firstName' => 'Jane',
@@ -658,28 +611,30 @@ class ShippingControllerTest extends DatabaseTestCase
             ),
             'items' => array()
         );
-        $this->client->request(
+        $client = $this->createAuthenticatedClient();
+        $client->request(
             'PUT',
-            '/api/shippings/1',
+            '/api/shippings/' . $this->shipping->getId(),
             $data
         );
-        $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
 
-        $this->client->request('GET', '/api/shippings/1');
-        $response = json_decode($this->client->getResponse()->getContent());
-        $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
+        $client->request('GET', '/api/shippings/' . $this->shipping->getId());
+        $response = json_decode($client->getResponse()->getContent());
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $this->assertEquals('sh01', $response->shippingNumber);
-        $this->assertEquals('2', $response->order->id);
+        $this->assertEquals($this->order->getId(), $response->order->id);
 
         $this->compareDataWithAddress($data['deliveryAddress'], $response->deliveryAddress);
     }
 
     public function testPutNotExisting()
     {
-        $this->client->request('PUT', '/api/shippings/666', array('number' => '123'));
-        $response = json_decode($this->client->getResponse()->getContent());
+        $client = $this->createAuthenticatedClient();
+        $client->request('PUT', '/api/shippings/666', array('number' => '123'));
+        $response = json_decode($client->getResponse()->getContent());
 
-        $this->assertEquals(404, $this->client->getResponse()->getStatusCode());
+        $this->assertEquals(404, $client->getResponse()->getStatusCode());
 
         $this->assertEquals(
             'Entity with the type "SuluSalesShippingBundle:Shipping" and the id "666" not found.',
@@ -708,20 +663,21 @@ class ShippingControllerTest extends DatabaseTestCase
                 'postboxPostcode' => 'postboxPostcode'
             ),
             'order' => array(
-                'id' => 1
+                'id' => $this->order->getId()
             ),
             'termsOfDeliveryContent' => $this->termsOfDelivery->getTerms(),
             'termsOfPaymentContent' => $this->termsOfPayment->getTerms(),
             'items' => array()
         );
 
-        $this->client->request('POST', '/api/shippings', $data);
-        $response = json_decode($this->client->getResponse()->getContent());
+        $client = $this->createAuthenticatedClient();
+        $client->request('POST', '/api/shippings', $data);
+        $response = json_decode($client->getResponse()->getContent());
         $this->assertEquals('sh00003', $response->shippingNumber);
 
-        $this->client->request('GET', '/api/shippings/' . $response->id);
-        $response = json_decode($this->client->getResponse()->getContent());
-        $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
+        $client->request('GET', '/api/shippings/' . $response->id);
+        $response = json_decode($client->getResponse()->getContent());
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
 
         $this->assertEquals('sh00003', $response->shippingNumber);
         $this->assertEquals(ShippingStatus::STATUS_CREATED, $response->status->id);
