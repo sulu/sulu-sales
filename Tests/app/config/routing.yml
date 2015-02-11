@@ -1,0 +1,4 @@
+import:
+    type: rest
+    resource: Sulu\Bundle\Sales\ShippingBundle\Controller\ShippingController
+    prefix: /api

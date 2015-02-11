@@ -13,6 +13,7 @@ namespace Sulu\Bundle\ProductBundle\Tests\Functional\Controller;
 use DateTime;
 use Doctrine\ORM\EntityManager;
 
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Sulu\Bundle\ContactBundle\Entity\Account;
 use Sulu\Bundle\ContactBundle\Entity\Address;
 use Sulu\Bundle\ContactBundle\Entity\AddressType;
@@ -52,6 +53,26 @@ class ShippingControllerTest extends SuluTestCase
      * @var EntityManager
      */
     protected $em;
+
+    /**
+     * @var ShippingStatus
+     */
+    protected $statusCreated;
+
+    /**
+     * @var ShippingStatus
+     */
+    protected $statusDeliverNote;
+
+    /**
+     * @var ShippingStatus
+     */
+    protected $statusShipped;
+
+    /**
+     * @var ShippingStatus
+     */
+    protected $statusCancled;
 
     /**
      * @var string
@@ -362,18 +383,43 @@ class ShippingControllerTest extends SuluTestCase
         $this->order->addItem($this->item);
 
         // shipping
-        $this->shippingStatus = new ShippingStatus();
-        $this->shippingStatus->setId(1);
-        $this->shippingStatusTranslation = new ShippingStatusTranslation();
-        $this->shippingStatusTranslation->setName('English-Shipping-Status-1');
-        $this->shippingStatusTranslation->setLocale($this->locale);
-        $this->shippingStatusTranslation->setStatus($this->shippingStatus);
+        $metadata = $this->em->getClassMetaData(get_class(new ShippingStatus()));
+        $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_NONE);
+
+        // created
+        $this->statusCreated = new ShippingStatus();
+        $this->statusCreated->setId(ShippingStatus::STATUS_CREATED);
+        $this->createStatusTranslation($this->statusCreated, 'Created', 'en');
+        $this->createStatusTranslation($this->statusCreated, 'Erfasst', 'de');
+
+        // delivery note
+        $this->statusDeliverNote = new ShippingStatus();
+        $this->statusDeliverNote->setId(ShippingStatus::STATUS_DELIVERY_NOTE);
+        $this->createStatusTranslation($this->statusDeliverNote, 'Delivery note created', 'en');
+        $this->createStatusTranslation($this->statusDeliverNote, 'Lieferschein erstellt', 'de');
+
+        // shipped
+        $this->statusShipped = new ShippingStatus();
+        $this->statusShipped->setId(ShippingStatus::STATUS_SHIPPED);
+        $this->createStatusTranslation($this->statusShipped, 'Shipped', 'en');
+        $this->createStatusTranslation($this->statusShipped, 'Versandt', 'de');
+
+        // canceled
+        $this->statusCancled = new ShippingStatus();
+        $this->statusCancled->setId(ShippingStatus::STATUS_CANCELED);
+        $this->createStatusTranslation($this->statusCancled, 'Canceled', 'en');
+        $this->createStatusTranslation($this->statusCancled, 'Storniert', 'de');
+
+        $this->em->persist($this->statusCancled);
+        $this->em->persist($this->statusShipped);
+        $this->em->persist($this->statusDeliverNote);
+        $this->em->persist($this->statusCreated);
 
         $this->shippingAddress = clone $this->orderAddressDelivery;
         $this->shipping = new Shipping();
         $this->shipping->setNumber('00001');
         $this->shipping->setShippingNumber('432');
-        $this->shipping->setStatus($this->shippingStatus);
+        $this->shipping->setStatus($this->statusCreated);
         $this->shipping->setOrder($this->order);
         $this->shipping->setChanged(new DateTime());
         $this->shipping->setCreated(new DateTime());
@@ -389,10 +435,12 @@ class ShippingControllerTest extends SuluTestCase
         $this->shipping->setTermsOfPaymentContent($this->termsOfPayment->getTerms());
         $this->shipping->setTrackingId('abcd1234');
         $this->shipping->setTrackingUrl('http://www.tracking.url?token=abcd1234');
-        $this->shipping->setBitmaskStatus($this->shippingStatus->getId());
+        $this->shipping->setBitmaskStatus($this->statusCreated->getId());
 
         $this->shipping2 = clone $this->shipping;
         $this->shipping2->setNumber('00002');
+        $this->shipping2->setStatus($this->statusCreated);
+        $this->shipping2->setBitmaskStatus($this->statusCreated->getId());
         $this->shippingAddress2 = clone $this->shippingAddress;
         $this->shipping2->setDeliveryAddress($this->shippingAddress2);
 
@@ -404,7 +452,7 @@ class ShippingControllerTest extends SuluTestCase
         $this->shipping->addShippingItem($this->shippingItem);
 
         // persist
-        $this->$em->persist($this->account);
+        $this->em->persist($this->account);
         $this->em->persist($title);
         $this->em->persist($country);
         $this->em->persist($this->termsOfPayment);
@@ -432,17 +480,24 @@ class ShippingControllerTest extends SuluTestCase
         $this->em->persist($productStatusTranslation);
         $this->em->persist($this->shipping);
         $this->em->persist($this->shipping2);
-        $this->em->persist($this->shippingStatus);
-        $this->em->persist($this->shippingStatusTranslation);
         $this->em->persist($this->shippingItem);
         $this->em->persist($this->shippingAddress);
         $this->em->persist($this->shippingAddress2);
     }
 
+    private function createStatusTranslation($status, $translation, $locale) {
+        $statusTranslation = new ShippingStatusTranslation();
+        $statusTranslation->setName($translation);
+        $statusTranslation->setLocale($locale);
+        $statusTranslation->setStatus($status);
+        $this->em->persist($statusTranslation);
+        return $statusTranslation;
+    }
+
     public function testGetById()
     {
         $client = $this->createAuthenticatedClient();
-        $client->request('GET', '/api/shippings/1');
+        $client->request('GET', '/api/shippings/'.$this->shipping->getId());
         $response = json_decode($client->getResponse()->getContent());
 
         // shipping
@@ -463,7 +518,7 @@ class ShippingControllerTest extends SuluTestCase
         );
 
         // shipping status
-        $this->assertEquals('English-Shipping-Status-1', $response->status->status);
+        $this->assertEquals($this->shipping->getStatus()->getId(), $response->status->id);
 
         // order
         $this->assertEquals($this->order->getId(), $response->order->id);
@@ -471,7 +526,7 @@ class ShippingControllerTest extends SuluTestCase
         // shipping item
         $this->assertEquals(1, count($response->items));
         $item = $response->items[0];
-        $this->assertEquals($this->item->getId(), $item->id);
+        $this->assertEquals($this->shippingItem->getId(), $item->id);
         $this->assertEquals(1, $item->quantity);
         $this->assertEquals('shipping-item-note', $item->note);
 
@@ -540,7 +595,7 @@ class ShippingControllerTest extends SuluTestCase
         $data = array(
             'shippingNumber' => 'sh01',
             'order' => array(
-                'id' => 2
+                'id' => $this->order->getId()
             ),
             'deliveryAddress' => array(
                 'firstName' => 'Jane',
@@ -563,16 +618,16 @@ class ShippingControllerTest extends SuluTestCase
         $client = $this->createAuthenticatedClient();
         $client->request(
             'PUT',
-            '/api/shippings/1',
+            '/api/shippings/'.$this->shipping->getId(),
             $data
         );
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
 
-        $client->request('GET', '/api/shippings/1');
+        $client->request('GET', '/api/shippings/'.$this->shipping->getId());
         $response = json_decode($client->getResponse()->getContent());
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $this->assertEquals('sh01', $response->shippingNumber);
-        $this->assertEquals('2', $response->order->id);
+        $this->assertEquals($this->order->getId(), $response->order->id);
 
         $this->compareDataWithAddress($data['deliveryAddress'], $response->deliveryAddress);
     }
@@ -612,7 +667,7 @@ class ShippingControllerTest extends SuluTestCase
                 'postboxPostcode' => 'postboxPostcode'
             ),
             'order' => array(
-                'id' => 1
+                'id' => $this->order->getId()
             ),
             'termsOfDeliveryContent' => $this->termsOfDelivery->getTerms(),
             'termsOfPaymentContent' => $this->termsOfPayment->getTerms(),

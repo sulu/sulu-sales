@@ -17,4 +17,4 @@ if (!file_exists($file)) {
 
 $autoload = require_once $file;
 
-\Doctrine\Common\Annotations\AnnotationRegistry::registerLoader(array($autoload, 'loadClass'));
+AnnotationRegistry::registerLoader(array($autoload, 'loadClass'));
