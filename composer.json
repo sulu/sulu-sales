@@ -12,10 +12,22 @@
         }
     ],
     "require": {
-        "php": ">=5.4",
+        "php": ">=5.5",
         "doctrine/orm": "2.4.*",
+        "friendsofsymfony/http-cache": "1.0.*",
+        "friendsofsymfony/rest-bundle": "~1.4",
         "stof/doctrine-extensions-bundle": "1.1.*",
         "willdurand/hateoas-bundle": "0.3.*",
+        "guzzle/http": "3.*",
+        "guzzle/plugin-log": "3.9.*",
+        "imagine/imagine": "~0.6.1",
+        "liip/theme-bundle": "1.1.*",
+        "massive/search-bundle": "~0.4",
+        "phpspec/prophecy-phpunit": "~1.0",
+        "sensio/framework-extra-bundle": "3.0.*",
+        "stof/doctrine-extensions-bundle": "1.1.*",
+        "symfony-cmf/routing-bundle": "1.2.*",
+        "symfony/symfony": "2.6.*",
 
         "sulu/sulu": "dev-develop",
         "sulu/admin-bundle": "dev-develop",
@@ -23,22 +35,30 @@
         "sulu/contact-bundle": "dev-develop",
         "sulu/security-bundle": "dev-develop",
         "sulu/sales-core-bundle": "dev-develop",
-        "sulu/sales-order-bundle": "dev-develop"
-    },
-    "require-dev": {
-        "sensio/framework-extra-bundle":  "~3.0",
-        "symfony/symfony": "2.5.*",
-        "doctrine/doctrine-bundle": "1.2.*",
-        "symfony/monolog-bundle": "2.4.*",
-        "phpunit/phpunit": "3.7.*",
-
-        "sulu/test-bundle": "dev-develop",
         "sulu/tag-bundle": "dev-develop",
         "sulu/website-bundle": "dev-develop",
         "sulu/category-bundle": "dev-develop",
         "sulu/media-bundle": "dev-develop",
+        "sulu/sales-order-bundle": "dev-develop"
+    },
+    "require-dev": {
+        "doctrine/doctrine-fixtures-bundle": "2.2.*",
+        "doctrine/orm": "~2.2,>=2.2.3",
+        "guzzle/plugin-mock": "3.9.*",
+        "massive/build-bundle": "0.2.*",
+        "matthiasnoback/symfony-config-test": "v0.1.1",
+        "matthiasnoback/symfony-dependency-injection-test": "v0.7.1",
+        "phpspec/prophecy-phpunit": "~1.0",
+        "phpunit/phpunit": "~4.0.0",
+        "sensio/framework-extra-bundle": "~3.0",
+        "twig/twig": "~1.11",
+        "zendframework/zend-stdlib": "~2.3",
+        "zendframework/zendsearch": "@dev",
+        "doctrine/doctrine-bundle": "1.2.*",
+        "symfony/monolog-bundle": "2.4.*",
+        "sulu/test-bundle": "dev-develop",
 
-        "symfony-cmf/routing-bundle": "1.2.*",
+        "symfony-cmf/testing": "~1.2",
         "liip/theme-bundle": "1.1.*"
     },
     "autoload": {
