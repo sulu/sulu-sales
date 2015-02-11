@@ -57,7 +57,6 @@
         "doctrine/doctrine-bundle": "1.2.*",
         "symfony/monolog-bundle": "2.4.*",
         "sulu/test-bundle": "dev-develop",
-
         "symfony-cmf/testing": "~1.2",
         "liip/theme-bundle": "1.1.*"
     },
