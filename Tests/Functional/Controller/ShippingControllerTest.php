@@ -189,11 +189,6 @@ class ShippingControllerTest extends SuluTestCase
      */
     private $shippingAddress2;
 
-    /**
-     * @var ShippingStatusTranslation
-     */
-    private $shippingStatusTranslation;
-
     public function setUp()
     {
         $this->em = $this->db('ORM')->getOm();
