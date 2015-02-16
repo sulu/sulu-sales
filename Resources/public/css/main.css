@@ -7,7 +7,7 @@ body {
 .item-table-list-form {
   margin-top: 20px;
 }
-/* line 17, ../scss/modules/item-table.scss */
+/* line 16, ../scss/modules/item-table.scss */
 .item-table-list-form.disabled .add-row,
 .item-table-list-form.disabled .item-remove {
   display: none;
@@ -32,7 +32,7 @@ body {
 }
 /* line 38, ../scss/modules/item-table.scss */
 .item-table-list .header {
-  border-bottom: 2px solid #cccccc;
+  border-bottom: 2px solid #ccc;
   border-color: #ccc;
   vertical-align: top;
   font-size: 14px;
@@ -50,7 +50,7 @@ body {
 .item-table-list .header .input-field {
   display: none;
 }
-/* line 58, ../scss/modules/item-table.scss */
+/* line 57, ../scss/modules/item-table.scss */
 .item-table-list .is-numeric,
 .item-table-list .is-numeric input {
   text-align: right;
@@ -64,7 +64,7 @@ body {
 /* line 68, ../scss/modules/item-table.scss */
 .item-table-row {
   height: 50px;
-  border-bottom: 1px solid #cccccc;
+  border-bottom: 1px solid #ccc;
 }
 /* line 74, ../scss/modules/item-table.scss */
 .item-table-row .row-number:before {
@@ -73,7 +73,7 @@ body {
 }
 /* line 84, ../scss/modules/item-table.scss */
 .item-table-row:last-child {
-  border-bottom: 2px solid #cccccc;
+  border-bottom: 2px solid #ccc;
 }
 /* line 90, ../scss/modules/item-table.scss */
 .item-table-row.new .product-search {
@@ -128,27 +128,32 @@ body {
   text-align: right;
 }
 
-/* line 145, ../scss/modules/item-table.scss */
+/* line 144, ../scss/modules/item-table.scss */
+.item-price {
+  min-width: 100px;
+}
+
+/* line 149, ../scss/modules/item-table.scss */
 .global-price-container {
   padding-top: 15px;
   position: relative;
 }
-/* line 149, ../scss/modules/item-table.scss */
+/* line 153, ../scss/modules/item-table.scss */
 .global-price-container .global-price-table {
   width: initial;
   float: right;
   margin-right: 31px;
   text-align: right;
 }
-/* line 155, ../scss/modules/item-table.scss */
+/* line 159, ../scss/modules/item-table.scss */
 .global-price-container .global-price-table td {
   padding: 0 20px 0 0;
 }
-/* line 159, ../scss/modules/item-table.scss */
+/* line 163, ../scss/modules/item-table.scss */
 .global-price-container .global-price-table tr {
   height: 30px;
 }
-/* line 161, ../scss/modules/item-table.scss */
+/* line 165, ../scss/modules/item-table.scss */
 .global-price-container .global-price-table tr:last-child {
   font-weight: bold;
   border-top: 1px solid #ccc;
