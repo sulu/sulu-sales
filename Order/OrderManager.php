@@ -605,7 +605,8 @@ class OrderManager
             false,
             '',
             '',
-            '160px'
+            '160px',
+            false
         );
 
         $this->fieldDescriptors['status'] = new DoctrineFieldDescriptor(
