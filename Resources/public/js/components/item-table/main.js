@@ -231,7 +231,7 @@ define([
             this.sandbox.on(EVENT_SET_ADRESSES.call(this), setAddresses.bind(this));
             this.sandbox.on(EVENT_RESET_ITEM_ADDRESSES.call(this), resetItemAddresses.bind(this));
         },
-    
+
         /**
          * bind dom events
          */
@@ -721,8 +721,8 @@ define([
                     name: 'auto-complete@husky',
                     options: options
                 }
-            ]).then(function(){
-                if(!!this.$lastAddedRow){
+            ]).then(function() {
+                if (!!this.$lastAddedRow) {
                     var $input = this.sandbox.dom.find('input', this.$lastAddedRow)[0];
                     this.sandbox.dom.focus($input);
                     this.$lastAddedRow = null;
