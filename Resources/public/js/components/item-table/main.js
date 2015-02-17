@@ -1000,7 +1000,8 @@ define([
                 createAddressString: this.sandbox.sulu.createAddressString,
                 translate: this.sandbox.translate,
                 deliveryDate: null,
-                costCenter: null
+                costCenter: null,
+                discount: null
             }, data);
             
             if (!data.hasOwnProperty(this.options.addressKey) || !data[this.options.addressKey]) {
