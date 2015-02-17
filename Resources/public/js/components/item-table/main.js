@@ -231,7 +231,7 @@ define([
             this.sandbox.on(EVENT_SET_ADRESSES.call(this), setAddresses.bind(this));
             this.sandbox.on(EVENT_RESET_ITEM_ADDRESSES.call(this), resetItemAddresses.bind(this));
         },
-
+    
         /**
          * bind dom events
          */
@@ -713,6 +713,7 @@ define([
             });
             options.remoteUrl = remoteUrl + '&limit=' + constants.autocompleteLimit;
             options.limit = constants.autocompleteLimit;
+            options.instanceName += this.rowCount;
 
             // initialize auto-complete when adding a new Item
             this.sandbox.start([
@@ -720,7 +721,13 @@ define([
                     name: 'auto-complete@husky',
                     options: options
                 }
-            ]);
+            ]).then(function(){
+                if(!!this.$lastAddedRow){
+                    var $input = this.sandbox.dom.find('input', this.$lastAddedRow)[0];
+                    this.sandbox.dom.focus($input);
+                    this.$lastAddedRow = null;
+                }
+            }.bind(this));
         },
 
         /**
@@ -838,6 +845,7 @@ define([
 
             // create row
             $row = createItemRow.call(this, itemData);
+            this.$lastAddedRow = $row;
             this.sandbox.dom.append(this.$find(constants.listClass), $row);
             return $row;
         },
