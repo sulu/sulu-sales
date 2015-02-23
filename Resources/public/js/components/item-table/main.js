@@ -796,8 +796,8 @@ define([
         /**
          * creates and returns a new row element
          */
-        createItemRow = function(itemData, increaseCount) {
-            if (increaseCount !== false) {
+        createItemRow = function(itemData, rowId) {
+            if (!rowId) {
                 this.rowCount++;
             }
 
@@ -806,7 +806,7 @@ define([
                     {
                         isEditable: this.options.isEditable,
                         columns: this.options.columns,
-                        rowId: constants.rowIdPrefix + this.rowCount,
+                        rowId: rowId ? rowId : constants.rowIdPrefix + this.rowCount,
                         rowNumber: this.rowCount
                     });
 
@@ -856,7 +856,7 @@ define([
          * @param itemData
          */
         updateItemRow = function(rowId, itemData) {
-            var $row = createItemRow.call(this, itemData, false);
+            var $row = createItemRow.call(this, itemData, rowId);
             this.sandbox.dom.replaceWith(this.$find('#' + rowId), $row);
 
             // add item to data
@@ -1001,7 +1001,8 @@ define([
                 translate: this.sandbox.translate,
                 deliveryDate: null,
                 costCenter: null,
-                discount: null
+                discount: null,
+                numberFormat: this.sandbox.numberFormat
             }, data);
             
             if (!data.hasOwnProperty(this.options.addressKey) || !data[this.options.addressKey]) {
@@ -1040,9 +1041,15 @@ define([
                                 costCenter = this.sandbox.dom.val(constants.overlayClassSelector + ' *[data-mapper-property="costCenter"]');
 
                             this.items[rowId].description = this.sandbox.dom.val(constants.overlayClassSelector + ' *[data-mapper-property="description"]');
-                            this.items[rowId].quantity = this.sandbox.dom.val(constants.overlayClassSelector + ' *[data-mapper-property="quantity"]');
-                            this.items[rowId].price = this.sandbox.dom.val(constants.overlayClassSelector + ' *[data-mapper-property="price"]');
-                            this.items[rowId].discount = this.sandbox.dom.val(constants.overlayClassSelector + ' *[data-mapper-property="discount"]');
+                            this.items[rowId].quantity = this.sandbox.parseFloat(
+                                this.sandbox.dom.val(constants.overlayClassSelector + ' *[data-mapper-property="quantity"]')
+                            );
+                            this.items[rowId].price = this.sandbox.parseFloat( 
+                                this.sandbox.dom.val(constants.overlayClassSelector + ' *[data-mapper-property="price"]')
+                            );
+                            this.items[rowId].discount = this.sandbox.parseFloat( 
+                                this.sandbox.dom.val(constants.overlayClassSelector + ' *[data-mapper-property="discount"]')
+                            );
 
                             // set address
                             if (deliveryAddress !== '-1') {

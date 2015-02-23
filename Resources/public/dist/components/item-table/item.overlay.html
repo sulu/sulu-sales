@@ -33,7 +33,7 @@
         <div class="grid-col-3">
             <div class="form-group-vertical">
                 <label><%= translate('salescore.item.quantity') %></label>
-                <input class="form-element" type="text" data-mapper-property="quantity" value="<%= quantity %>"/>
+                <input class="form-element" type="text" data-mapper-property="quantity" value="<%= numberFormat(quantity) %>"/>
             </div>
         </div>
         <div class="grid-col-3">
@@ -47,7 +47,7 @@
         <div class="grid-col-6">
             <div class="form-group-vertical">
                 <label><%= translate('salescore.item.price') %></label>
-                <input class="form-element" type="text" data-mapper-property="price" value="<%= price %>"/>
+                <input class="form-element" type="text" data-mapper-property="price" value="<%= numberFormat(price) %>"/>
             </div>
         </div>
         <% } %>
@@ -83,7 +83,7 @@
         <div class="grid-col-6">
             <div class="form-group-vertical">
                 <label><%= translate('salescore.item.discount') %></label>
-                <input class="form-element" type="text" data-mapper-property="discount" value="<%= discount %>"/>
+                <input class="form-element" type="text" data-mapper-property="discount" value="<%= numberFormat(discount) %>"/>
             </div>
         </div>
         <% } %>
