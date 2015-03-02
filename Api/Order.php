@@ -14,7 +14,7 @@ use Sulu\Bundle\Sales\OrderBundle\Entity\OrderAddress as OrderAddressEntity;
 use Sulu\Component\Rest\ApiWrapper;
 use Hateoas\Configuration\Annotation\Relation;
 use JMS\Serializer\Annotation\SerializedName;
-use Sulu\Component\Security\UserInterface;
+use Sulu\Component\Security\Authentication\UserInterface;
 use DateTime;
 
 /**
