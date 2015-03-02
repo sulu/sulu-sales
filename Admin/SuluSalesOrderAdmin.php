@@ -13,7 +13,7 @@ namespace Sulu\Bundle\Sales\OrderBundle\Admin;
 use Sulu\Bundle\AdminBundle\Admin\Admin;
 use Sulu\Bundle\AdminBundle\Navigation\Navigation;
 use Sulu\Bundle\AdminBundle\Navigation\NavigationItem;
-use Sulu\Bundle\SecurityBundle\Permission\SecurityCheckerInterface;
+use Sulu\Component\Security\Authorization\SecurityCheckerInterface;
 
 class SuluSalesOrderAdmin extends Admin
 {

@@ -34,7 +34,7 @@ use Sulu\Component\Rest\ListBuilder\Doctrine\FieldDescriptor\DoctrineConcatenati
 use Sulu\Component\Rest\ListBuilder\Doctrine\FieldDescriptor\DoctrineFieldDescriptor;
 use Sulu\Bundle\Sales\OrderBundle\Api\Order;
 use Sulu\Component\Rest\ListBuilder\Doctrine\FieldDescriptor\DoctrineJoinDescriptor;
-use Sulu\Component\Security\UserRepositoryInterface;
+use Sulu\Component\Security\Authentication\UserRepositoryInterface;
 use DateTime;
 use Sulu\Component\Persistence\RelationTrait;
 
