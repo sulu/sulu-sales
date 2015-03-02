@@ -20,7 +20,7 @@ use Sulu\Component\Rest\ListBuilder\Doctrine\FieldDescriptor\DoctrineConcatenati
 use Sulu\Component\Rest\ListBuilder\Doctrine\FieldDescriptor\DoctrineFieldDescriptor;
 use Sulu\Component\Rest\ListBuilder\Doctrine\FieldDescriptor\DoctrineJoinDescriptor;
 use Sulu\Component\Rest\RestHelperInterface;
-use Sulu\Component\Security\UserRepositoryInterface;
+use Sulu\Component\Security\Authentication\UserRepositoryInterface;
 use Sulu\Bundle\Sales\CoreBundle\Item\ItemManager;
 use Sulu\Bundle\Sales\OrderBundle\Entity\OrderAddress;
 use Sulu\Bundle\Sales\ShippingBundle\Shipping\Exception\MissingShippingAttributeException;
