@@ -3,7 +3,7 @@
 namespace Sulu\Bundle\Sales\ShippingBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Sulu\Component\Security\UserInterface;
+use Sulu\Component\Security\Authentication\UserInterface;
 
 /**
  * Shipping

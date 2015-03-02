@@ -9,7 +9,7 @@ use JMS\Serializer\Annotation\SerializedName;
 use JMS\Serializer\Annotation\Exclude;
 use Sulu\Bundle\Sales\CoreBundle\Core\SalesDocument;
 use Sulu\Component\Rest\ApiWrapper;
-use Sulu\Component\Security\UserInterface;
+use Sulu\Component\Security\Authentication\UserInterface;
 use Sulu\Bundle\Sales\CoreBundle\Api\Item;
 use Sulu\Bundle\Sales\OrderBundle\Api\Order;
 use Sulu\Bundle\Sales\ShippingBundle\Entity\Shipping as ShippingEntity;
