@@ -11,7 +11,7 @@ use Sulu\Component\Rest\ApiWrapper;
 use Hateoas\Configuration\Annotation\Relation;
 use JMS\Serializer\Annotation\SerializedName;
 use DateTime;
-use Sulu\Component\Security\UserInterface;
+use Sulu\Component\Security\Authentication\UserInterface;
 use Symfony\Component\Intl\NumberFormatter\NumberFormatter;
 
 /**
