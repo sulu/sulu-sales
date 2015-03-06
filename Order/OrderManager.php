@@ -93,6 +93,16 @@ class OrderManager
      */
     private $fieldDescriptors = array();
 
+    /**
+     * constructor
+     *
+     * @param ObjectManager $em
+     * @param OrderRepository $orderRepository
+     * @param UserRepositoryInterface $userRepository
+     * @param ItemManager $itemManager
+     * @param EntityRepository $orderStatusRepository
+     * @param EntityRepository $orderTypeRepository
+     */
     public function __construct(
         ObjectManager $em,
         OrderRepository $orderRepository,
@@ -280,7 +290,7 @@ class OrderManager
      */
     public function delete($id)
     {
-        // TODO: move order to an archive instead of remove it from database
+        // TODO: move order to an archive instead of removing it from database
         $order = $this->orderRepository->findById($id);
 
         if (!$order) {
@@ -388,10 +398,10 @@ class OrderManager
     {
         try {
             return $this->em
-                ->getRepository(self::$orderEntityName)
+                ->getRepository(static::$orderEntityName)
                 ->find($id);
         } catch (NoResultException $nre) {
-            throw new EntityNotFoundException(self::$orderEntityName, $id);
+            throw new EntityNotFoundException(static::$orderEntityName, $id);
         }
     }
 
@@ -406,10 +416,10 @@ class OrderManager
     {
         try {
             return $this->em
-                ->getRepository(self::$orderEntityName)
+                ->getRepository(static::$orderEntityName)
                 ->findOrderForItemWithId($id);
         } catch (NoResultException $nre) {
-            throw new EntityNotFoundException(self::$itemEntity, $id);
+            throw new EntityNotFoundException(static::$itemEntity, $id);
         }
     }
 
@@ -522,7 +532,7 @@ class OrderManager
         // get entity
         $orderType = $this->getOrderTypeEntityById($typeId);
         if (!$orderType) {
-            throw new EntityNotFoundException(self::$orderTypeEntityName, $typeId);
+            throw new EntityNotFoundException(static::$orderTypeEntityName, $typeId);
         }
 
         // set order type
@@ -537,7 +547,7 @@ class OrderManager
         $this->fieldDescriptors['id'] = new DoctrineFieldDescriptor(
             'id',
             'id',
-            self::$orderEntityName,
+            static::$orderEntityName,
             'public.id',
             array(),
             true
@@ -545,7 +555,7 @@ class OrderManager
         $this->fieldDescriptors['number'] = new DoctrineFieldDescriptor(
             'number',
             'number',
-            self::$orderEntityName,
+            static::$orderEntityName,
             'salesorder.orders.number',
             array(),
             false,
@@ -555,9 +565,9 @@ class OrderManager
         // TODO: get customer from order-address
 
         $contactJoin = array(
-            self::$orderAddressEntityName => new DoctrineJoinDescriptor(
-                self::$orderAddressEntityName,
-                self::$orderEntityName . '.invoiceAddress'
+            static::$orderAddressEntityName => new DoctrineJoinDescriptor(
+                static::$orderAddressEntityName,
+                static::$orderEntityName . '.invoiceAddress'
             )
         );
 
@@ -566,7 +576,7 @@ class OrderManager
                 new DoctrineFieldDescriptor(
                     'accountName',
                     'account',
-                    self::$orderAddressEntityName,
+                    static::$orderAddressEntityName,
                     'contact.contacts.contact',
                     $contactJoin
                 )
@@ -586,14 +596,14 @@ class OrderManager
                 new DoctrineFieldDescriptor(
                     'firstName',
                     'contact',
-                    self::$orderAddressEntityName,
+                    static::$orderAddressEntityName,
                     'contact.contacts.contact',
                     $contactJoin
                 ),
                 new DoctrineFieldDescriptor(
                     'lastName',
                     'contact',
-                    self::$orderAddressEntityName,
+                    static::$orderAddressEntityName,
                     'contact.contacts.contact',
                     $contactJoin
                 )
@@ -612,17 +622,17 @@ class OrderManager
         $this->fieldDescriptors['status'] = new DoctrineFieldDescriptor(
             'name',
             'status',
-            self::$orderStatusTranslationEntityName,
+            static::$orderStatusTranslationEntityName,
             'salesorder.orders.status',
             array(
-                self::$orderStatusEntityName => new DoctrineJoinDescriptor(
-                    self::$orderStatusEntityName,
-                    self::$orderEntityName . '.status'
+                static::$orderStatusEntityName => new DoctrineJoinDescriptor(
+                    static::$orderStatusEntityName,
+                    static::$orderEntityName . '.status'
                 ),
-                self::$orderStatusTranslationEntityName => new DoctrineJoinDescriptor(
-                    self::$orderStatusTranslationEntityName,
-                    self::$orderStatusEntityName . '.translations',
-                    self::$orderStatusTranslationEntityName . ".locale = '" . $locale . "'"
+                static::$orderStatusTranslationEntityName => new DoctrineJoinDescriptor(
+                    static::$orderStatusTranslationEntityName,
+                    static::$orderStatusEntityName . '.translations',
+                    static::$orderStatusTranslationEntityName . ".locale = '" . $locale . "'"
                 )
             )
         );
@@ -630,17 +640,17 @@ class OrderManager
         $this->fieldDescriptors['type'] = new DoctrineFieldDescriptor(
             'name',
             'type',
-            self::$orderTypeTranslationEntityName,
+            static::$orderTypeTranslationEntityName,
             'salesorder.orders.type',
             array(
-                self::$orderTypeEntityName => new DoctrineJoinDescriptor(
-                    self::$orderTypeEntityName,
-                    self::$orderEntityName . '.type'
+                static::$orderTypeEntityName => new DoctrineJoinDescriptor(
+                    static::$orderTypeEntityName,
+                    static::$orderEntityName . '.type'
                 ),
-                self::$orderTypeTranslationEntityName => new DoctrineJoinDescriptor(
-                    self::$orderTypeTranslationEntityName,
-                    self::$orderTypeEntityName . '.translations',
-                    self::$orderTypeTranslationEntityName . ".locale = '" . $locale . "'"
+                static::$orderTypeTranslationEntityName => new DoctrineJoinDescriptor(
+                    static::$orderTypeTranslationEntityName,
+                    static::$orderTypeEntityName . '.translations',
+                    static::$orderTypeTranslationEntityName . ".locale = '" . $locale . "'"
                 )
             )
         );
@@ -704,9 +714,9 @@ class OrderManager
         if (array_key_exists($dataKey, $data) && is_array($data[$dataKey]) && array_key_exists('id', $data[$dataKey])) {
             /** @var Contact $contact */
             $contactId = $data[$dataKey]['id'];
-            $contact = $this->em->getRepository(self::$contactEntityName)->find($contactId);
+            $contact = $this->em->getRepository(static::$contactEntityName)->find($contactId);
             if (!$contact) {
-                throw new OrderDependencyNotFoundException(self::$contactEntityName, $contactId);
+                throw new OrderDependencyNotFoundException(static::$contactEntityName, $contactId);
             }
             $addCallback($contact);
         }
@@ -801,10 +811,10 @@ class OrderManager
                 throw new MissingOrderAttributeException('termsOfDelivery.id');
             }
             // TODO: inject repository class
-            $terms = $this->em->getRepository(self::$termsOfDeliveryEntityName)->find($termsOfDeliveryData['id']);
+            $terms = $this->em->getRepository(static::$termsOfDeliveryEntityName)->find($termsOfDeliveryData['id']);
             if (!$terms) {
                 throw new OrderDependencyNotFoundException(
-                    self::$termsOfDeliveryEntityName,
+                    static::$termsOfDeliveryEntityName,
                     $termsOfDeliveryData['id']
                 );
             }
@@ -840,9 +850,9 @@ class OrderManager
                 throw new MissingOrderAttributeException('termsOfPayment.id');
             }
             // TODO: inject repository class
-            $terms = $this->em->getRepository(self::$termsOfPaymentEntityName)->find($termsOfPaymentData['id']);
+            $terms = $this->em->getRepository(static::$termsOfPaymentEntityName)->find($termsOfPaymentData['id']);
             if (!$terms) {
-                throw new OrderDependencyNotFoundException(self::$termsOfPaymentEntityName, $termsOfPaymentData['id']);
+                throw new OrderDependencyNotFoundException(static::$termsOfPaymentEntityName, $termsOfPaymentData['id']);
             }
             $order->setTermsOfPayment($terms);
             $order->setTermsOfPaymentContent($terms->getTerms());
@@ -873,9 +883,9 @@ class OrderManager
                 throw new MissingOrderAttributeException('account.id');
             }
             // TODO: inject repository class
-            $account = $this->em->getRepository(self::$accountEntityName)->find($accountData['id']);
+            $account = $this->em->getRepository(static::$accountEntityName)->find($accountData['id']);
             if (!$account) {
-                throw new OrderDependencyNotFoundException(self::$accountEntityName, $accountData['id']);
+                throw new OrderDependencyNotFoundException(static::$accountEntityName, $accountData['id']);
             }
             $order->setAccount($account);
             return $account;
