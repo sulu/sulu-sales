@@ -158,6 +158,11 @@ class Order
     private $type;
 
     /**
+     * @var float
+     */
+    private $deliveryCost;
+
+    /**
      * Constructor
      */
     public function __construct()
@@ -844,5 +849,28 @@ class Order
     public function getType()
     {
         return $this->type;
+    }
+
+    /**
+     * Set deliveryCost
+     *
+     * @param float $deliveryCost
+     * @return Order
+     */
+    public function setDeliveryCost($deliveryCost)
+    {
+        $this->deliveryCost = $deliveryCost;
+
+        return $this;
+    }
+
+    /**
+     * Get deliveryCost
+     *
+     * @return float 
+     */
+    public function getDeliveryCost()
+    {
+        return $this->deliveryCost;
     }
 }
