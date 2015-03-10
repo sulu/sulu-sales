@@ -14,6 +14,7 @@ use Sulu\Bundle\Sales\OrderBundle\Entity\OrderAddress as OrderAddressEntity;
 use Sulu\Component\Rest\ApiWrapper;
 use Hateoas\Configuration\Annotation\Relation;
 use JMS\Serializer\Annotation\SerializedName;
+use JMS\Serializer\Annotation\Groups;
 use Sulu\Component\Security\Authentication\UserInterface;
 use DateTime;
 
@@ -71,6 +72,7 @@ class Order extends ApiWrapper implements SalesDocument
     /**
      * @VirtualProperty
      * @SerializedName("created")
+     * @Groups({"cart"})
      * @return DateTime
      */
     public function getCreated()
@@ -227,6 +229,7 @@ class Order extends ApiWrapper implements SalesDocument
      * Get currency
      * @VirtualProperty
      * @SerializedName("currency")
+     * @Groups({"cart"})
      * @return string
      */
     public function getCurrency()
@@ -387,6 +390,7 @@ class Order extends ApiWrapper implements SalesDocument
      * @return string
      * @VirtualProperty
      * @SerializedName("costCentre")
+     * @Groups({"cart"})
      */
     public function getCostCentre()
     {
@@ -412,6 +416,7 @@ class Order extends ApiWrapper implements SalesDocument
      * @return string
      * @VirtualProperty
      * @SerializedName("commission")
+     * @Groups({"cart"})
      */
     public function getCommission()
     {
@@ -437,6 +442,7 @@ class Order extends ApiWrapper implements SalesDocument
      * @return \DateTime
      * @VirtualProperty
      * @SerializedName("desiredDeliveryDate")
+     * @Groups({"cart"})
      */
     public function getDesiredDeliveryDate()
     {
@@ -594,6 +600,7 @@ class Order extends ApiWrapper implements SalesDocument
      *
      * @VirtualProperty
      * @SerializedName("items")
+     * @Groups({"cart"})
      */
     public function getItems()
     {
@@ -683,6 +690,7 @@ class Order extends ApiWrapper implements SalesDocument
      * @return OrderAddressEntity
      * @VirtualProperty
      * @SerializedName("deliveryAddress")
+     * @Groups({"cart"})
      */
     public function getDeliveryAddress()
     {
@@ -708,6 +716,7 @@ class Order extends ApiWrapper implements SalesDocument
      * @return OrderAddressEntity
      * @VirtualProperty
      * @SerializedName("invoiceAddress")
+     * @Groups({"cart"})
      */
     public function getInvoiceAddress()
     {
@@ -739,6 +748,7 @@ class Order extends ApiWrapper implements SalesDocument
      * @return float
      * @VirtualProperty
      * @SerializedName("totalNetPrice")
+     * @Groups({"cart"})
      */
     public function getTotalNetPrice()
     {
@@ -750,6 +760,7 @@ class Order extends ApiWrapper implements SalesDocument
      * @SerializedName("totalNetPriceFormatted")
      *
      * @return string
+     * @Groups({"cart"})
      */
     public function getTotalNetPriceFormatted($locale=null)
     {
@@ -772,6 +783,7 @@ class Order extends ApiWrapper implements SalesDocument
      * @return DateTime
      * @VirtualProperty
      * @SerializedName("orderDate")
+     * @Groups({"cart"})
      */
     public function getOrderDate()
     {

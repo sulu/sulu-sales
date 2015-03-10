@@ -11,6 +11,8 @@
 namespace Sulu\Bundle\Sales\OrderBundle\Controller;
 
 use FOS\RestBundle\Routing\ClassResourceInterface;
+use Sulu\Bundle\Sales\OrderBundle\Cart\CartManager;
+use Sulu\Bundle\Sales\OrderBundle\Entity\Order;
 use Symfony\Component\HttpFoundation\Request;
 use Sulu\Component\Rest\RestController;
 use Sulu\Component\Security\SecuredControllerInterface;
@@ -32,7 +34,7 @@ class CartController extends RestController implements ClassResourceInterface, S
     protected static $entityKey = 'cart';
 
     /**
-     * @return OrderManager
+     * @return CartManager
      */
     private function getManager()
     {
@@ -49,7 +51,16 @@ class CartController extends RestController implements ClassResourceInterface, S
     public function getAction(Request $request)
     {
         $manager = $this->getManager();
-        $view = $this->view('', 200);
+
+        $cart = $manager->getUserCart($this->getUser(), $this->getUser()->getLocale());
+        
+        $view = $this->view($cart, 200);
+
+        $view->setSerializationContext(
+            SerializationContext::create()->setGroups(
+                'cart'
+            )
+        );
 
         return $this->handleView($view);
     }

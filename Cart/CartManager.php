@@ -11,19 +11,14 @@
 namespace Sulu\Bundle\Sales\OrderBundle\Cart;
 
 use Doctrine\Common\Persistence\ObjectManager;
+
 use Doctrine\ORM\EntityRepository;
-use Doctrine\ORM\NoResultException;
-use Sulu\Bundle\ContactBundle\Entity\Account;
-use Sulu\Bundle\ContactBundle\Entity\Address;
-use Sulu\Bundle\ContactBundle\Entity\Contact;
-use Sulu\Bundle\ContactBundle\Entity\TermsOfDelivery;
 use Sulu\Bundle\Sales\CoreBundle\Item\ItemManager;
+use Sulu\Bundle\Sales\OrderBundle\Api\Order as ApiOrder;
+use Sulu\Bundle\Sales\OrderBundle\Entity\Order;
 use Sulu\Bundle\Sales\OrderBundle\Entity\OrderRepository;
+use Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatus;
 use Sulu\Bundle\Sales\OrderBundle\Order\OrderManager;
-use Sulu\Component\Rest\Exception\EntityNotFoundException;
-use Sulu\Component\Rest\ListBuilder\Doctrine\FieldDescriptor\DoctrineConcatenationFieldDescriptor;
-use Sulu\Component\Rest\ListBuilder\Doctrine\FieldDescriptor\DoctrineFieldDescriptor;
-use Sulu\Component\Rest\ListBuilder\Doctrine\FieldDescriptor\DoctrineJoinDescriptor;
 use Sulu\Component\Security\Authentication\UserRepositoryInterface;
 use Sulu\Component\Persistence\RelationTrait;
 
@@ -96,22 +91,45 @@ class CartManager
         EntityRepository $orderTypeRepository
     ) {
         $this->orderRepository = $orderRepository;
-        $this->userRepository = $userRepository;
         $this->em = $em;
+        $this->userRepository = $userRepository;
         $this->itemManager = $itemManager;
         $this->orderStatusRepository = $orderStatusRepository;
         $this->orderTypeRepository = $orderTypeRepository;
 
         // get cart status entity
-        $statusClass = static::$statusClass;
-        $test = $statusClass::STATUS_IN_CART;
+//        $statusClass = static::$statusClass;
+//        $test = $statusClass::STATUS_IN_CART;
         
     }
-    
-    public function getUserCart($user) {
-        $this->orderRepository->findBy(array(
-            'status'
 
-        ));
+    /**
+     * @param $user
+     * @param null $locale
+     *
+     * @return null|\Sulu\Bundle\Sales\OrderBundle\Entity\Order
+     */
+    public function getUserCart($user, $locale = null)
+    {
+        // default locale from user
+        $locale = $locale ?: $user->getLocale();
+
+        // get cart
+        $cart = $this->orderRepository->findByStatusIdAndUser(
+            $locale,
+            OrderStatus::STATUS_IN_CART,
+            $user
+        );
+
+        // user has no cart - create a new one
+        if (!$cart) {
+            $cart = new Order();
+//            $cart->setCreator($user);
+//            $cart->setCreator($user);
+//            $cart->setCreated(new \DateTime());
+//            $cart->setChanged(new \DateTime());
+        }
+
+        return new ApiOrder($cart, $locale);
     }
 }

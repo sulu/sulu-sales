@@ -109,6 +109,33 @@ class OrderRepository extends EntityRepository
     }
 
     /**
+     * Finds an order by statusId and user
+     *
+     * @param $statusId
+     * @param $user
+     *
+     * @return Order|null
+     */
+    public function findByStatusIdAndUser($locale, $statusId, $user)
+    {
+        try {
+            $qb = $this->getOrderQuery($locale)
+                ->andWhere('o.creator = :user')
+                ->setParameter('user', $user)
+                ->andWhere('status.id = :statusId')
+                ->setParameter('statusId', $statusId)
+                ->setMaxResults(1)
+                ->orderBy('o.created', 'DESC');
+            
+            // TODO use expiryDate
+
+            return $qb->getQuery()->getSingleResult();
+        } catch (NoResultException $exc) {
+            return null;
+        }
+    }
+
+    /**
      * Returns query for orders
      * @param string $locale The locale to load
      * @return \Doctrine\ORM\QueryBuilder
@@ -121,7 +148,6 @@ class OrderRepository extends EntityRepository
             ->leftJoin('o.status', 'status')
             ->leftJoin('status.translations', 'statusTranslations', 'WITH', 'statusTranslations.locale = :locale')
             ->leftJoin('o.items', 'items')
-//            ->andWhere('statusTranslations.locale = :locale')
             ->setParameter('locale', $locale);
         return $qb;
     }
