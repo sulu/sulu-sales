@@ -10,11 +10,7 @@
 
 namespace Sulu\Bundle\Sales\OrderBundle\Tests\Functional\Manager;
 
-use Massive\Bundle\Purchase\OrderBundle\Entity\OrderRepository;
-use Sulu\Bundle\Sales\OrderBundle\Cart\CartManager;
 use Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatus;
-use Sulu\Bundle\Sales\OrderBundle\Order\OrderManager;
-use Sulu\Bundle\Sales\OrderBundle\Tests\OrderTestBase;
 use Sulu\Bundle\SecurityBundle\Entity\UserRepository;
 
 class CartManagerTest extends OrderTestBase
@@ -38,6 +34,22 @@ class CartManagerTest extends OrderTestBase
 
         // $cart is an ApiOrder, so get entity first
         $this->assertEquals($cart->getEntity(), $this->order);
+    }
+
+    public function testPostItem()
+    {
+        $data = array();
+
+        $client = $this->createAuthenticatedClient();
+
+        $client->request('POST', '/api/cart/items', $data);
+        $response = json_decode($client->getResponse()->getContent());
+
+        $client->request('GET', '/api/cart/');
+        $response = json_decode($client->getResponse()->getContent());
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        
+        // TODO: make assertions
     }
 
     /**

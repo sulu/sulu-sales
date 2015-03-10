@@ -11,12 +11,12 @@
 namespace Sulu\Bundle\Sales\OrderBundle\Controller;
 
 use FOS\RestBundle\Routing\ClassResourceInterface;
+use JMS\Serializer\SerializationContext;
 use Sulu\Bundle\Sales\OrderBundle\Cart\CartManager;
 use Sulu\Bundle\Sales\OrderBundle\Entity\Order;
 use Symfony\Component\HttpFoundation\Request;
 use Sulu\Component\Rest\RestController;
 use Sulu\Component\Security\SecuredControllerInterface;
-
 
 // TODO controller needs to be moved into shop-bundle
 
@@ -45,7 +45,7 @@ class CartController extends RestController implements ClassResourceInterface, S
      * Retrieves and shows an order with the given ID
      *
      * @param \Symfony\Component\HttpFoundation\Request $request
-     * @param integer $id order ID
+     *
      * @return \Symfony\Component\HttpFoundation\Response
      */
     public function getAction(Request $request)
@@ -53,13 +53,12 @@ class CartController extends RestController implements ClassResourceInterface, S
         $manager = $this->getManager();
 
         $cart = $manager->getUserCart($this->getUser(), $this->getUser()->getLocale());
-        
-        $view = $this->view($cart, 200);
 
+        $view = $this->view($cart, 200);
         $view->setSerializationContext(
-            SerializationContext::create()->setGroups(
+            SerializationContext::create()->setGroups(array(
                 'cart'
-            )
+            ))
         );
 
         return $this->handleView($view);

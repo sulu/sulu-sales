@@ -114,7 +114,7 @@ class OrderRepository extends EntityRepository
      * @param $statusId
      * @param $user
      *
-     * @return Order|null
+     * @return array|null
      */
     public function findByStatusIdAndUser($locale, $statusId, $user)
     {
@@ -124,6 +124,29 @@ class OrderRepository extends EntityRepository
                 ->setParameter('user', $user)
                 ->andWhere('status.id = :statusId')
                 ->setParameter('statusId', $statusId)
+                ->orderBy('o.created', 'DESC');
+            
+            // TODO use expiryDate
+
+            return $qb->getQuery()->getResult();
+        } catch (NoResultException $exc) {
+            return null;
+        }
+    }
+
+    /**
+     * Finds an order by statusId and user
+     *
+     * @param $statusId
+     * @param $user
+     *
+     * @return Order|null
+     */
+    public function findOneBySessionId($locale, $statusId, $user)
+    {
+        try {
+            $qb = $this->getOrderQuery($locale)
+                ->
                 ->setMaxResults(1)
                 ->orderBy('o.created', 'DESC');
             
