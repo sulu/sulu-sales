@@ -80,7 +80,6 @@ class ItemManager
      * @param $userId
      * @param \Sulu\Bundle\Sales\CoreBundle\Api\Item $item
      * @param null $itemStatusId
-     * @internal param null $id
      * @return null|\Sulu\Bundle\Sales\CoreBundle\Api\Item
      */
     public function save(array $data, $locale, $userId = null, Item $item = null, $itemStatusId = null)
