@@ -694,7 +694,7 @@ class Order extends ApiWrapper implements SalesDocument
      */
     public function getDeliveryAddress()
     {
-        return $this->entity->getDeliveryAddress();
+        return new OrderAddress($this->entity->getDeliveryAddress());
     }
 
     /**

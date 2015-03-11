@@ -28,6 +28,13 @@ class CartManager extends BaseSalesManager
 {
     use RelationTrait;
 
+    /**
+     * TODO: replace by config
+     *
+     * defines when a cart expires
+     */
+    const EXPIRY_MONTHS = 2;
+
     protected static $orderEntityName = 'SuluSalesOrderBundle:Order';
     protected static $contactEntityName = 'SuluContactBundle:Contact';
     protected static $addressEntityName = 'SuluContactBundle:Address';
@@ -102,7 +109,8 @@ class CartManager extends BaseSalesManager
         ItemManager $itemManager,
         EntityRepository $orderStatusRepository,
         EntityRepository $orderTypeRepository
-    ) {
+    )
+    {
         $this->em = $em;
         $this->session = $session;
         $this->orderRepository = $orderRepository;
@@ -121,44 +129,108 @@ class CartManager extends BaseSalesManager
      */
     public function getUserCart($user = null, $locale = null)
     {
-        // TODO: add management of expired CART
-        
-        // TODO: cleanup of expired carts
-        
         // cart by session ID
         if (!$user) {
-            $sessionId = $this->session->getId();
-            $this->orderRepository->findBy(array('sessionId' => $sessionId));
+            // TODO: get correct locale
+            // TODO: QUESTION: add locale to order?
+            $locale = 'de';
+            $cartArray = $this->findCartBySessionId();
+        } else {
+            // TODO: check if cart for this sessionId exists and assign it to user
+            
+            // default locale from user
+            $locale = $locale ?: $user->getLocale();
+            // get carts
+            $cartArray = $this->findCartByUser($locale, $user);
         }
 
-        // default locale from user
-        $locale = $locale ?: $user->getLocale();
+        // cleanup cart array: remove duplicates and expired carts
+        $this->cleanupCartArray($cartArray);
 
-        // get cart // TODO: move this to orderManager?
-        $cartArray = $this->orderRepository->findByStatusIdAndUser(
-            $locale,
-            OrderStatus::STATUS_IN_CART,
-            $user
-        );
-        
-        // TODO: handle when cartArray count is > 1
-
-        // user has no cart - return empty one
-        if (!$cartArray) {
+        // check if cart exists
+        if ($cartArray && count($cartArray) > 0) {
+            // multiple carts found, do a cleanup
+            $cart = $cartArray[0];
+        } else {
+            // user has no cart - return empty one
             $cart = new Order();
         }
 
         return new ApiOrder($cart, $locale);
     }
-    
+
+    /**
+     * finds cart by session-id
+     *
+     * @return array
+     */
+    private function findCartBySessionId()
+    {
+        $sessionId = $this->session->getId();
+        $cartArray = $this->orderRepository->findBy(
+            array(
+                'sessionId' => $sessionId,
+                'status' => OrderStatus::STATUS_IN_CART
+            ),
+            array(
+                'created' => 'DESC'
+            )
+        );
+
+        return $cartArray;
+    }
+
+    /**
+     * finds cart by locale and user
+     *
+     * @param $locale
+     * @param $user
+     *
+     * @return array|null
+     */
+    private function findCartByUser($locale, $user)
+    {
+        $cartArray = $this->orderRepository->findByStatusIdAndUser(
+            $locale,
+            OrderStatus::STATUS_IN_CART,
+            $user
+        );
+
+        return $cartArray;
+    }
+
+    /**
+     * removes all elements from database but the first
+     *
+     * @param $cartArray
+     */
+    private function cleanupCartArray(&$cartArray)
+    {
+        if ($cartArray && count($cartArray) > 0) {
+            // handle cartArray count is > 1
+            foreach ($cartArray as $index => $cart) {
+                // TODO: QUESTION: delete expired carts?
+                // delete expired carts
+                if ($cart->getChanged()->getTimestamp() < strtotime(static::EXPIRY_MONTHS . ' months ago')) {
+                    $this->em->remove($cart);
+                    continue;
+                }
+
+                // dont delete first element, since this is the current cart
+                if ($index === 0) {
+                    continue;
+                }
+                // TODO: QUESTION remove duplicated carts? => if expiry check is active, only one cart can exist
+                // remove duplicated carts
+                $this->em->remove($cart);
+            }
+        }
+    }
+
     public function addProduct($data, $user = null, $locale = null)
     {
         $cart = $this->getUserCart($user, $locale);
-
-
-
 //        $cart->addItem();
     }
-    
 //    protected function checkProductData
 }

@@ -894,7 +894,14 @@ class OrderManager
         }
         return null;
     }
-
+    
+    
+    public function addItem($itemData, $locale, $userId, $order)
+    {
+        $item = $this->itemManager->save($itemData, $locale, $userId);
+        return $order->addItem($item->getEntity());
+    }
+    
     /**
      * processes items defined in an order and creates item entities
      * @param $data

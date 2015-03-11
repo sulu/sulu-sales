@@ -109,7 +109,7 @@ class OrderRepository extends EntityRepository
     }
 
     /**
-     * Finds an order by statusId and user
+     * Finds orders by statusId and user
      *
      * @param $statusId
      * @param $user
@@ -129,30 +129,6 @@ class OrderRepository extends EntityRepository
             // TODO use expiryDate
 
             return $qb->getQuery()->getResult();
-        } catch (NoResultException $exc) {
-            return null;
-        }
-    }
-
-    /**
-     * Finds an order by statusId and user
-     *
-     * @param $statusId
-     * @param $user
-     *
-     * @return Order|null
-     */
-    public function findOneBySessionId($locale, $statusId, $user)
-    {
-        try {
-            $qb = $this->getOrderQuery($locale)
-                ->
-                ->setMaxResults(1)
-                ->orderBy('o.created', 'DESC');
-            
-            // TODO use expiryDate
-
-            return $qb->getQuery()->getSingleResult();
         } catch (NoResultException $exc) {
             return null;
         }
