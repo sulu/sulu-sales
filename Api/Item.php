@@ -6,10 +6,13 @@ use JMS\Serializer\Annotation\VirtualProperty;
 use Sulu\Bundle\ContactBundle\Entity\Account;
 use Sulu\Bundle\ProductBundle\Api\Product;
 use Sulu\Bundle\Sales\CoreBundle\Entity\Item as Entity;
-use Sulu\Bundle\Sales\CoreBundle\Entity\ItemAttribute;
+use Sulu\Bundle\Sales\CoreBundle\Entity\ItemAttributeEntity;
+use Sulu\Bundle\Sales\OrderBundle\Entity\OrderAddressEntity;
+use Sulu\Bundle\Sales\OrderBundle\Api\OrderAddress;
 use Sulu\Component\Rest\ApiWrapper;
 use Hateoas\Configuration\Annotation\Relation;
 use JMS\Serializer\Annotation\SerializedName;
+use JMS\Serializer\Annotation\Groups;
 use DateTime;
 use Sulu\Component\Security\Authentication\UserInterface;
 use Symfony\Component\Intl\NumberFormatter\NumberFormatter;
@@ -35,6 +38,7 @@ class Item extends ApiWrapper
      * @return int
      * @VirtualProperty
      * @SerializedName("id")
+     * @Groups({"cart"})
      */
     public function getId()
     {
@@ -53,11 +57,13 @@ class Item extends ApiWrapper
 
     /**
      * @param $name
+     *
      * @return Item
      */
     public function setName($name)
     {
         $this->entity->setName($name);
+
         return $this;
     }
 
@@ -73,11 +79,13 @@ class Item extends ApiWrapper
 
     /**
      * @param $number
+     *
      * @return Item
      */
     public function setNumber($number)
     {
         $this->entity->setNumber($number);
+
         return $this;
     }
 
@@ -94,11 +102,13 @@ class Item extends ApiWrapper
 
     /**
      * @param DateTime $created
+     *
      * @return Item
      */
     public function setCreated(DateTime $created)
     {
         $this->entity->setCreated($created);
+
         return $this;
     }
 
@@ -115,11 +125,13 @@ class Item extends ApiWrapper
 
     /**
      * @param DateTime $changed
+     *
      * @return Item
      */
     public function setChanged(DateTime $changed)
     {
         $this->entity->setChanged($changed);
+
         return $this;
     }
 
@@ -127,6 +139,7 @@ class Item extends ApiWrapper
      * Set changer
      *
      * @param UserInterface $changer
+     *
      * @return Item
      */
     public function setChanger(UserInterface $changer = null)
@@ -147,6 +160,7 @@ class Item extends ApiWrapper
     {
         // just return id
         $changer = $this->entity->getChanger();
+
         return !$changer ? null : array(
             'id' => $changer->getId()
         );
@@ -156,6 +170,7 @@ class Item extends ApiWrapper
      * Set creator
      *
      * @param UserInterface $creator
+     *
      * @return Item
      */
     public function setCreator(UserInterface $creator = null)
@@ -176,6 +191,7 @@ class Item extends ApiWrapper
     {
         // just return id
         $creator = $this->entity->getCreator();
+
         return !$creator ? null : array(
             'id' => $creator->getId()
         );
@@ -183,6 +199,7 @@ class Item extends ApiWrapper
 
     /**
      * @param float
+     *
      * @return Item
      */
     public function setQuantity($quantity)
@@ -196,6 +213,7 @@ class Item extends ApiWrapper
      * @return float
      * @VirtualProperty
      * @SerializedName("quantity")
+     * @Groups({"cart"})
      */
     public function getQuantity()
     {
@@ -204,6 +222,7 @@ class Item extends ApiWrapper
 
     /**
      * @param string
+     *
      * @return Item
      */
     public function setQuantityUnit($quantityUnit)
@@ -225,6 +244,7 @@ class Item extends ApiWrapper
 
     /**
      * @param bool
+     *
      * @return Item
      */
     public function setUseProductsPrice($useProductsPrice)
@@ -246,6 +266,7 @@ class Item extends ApiWrapper
 
     /**
      * @param float
+     *
      * @return Item
      */
     public function setTax($tax)
@@ -267,6 +288,7 @@ class Item extends ApiWrapper
 
     /**
      * @param float
+     *
      * @return Item
      */
     public function setPrice($value)
@@ -292,9 +314,10 @@ class Item extends ApiWrapper
      *
      * @return string
      */
-    public function getPriceFormatted($locale=null)
+    public function getPriceFormatted($locale = null)
     {
         $formatter = $this->getFormatter($locale);
+
         return $formatter->format((float)$this->entity->getPrice());
     }
 
@@ -304,14 +327,16 @@ class Item extends ApiWrapper
      *
      * @return string
      */
-    public function getTotalNetPriceFormatted($locale=null)
+    public function getTotalNetPriceFormatted($locale = null)
     {
         $formatter = $this->getFormatter($locale);
+
         return $formatter->format((float)$this->entity->getTotalNetPrice());
     }
 
     /**
      * @param float
+     *
      * @return Item
      */
     public function setDiscount($value)
@@ -333,6 +358,7 @@ class Item extends ApiWrapper
 
     /**
      * @param string
+     *
      * @return Item
      */
     public function setDescription($value)
@@ -354,6 +380,7 @@ class Item extends ApiWrapper
 
     /**
      * @param float
+     *
      * @return Item
      */
     public function setWeight($value)
@@ -375,6 +402,7 @@ class Item extends ApiWrapper
 
     /**
      * @param float
+     *
      * @return Item
      */
     public function setWidth($value)
@@ -396,6 +424,7 @@ class Item extends ApiWrapper
 
     /**
      * @param float
+     *
      * @return Item
      */
     public function setHeight($value)
@@ -417,6 +446,7 @@ class Item extends ApiWrapper
 
     /**
      * @param float
+     *
      * @return Item
      */
     public function setLength($value)
@@ -438,6 +468,7 @@ class Item extends ApiWrapper
 
     /**
      * @param int
+     *
      * @return Item
      */
     public function setBitmaskStatus($status)
@@ -459,6 +490,7 @@ class Item extends ApiWrapper
 
     /**
      * @param Account
+     *
      * @return Item
      */
     public function setSupplier($value)
@@ -478,6 +510,7 @@ class Item extends ApiWrapper
 
     /**
      * @param string
+     *
      * @return Item
      */
     public function setSupplierName($value)
@@ -498,10 +531,11 @@ class Item extends ApiWrapper
     }
 
     /**
-     * @param ItemAttribute $value
+     * @param ItemAttributeEntity $value
+     *
      * @return $this
      */
-    public function addAttribute(ItemAttribute $value)
+    public function addAttribute(ItemAttributeEntity $value)
     {
         $this->entity->addAttribute($value);
 
@@ -520,6 +554,7 @@ class Item extends ApiWrapper
 
     /**
      * @param $product
+     *
      * @return Item
      */
     public function setProduct($product)
@@ -533,24 +568,57 @@ class Item extends ApiWrapper
      * @return Product
      * @VirtualProperty
      * @SerializedName("product")
+     * @Groups({"cart"})
      */
     public function getProduct()
     {
-        if ($this->getEntity()->getProduct()) {
-            return array(
-                'id' => $this->entity->getProduct()->getId()
-            );
+        $product = $this->getEntity()->getProduct();
+        if ($product) {
+            return new Product($product, $this->locale);
         }
+
         return null;
     }
 
     /**
+     * Set deliveryAddress
+     *
+     * @param OrderAddressEntity $deliveryAddress
+     *
+     * @return Item
+     */
+    public function setDeliveryAddress(OrderAddressEntity $deliveryAddress = null)
+    {
+        $this->entity->setDeliveryAddress($deliveryAddress);
+
+        return $this;
+    }
+
+    /**
+     * Get deliveryAddress
+     *
+     * @return OrderAddress $deliveryAddress
+     * @VirtualProperty
+     * @SerializedName("deliveryAddress")
+     * @Groups({"cart"})
+     */
+    public function getDeliveryAddress()
+    {
+        $address = $this->entity->getDeliveryAddress();
+        if ($address) {
+            return new OrderAddress($address);
+        }
+    }
+
+    /**
      * @param $locale
+     *
      * @return Formatter
      */
     private function getFormatter($locale)
     {
         $sysLocale = $locale ? $locale : 'de-AT';
+
         return new \NumberFormatter($sysLocale, \NumberFormatter::CURRENCY);
     }
 }
