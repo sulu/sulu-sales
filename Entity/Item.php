@@ -139,6 +139,11 @@ class Item
     private $totalNetPrice;
 
     /**
+     * @var \Sulu\Bundle\Sales\OrderBundle\Entity\OrderAddress
+     */
+    private $deliveryAddress;
+
+    /**
      * Constructor
      */
     public function __construct()
@@ -150,6 +155,7 @@ class Item
      * Set name
      *
      * @param string $name
+     *
      * @return Item
      */
     public function setName($name)
@@ -173,6 +179,7 @@ class Item
      * Set number
      *
      * @param string $number
+     *
      * @return Item
      */
     public function setNumber($number)
@@ -196,6 +203,7 @@ class Item
      * Set quantity
      *
      * @param float $quantity
+     *
      * @return Item
      */
     public function setQuantity($quantity)
@@ -221,6 +229,7 @@ class Item
      * Set quantityUnit
      *
      * @param string $quantityUnit
+     *
      * @return Item
      */
     public function setQuantityUnit($quantityUnit)
@@ -244,6 +253,7 @@ class Item
      * Set useProductsPrice
      *
      * @param boolean $useProductsPrice
+     *
      * @return Item
      */
     public function setUseProductsPrice($useProductsPrice)
@@ -267,6 +277,7 @@ class Item
      * Set tax
      *
      * @param float $tax
+     *
      * @return Item
      */
     public function setTax($tax)
@@ -290,6 +301,7 @@ class Item
      * Set price
      *
      * @param float $price
+     *
      * @return Item
      */
     public function setPrice($price)
@@ -315,6 +327,7 @@ class Item
      * Set discount
      *
      * @param float $discount
+     *
      * @return Item
      */
     public function setDiscount($discount)
@@ -340,6 +353,7 @@ class Item
      * Set description
      *
      * @param string $description
+     *
      * @return Item
      */
     public function setDescription($description)
@@ -363,6 +377,7 @@ class Item
      * Set weight
      *
      * @param float $weight
+     *
      * @return Item
      */
     public function setWeight($weight)
@@ -386,6 +401,7 @@ class Item
      * Set width
      *
      * @param float $width
+     *
      * @return Item
      */
     public function setWidth($width)
@@ -409,6 +425,7 @@ class Item
      * Set height
      *
      * @param float $height
+     *
      * @return Item
      */
     public function setHeight($height)
@@ -432,6 +449,7 @@ class Item
      * Set length
      *
      * @param float $length
+     *
      * @return Item
      */
     public function setLength($length)
@@ -455,6 +473,7 @@ class Item
      * Set supplierName
      *
      * @param string $supplierName
+     *
      * @return Item
      */
     public function setSupplierName($supplierName)
@@ -478,6 +497,7 @@ class Item
      * Set created
      *
      * @param \DateTime $created
+     *
      * @return Item
      */
     public function setCreated($created)
@@ -501,6 +521,7 @@ class Item
      * Set changed
      *
      * @param \DateTime $changed
+     *
      * @return Item
      */
     public function setChanged($changed)
@@ -534,6 +555,7 @@ class Item
      * Add attributes
      *
      * @param \Sulu\Bundle\Sales\CoreBundle\Entity\ItemAttribute $attributes
+     *
      * @return Item
      */
     public function addAttribute(\Sulu\Bundle\Sales\CoreBundle\Entity\ItemAttribute $attributes)
@@ -567,6 +589,7 @@ class Item
      * Set product
      *
      * @param \Sulu\Bundle\ProductBundle\Entity\ProductInterface $product
+     *
      * @return Item
      */
     public function setProduct(\Sulu\Bundle\ProductBundle\Entity\ProductInterface $product = null)
@@ -590,6 +613,7 @@ class Item
      * Set changer
      *
      * @param UserInterface $changer
+     *
      * @return Item
      */
     public function setChanger(UserInterface $changer = null)
@@ -613,6 +637,7 @@ class Item
      * Set creator
      *
      * @param UserInterface $creator
+     *
      * @return Item
      */
     public function setCreator(UserInterface $creator = null)
@@ -631,16 +656,17 @@ class Item
     {
         return $this->creator;
     }
+
     /**
      * @var \Sulu\Bundle\ContactBundle\Entity\Account
      */
     private $supplier;
 
-
     /**
      * Set supplier
      *
      * @param \Sulu\Bundle\ContactBundle\Entity\Account $supplier
+     *
      * @return Item
      */
     public function setSupplier(\Sulu\Bundle\ContactBundle\Entity\Account $supplier = null)
@@ -664,6 +690,7 @@ class Item
      * Set bitmaskStatus
      *
      * @param integer $bitmaskStatus
+     *
      * @return Item
      */
     public function setBitmaskStatus($bitmaskStatus)
@@ -687,6 +714,7 @@ class Item
      * Set totalNetPrice
      *
      * @param float $totalNetPrice
+     *
      * @return Item
      */
     private function setTotalNetPrice($totalNetPrice)
@@ -708,12 +736,35 @@ class Item
 
     /**
      * Updates and sets the total net price
-     *
      */
     private function updateTotalNetPrice()
     {
         $quantityPrice = $this->price * $this->quantity;
         $total = $quantityPrice - ($quantityPrice * ($this->discount / 100));
         $this->setTotalNetPrice(round($total, 2));
+    }
+
+    /**
+     * Set deliveryAddress
+     *
+     * @param \Sulu\Bundle\Sales\OrderBundle\Entity\OrderAddress $deliveryAddress
+     *
+     * @return Item
+     */
+    public function setDeliveryAddress(\Sulu\Bundle\Sales\OrderBundle\Entity\OrderAddress $deliveryAddress = null)
+    {
+        $this->deliveryAddress = $deliveryAddress;
+
+        return $this;
+    }
+
+    /**
+     * Get deliveryAddress
+     *
+     * @return \Sulu\Bundle\Sales\OrderBundle\Entity\OrderAddress $deliveryAddress
+     */
+    public function getDeliveryAddress()
+    {
+        return $this->deliveryAddress;
     }
 }
