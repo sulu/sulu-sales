@@ -13,8 +13,8 @@ namespace Sulu\Bundle\Sales\OrderBundle\Cart;
 use Doctrine\Common\Persistence\ObjectManager;
 
 use Doctrine\ORM\EntityRepository;
-use Sulu\Bundle\Sales\CoreBundle\Item\ItemManager;
 use Sulu\Bundle\Sales\CoreBundle\Manager\BaseSalesManager;
+use Sulu\Bundle\Sales\CoreBundle\Pricing\PriceCalculationInterface;
 use Sulu\Bundle\Sales\OrderBundle\Api\Order as ApiOrder;
 use Sulu\Bundle\Sales\OrderBundle\Entity\Order;
 use Sulu\Bundle\Sales\OrderBundle\Entity\OrderRepository;
@@ -65,60 +65,34 @@ class CartManager extends BaseSalesManager
     private $orderManager;
 
     /**
-     * @var ItemManager
-     */
-    private $itemManager;
-
-    /**
      * @var OrderRepository
      */
     private $orderRepository;
 
     /**
-     * @var EntityRepository
+     * @var PriceCalculationInterface
      */
-    private $orderTypeRepository;
+    private $priceCalculation;
 
     /**
-     * @var EntityRepository
-     */
-    private $orderStatusRepository;
-
-    /**
-     * @var UserRepositoryInterface
-     */
-    private $userRepository;
-
-    /**
-     * constructor
-     *
      * @param ObjectManager $em
-     * @param OrderManager $orderManager
+     * @param SessionInterface $session
      * @param OrderRepository $orderRepository
-     * @param UserRepositoryInterface $userRepository
-     * @param ItemManager $itemManager
-     * @param EntityRepository $orderStatusRepository
-     * @param EntityRepository $orderTypeRepository
+     * @param OrderManager $orderManager
      */
     public function __construct(
         ObjectManager $em,
         SessionInterface $session,
         OrderRepository $orderRepository,
         OrderManager $orderManager,
-        UserRepositoryInterface $userRepository,
-        ItemManager $itemManager,
-        EntityRepository $orderStatusRepository,
-        EntityRepository $orderTypeRepository
+        PriceCalculationInterface $priceCalculation
     )
     {
         $this->em = $em;
         $this->session = $session;
         $this->orderRepository = $orderRepository;
         $this->orderManager = $orderManager; //FIXME: unused
-        $this->userRepository = $userRepository; //FIXME: unused
-        $this->itemManager = $itemManager; //FIXME: unused
-        $this->orderStatusRepository = $orderStatusRepository; //FIXME: unused
-        $this->orderTypeRepository = $orderTypeRepository; //FIXME: unused
+        $this->priceCalculation = $priceCalculation;
     }
 
     /**
@@ -156,7 +130,21 @@ class CartManager extends BaseSalesManager
             $cart = new Order();
         }
 
-        return new ApiOrder($cart, $locale);
+        $apiOrder = new ApiOrder($cart, $locale);
+
+        // TODO: calcualte difference to previous cart
+        
+        $items = $apiOrder->getItems();
+
+        // perform price calucaltion
+        $totalPrice = $this->priceCalculation->calculate($items, $prices, $supplierItems, true);
+        
+        // set grouped items
+        $apiOrder->setSupplierItems(array_values($supplierItems));
+        // set total price
+        $apiOrder->getTotalNetPrice($totalPrice);
+
+        return $apiOrder;
     }
 
     /**

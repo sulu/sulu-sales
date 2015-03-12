@@ -57,7 +57,7 @@ class CartController extends RestController implements ClassResourceInterface, S
         $view = $this->view($cart, 200);
         $view->setSerializationContext(
             SerializationContext::create()->setGroups(array(
-                'cart'
+                'cart', 'cartExtended'
             ))
         );
 

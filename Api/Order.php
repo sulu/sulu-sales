@@ -29,6 +29,13 @@ class Order extends ApiWrapper implements SalesDocument
     private $workflows = array();
 
     /**
+     * groups items by suppliers
+     *
+     * @var array
+     */
+    private $groupedItems = array();
+
+    /**
      * @param OrderEntity $order The order to wrap
      * @param string $locale The locale of this order
      */
@@ -61,11 +68,13 @@ class Order extends ApiWrapper implements SalesDocument
 
     /**
      * @param $number
+     *
      * @return Order
      */
     public function setNumber($number)
     {
         $this->entity->setNumber($number);
+
         return $this;
     }
 
@@ -82,11 +91,13 @@ class Order extends ApiWrapper implements SalesDocument
 
     /**
      * @param DateTime $created
+     *
      * @return Order
      */
     public function setCreated(DateTime $created)
     {
         $this->entity->setCreated($created);
+
         return $this;
     }
 
@@ -102,11 +113,13 @@ class Order extends ApiWrapper implements SalesDocument
 
     /**
      * @param DateTime $changed
+     *
      * @return Order
      */
     public function setChanged(DateTime $changed)
     {
         $this->entity->setChanged($changed);
+
         return $this;
     }
 
@@ -114,6 +127,7 @@ class Order extends ApiWrapper implements SalesDocument
      * Set sessionId
      *
      * @param string $sessionId
+     *
      * @return Order
      */
     public function setSessionId($sessionId)
@@ -136,7 +150,9 @@ class Order extends ApiWrapper implements SalesDocument
 
     /**
      * Set status
+     *
      * @param OrderStatus
+     *
      * @return Order
      */
     public function setStatus($status)
@@ -150,6 +166,7 @@ class Order extends ApiWrapper implements SalesDocument
      * Set bitmaskStatus
      *
      * @param integer $bitmaskStatus
+     *
      * @return Order
      */
     public function setBitmaskStatus($bitmaskStatus)
@@ -187,7 +204,9 @@ class Order extends ApiWrapper implements SalesDocument
 
     /**
      * Set type
+     *
      * @param OrderType
+     *
      * @return Order
      */
     public function setType($type)
@@ -216,6 +235,7 @@ class Order extends ApiWrapper implements SalesDocument
      * Set currency
      *
      * @param string $currency
+     *
      * @return Order
      */
     public function setCurrency($currency)
@@ -239,6 +259,7 @@ class Order extends ApiWrapper implements SalesDocument
 
     /**
      * @param string $customerName
+     *
      * @return Order
      */
     public function setCustomerName($customerName)
@@ -262,6 +283,7 @@ class Order extends ApiWrapper implements SalesDocument
      * Set termsOfDelivery
      *
      * @param TermsOfDelivery $termsOfDelivery
+     *
      * @return Order
      */
     public function setTermsOfDelivery($termsOfDelivery)
@@ -294,6 +316,7 @@ class Order extends ApiWrapper implements SalesDocument
      * Set termsOfPayment
      *
      * @param TermsOfPayment $termsOfPayment
+     *
      * @return Order
      */
     public function setTermsOfPayment($termsOfPayment)
@@ -325,6 +348,7 @@ class Order extends ApiWrapper implements SalesDocument
      * Set termsOfPayment
      *
      * @param string $termsOfPayment
+     *
      * @return Order
      */
     public function setTermsOfPaymentContent($termsOfPayment)
@@ -350,6 +374,7 @@ class Order extends ApiWrapper implements SalesDocument
      * Set termsOfDelivery
      *
      * @param string $termsOfDelivery
+     *
      * @return Order
      */
     public function setTermsOfDeliveryContent($termsOfDelivery)
@@ -372,9 +397,34 @@ class Order extends ApiWrapper implements SalesDocument
     }
 
     /**
+     * @param float $deliveryCost
+     *
+     * @return Order
+     */
+    public function setDeliveryCost($deliveryCost)
+    {
+        $this->entity->setDeliveryCost($deliveryCost);
+
+        return $this;
+    }
+
+    /**
+     * @VirtualProperty
+     * @SerializedName("deliveryCost")
+     * @Groups({"cart"})
+     *
+     * @return float
+     */
+    public function getDeliveryCost()
+    {
+        return $this->entity->getDeliveryCost();
+    }
+
+    /**
      * Set costCentre
      *
      * @param string $costCentre
+     *
      * @return Order
      */
     public function setCostCentre($costCentre)
@@ -401,6 +451,7 @@ class Order extends ApiWrapper implements SalesDocument
      * Set commission
      *
      * @param string $commission
+     *
      * @return Order
      */
     public function setCommission($commission)
@@ -427,6 +478,7 @@ class Order extends ApiWrapper implements SalesDocument
      * Set desiredDeliveryDate
      *
      * @param \DateTime $desiredDeliveryDate
+     *
      * @return Order
      */
     public function setDesiredDeliveryDate($desiredDeliveryDate)
@@ -453,6 +505,7 @@ class Order extends ApiWrapper implements SalesDocument
      * Set taxfree
      *
      * @param boolean $taxfree
+     *
      * @return Order
      */
     public function setTaxfree($taxfree)
@@ -478,6 +531,7 @@ class Order extends ApiWrapper implements SalesDocument
      * Set account
      *
      * @param Account $account
+     *
      * @return Order
      */
     public function setAccount(Account $account = null)
@@ -510,6 +564,7 @@ class Order extends ApiWrapper implements SalesDocument
      * Set contact
      *
      * @param Contact $contact
+     *
      * @return Order
      */
     public function setContact(Contact $contact = null)
@@ -542,6 +597,7 @@ class Order extends ApiWrapper implements SalesDocument
      * Set responsibleContact
      *
      * @param Contact $responsibleContact
+     *
      * @return Order
      */
     public function setResponsibleContact(Contact $responsibleContact = null)
@@ -574,6 +630,7 @@ class Order extends ApiWrapper implements SalesDocument
      * Add item
      *
      * @param \Sulu\Bundle\Sales\CoreBundle\Entity\Item $item
+     *
      * @return Order
      */
     public function addItem(\Sulu\Bundle\Sales\CoreBundle\Entity\Item $item)
@@ -608,12 +665,43 @@ class Order extends ApiWrapper implements SalesDocument
         foreach ($this->entity->getItems() as $item) {
             $items[] = new Item($item, $this->locale);
         }
+
         return $items;
     }
 
     /**
+     * Get items ordered by suppliers
+     *
+     * @return array
+     *
+     * @VirtualProperty
+     * @SerializedName("supplierItems")
+     * @Groups({"cartExtended"})
+     */
+    public function getSupplierItems()
+    {
+        return $this->groupedItems;
+    }
+
+    /**
+     * set supplier items
+     *
+     * @param $supplierItems
+     *
+     * @return $this
+     */
+    public function setSupplierItems($supplierItems)
+    {
+        $this->groupedItems = $supplierItems;
+
+        return $this;
+    }
+
+    /**
      * get item entity by id
+     *
      * @param $id
+     *
      * @return mixed
      */
     public function getItem($id)
@@ -629,6 +717,7 @@ class Order extends ApiWrapper implements SalesDocument
      * Set changer
      *
      * @param UserInterface $changer
+     *
      * @return Order
      */
     public function setChanger(UserInterface $changer = null)
@@ -652,6 +741,7 @@ class Order extends ApiWrapper implements SalesDocument
      * Set creator
      *
      * @param UserInterface $creator
+     *
      * @return Order
      */
     public function setCreator(UserInterface $creator = null)
@@ -675,6 +765,7 @@ class Order extends ApiWrapper implements SalesDocument
      * Set deliveryAddress
      *
      * @param OrderAddressEntity $deliveryAddress
+     *
      * @return Order
      */
     public function setDeliveryAddress(OrderAddressEntity $deliveryAddress = null)
@@ -701,6 +792,7 @@ class Order extends ApiWrapper implements SalesDocument
      * Set invoiceAddress
      *
      * @param OrderAddressEntity $invoiceAddress
+     *
      * @return Order
      */
     public function setInvoiceAddress(OrderAddressEntity $invoiceAddress = null)
@@ -720,11 +812,12 @@ class Order extends ApiWrapper implements SalesDocument
      */
     public function getInvoiceAddress()
     {
-        return $this->entity->getInvoiceAddress();
+        return new OrderAddress($this->entity->getInvoiceAddress());
     }
 
     /**
      * @param $number
+     *
      * @return Order
      */
     public function setOrderNumber($number)
@@ -762,14 +855,16 @@ class Order extends ApiWrapper implements SalesDocument
      * @return string
      * @Groups({"cart"})
      */
-    public function getTotalNetPriceFormatted($locale=null)
+    public function getTotalNetPriceFormatted($locale = null)
     {
         $formatter = $this->getFormatter($locale);
+
         return $formatter->format((float)$this->entity->getTotalNetPrice());
     }
 
     /**
      * @param DateTime
+     *
      * @return Order
      */
     public function setOrderDate($orderDate)
@@ -808,6 +903,7 @@ class Order extends ApiWrapper implements SalesDocument
 
     /**
      * @param array
+     *
      * @return Order
      */
     public function setPermissions(array $permissions)
@@ -829,6 +925,7 @@ class Order extends ApiWrapper implements SalesDocument
 
     /**
      * @param array
+     *
      * @return Order
      */
     public function setWorkflows(array $workflows)
@@ -859,11 +956,13 @@ class Order extends ApiWrapper implements SalesDocument
 
     /**
      * @param $locale
+     *
      * @return Formatter
      */
     private function getFormatter($locale)
     {
         $sysLocale = $locale ? $locale : 'de-AT';
+
         return new \NumberFormatter($sysLocale, \NumberFormatter::CURRENCY);
     }
 }
