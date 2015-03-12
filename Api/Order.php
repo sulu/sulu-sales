@@ -838,6 +838,18 @@ class Order extends ApiWrapper implements SalesDocument
     }
 
     /**
+     * @param $totalNetPrice
+     *
+     * @return $this
+     */
+    public function setTotalNetPrice($totalNetPrice)
+    {
+        $this->entity->setTotalNetPrice($totalNetPrice);
+
+        return $this;
+    }
+
+    /**
      * @return float
      * @VirtualProperty
      * @SerializedName("totalNetPrice")

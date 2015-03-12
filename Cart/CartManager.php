@@ -14,7 +14,7 @@ use Doctrine\Common\Persistence\ObjectManager;
 
 use Doctrine\ORM\EntityRepository;
 use Sulu\Bundle\Sales\CoreBundle\Manager\BaseSalesManager;
-use Sulu\Bundle\Sales\CoreBundle\Pricing\PriceCalculationInterface;
+use Sulu\Bundle\Sales\CoreBundle\Pricing\GroupedItemsPriceCalculatorInterface;
 use Sulu\Bundle\Sales\OrderBundle\Api\Order as ApiOrder;
 use Sulu\Bundle\Sales\OrderBundle\Entity\Order;
 use Sulu\Bundle\Sales\OrderBundle\Entity\OrderRepository;
@@ -70,7 +70,7 @@ class CartManager extends BaseSalesManager
     private $orderRepository;
 
     /**
-     * @var PriceCalculationInterface
+     * @var GroupedItemsPriceCalculatorInterface
      */
     private $priceCalculation;
 
@@ -79,13 +79,14 @@ class CartManager extends BaseSalesManager
      * @param SessionInterface $session
      * @param OrderRepository $orderRepository
      * @param OrderManager $orderManager
+     * @param GroupedItemsPriceCalculatorInterface $priceCalculation
      */
     public function __construct(
         ObjectManager $em,
         SessionInterface $session,
         OrderRepository $orderRepository,
         OrderManager $orderManager,
-        PriceCalculationInterface $priceCalculation
+        GroupedItemsPriceCalculatorInterface $priceCalculation
     )
     {
         $this->em = $em;
@@ -142,7 +143,9 @@ class CartManager extends BaseSalesManager
         // set grouped items
         $apiOrder->setSupplierItems(array_values($supplierItems));
         // set total price
-        $apiOrder->getTotalNetPrice($totalPrice);
+        $apiOrder->setTotalNetPrice($totalPrice);
+        
+        $this->em->flush();
 
         return $apiOrder;
     }

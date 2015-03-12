@@ -63,7 +63,7 @@
             <argument type="service" id="session" />
             <argument type="service" id="sulu_sales_order.order_repository" />
             <argument type="service" id="sulu_sales_order.order_manager" />
-            <argument type="service" id="sulu_sales_core.price_calculation" />
+            <argument type="service" id="sulu_sales_core.grouped_price_calculator" />
         </service>
 
         <service id="sulu_sales_order.order_dependency_manager" class="%sulu_sales_order.order_dependency_manager.class%" />

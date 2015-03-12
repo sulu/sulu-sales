@@ -771,7 +771,7 @@ class Order
      * @param float $totalNetPrice
      * @return Order
      */
-    private function setTotalNetPrice($totalNetPrice)
+    public function setTotalNetPrice($totalNetPrice)
     {
         $this->totalNetPrice = $totalNetPrice;
 
