@@ -29,10 +29,11 @@ class Item extends ApiWrapper implements CalculableBulkPriceItemInterface, Calcu
      * @param Entity $item The item to wrap
      * @param string $locale The locale of this item
      */
-    public function __construct(Entity $item, $locale)
+    public function __construct(Entity $item, $locale, $currency = 'EUR')
     {
         $this->entity = $item;
         $this->locale = $locale;
+        $this->currency = $currency;
     }
 
     /**
@@ -629,11 +630,11 @@ class Item extends ApiWrapper implements CalculableBulkPriceItemInterface, Calcu
      * {@inheritDoc}
      * TODO: default-price EUR?
      */
-    public function getCalcPrice($quantity, $currency = 'EUR')
+    public function getCalcPrice($quantity)
     {
         // TODO: if ($this->getUseProductsPrice()) {
         if (($product = $this->getProduct())) {
-            $price = $product->getBulkPriceForCurrency($quantity, $currency);
+            $price = $product->getBulkPriceForCurrency($quantity, $this->currency);
             return $price->getPrice();
         }
         return $this->getPrice();
@@ -665,6 +666,14 @@ class Item extends ApiWrapper implements CalculableBulkPriceItemInterface, Calcu
     public function getCalcDiscount()
     {
         return $this->getDiscount();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getCalcCurrencyCode()
+    {
+        return $this->currency;
     }
 
     /**

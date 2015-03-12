@@ -17,10 +17,10 @@ interface CalculableBulkPriceItemInterface
      * @return float
      */
     public function getCalcPrice($quantity);
-    
+
     /**
      * returns quantity of items
-     * 
+     *
      * @return float
      */
     public function getCalcQuantity();
@@ -31,4 +31,9 @@ interface CalculableBulkPriceItemInterface
      * @return float from 0 to 100
      */
     public function getCalcDiscount();
+
+    /**
+     * returns the currency of an item
+     */
+    public function getCalcCurrencyCode();
 }

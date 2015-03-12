@@ -31,4 +31,9 @@ interface CalculablePriceItemInterface
      * @return float from 0 to 100
      */
     public function getCalcDiscount();
+
+    /**
+     * returns the currency of an item
+     */
+    public function getCalcCurrencyCode();
 }
