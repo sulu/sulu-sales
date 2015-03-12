@@ -1,0 +1,357 @@
+<?php
+/*
+ * This file is part of the Sulu CMS.
+ *
+ * (c) MASSIVE ART WebServices GmbH
+ *
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
+ */
+namespace Sulu\Bundle\Sales\OrderBundle\Tests;
+
+class OrderData {
+
+    protected $locale = 'en';
+    
+    protected static $orderStatusEntityName = 'SuluSalesOrderBundle:OrderStatus';
+
+    /**
+     * @var OrderType
+     */
+    protected $orderTypeManual;
+    protected $orderTypeShop;
+    protected $orderTypeAnon;
+
+    /**
+     * @var Account
+     */
+    protected $account;
+    /**
+     * @var Address
+     */
+    protected $address;
+    /**
+     * @var Address
+     */
+    protected $address2;
+    /**
+     * @var Contact
+     */
+    protected $contact;
+    /**
+     * @var Contact
+     */
+    protected $contact2;
+    /**
+     * @var Order
+     */
+    protected $order;
+    /**
+     * @var OrderAddress
+     */
+    protected $orderAddressDelivery;
+    /**
+     * @var OrderAddress
+     */
+    protected $orderAddressInvoice;
+    /**
+     * @var OrderStatus
+     */
+    protected $orderStatus;
+    /**
+     * @var TermsOfDelivery
+     */
+    protected $termsOfDelivery;
+    /**
+     * @var TermsOfPayment
+     */
+    protected $termsOfPayment;
+    /**
+     * @var Item
+     */
+    protected $item;
+    /**
+     * @var Product
+     */
+    protected $product;
+
+    /**
+     * @var ProductTranslation
+     */
+    protected $productTranslation;
+    /**
+     * @var Phone
+     */
+    protected $phone;
+    /**
+     * @var User
+     */
+    protected $user;
+
+    /**
+     * @var EntityManager
+     */
+    protected $em;
+
+
+    public function __construct(EntityManager $entityManager) {
+        $this->em = $entityManager;
+    }
+
+    protected function setUpTestData()
+    {
+        // account
+        $this->account = new Account();
+        $this->account->setName('Company');
+        $this->account->setType(Account::TYPE_BASIC);
+        $this->account->setUid('uid-123');
+        $this->account->setDisabled(0);
+
+        // country
+        $country = new Country();
+        $country->setName('Country');
+        $country->setCode('co');
+        // address type
+        $addressType = new AddressType();
+        $addressType->setName('Business');
+        // address
+        $this->address = new Address();
+        $this->address->setStreet('Sample-Street');
+        $this->address->setNumber('12');
+        $this->address->setAddition('Entrance 2');
+        $this->address->setCity('Sample-City');
+        $this->address->setState('State');
+        $this->address->setZip('12345');
+        $this->address->setCountry($country);
+        $this->address->setPostboxNumber('postboxNumber');
+        $this->address->setPostboxPostcode('postboxPostcode');
+        $this->address->setPostboxCity('postboxCity');
+        $this->address->setAddressType($addressType);
+        // address
+        $this->address2 = new Address();
+        $this->address2->setStreet('Street');
+        $this->address2->setNumber('2');
+        $this->address2->setCity('Utopia');
+        $this->address2->setZip('1');
+        $this->address2->setCountry($country);
+        $this->address2->setAddressType($addressType);
+
+        // phone
+        $phoneType = new PhoneType();
+        $phoneType->setName('Business');
+        $this->phone = new Phone();
+        $this->phone->setPhone('+43 123 / 456 789');
+        $this->phone->setPhoneType($phoneType);
+
+        // title
+        $title = new ContactTitle();
+        $title->setTitle('Dr');
+
+        // contact
+        $this->contact = new Contact();
+        $this->contact->setFirstName('John');
+        $this->contact->setLastName('Doe');
+        $this->contact->setTitle($title);
+        // contact
+        $this->contact2 = new Contact();
+        $this->contact2->setFirstName('Johanna');
+        $this->contact2->setLastName('Dole');
+
+        $contact = new Contact();
+        $contact->setFirstName('Max');
+        $contact->setLastName('Mustermann');
+        $this->em->persist($contact);
+
+        $user = new User();
+        $user->setUsername('test');
+        $user->setPassword('test');
+        $user->setSalt('');
+        $user->setLocale('en');
+        $user->setContact($this->contact);
+        $this->user = $user;
+
+        $this->orderStatus = $this->em->getRepository(self::$orderStatusEntityName)->find(OrderStatus::STATUS_CREATED);
+
+        // order address
+        $this->orderAddressDelivery = new OrderAddress();
+        $this->orderAddressDelivery->setFirstName($this->contact->getFirstName());
+        $this->orderAddressDelivery->setLastName($this->contact->getLastName());
+        $this->orderAddressDelivery->setTitle($title->getTitle());
+        $this->orderAddressDelivery->setStreet($this->address->getStreet());
+        $this->orderAddressDelivery->setNumber($this->address->getNumber());
+        $this->orderAddressDelivery->setAddition($this->address->getAddition());
+        $this->orderAddressDelivery->setCity($this->address->getCity());
+        $this->orderAddressDelivery->setZip($this->address->getZip());
+        $this->orderAddressDelivery->setState($this->address->getState());
+        $this->orderAddressDelivery->setCountry($this->address->getCountry()->getName());
+        $this->orderAddressDelivery->setPostboxNumber($this->address->getPostboxNumber());
+        $this->orderAddressDelivery->setPostboxPostcode($this->address->getPostboxPostcode());
+        $this->orderAddressDelivery->setPostboxCity($this->address->getPostboxCity());
+        $this->orderAddressDelivery->setAccountName($this->account->getName());
+        $this->orderAddressDelivery->setUid($this->account->getUid());
+        $this->orderAddressDelivery->setPhone($this->phone->getPhone());
+        $this->orderAddressDelivery->setPhoneMobile('+43 123 / 456');
+
+        // clone address for invoice
+        $this->orderAddressInvoice = clone $this->orderAddressDelivery;
+        $this->orderAddressInvoice = clone $this->orderAddressDelivery;
+
+        $this->termsOfDelivery = new TermsOfDelivery();
+        $this->termsOfDelivery->setTerms('10kg minimum');
+        $this->termsOfPayment = new TermsOfPayment();
+        $this->termsOfPayment->setTerms('10% off');
+
+        // order
+        $this->order = new Order();
+        $this->order->setNumber('1234');
+        $this->order->setCommission('commission');
+        $this->order->setCostCentre('cost-centre');
+        $this->order->setCustomerName($this->contact->getFullName());
+        $this->order->setCurrency('EUR');
+        $this->order->setTermsOfDelivery($this->termsOfDelivery);
+        $this->order->setTermsOfDeliveryContent($this->termsOfDelivery->getTerms());
+        $this->order->setTermsOfPayment($this->termsOfPayment);
+        $this->order->setTermsOfPaymentContent($this->termsOfPayment->getTerms());
+        $this->order->setCreated(new DateTime());
+        $this->order->setChanged(new DateTime());
+        $this->order->setCreator();
+        $this->order->setDesiredDeliveryDate(new DateTime('2015-01-01'));
+        $this->order->setSessionId('abcd1234');
+        $this->order->setTaxfree(true);
+        $this->order->setContact($this->contact);
+        $this->order->setAccount($this->account);
+        $this->order->setStatus($this->orderStatus);
+        $this->order->setBitmaskStatus($this->orderStatus->getId());
+        $this->order->setDeliveryAddress($this->orderAddressDelivery);
+        $this->order->setInvoiceAddress($this->orderAddressInvoice);
+        $this->order->setCreator($this->user);
+        $this->order->setChanger($this->user);
+
+        $order2 = clone $this->order;
+        $order2->setNumber('12345');
+        $order2->setDeliveryAddress(null);
+        $order2->setInvoiceAddress(null);
+
+        // product type
+        $productType = new Type();
+        $productTypeTranslation = new TypeTranslation();
+        $productTypeTranslation->setLocale($this->locale);
+        $productTypeTranslation->setName('EnglishProductType-1');
+        $productTypeTranslation->setType($productType);
+        // product status
+        $productStatus = new Status();
+        $productStatusTranslation = new StatusTranslation();
+        $productStatusTranslation->setLocale($this->locale);
+        $productStatusTranslation->setName('EnglishProductStatus-1');
+        $productStatusTranslation->setStatus($productStatus);
+        // product
+        $this->product = new Product();
+        $this->product->setNumber('ProductNumber-1');
+        $this->product->setManufacturer('EnglishManufacturer-1');
+        $this->product->setType($productType);
+        $this->product->setStatus($productStatus);
+        $this->product->setCreated(new DateTime());
+        $this->product->setChanged(new DateTime());
+
+        // product translation
+        $this->productTranslation = new ProductTranslation();
+        $this->productTranslation->setProduct($this->product);
+        $this->productTranslation->setLocale($this->locale);
+        $this->productTranslation->setName('EnglishProductTranslationName-1');
+        $this->productTranslation->setShortDescription('EnglishProductShortDescription-1');
+        $this->productTranslation->setLongDescription('EnglishProductLongDescription-1');
+        $this->product->addTranslation($this->productTranslation);
+
+        // Item
+        $this->item = new Item();
+        $this->item->setName('Product1');
+        $this->item->setNumber('123');
+        $this->item->setQuantity(2);
+        $this->item->setQuantityUnit('Pcs');
+        $this->item->setUseProductsPrice(true);
+        $this->item->setTax(20);
+        $this->item->setPrice(125.99);
+        $this->item->setDiscount(10);
+        $this->item->setDescription('This is a description');
+        $this->item->setWeight(15.8);
+        $this->item->setWidth(5);
+        $this->item->setHeight(6);
+        $this->item->setLength(7);
+        $this->item->setSupplierName('Supplier');
+        $this->item->setCreated(new DateTime());
+        $this->item->setChanged(new DateTime());
+        $this->item->setProduct($this->product);
+
+        $orderTypeTranslationManual = new OrderTypeTranslation();
+        $orderTypeTranslationManual->setLocale('en');
+        $orderTypeTranslationManual->setName('order type translation manual');
+
+        $orderTypeTranslationShop = new OrderTypeTranslation();
+        $orderTypeTranslationShop->setLocale('en');
+        $orderTypeTranslationShop->setName('order type translation shop');
+
+        $orderTypeTranslationAnon = new OrderTypeTranslation();
+        $orderTypeTranslationAnon->setLocale('en');
+        $orderTypeTranslationAnon->setName('order type translation anon');
+
+        $this->orderTypeManual = new OrderType();
+        $metadata = $this->em->getClassMetaData(get_class($this->orderTypeManual));
+        $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_NONE);
+
+        $this->orderTypeManual->setId(OrderType::MANUAL);
+        $this->orderTypeManual->addTranslation($orderTypeTranslationManual);
+        $orderTypeTranslationManual->setType($this->orderTypeManual);
+
+        $this->orderTypeShop = new OrderType();
+        $metadata = $this->em->getClassMetaData(get_class($this->orderTypeShop));
+        $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_NONE);
+
+        $this->orderTypeShop->setId(OrderType::SHOP);
+        $this->orderTypeShop->addTranslation($orderTypeTranslationShop);
+        $orderTypeTranslationShop->setType($this->orderTypeShop);
+
+        $this->orderTypeAnon = new OrderType();
+        $metadata = $this->em->getClassMetaData(get_class($this->orderTypeAnon));
+        $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_NONE);
+
+        $this->orderTypeAnon->setId(OrderType::ANONYMOUS);
+        $this->orderTypeAnon->addTranslation($orderTypeTranslationAnon);
+        $orderTypeTranslationAnon->setType($this->orderTypeAnon);
+
+        $this->order->addItem($this->item);
+        $this->order->setType($this->orderTypeManual);
+        $order2->setType($this->orderTypeManual);
+
+        $this->em->persist($user);
+        $this->em->persist($this->orderTypeManual);
+        $this->em->persist($this->orderTypeShop);
+        $this->em->persist($this->orderTypeAnon);
+        $this->em->persist($orderTypeTranslationManual);
+        $this->em->persist($orderTypeTranslationShop);
+        $this->em->persist($orderTypeTranslationAnon);
+        $this->em->persist($this->account);
+        $this->em->persist($title);
+        $this->em->persist($country);
+        $this->em->persist($this->termsOfPayment);
+        $this->em->persist($this->termsOfDelivery);
+        $this->em->persist($country);
+        $this->em->persist($addressType);
+        $this->em->persist($this->address);
+        $this->em->persist($this->address2);
+        $this->em->persist($phoneType);
+        $this->em->persist($this->phone);
+        $this->em->persist($this->contact);
+        $this->em->persist($this->contact2);
+        $this->em->persist($this->order);
+        $this->em->persist($order2);
+        $this->em->persist($this->orderAddressDelivery);
+        $this->em->persist($this->orderAddressInvoice);
+        $this->em->persist($this->item);
+        $this->em->persist($this->product);
+        $this->em->persist($this->productTranslation);
+        $this->em->persist($productType);
+        $this->em->persist($productTypeTranslation);
+        $this->em->persist($productStatus);
+        $this->em->persist($productStatusTranslation);
+    }
+}

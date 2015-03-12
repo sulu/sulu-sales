@@ -21,7 +21,7 @@ class OrderControllerTest extends OrderTestBase
     {
         $client = $this->createAuthenticatedClient();
 
-        $client->request('GET', '/api/orders/' . $this->order->getId());
+        $client->request('GET', '/api/orders/' . $this->data->order->getId());
         $response = json_decode($client->getResponse()->getContent());
 
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
@@ -36,11 +36,11 @@ class OrderControllerTest extends OrderTestBase
         $this->assertEquals('10% off', $response->termsOfPaymentContent);
         // order status
         $this->assertEquals('Created', $response->status->status);
-        $this->assertEquals($this->orderStatus->getId(), $response->status->id);
+        $this->assertEquals($this->data->orderStatus->getId(), $response->status->id);
         // contact
-        $this->assertEquals($this->contact->getId(), $response->contact->id);
+        $this->assertEquals($this->data->contact->getId(), $response->contact->id);
         // order Address delivery
-        $this->assertEquals($this->orderAddressDelivery->getId(), $response->deliveryAddress->id);
+        $this->assertEquals($this->data->orderAddressDelivery->getId(), $response->deliveryAddress->id);
         $this->assertEquals('John', $response->deliveryAddress->firstName);
         $this->assertEquals('Doe', $response->deliveryAddress->lastName);
         $this->assertEquals('Company', $response->deliveryAddress->accountName);
@@ -59,16 +59,16 @@ class OrderControllerTest extends OrderTestBase
         $this->assertEquals('+43 123 / 456 789', $response->deliveryAddress->phone);
         $this->assertEquals('+43 123 / 456', $response->deliveryAddress->phoneMobile);
         // order Address invoice
-        $this->assertEquals($this->orderAddressDelivery->getId(), $response->deliveryAddress->id);
+        $this->assertEquals($this->data->orderAddressDelivery->getId(), $response->deliveryAddress->id);
         $this->assertEquals('John', $response->deliveryAddress->firstName);
 
         // TODO: extend item tests
         // items
         $this->assertEquals(1, count($response->items));
         $item = $response->items[0];
-        $this->assertEquals($this->item->getId(), $item->id);
+        $this->assertEquals($this->data->item->getId(), $item->id);
         // item product
-        $this->assertEquals($this->item->getProduct()->getId(), $item->product->id);
+        $this->assertEquals($this->data->item->getProduct()->getId(), $item->product->id);
     }
 
     public function testGetAll()
@@ -112,14 +112,14 @@ class OrderControllerTest extends OrderTestBase
         $client = $this->createAuthenticatedClient();
         $client->request(
             'PUT',
-            '/api/orders/' . $this->order->getId(),
+            '/api/orders/' . $this->data->order->getId(),
             array(
                 'orderNumber' => 'EvilNumber',
                 'contact' => array(
-                    'id' =>  $this->contact->getId()
+                    'id' =>  $this->data->contact->getId()
                 ),
                 'account' => array(
-                    'id' =>  $this->account->getId()
+                    'id' =>  $this->data->account->getId()
                 ),
                 'invoiceAddress' => array(
                     'street' => 'Sample-Street',
@@ -144,13 +144,13 @@ class OrderControllerTest extends OrderTestBase
         );
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
 
-        $client->request('GET', '/api/orders/' . $this->order->getId());
+        $client->request('GET', '/api/orders/' . $this->data->order->getId());
         $response = json_decode($client->getResponse()->getContent());
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $this->assertEquals('EvilNumber', $response->orderNumber);
 
-        $this->checkOrderAddress($response->invoiceAddress, $this->address, $this->contact, $this->account);
-        $this->checkOrderAddress($response->deliveryAddress, $this->address2, $this->contact, $this->account);
+        $this->checkOrderAddress($response->invoiceAddress, $this->data->address, $this->data->contact, $this->data->account);
+        $this->checkOrderAddress($response->deliveryAddress, $this->data->address2, $this->data->contact, $this->data->account);
 
     }
 
@@ -172,12 +172,12 @@ class OrderControllerTest extends OrderTestBase
     {
         $data = array(
             'orderNumber' => 'NUMBER:0815',
-            'supplierName' => $this->account->getName(),
+            'supplierName' => $this->data->account->getName(),
             'account' => array(
-                'id' => $this->account->getId()
+                'id' => $this->data->account->getId()
             ),
             'contact' => array(
-                'id' => $this->contact->getId()
+                'id' => $this->data->contact->getId()
             ),
             'invoiceAddress' => array(
                 'street' => 'Sample-Street',
@@ -199,10 +199,10 @@ class OrderControllerTest extends OrderTestBase
                 'country' => 'Country'
             ),
             'termsOfDelivery' => array(
-                'id' => $this->termsOfDelivery->getId()
+                'id' => $this->data->termsOfDelivery->getId()
             ),
             'termsOfPayment' => array(
-                'id' => $this->termsOfPayment->getId()
+                'id' => $this->data->termsOfPayment->getId()
             ),
         );
         $client = $this->createAuthenticatedClient();
@@ -217,23 +217,23 @@ class OrderControllerTest extends OrderTestBase
         $this->assertEquals('NUMBER:0815', $response->orderNumber);
         $this->assertEquals('Created', $response->status->status);
 
-        $this->checkOrderAddress($response->invoiceAddress, $this->address, $this->contact, $this->account);
-        $this->checkOrderAddress($response->deliveryAddress, $this->address2, $this->contact, $this->account);
+        $this->checkOrderAddress($response->invoiceAddress, $this->data->address, $this->data->contact, $this->data->account);
+        $this->checkOrderAddress($response->deliveryAddress, $this->data->address2, $this->data->contact, $this->data->account);
     }
 
     public function testPostItems()
     {
         $data = array(
             'orderNumber' => 'NUMBER:0815',
-            'supplierName' => $this->account->getName(),
+            'supplierName' => $this->data->account->getName(),
             'account' => array(
-                'id' => $this->account->getId()
+                'id' => $this->data->account->getId()
             ),
             'orderType' => array(
-              'id' => $this->orderTypeManual->getId()
+              'id' => $this->data->orderTypeManual->getId()
             ),
             'contact' => array(
-                'id' => $this->contact->getId()
+                'id' => $this->data->contact->getId()
             ),
             'invoiceAddress' => array(
                 'street' => 'Sample-Street',
@@ -256,14 +256,14 @@ class OrderControllerTest extends OrderTestBase
             ),
             'items' => array(
                 array(
-                    'name' => $this->productTranslation->getName(),
-                    'number' => $this->product->getNumber(),
+                    'name' => $this->data->productTranslation->getName(),
+                    'number' => $this->data->product->getNumber(),
                     'quantity' => 2,
                     'quantityUnit' => 'pc',
                     'price' => 1000,
                     'discount' => 10,
                     'tax' => 20,
-                    'description' => $this->productTranslation->getLongDescription(),
+                    'description' => $this->data->productTranslation->getLongDescription(),
                     'useProductsPrice' => false,
                     'weight' => 12,
                     'width' => 13,
@@ -271,7 +271,7 @@ class OrderControllerTest extends OrderTestBase
                     'length' => 15,
                     'supplierName' => 'supplier',
                     'product' => array(
-                        'id' => $this->product->getId()
+                        'id' => $this->data->product->getId()
                     )
                 )
             )
@@ -288,21 +288,21 @@ class OrderControllerTest extends OrderTestBase
     public function testStatusChange()
     {
         $client = $this->createAuthenticatedClient();
-        $client->request('POST', '/api/orders/' . $this->order->getId(), array(
+        $client->request('POST', '/api/orders/' . $this->data->order->getId(), array(
             'action' => 'confirm'
         ));
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $response = json_decode($client->getResponse()->getContent());
-        $this->assertEquals($this->order->getId(), $response->id);
+        $this->assertEquals($this->data->order->getId(), $response->id);
         $this->assertEquals(OrderStatus::STATUS_CREATED | OrderStatus::STATUS_CONFIRMED, $response->bitmaskStatus);
         $this->assertEquals(OrderStatus::STATUS_CONFIRMED, $response->status->id);
 
-        $client->request('POST', '/api/orders/' . $this->order->getId(), array(
+        $client->request('POST', '/api/orders/' . $this->data->order->getId(), array(
             'action' => 'edit'
         ));
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $response = json_decode($client->getResponse()->getContent());
-        $this->assertEquals($this->order->getId(), $response->id);
+        $this->assertEquals($this->data->order->getId(), $response->id);
         $this->assertEquals(OrderStatus::STATUS_CREATED & ~OrderStatus::STATUS_CONFIRMED, $response->bitmaskStatus);
         $this->assertEquals(OrderStatus::STATUS_CREATED, $response->status->id);
     }
@@ -310,10 +310,10 @@ class OrderControllerTest extends OrderTestBase
     public function testDeleteById()
     {
         $client = $this->createAuthenticatedClient();
-        $client->request('DELETE', '/api/orders/' . $this->order->getId());
+        $client->request('DELETE', '/api/orders/' . $this->data->order->getId());
         $this->assertEquals('204', $client->getResponse()->getStatusCode());
 
-        $client->request('GET', '/api/orders/' . $this->order->getId());
+        $client->request('GET', '/api/orders/' . $this->data->order->getId());
         $this->assertEquals('404', $client->getResponse()->getStatusCode());
     }
 }

@@ -894,8 +894,15 @@ class OrderManager
         }
         return null;
     }
-    
-    
+
+    /**
+     * @param $itemData
+     * @param $locale
+     * @param $userId
+     * @param $order
+     *
+     * @return mixed
+     */
     public function addItem($itemData, $locale, $userId, $order)
     {
         $item = $this->itemManager->save($itemData, $locale, $userId);
@@ -941,8 +948,7 @@ class OrderManager
                 };
 
                 $add = function ($itemData) use ($locale, $userId, $order) {
-                    $item = $this->itemManager->save($itemData, $locale, $userId);
-                    return $order->addItem($item->getEntity());
+                    return $this->addItem($itemData, $locale, $userId, $order);
                 };
 
                 $result = $this->processSubEntities(

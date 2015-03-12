@@ -228,10 +228,49 @@ class CartManager extends BaseSalesManager
         }
     }
 
+    /**
+     * adds a product to cart
+     *
+     * @param $data
+     * @param null $user
+     * @param null $locale
+     *
+     * @return null|Order
+     */
     public function addProduct($data, $user = null, $locale = null)
     {
+        //TODO: locale
+        // get cart
         $cart = $this->getUserCart($user, $locale);
-//        $cart->addItem();
+        // define user-id
+        $userId = $user ? $user->getId() : null;
+        $this->orderManager->addItem($data, $locale, $userId, $cart);
+        
+        return $cart;
     }
-//    protected function checkProductData
+
+    /**
+     * patches an item in cart
+     *
+     * @param int $itemId
+     * @param array $data
+     * @param null $user
+     * @param null $locale
+     */
+    public function updateItem($itemId, $data, $user = null, $locale = null)
+    {
+        // TODO: update items
+    }
+
+    /**
+     * patches an item in cart
+     *
+     * @param $data
+     * @param null $user
+     * @param null $locale
+     */
+    public function removeItem($data, $user = null, $locale = null)
+    {
+        // TODO: remove item
+    }
 }

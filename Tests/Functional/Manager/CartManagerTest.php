@@ -27,9 +27,9 @@ class CartManagerTest extends OrderTestBase
 
         // set order to cart order
         $this->orderStatus = $this->em->getRepository(static::$orderStatusEntityName)->find(OrderStatus::STATUS_IN_CART);
-        $this->order->setStatus($this->orderStatus);
+        $this->data->order->setStatus($this->orderStatus);
 
-        $this->order->setSessionId('IamASessionKey');
+        $this->data->order->setSessionId('IamASessionKey');
 
         $this->em->flush();
     }
@@ -37,10 +37,10 @@ class CartManagerTest extends OrderTestBase
     public function testGetCartByUser()
     {
         // get cart by user
-        $cart = $this->getCartManager()->getUserCart($this->user);
+        $cart = $this->getCartManager()->getUserCart($this->data->user);
 
         // $cart is an ApiOrder, so get entity first
-        $this->assertEquals($cart->getEntity(), $this->order);
+        $this->assertEquals($cart->getEntity(), $this->data->order);
     }
     
     public function testGetCartBySessionId()
@@ -53,23 +53,6 @@ class CartManagerTest extends OrderTestBase
 //        $cart = $this->getCartManager()->getUserCart();
 //        $this->assertEquals($cart->getEntity(), $this->order);
 
-        $this->assertTrue(true);
-    }
-
-    public function testPostItem()
-    {
-        $data = array();
-
-        $client = $this->createAuthenticatedClient();
-
-//        $client->request('POST', '/api/cart/items', $data);
-//        $response = json_decode($client->getResponse()->getContent());
-//
-//        $client->request('GET', '/api/cart/');
-//        $response = json_decode($client->getResponse()->getContent());
-//        $this->assertEquals(200, $client->getResponse()->getStatusCode());
-        
-        // TODO: make assertions
         $this->assertTrue(true);
     }
 
