@@ -7,8 +7,8 @@ use Sulu\Bundle\ContactBundle\Entity\Account;
 use Sulu\Bundle\ProductBundle\Api\Product;
 use Sulu\Bundle\Sales\CoreBundle\Entity\Item as Entity;
 use Sulu\Bundle\Sales\CoreBundle\Entity\ItemAttributeEntity;
+use Sulu\Bundle\Sales\CoreBundle\Pricing\CalculableBulkPriceItemInterface;
 use Sulu\Bundle\Sales\CoreBundle\Pricing\CalculablePriceGroupItemInterface;
-use Sulu\Bundle\Sales\CoreBundle\Pricing\CalculablePriceItemInterface;
 use Sulu\Bundle\Sales\OrderBundle\Entity\OrderAddressEntity;
 use Sulu\Bundle\Sales\OrderBundle\Api\OrderAddress;
 use Sulu\Component\Rest\ApiWrapper;
@@ -631,20 +631,8 @@ class Item extends ApiWrapper implements CalculableBulkPriceItemInterface, Calcu
     public function getCalcPrice($quantity, $currency = 'EUR')
     {
         if (($product = $this->getProduct())) {
-            $prices = $product->getPrices();
-            
-            foreach ($prices as $price) {
-                $bestpick = null;
-                $bestpickDiffaerence = 9;
-                
-                $priceCurrency = $price->getCurrency();
-                if ($priceCurrency->getCode() === $currency && $price->getMinimumQuantity() < $quantity) {
-                    if ($quantity- $price->getMinimumQuantity())
-                    $bestpick = $price->getMinimumQuantity();
-                }
-            }
-
-            return $basePrice->getPrice();
+            $price = $product->getBulkPriceForCurrency($quantity, $currency);
+            return $price->getPrice();
         }
 
         return $this->getPrice();

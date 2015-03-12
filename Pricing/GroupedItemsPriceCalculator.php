@@ -15,7 +15,7 @@ use Sulu\Bundle\Sales\CoreBundle\Pricing\Exceptions\PriceCalculationException;
 /**
  * Calculate Price of an Order
  */
-class GroupedItemPriceCalculator implements GroupedItemsPriceCalculatorInterface
+class GroupedItemsPriceCalculator implements GroupedItemsPriceCalculatorInterface
 {
     /**
      * caclucaltes the overall total price of an items array and prices per price group
@@ -36,8 +36,11 @@ class GroupedItemPriceCalculator implements GroupedItemsPriceCalculatorInterface
 
             // TODO: item-price calculation more modular
             
-            // get items price
-            $itemPrice = $item->getCalcPrice() * $item->getCalcQuantity();
+            // get bulk price
+            $price = $item->getCalcPrice($item->getCalcQuantity());
+            $this->validateNotNull('price', $price);
+            
+            $itemPrice =  $price * $item->getCalcQuantity();
 
             // calculate items discount
             $discount = ($itemPrice / 100) * $item->getCalcDiscount();
@@ -105,14 +108,14 @@ class GroupedItemPriceCalculator implements GroupedItemsPriceCalculatorInterface
      */
     protected function validateItem($item)
     {
-        // item must be instance of PriceCalcualtionInterface
-        if (!($item instanceof PriceCalculationItemInterface)) {
-            throw new PriceCalculationException('Not an instance of PriceCalculationInterface');
-        }
+//        // item must be instance of PriceCalcualtionInterface
+//        if (!($item instanceof PriceCalculationItemInterface)) {
+//            throw new PriceCalculationException('Not an instance of PriceCalculationInterface');
+//        }
 
         // validate not null
-        $this->validateNotNull('price', $item->getCalcPrice());
         $this->validateNotNull('quantity', $item->getCalcQuantity());
+//        $this->validateNotNull('price', $item->getCalcPrice($item->getCalcQuantity()));
 
         // validate discount
         $discountPercent = $item->getCalcDiscount();

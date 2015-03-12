@@ -9,7 +9,7 @@
  */
 namespace Sulu\Bundle\Sales\CoreBundle\Pricing;
 
-interface GroupedItemsPriceCalculatiorInterface
+interface GroupedItemsPriceCalculatorInterface
 {
     /**
      * calculate price of items array
