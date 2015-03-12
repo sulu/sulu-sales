@@ -304,6 +304,7 @@ class Item extends ApiWrapper implements CalculableBulkPriceItemInterface, Calcu
      * @return float
      * @VirtualProperty
      * @SerializedName("price")
+     * @Groups({"cart"})
      */
     public function getPrice()
     {
@@ -630,11 +631,11 @@ class Item extends ApiWrapper implements CalculableBulkPriceItemInterface, Calcu
      */
     public function getCalcPrice($quantity, $currency = 'EUR')
     {
+        // TODO: if ($this->getUseProductsPrice()) {
         if (($product = $this->getProduct())) {
             $price = $product->getBulkPriceForCurrency($quantity, $currency);
             return $price->getPrice();
         }
-
         return $this->getPrice();
     }
 
