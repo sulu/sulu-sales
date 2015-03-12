@@ -39,10 +39,11 @@ class Order extends ApiWrapper implements SalesDocument
      * @param OrderEntity $order The order to wrap
      * @param string $locale The locale of this order
      */
-    public function __construct(OrderEntity $order, $locale)
+    public function __construct(OrderEntity $order, $locale, $currency = 'EUR')
     {
         $this->entity = $order;
         $this->locale = $locale;
+        $this->currency = $currency;
     }
 
     /**
@@ -663,7 +664,7 @@ class Order extends ApiWrapper implements SalesDocument
     {
         $items = array();
         foreach ($this->entity->getItems() as $item) {
-            $items[] = new Item($item, $this->locale);
+            $items[] = new Item($item, $this->locale, $this->getCurrency());
         }
 
         return $items;
@@ -785,7 +786,10 @@ class Order extends ApiWrapper implements SalesDocument
      */
     public function getDeliveryAddress()
     {
-        return new OrderAddress($this->entity->getDeliveryAddress());
+        if ($address = $this->entity->getDeliveryAddress()) {
+            return new OrderAddress($address);
+        }
+        return null;
     }
 
     /**
@@ -812,7 +816,9 @@ class Order extends ApiWrapper implements SalesDocument
      */
     public function getInvoiceAddress()
     {
-        return new OrderAddress($this->entity->getInvoiceAddress());
+        if ($address = $this->entity->getInvoiceAddress()) {
+            return new OrderAddress($address);
+        }
     }
 
     /**

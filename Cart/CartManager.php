@@ -75,6 +75,11 @@ class CartManager extends BaseSalesManager
     private $priceCalculation;
 
     /**
+     * @var string
+     */
+    private $defaultCurrency;
+
+    /**
      * @param ObjectManager $em
      * @param SessionInterface $session
      * @param OrderRepository $orderRepository
@@ -86,7 +91,8 @@ class CartManager extends BaseSalesManager
         SessionInterface $session,
         OrderRepository $orderRepository,
         OrderManager $orderManager,
-        GroupedItemsPriceCalculatorInterface $priceCalculation
+        GroupedItemsPriceCalculatorInterface $priceCalculation,
+        $defaultCurrency
     )
     {
         $this->em = $em;
@@ -94,6 +100,7 @@ class CartManager extends BaseSalesManager
         $this->orderRepository = $orderRepository;
         $this->orderManager = $orderManager; //FIXME: unused
         $this->priceCalculation = $priceCalculation;
+        $this->defaultCurrency = $defaultCurrency;
     }
 
     /**
@@ -102,7 +109,7 @@ class CartManager extends BaseSalesManager
      *
      * @return null|\Sulu\Bundle\Sales\OrderBundle\Entity\Order
      */
-    public function getUserCart($user = null, $locale = null)
+    public function getUserCart($user = null, $locale = null, $currency = null)
     {
         // cart by session ID
         if (!$user) {
@@ -131,7 +138,8 @@ class CartManager extends BaseSalesManager
             $cart = new Order();
         }
 
-        $apiOrder = new ApiOrder($cart, $locale);
+        $currency = $currency ?: $this->defaultCurrency;
+        $apiOrder = new ApiOrder($cart, $locale, $currency);
 
         // TODO: calcualte difference to previous cart
         
@@ -140,8 +148,10 @@ class CartManager extends BaseSalesManager
         // perform price calucaltion
         $totalPrice = $this->priceCalculation->calculate($items, $prices, $supplierItems, true);
         
-        // set grouped items
-        $apiOrder->setSupplierItems(array_values($supplierItems));
+        if ($supplierItems) {
+            // set grouped items
+            $apiOrder->setSupplierItems(array_values($supplierItems));
+        }
         // set total price
         $apiOrder->setTotalNetPrice($totalPrice);
         
