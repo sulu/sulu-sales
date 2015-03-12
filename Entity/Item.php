@@ -3,6 +3,7 @@
 namespace Sulu\Bundle\Sales\CoreBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Sulu\Bundle\ProductBundle\Api\Product;
 use Sulu\Component\Security\Authentication\UserInterface;
 
 /**
