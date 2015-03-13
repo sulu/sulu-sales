@@ -3,6 +3,7 @@
 namespace Sulu\Bundle\Sales\CoreBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Sulu\Bundle\ProductBundle\Api\Product;
 use Sulu\Component\Security\Authentication\UserInterface;
 
 /**
@@ -139,6 +140,11 @@ class Item
     private $totalNetPrice;
 
     /**
+     * @var \Sulu\Bundle\Sales\OrderBundle\Entity\OrderAddress
+     */
+    private $deliveryAddress;
+
+    /**
      * Constructor
      */
     public function __construct()
@@ -148,7 +154,6 @@ class Item
 
     /**
      * Set name
-     *
      * @param string $name
      * @return Item
      */
@@ -161,7 +166,6 @@ class Item
 
     /**
      * Get name
-     *
      * @return string
      */
     public function getName()
@@ -171,7 +175,6 @@ class Item
 
     /**
      * Set number
-     *
      * @param string $number
      * @return Item
      */
@@ -184,7 +187,6 @@ class Item
 
     /**
      * Get number
-     *
      * @return string
      */
     public function getNumber()
@@ -194,7 +196,6 @@ class Item
 
     /**
      * Set quantity
-     *
      * @param float $quantity
      * @return Item
      */
@@ -209,7 +210,6 @@ class Item
 
     /**
      * Get quantity
-     *
      * @return float
      */
     public function getQuantity()
@@ -219,7 +219,6 @@ class Item
 
     /**
      * Set quantityUnit
-     *
      * @param string $quantityUnit
      * @return Item
      */
@@ -232,7 +231,6 @@ class Item
 
     /**
      * Get quantityUnit
-     *
      * @return string
      */
     public function getQuantityUnit()
@@ -242,7 +240,6 @@ class Item
 
     /**
      * Set useProductsPrice
-     *
      * @param boolean $useProductsPrice
      * @return Item
      */
@@ -255,7 +252,6 @@ class Item
 
     /**
      * Get useProductsPrice
-     *
      * @return boolean
      */
     public function getUseProductsPrice()
@@ -265,7 +261,6 @@ class Item
 
     /**
      * Set tax
-     *
      * @param float $tax
      * @return Item
      */
@@ -278,7 +273,6 @@ class Item
 
     /**
      * Get tax
-     *
      * @return float
      */
     public function getTax()
@@ -288,7 +282,6 @@ class Item
 
     /**
      * Set price
-     *
      * @param float $price
      * @return Item
      */
@@ -303,7 +296,6 @@ class Item
 
     /**
      * Get price
-     *
      * @return float
      */
     public function getPrice()
@@ -313,7 +305,6 @@ class Item
 
     /**
      * Set discount
-     *
      * @param float $discount
      * @return Item
      */
@@ -328,7 +319,6 @@ class Item
 
     /**
      * Get discount
-     *
      * @return float
      */
     public function getDiscount()
@@ -338,7 +328,6 @@ class Item
 
     /**
      * Set description
-     *
      * @param string $description
      * @return Item
      */
@@ -351,7 +340,6 @@ class Item
 
     /**
      * Get description
-     *
      * @return string
      */
     public function getDescription()
@@ -361,7 +349,6 @@ class Item
 
     /**
      * Set weight
-     *
      * @param float $weight
      * @return Item
      */
@@ -374,7 +361,6 @@ class Item
 
     /**
      * Get weight
-     *
      * @return float
      */
     public function getWeight()
@@ -384,7 +370,6 @@ class Item
 
     /**
      * Set width
-     *
      * @param float $width
      * @return Item
      */
@@ -397,7 +382,6 @@ class Item
 
     /**
      * Get width
-     *
      * @return float
      */
     public function getWidth()
@@ -407,7 +391,6 @@ class Item
 
     /**
      * Set height
-     *
      * @param float $height
      * @return Item
      */
@@ -420,7 +403,6 @@ class Item
 
     /**
      * Get height
-     *
      * @return float
      */
     public function getHeight()
@@ -430,7 +412,6 @@ class Item
 
     /**
      * Set length
-     *
      * @param float $length
      * @return Item
      */
@@ -443,7 +424,6 @@ class Item
 
     /**
      * Get length
-     *
      * @return float
      */
     public function getLength()
@@ -453,7 +433,6 @@ class Item
 
     /**
      * Set supplierName
-     *
      * @param string $supplierName
      * @return Item
      */
@@ -466,7 +445,6 @@ class Item
 
     /**
      * Get supplierName
-     *
      * @return string
      */
     public function getSupplierName()
@@ -476,7 +454,6 @@ class Item
 
     /**
      * Set created
-     *
      * @param \DateTime $created
      * @return Item
      */
@@ -489,7 +466,6 @@ class Item
 
     /**
      * Get created
-     *
      * @return \DateTime
      */
     public function getCreated()
@@ -499,7 +475,6 @@ class Item
 
     /**
      * Set changed
-     *
      * @param \DateTime $changed
      * @return Item
      */
@@ -512,7 +487,6 @@ class Item
 
     /**
      * Get changed
-     *
      * @return \DateTime
      */
     public function getChanged()
@@ -522,7 +496,6 @@ class Item
 
     /**
      * Get id
-     *
      * @return integer
      */
     public function getId()
@@ -532,7 +505,6 @@ class Item
 
     /**
      * Add attributes
-     *
      * @param \Sulu\Bundle\Sales\CoreBundle\Entity\ItemAttribute $attributes
      * @return Item
      */
@@ -545,7 +517,6 @@ class Item
 
     /**
      * Remove attributes
-     *
      * @param \Sulu\Bundle\Sales\CoreBundle\Entity\ItemAttribute $attributes
      */
     public function removeAttribute(\Sulu\Bundle\Sales\CoreBundle\Entity\ItemAttribute $attributes)
@@ -555,7 +526,6 @@ class Item
 
     /**
      * Get attributes
-     *
      * @return \Doctrine\Common\Collections\Collection
      */
     public function getAttributes()
@@ -565,7 +535,6 @@ class Item
 
     /**
      * Set product
-     *
      * @param \Sulu\Bundle\ProductBundle\Entity\ProductInterface $product
      * @return Item
      */
@@ -578,7 +547,6 @@ class Item
 
     /**
      * Get product
-     *
      * @return \Sulu\Bundle\ProductBundle\Entity\Product
      */
     public function getProduct()
@@ -588,7 +556,6 @@ class Item
 
     /**
      * Set changer
-     *
      * @param UserInterface $changer
      * @return Item
      */
@@ -601,7 +568,6 @@ class Item
 
     /**
      * Get changer
-     *
      * @return UserInterface
      */
     public function getChanger()
@@ -611,7 +577,6 @@ class Item
 
     /**
      * Set creator
-     *
      * @param UserInterface $creator
      * @return Item
      */
@@ -624,22 +589,20 @@ class Item
 
     /**
      * Get creator
-     *
      * @return UserInterface
      */
     public function getCreator()
     {
         return $this->creator;
     }
+
     /**
      * @var \Sulu\Bundle\ContactBundle\Entity\Account
      */
     private $supplier;
 
-
     /**
      * Set supplier
-     *
      * @param \Sulu\Bundle\ContactBundle\Entity\Account $supplier
      * @return Item
      */
@@ -652,7 +615,6 @@ class Item
 
     /**
      * Get supplier
-     *
      * @return \Sulu\Bundle\ContactBundle\Entity\Account
      */
     public function getSupplier()
@@ -662,7 +624,6 @@ class Item
 
     /**
      * Set bitmaskStatus
-     *
      * @param integer $bitmaskStatus
      * @return Item
      */
@@ -675,7 +636,6 @@ class Item
 
     /**
      * Get bitmaskStatus
-     *
      * @return integer
      */
     public function getBitmaskStatus()
@@ -685,7 +645,6 @@ class Item
 
     /**
      * Set totalNetPrice
-     *
      * @param float $totalNetPrice
      * @return Item
      */
@@ -698,7 +657,6 @@ class Item
 
     /**
      * Get totalNetPrice
-     *
      * @return float
      */
     public function getTotalNetPrice()
@@ -708,12 +666,32 @@ class Item
 
     /**
      * Updates and sets the total net price
-     *
      */
     private function updateTotalNetPrice()
     {
         $quantityPrice = $this->price * $this->quantity;
         $total = $quantityPrice - ($quantityPrice * ($this->discount / 100));
         $this->setTotalNetPrice(round($total, 2));
+    }
+
+    /**
+     * Set deliveryAddress
+     * @param \Sulu\Bundle\Sales\OrderBundle\Entity\OrderAddress $deliveryAddress
+     * @return Item
+     */
+    public function setDeliveryAddress(\Sulu\Bundle\Sales\OrderBundle\Entity\OrderAddress $deliveryAddress = null)
+    {
+        $this->deliveryAddress = $deliveryAddress;
+
+        return $this;
+    }
+
+    /**
+     * Get deliveryAddress
+     * @return \Sulu\Bundle\Sales\OrderBundle\Entity\OrderAddress $deliveryAddress
+     */
+    public function getDeliveryAddress()
+    {
+        return $this->deliveryAddress;
     }
 }

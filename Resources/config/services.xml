@@ -11,6 +11,7 @@
         <parameter key="sulu_sales_core.widgets.simple_account.class">Sulu\Bundle\Sales\CoreBundle\Widgets\SimpleAccount</parameter>
         <parameter key="sulu_sales_core.widgets.simple_contact.class">Sulu\Bundle\Sales\CoreBundle\Widgets\SimpleContact</parameter>
         <parameter key="sulu_sales_core.widgets.multiple_accounts.class">Sulu\Bundle\Sales\CoreBundle\Widgets\MultipleAccounts</parameter>
+        <parameter key="sulu_sales_core.grouped_price_calculator.class">Sulu\Bundle\Sales\CoreBundle\Pricing\GroupedItemsPriceCalculator</parameter>
     </parameters>
 
     <services>
@@ -18,12 +19,15 @@
             <tag name="sulu.admin" />
             <argument>%sulu_admin.name%</argument>
         </service>
+        
+        <service id="sulu_sales_core.grouped_price_calculator" class="%sulu_sales_core.grouped_price_calculator.class%"></service>
 
         <service id="sulu_sales_core.item_manager" class="%sulu_sales_core.item_manager.class%">
             <argument type="service" id="doctrine.orm.entity_manager" />
             <argument type="service" id="sulu_sales_core.item_repository" />
             <argument type="service" id="sulu_security.user_repository" />
             <argument type="service" id="sulu_product.product_repository" />
+            <argument type="service" id="sulu_product.price_manager" />
         </service>
 
         <!--REPOSITORIES-->

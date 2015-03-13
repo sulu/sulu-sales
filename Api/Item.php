@@ -6,10 +6,15 @@ use JMS\Serializer\Annotation\VirtualProperty;
 use Sulu\Bundle\ContactBundle\Entity\Account;
 use Sulu\Bundle\ProductBundle\Api\Product;
 use Sulu\Bundle\Sales\CoreBundle\Entity\Item as Entity;
-use Sulu\Bundle\Sales\CoreBundle\Entity\ItemAttribute;
+use Sulu\Bundle\Sales\CoreBundle\Entity\ItemAttributeEntity;
+use Sulu\Bundle\Sales\CoreBundle\Pricing\CalculableBulkPriceItemInterface;
+use Sulu\Bundle\Sales\CoreBundle\Pricing\CalculablePriceGroupItemInterface;
+use Sulu\Bundle\Sales\OrderBundle\Entity\OrderAddressEntity;
+use Sulu\Bundle\Sales\OrderBundle\Api\OrderAddress;
 use Sulu\Component\Rest\ApiWrapper;
 use Hateoas\Configuration\Annotation\Relation;
 use JMS\Serializer\Annotation\SerializedName;
+use JMS\Serializer\Annotation\Groups;
 use DateTime;
 use Sulu\Component\Security\Authentication\UserInterface;
 use Symfony\Component\Intl\NumberFormatter\NumberFormatter;
@@ -18,16 +23,17 @@ use Symfony\Component\Intl\NumberFormatter\NumberFormatter;
  * The item class which will be exported to the API
  * @package Sulu\Bundle\Sales\CoreBundle\Api
  */
-class Item extends ApiWrapper
+class Item extends ApiWrapper implements CalculableBulkPriceItemInterface, CalculablePriceGroupItemInterface
 {
     /**
      * @param Entity $item The item to wrap
      * @param string $locale The locale of this item
      */
-    public function __construct(Entity $item, $locale)
+    public function __construct(Entity $item, $locale, $currency = 'EUR')
     {
         $this->entity = $item;
         $this->locale = $locale;
+        $this->currency = $currency;
     }
 
     /**
@@ -35,6 +41,7 @@ class Item extends ApiWrapper
      * @return int
      * @VirtualProperty
      * @SerializedName("id")
+     * @Groups({"cart"})
      */
     public function getId()
     {
@@ -58,6 +65,7 @@ class Item extends ApiWrapper
     public function setName($name)
     {
         $this->entity->setName($name);
+
         return $this;
     }
 
@@ -78,6 +86,7 @@ class Item extends ApiWrapper
     public function setNumber($number)
     {
         $this->entity->setNumber($number);
+
         return $this;
     }
 
@@ -99,6 +108,7 @@ class Item extends ApiWrapper
     public function setCreated(DateTime $created)
     {
         $this->entity->setCreated($created);
+
         return $this;
     }
 
@@ -120,12 +130,12 @@ class Item extends ApiWrapper
     public function setChanged(DateTime $changed)
     {
         $this->entity->setChanged($changed);
+
         return $this;
     }
 
     /**
      * Set changer
-     *
      * @param UserInterface $changer
      * @return Item
      */
@@ -138,7 +148,6 @@ class Item extends ApiWrapper
 
     /**
      * Get changer
-     *
      * @return UserInterface
      * @VirtualProperty
      * @SerializedName("changer")
@@ -147,6 +156,7 @@ class Item extends ApiWrapper
     {
         // just return id
         $changer = $this->entity->getChanger();
+
         return !$changer ? null : array(
             'id' => $changer->getId()
         );
@@ -154,7 +164,6 @@ class Item extends ApiWrapper
 
     /**
      * Set creator
-     *
      * @param UserInterface $creator
      * @return Item
      */
@@ -167,7 +176,6 @@ class Item extends ApiWrapper
 
     /**
      * Get creator
-     *
      * @return UserInterface
      * @VirtualProperty
      * @SerializedName("creator")
@@ -176,6 +184,7 @@ class Item extends ApiWrapper
     {
         // just return id
         $creator = $this->entity->getCreator();
+
         return !$creator ? null : array(
             'id' => $creator->getId()
         );
@@ -196,6 +205,7 @@ class Item extends ApiWrapper
      * @return float
      * @VirtualProperty
      * @SerializedName("quantity")
+     * @Groups({"cart"})
      */
     public function getQuantity()
     {
@@ -280,6 +290,7 @@ class Item extends ApiWrapper
      * @return float
      * @VirtualProperty
      * @SerializedName("price")
+     * @Groups({"cart"})
      */
     public function getPrice()
     {
@@ -289,24 +300,24 @@ class Item extends ApiWrapper
     /**
      * @VirtualProperty
      * @SerializedName("priceFormatted")
-     *
      * @return string
      */
-    public function getPriceFormatted($locale=null)
+    public function getPriceFormatted($locale = null)
     {
         $formatter = $this->getFormatter($locale);
+
         return $formatter->format((float)$this->entity->getPrice());
     }
 
     /**
      * @VirtualProperty
      * @SerializedName("totalNetPriceFormatted")
-     *
      * @return string
      */
-    public function getTotalNetPriceFormatted($locale=null)
+    public function getTotalNetPriceFormatted($locale = null)
     {
         $formatter = $this->getFormatter($locale);
+
         return $formatter->format((float)$this->entity->getTotalNetPrice());
     }
 
@@ -498,10 +509,10 @@ class Item extends ApiWrapper
     }
 
     /**
-     * @param ItemAttribute $value
+     * @param ItemAttributeEntity $value
      * @return $this
      */
-    public function addAttribute(ItemAttribute $value)
+    public function addAttribute(ItemAttributeEntity $value)
     {
         $this->entity->addAttribute($value);
 
@@ -533,13 +544,40 @@ class Item extends ApiWrapper
      * @return Product
      * @VirtualProperty
      * @SerializedName("product")
+     * @Groups({"cart"})
      */
     public function getProduct()
     {
-        if ($this->getEntity()->getProduct()) {
-            return array(
-                'id' => $this->entity->getProduct()->getId()
-            );
+        $product = $this->getEntity()->getProduct();
+        if ($product) {
+            return new Product($product, $this->locale);
+        }
+        return null;
+    }
+
+    /**
+     * Set deliveryAddress
+     * @param OrderAddressEntity $deliveryAddress
+     * @return Item
+     */
+    public function setDeliveryAddress(OrderAddressEntity $deliveryAddress = null)
+    {
+        $this->entity->setDeliveryAddress($deliveryAddress);
+        return $this;
+    }
+
+    /**
+     * Get deliveryAddress
+     * @return OrderAddress $deliveryAddress
+     * @VirtualProperty
+     * @SerializedName("deliveryAddress")
+     * @Groups({"cart"})
+     */
+    public function getDeliveryAddress()
+    {
+        $address = $this->entity->getDeliveryAddress();
+        if ($address) {
+            return new OrderAddress($address);
         }
         return null;
     }
@@ -552,5 +590,74 @@ class Item extends ApiWrapper
     {
         $sysLocale = $locale ? $locale : 'de-AT';
         return new \NumberFormatter($sysLocale, \NumberFormatter::CURRENCY);
+    }
+
+    /**
+     * {@inheritDoc}
+     * TODO: default-price EUR?
+     */
+    public function getCalcPrice($quantity)
+    {
+        // TODO: if ($this->getUseProductsPrice()) {
+        $product = $this->getProduct();
+        if ($product) {
+            $price = $product->getBulkPriceForCurrency($quantity, $this->currency);
+            if ($price) {
+                return $price->getPrice();
+            }
+        }
+        return $this->getPrice();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getCalcQuantity()
+    {
+        return $this->getQuantity();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getCalcPriceGroup()
+    {
+        $supplier = $this->getSupplier();
+        if ($supplier) {
+            return $supplier->getId();
+        }
+
+        return null;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getCalcDiscount()
+    {
+        return $this->getDiscount();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getCalcCurrencyCode()
+    {
+        return $this->currency;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getCalcPriceGroupContent()
+    {
+        $supplier = $this->getSupplier();
+        if ($supplier) {
+            return array(
+                'id' => $supplier->getId(),
+                'name' => $supplier->getName(),
+            );
+        }
+        return null;
     }
 }
