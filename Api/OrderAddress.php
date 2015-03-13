@@ -1,118 +1,38 @@
 <?php
 
-namespace Sulu\Bundle\Sales\OrderBundle\Entity;
+namespace Sulu\Bundle\Sales\OrderBundle\Api;
 
-use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation\VirtualProperty;
+use Sulu\Bundle\Sales\OrderBundle\Entity\OrderAddress as Entity;
+
+use JMS\Serializer\Annotation\Groups;
+use Sulu\Component\Rest\ApiWrapper;
+use JMS\Serializer\Annotation\SerializedName;
 
 /**
- * OrderAddress
+ * Defines the type of an order
+ * @package Sulu\Bundle\Sales\OrderBundle\Api
  */
-class OrderAddress
+class OrderAddress extends ApiWrapper
 {
     /**
-     * @var string
+     * @param Entity $entity
      */
-    private $salutation;
+    public function __construct(Entity $entity) {
+        $this->entity = $entity;
+    }
 
     /**
-     * @var string
+     * Returns the id
+     * @return int
+     * @VirtualProperty
+     * @SerializedName("id")
+     * @Groups({"cart"})
      */
-    private $firstName;
-
-    /**
-     * @var string
-     */
-    private $lastName;
-
-    /**
-     * @var string
-     */
-    private $accountName;
-
-    /**
-     * @var string
-     */
-    private $title;
-
-    /**
-     * @var string
-     */
-    private $street;
-
-    /**
-     * @var string
-     */
-    private $addition;
-
-    /**
-     * @var string
-     */
-    private $number;
-
-    /**
-     * @var string
-     */
-    private $city;
-
-    /**
-     * @var string
-     */
-    private $zip;
-
-    /**
-     * @var string
-     */
-    private $state;
-
-    /**
-     * @var string
-     */
-    private $country;
-
-    /**
-     * @var string
-     */
-    private $uid;
-
-    /**
-     * @var string
-     */
-    private $email;
-
-    /**
-     * @var string
-     */
-    private $phone;
-
-    /**
-     * @var string
-     */
-    private $phoneMobile;
-
-    /**
-     * @var integer
-     */
-    private $id;
-
-    /**
-     * @var string
-     */
-    private $postboxCity;
-
-    /**
-     * @var string
-     */
-    private $postboxNumber;
-
-    /**
-     * @var string
-     */
-    private $postboxPostcode;
-
-    /**
-     * @var \Sulu\Bundle\ContactBundle\Entity\Address
-     */
-    private $contactAddress;
+    public function getId()
+    {
+        return $this->entity->getId();
+    }
 
     /**
      * Set salutation
@@ -123,7 +43,7 @@ class OrderAddress
      */
     public function setSalutation($salutation)
     {
-        $this->salutation = $salutation;
+        $this->entity->setSalutation($salutation);
 
         return $this;
     }
@@ -132,10 +52,13 @@ class OrderAddress
      * Get salutation
      *
      * @return string
+     * @VirtualProperty
+     * @SerializedName("salutation")
+     * @Groups({"cart"})
      */
     public function getSalutation()
     {
-        return $this->salutation;
+        return $this->entity->getSalutation();
     }
 
     /**
@@ -147,7 +70,7 @@ class OrderAddress
      */
     public function setFirstName($firstName)
     {
-        $this->firstName = $firstName;
+        $this->entity->setFirstName($firstName);
 
         return $this;
     }
@@ -156,10 +79,13 @@ class OrderAddress
      * Get firstName
      *
      * @return string
+     * @VirtualProperty
+     * @SerializedName("firstName")
+     * @Groups({"cart"})
      */
     public function getFirstName()
     {
-        return $this->firstName;
+        return $this->entity->getFirstName();
     }
 
     /**
@@ -171,7 +97,7 @@ class OrderAddress
      */
     public function setLastName($lastName)
     {
-        $this->lastName = $lastName;
+        $this->entity->setLastName($lastName);
 
         return $this;
     }
@@ -180,10 +106,13 @@ class OrderAddress
      * Get lastName
      *
      * @return string
+     * @VirtualProperty
+     * @SerializedName("lastName")
+     * @Groups({"cart"})
      */
     public function getLastName()
     {
-        return $this->lastName;
+        return $this->entity->getLastName();
     }
 
     /**
@@ -195,7 +124,7 @@ class OrderAddress
      */
     public function setAccountName($accountName)
     {
-        $this->accountName = $accountName;
+        $this->entity->setAccountName($accountName);
 
         return $this;
     }
@@ -204,10 +133,13 @@ class OrderAddress
      * Get accountName
      *
      * @return string
+     * @VirtualProperty
+     * @SerializedName("accountName")
+     * @Groups({"cart"})
      */
     public function getAccountName()
     {
-        return $this->accountName;
+        return $this->entity->getAccountName();
     }
 
     /**
@@ -219,7 +151,7 @@ class OrderAddress
      */
     public function setTitle($title)
     {
-        $this->title = $title;
+        $this->entity->setTitle($title);
 
         return $this;
     }
@@ -228,10 +160,13 @@ class OrderAddress
      * Get title
      *
      * @return string
+     * @VirtualProperty
+     * @SerializedName("title")
+     * @Groups({"cart"})
      */
     public function getTitle()
     {
-        return $this->title;
+        return $this->entity->getTitle();
     }
 
     /**
@@ -243,7 +178,7 @@ class OrderAddress
      */
     public function setStreet($street)
     {
-        $this->street = $street;
+        $this->entity->setStreet($street);
 
         return $this;
     }
@@ -252,10 +187,13 @@ class OrderAddress
      * Get street
      *
      * @return string
+     * @VirtualProperty
+     * @SerializedName("street")
+     * @Groups({"cart"})
      */
     public function getStreet()
     {
-        return $this->street;
+        return $this->entity->getStreet();
     }
 
     /**
@@ -267,7 +205,7 @@ class OrderAddress
      */
     public function setAddition($addition)
     {
-        $this->addition = $addition;
+        $this->entity->setAddition($addition);
 
         return $this;
     }
@@ -276,10 +214,13 @@ class OrderAddress
      * Get addition
      *
      * @return string
+     * @VirtualProperty
+     * @SerializedName("addition")
+     * @Groups({"cart"})
      */
     public function getAddition()
     {
-        return $this->addition;
+        return $this->entity->getAddition();
     }
 
     /**
@@ -291,7 +232,7 @@ class OrderAddress
      */
     public function setNumber($number)
     {
-        $this->number = $number;
+        $this->entity->setNumber($number);
 
         return $this;
     }
@@ -300,10 +241,13 @@ class OrderAddress
      * Get number
      *
      * @return string
+     * @VirtualProperty
+     * @SerializedName("number")
+     * @Groups({"cart"})
      */
     public function getNumber()
     {
-        return $this->number;
+        return $this->entity->getNumber();
     }
 
     /**
@@ -315,7 +259,7 @@ class OrderAddress
      */
     public function setCity($city)
     {
-        $this->city = $city;
+        $this->entity->setCity($city);
 
         return $this;
     }
@@ -324,10 +268,13 @@ class OrderAddress
      * Get city
      *
      * @return string
+     * @VirtualProperty
+     * @SerializedName("city")
+     * @Groups({"cart"})
      */
     public function getCity()
     {
-        return $this->city;
+        return $this->entity->getCity();
     }
 
     /**
@@ -339,7 +286,7 @@ class OrderAddress
      */
     public function setZip($zip)
     {
-        $this->zip = $zip;
+        $this->entity->setZip($zip);
 
         return $this;
     }
@@ -348,10 +295,13 @@ class OrderAddress
      * Get zip
      *
      * @return string
+     * @VirtualProperty
+     * @SerializedName("zip")
+     * @Groups({"cart"})
      */
     public function getZip()
     {
-        return $this->zip;
+        return $this->entity->getZip();
     }
 
     /**
@@ -363,7 +313,7 @@ class OrderAddress
      */
     public function setState($state)
     {
-        $this->state = $state;
+        $this->entity->setState($state);
 
         return $this;
     }
@@ -372,10 +322,13 @@ class OrderAddress
      * Get state
      *
      * @return string
+     * @VirtualProperty
+     * @SerializedName("state")
+     * @Groups({"cart"})
      */
     public function getState()
     {
-        return $this->state;
+        return $this->entity->getState();
     }
 
     /**
@@ -387,7 +340,7 @@ class OrderAddress
      */
     public function setCountry($country)
     {
-        $this->country = $country;
+        $this->entity->setCountry($country);
 
         return $this;
     }
@@ -396,10 +349,13 @@ class OrderAddress
      * Get country
      *
      * @return string
+     * @VirtualProperty
+     * @SerializedName("country")
+     * @Groups({"cart"})
      */
     public function getCountry()
     {
-        return $this->country;
+        return $this->entity->getCountry();
     }
 
     /**
@@ -411,7 +367,7 @@ class OrderAddress
      */
     public function setUid($uid)
     {
-        $this->uid = $uid;
+        $this->entity->setUid($uid);
 
         return $this;
     }
@@ -420,10 +376,13 @@ class OrderAddress
      * Get uid
      *
      * @return string
+     * @VirtualProperty
+     * @SerializedName("uid")
+     * @Groups({"cart"})
      */
     public function getUid()
     {
-        return $this->uid;
+        return $this->entity->getUid();
     }
 
     /**
@@ -435,7 +394,7 @@ class OrderAddress
      */
     public function setPhone($phone)
     {
-        $this->phone = $phone;
+        $this->entity->setPhone($phone);
 
         return $this;
     }
@@ -444,10 +403,13 @@ class OrderAddress
      * Get phone
      *
      * @return string
+     * @VirtualProperty
+     * @SerializedName("phone")
+     * @Groups({"cart"})
      */
     public function getPhone()
     {
-        return $this->phone;
+        return $this->entity->getPhone();
     }
 
     /**
@@ -459,7 +421,7 @@ class OrderAddress
      */
     public function setPhoneMobile($phoneMobile)
     {
-        $this->phoneMobile = $phoneMobile;
+        $this->entity->setPhoneMobile($phoneMobile);
 
         return $this;
     }
@@ -468,20 +430,13 @@ class OrderAddress
      * Get phoneMobile
      *
      * @return string
+     * @VirtualProperty
+     * @SerializedName("phoneMobile")
+     * @Groups({"cart"})
      */
     public function getPhoneMobile()
     {
-        return $this->phoneMobile;
-    }
-
-    /**
-     * Get id
-     *
-     * @return integer
-     */
-    public function getId()
-    {
-        return $this->id;
+        return $this->entity->getPhoneMobile();
     }
 
     /**
@@ -493,7 +448,7 @@ class OrderAddress
      */
     public function setPostboxCity($postboxCity)
     {
-        $this->postboxCity = $postboxCity;
+        $this->entity->setPostboxCity($postboxCity);
 
         return $this;
     }
@@ -502,10 +457,13 @@ class OrderAddress
      * Get postboxCity
      *
      * @return string
+     * @VirtualProperty
+     * @SerializedName("postboxCity")
+     * @Groups({"cart"})
      */
     public function getPostboxCity()
     {
-        return $this->postboxCity;
+        return $this->entity->getPostboxCity();
     }
 
     /**
@@ -517,7 +475,7 @@ class OrderAddress
      */
     public function setPostboxNumber($postboxNumber)
     {
-        $this->postboxNumber = $postboxNumber;
+        $this->entity->setPostboxNumber($postboxNumber);
 
         return $this;
     }
@@ -526,10 +484,13 @@ class OrderAddress
      * Get postboxNumber
      *
      * @return string
+     * @VirtualProperty
+     * @SerializedName("postboxNumber")
+     * @Groups({"cart"})
      */
     public function getPostboxNumber()
     {
-        return $this->postboxNumber;
+        return $this->entity->getPostboxNumber();
     }
 
     /**
@@ -541,7 +502,7 @@ class OrderAddress
      */
     public function setPostboxPostcode($postboxPostcode)
     {
-        $this->postboxPostcode = $postboxPostcode;
+        $this->entity->setPostboxPostcode($postboxPostcode);
 
         return $this;
     }
@@ -550,10 +511,13 @@ class OrderAddress
      * Get postboxPostcode
      *
      * @return string
+     * @VirtualProperty
+     * @SerializedName("postboxCode")
+     * @Groups({"cart"})
      */
     public function getPostboxPostcode()
     {
-        return $this->postboxPostcode;
+        return $this->entity->getPostboxPostcode();
     }
 
     /**
@@ -565,7 +529,7 @@ class OrderAddress
      */
     public function setEmail($email)
     {
-        $this->email = $email;
+        $this->entity->setEmail($email);
 
         return $this;
     }
@@ -574,10 +538,13 @@ class OrderAddress
      * Get email
      *
      * @return string
+     * @VirtualProperty
+     * @SerializedName("email")
+     * @Groups({"cart"})
      */
     public function getEmail()
     {
-        return $this->email;
+        return $this->entity->getEmail();
     }
 
     /**
@@ -589,7 +556,7 @@ class OrderAddress
      */
     public function setContactAddress(\Sulu\Bundle\ContactBundle\Entity\Address $contactAddress = null)
     {
-        $this->contactAddress = $contactAddress;
+        $this->entity->setContactAddress($contactAddress);
 
         return $this;
     }
@@ -597,10 +564,29 @@ class OrderAddress
     /**
      * Get contactAddress
      *
-     * @return \Sulu\Bundle\ContactBundle\Entity\Address $contactAddress
+     * @return null|\Sulu\Bundle\ContactBundle\Entity\Address $contactAddress
      */
     public function getContactAddress()
     {
-        return $this->contactAddress;
+        if ($this->entity->getContactAddress()) {
+            return $this->entity->getContactAddress();
+        }
+        return null;
+    }
+
+    /**
+     * Get contactAddress id
+     *
+     * @return int|null
+     * @VirtualProperty
+     * @SerializedName("contactAddressId")
+     * @Groups({"cart"})
+     */
+    public function getContactAddressId()
+    {
+        if ($this->entity->getContactAddress()) {
+            return $this->entity->getContactAddress()->getId();
+        }
+        return null;
     }
 }

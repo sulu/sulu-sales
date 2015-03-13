@@ -25,5 +25,11 @@
         <field name="uid" type="string" column="uid" length="255" nullable="true"/>
         <field name="phone" type="string" column="phone" length="255" nullable="true"/>
         <field name="phoneMobile" type="string" column="phoneMobile" length="255" nullable="true"/>
+
+        <many-to-one target-entity="Sulu\Bundle\ContactBundle\Entity\Address" field="contactAddress">
+            <join-columns>
+                <join-column name="idContactAddresses" referenced-column-name="id" nullable="true"/>
+            </join-columns>
+        </many-to-one>
     </entity>
 </doctrine-mapping>

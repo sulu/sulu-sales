@@ -15,6 +15,7 @@
         <parameter key="sulu_sales_order.widgets.order_flow_of_documents.class">Sulu\Bundle\Sales\OrderBundle\Widgets\FlowOfDocuments</parameter>
         <parameter key="sulu_sales_order.order_dependency_manager.class">Sulu\Bundle\Sales\OrderBundle\Order\OrderDependencyManager</parameter>
         <parameter key="sulu_sales_order.order_updater.class">Sulu\Bundle\Sales\OrderBundle\Order\OrderUpdater</parameter>
+        <parameter key="sulu_sales_order.cart_manager.class">Sulu\Bundle\Sales\OrderBundle\Cart\CartManager</parameter>
     </parameters>
     <services>
         <!--ADMIN-->
@@ -55,6 +56,15 @@
             <argument type="service" id="sulu_sales_core.item_manager" />
             <argument type="service" id="sulu_sales_order.order_status_repository" />
             <argument type="service" id="sulu_sales_order.order_type_repository" />
+        </service>
+
+        <service id="sulu_sales_order.cart_manager" class="%sulu_sales_order.cart_manager.class%">
+            <argument type="service" id="doctrine.orm.entity_manager" />
+            <argument type="service" id="session" />
+            <argument type="service" id="sulu_sales_order.order_repository" />
+            <argument type="service" id="sulu_sales_order.order_manager" />
+            <argument type="service" id="sulu_sales_core.grouped_price_calculator" />
+            <argument>%sulu_product.default_currency%</argument>
         </service>
 
         <service id="sulu_sales_order.order_dependency_manager" class="%sulu_sales_order.order_dependency_manager.class%" />

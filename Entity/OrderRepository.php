@@ -34,7 +34,7 @@ class OrderRepository extends EntityRepository
      * @param $id
      * @return Order|null
      */
-    public function findOrderForItemWithId($id)
+    public function findOrderForItemWithId($id, $multipleResults = false)
     {
         try {
             $qb = $this->createQueryBuilder('o')
@@ -42,7 +42,13 @@ class OrderRepository extends EntityRepository
                 ->where('items.id = :id')
                 ->setParameter('id', $id);
 
-            return $qb->getQuery()->getSingleResult();
+            $query = $qb->getQuery();
+            
+            if (!$multipleResults) {
+                return $query->getSingleResult();
+            } else {
+                return $query->getResult();
+            }
         } catch (NoResultException $exc) {
             return null;
         }
@@ -109,6 +115,30 @@ class OrderRepository extends EntityRepository
     }
 
     /**
+     * Finds orders by statusId and user
+     *
+     * @param $statusId
+     * @param $user
+     *
+     * @return array|null
+     */
+    public function findByStatusIdAndUser($locale, $statusId, $user)
+    {
+        try {
+            $qb = $this->getOrderQuery($locale)
+                ->andWhere('o.creator = :user')
+                ->setParameter('user', $user)
+                ->andWhere('status.id = :statusId')
+                ->setParameter('statusId', $statusId)
+                ->orderBy('o.created', 'DESC');
+            
+            return $qb->getQuery()->getResult();
+        } catch (NoResultException $exc) {
+            return null;
+        }
+    }
+
+    /**
      * Returns query for orders
      * @param string $locale The locale to load
      * @return \Doctrine\ORM\QueryBuilder
@@ -121,7 +151,6 @@ class OrderRepository extends EntityRepository
             ->leftJoin('o.status', 'status')
             ->leftJoin('status.translations', 'statusTranslations', 'WITH', 'statusTranslations.locale = :locale')
             ->leftJoin('o.items', 'items')
-//            ->andWhere('statusTranslations.locale = :locale')
             ->setParameter('locale', $locale);
         return $qb;
     }
