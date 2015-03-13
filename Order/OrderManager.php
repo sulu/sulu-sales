@@ -1005,7 +1005,7 @@ class OrderManager
                 };
 
                 $delete = function ($item) use ($order) {
-                    $this->removeItem($item->getEntity, $order);
+                    $this->removeItem($item->getEntity(), $order->getEntity());
                 };
 
                 $update = function ($item, $matchedEntry) use ($locale, $userId, $order) {
