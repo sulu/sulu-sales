@@ -14,6 +14,7 @@ use Doctrine\Common\Persistence\ObjectManager;
 use Sulu\Bundle\ProductBundle\Entity\Product;
 use Sulu\Bundle\ProductBundle\Product\Exception\ProductException;
 use Sulu\Bundle\ProductBundle\Product\Exception\ProductNotFoundException;
+use Sulu\Bundle\ProductBundle\Product\ProductPriceManagerInterface;
 use Sulu\Bundle\ProductBundle\Product\ProductRepositoryInterface;
 use Sulu\Bundle\Sales\CoreBundle\Api\Item;
 use Sulu\Bundle\Sales\CoreBundle\Entity\Item as ItemEntity;
@@ -54,6 +55,11 @@ class ItemManager
     protected $productRepository;
 
     /**
+     * @var ProductPriceManagerInterface
+     */
+    protected $productPriceManager;
+
+    /**
      * constructor
      *
      * @param ObjectManager $em
@@ -64,13 +70,15 @@ class ItemManager
         ObjectManager $em,
         ItemRepository $itemRepository,
         UserRepositoryInterface $userRepository,
-        ProductRepositoryInterface $productRepository
+        ProductRepositoryInterface $productRepository,
+        ProductPriceManagerInterface $productPriceManager
     )
     {
         $this->em = $em;
         $this->itemRepository = $itemRepository;
         $this->userRepository = $userRepository;
         $this->productRepository = $productRepository;
+        $this->productPriceManager = $productPriceManager;
     }
 
     /**
@@ -82,14 +90,19 @@ class ItemManager
      * @param null $itemStatusId
      * @return null|\Sulu\Bundle\Sales\CoreBundle\Api\Item
      */
-    public function save(array $data, $locale, $userId = null, Item $item = null, $itemStatusId = null)
+    public function save(array $data, $locale, $userId = null, $item = null, $itemStatusId = null)
     {
         // check requiresd data
-        $this->checkRequiredData($data, !!$item);
+        if (!$item) {
+            $this->checkRequiredData($data, !!$item);
+        }
 
         // get item
         if (!$item) {
             $item = new Item(new ItemEntity(), $locale);
+        }
+        if ($item instanceof ItemEntity) {
+            $item = new Item($item, $locale);
         }
 
         // get user
@@ -104,12 +117,12 @@ class ItemManager
             // TODO: set supplier based on if its a string  or object (fetch account and set it to setSupplier)
             $item->setSupplierName($this->getProperty($data, 'supplierName', $item->getSupplierName()));
             $item->setTax($this->getProperty($data, 'tax', $item->getTax()));
+            $item->setQuantityUnit($this->getProperty($data, 'quantityUnit', $item->getQuantityUnit()));
         }
         $item->setPrice($this->getProperty($data, 'price', $item->getPrice()));
 
         // set item data
         $item->setQuantity($this->getProperty($data, 'quantity', null));
-        $item->setQuantityUnit($this->getProperty($data, 'quantityUnit', $item->getQuantityUnit()));
         $item->setDiscount($this->getProperty($data, 'discount', $item->getDiscount()));
 
         // create new item
@@ -254,19 +267,23 @@ class ItemManager
 
     /**
      * check if necessary data is set
+     *
      * @param $data
      * @param $isNew
+     *
+     * @throws MissingItemAttributeException
      */
     private function checkRequiredData($data, $isNew)
     {
         // either name or products must be set
         if (array_key_exists('product', $data)) {
-            $this->checkDataSet($data['product'], 'id', $isNew);
+            // product-id must be defined
+            $this->getProductId($data['product']);
         } else {
-            $this->checkDataSet($data, 'name', $isNew);
+            $this->checkDataSet($data, 'name', !$isNew);
+            $this->checkDataSet($data, 'quantityUnit', !$isNew);
         }
-        $this->checkDataSet($data, 'quantity', $isNew);
-        $this->checkDataSet($data, 'quantityUnit', $isNew);
+        $this->checkDataSet($data, 'quantity', !$isNew);
     }
 
     /**
@@ -301,6 +318,31 @@ class ItemManager
     }
 
     /**
+     * returns productid - if not defined, throw an exception
+     *
+     * @param $data
+     *
+     * @return mixed
+     * @throws MissingItemAttributeException
+     */
+    private function getProductId($data)
+    {
+        // if data is array, id must be a key
+        if (is_array($data)) {
+            if (!isset($data['id'])) {
+                throw new MissingItemAttributeException('product.id');
+            }
+
+            return $data['id'];
+            // data must be an int
+        } elseif (!is_int($data)) {
+            throw new MissingItemAttributeException('product.id');
+        }
+
+        return $data;
+    }
+
+    /**
      * Sets item based on given product data
      *
      * @param $data
@@ -316,13 +358,12 @@ class ItemManager
         // terms of delivery
         $productData = $this->getProperty($data, 'product');
         if ($productData) {
-            if (!array_key_exists('id', $productData)) {
-                throw new MissingItemAttributeException('product.id');
-            }
+            $productId = $this->getProductId($productData);
+            
             /** @var Product $product */
-            $product = $this->productRepository->find($productData['id']);
+            $product = $this->productRepository->find($productId);
             if (!$product) {
-                throw new ProductNotFoundException(self::$productEntityName, $productData['id']);
+                throw new ProductNotFoundException(self::$productEntityName, $productId);
             }
             $item->setProduct($product);
             $translation = $product->getTranslation($locale);
@@ -361,14 +402,16 @@ class ItemManager
             $item->setTax(0);
 //            $item->setTax($product->getTaxClass()->getTax($locale));
 
+            // TODO: product-price
             if ($item->getUseProductsPrice() === true) {
-                $item->setPrice($product->getPrice());
+                $price = $this->productPriceManager->getBulkPriceForCurrency(
+                    $product,
+                    $item->getQuantity()
+                );
+                $item->setPrice($price);
             }
 
             return $product;
-        } else {
-            $item->setName(null);
-            $item->setProduct(null);
         }
         return null;
     }

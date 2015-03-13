@@ -27,6 +27,7 @@
             <argument type="service" id="sulu_sales_core.item_repository" />
             <argument type="service" id="sulu_security.user_repository" />
             <argument type="service" id="sulu_product.product_repository" />
+            <argument type="service" id="sulu_product.price_manager" />
         </service>
 
         <!--REPOSITORIES-->
