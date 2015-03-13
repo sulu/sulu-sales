@@ -49,7 +49,7 @@ class CartManagerTest extends OrderTestBase
 //        $sessionMock = new MockFileSessionStorage();
 //        $sessionMock->setId('IamASessionKey');
 //        $session = new Session($sessionMock);
-//
+
 //        $cart = $this->getCartManager()->getUserCart();
 //        $this->assertEquals($cart->getEntity(), $this->order);
 

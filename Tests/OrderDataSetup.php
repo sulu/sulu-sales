@@ -9,7 +9,38 @@
  */
 namespace Sulu\Bundle\Sales\OrderBundle\Tests;
 
-class OrderData {
+use DateTime;
+use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\Mapping\ClassMetadata;
+use Sulu\Bundle\ContactBundle\Entity\Account;
+use Sulu\Bundle\ContactBundle\Entity\Address;
+use Sulu\Bundle\ContactBundle\Entity\AddressType;
+use Sulu\Bundle\ContactBundle\Entity\Contact;
+use Sulu\Bundle\ContactBundle\Entity\ContactTitle;
+use Sulu\Bundle\ContactBundle\Entity\Country;
+use Sulu\Bundle\ContactBundle\Entity\Phone;
+use Sulu\Bundle\ContactBundle\Entity\PhoneType;
+use Sulu\Bundle\ContactBundle\Entity\TermsOfDelivery;
+use Sulu\Bundle\ContactBundle\Entity\TermsOfPayment;
+use Sulu\Bundle\ProductBundle\Entity\Product;
+use Sulu\Bundle\ProductBundle\Entity\ProductTranslation;
+use Sulu\Bundle\ProductBundle\Entity\Status;
+use Sulu\Bundle\ProductBundle\Entity\StatusTranslation;
+use Sulu\Bundle\ProductBundle\Entity\Type;
+use Sulu\Bundle\ProductBundle\Entity\TypeTranslation;
+
+use Sulu\Bundle\Sales\CoreBundle\Entity\Item;
+use Sulu\Bundle\Sales\OrderBundle\DataFixtures\ORM\LoadOrderStatus;
+use Sulu\Bundle\Sales\OrderBundle\Entity\Order;
+use Sulu\Bundle\Sales\OrderBundle\Entity\OrderAddress;
+use Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatus;
+use Sulu\Bundle\Sales\OrderBundle\Entity\OrderType;
+use Sulu\Bundle\Sales\OrderBundle\Entity\OrderTypeTranslation;
+use Sulu\Bundle\SecurityBundle\Entity\User;
+use Sulu\Bundle\TestBundle\Testing\SuluTestCase;
+use Symfony\Component\HttpKernel\Client;
+
+class OrderDataSetup {
 
     protected $locale = 'en';
     
@@ -18,75 +49,75 @@ class OrderData {
     /**
      * @var OrderType
      */
-    protected $orderTypeManual;
-    protected $orderTypeShop;
-    protected $orderTypeAnon;
+    public $orderTypeManual;
+    public $orderTypeShop;
+    public $orderTypeAnon;
 
     /**
      * @var Account
      */
-    protected $account;
+    public $account;
     /**
      * @var Address
      */
-    protected $address;
+    public $address;
     /**
      * @var Address
      */
-    protected $address2;
+    public $address2;
     /**
      * @var Contact
      */
-    protected $contact;
+    public $contact;
     /**
      * @var Contact
      */
-    protected $contact2;
+    public $contact2;
     /**
      * @var Order
      */
-    protected $order;
+    public $order;
     /**
      * @var OrderAddress
      */
-    protected $orderAddressDelivery;
+    public $orderAddressDelivery;
     /**
      * @var OrderAddress
      */
-    protected $orderAddressInvoice;
+    public $orderAddressInvoice;
     /**
      * @var OrderStatus
      */
-    protected $orderStatus;
+    public $orderStatus;
     /**
      * @var TermsOfDelivery
      */
-    protected $termsOfDelivery;
+    public $termsOfDelivery;
     /**
      * @var TermsOfPayment
      */
-    protected $termsOfPayment;
+    public $termsOfPayment;
     /**
      * @var Item
      */
-    protected $item;
+    public $item;
     /**
      * @var Product
      */
-    protected $product;
+    public $product;
 
     /**
      * @var ProductTranslation
      */
-    protected $productTranslation;
+    public $productTranslation;
     /**
      * @var Phone
      */
-    protected $phone;
+    public $phone;
     /**
      * @var User
      */
-    protected $user;
+    public $user;
 
     /**
      * @var EntityManager
@@ -96,8 +127,27 @@ class OrderData {
 
     public function __construct(EntityManager $entityManager) {
         $this->em = $entityManager;
+
+        $this->loadFixtures();
+        $this->setUpTestData();
+    }
+    
+    public function prepareCart()
+    {
+        // set order to cart order
+        $this->orderStatus = $this->em->getRepository(static::$orderStatusEntityName)->find(OrderStatus::STATUS_IN_CART);
+        
+        $this->order->setStatus($this->orderStatus);
+        $this->order->setSessionId('IamASessionKey');
     }
 
+    protected function loadFixtures()
+    {
+        // load order-status
+        $statusFixtures = new LoadOrderStatus();
+        $statusFixtures->load($this->em);
+    }
+    
     protected function setUpTestData()
     {
         // account

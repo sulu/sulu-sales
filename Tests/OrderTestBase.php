@@ -47,6 +47,8 @@ class OrderTestBase extends SuluTestCase
 {
     protected $locale = 'en';
 
+    protected static $orderStatusEntityName = 'SuluSalesOrderBundle:OrderStatus';
+
     protected $data;
     
     /**
@@ -58,21 +60,13 @@ class OrderTestBase extends SuluTestCase
     {
         $this->em = $this->db('ORM')->getOm();
         $this->purgeDatabase();
-        $this->loadFixtures();
         $this->setUpTestData();
         $this->em->flush();
-    }
-    
-    protected function loadFixtures()
-    {
-        // load order-status
-        $statusFixtures = new LoadOrderStatus();
-        $statusFixtures->load($this->em);
     }
 
     protected function setUpTestData()
     {
-        $this->data = new SetupOrderData($this->em);
+        $this->data = new OrderDataSetup($this->em);
     }
 
     protected function createStatusTranslation(EntityManager $manager, $status, $translation, $locale) {

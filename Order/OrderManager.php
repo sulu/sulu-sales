@@ -231,8 +231,8 @@ class OrderManager
         $order->setCustomerName($customerName);
 
         // set OrderAddress data
-        $this->setOrderAddress($order->getInvoiceAddress(), $data['invoiceAddress'], $contact, $account);
-        $this->setOrderAddress($order->getDeliveryAddress(), $data['deliveryAddress'], $contact, $account);
+        $this->setOrderAddress($order->getEntity()->getInvoiceAddress(), $data['invoiceAddress'], $contact, $account);
+        $this->setOrderAddress($order->getEntity()->getDeliveryAddress(), $data['deliveryAddress'], $contact, $account);
 
         // handle items
         if (!$this->processItems($data, $order, $locale, $userId)) {
