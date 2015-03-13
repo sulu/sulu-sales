@@ -137,24 +137,6 @@ abstract class BaseOrderManager
     }
 
     /**
-     * find order for item with id
-     * @param $id
-     * @throws \Sulu\Component\Rest\Exception\EntityNotFoundException
-     * @internal param $statusId
-     * @return OrderEntity
-     */
-    public function findOrderEntityForItemWithId($id)
-    {
-        try {
-            return $this->em
-                ->getRepository(static::$orderEntityName)
-                ->findOrderForItemWithId($id);
-        } catch (NoResultException $nre) {
-            throw new EntityNotFoundException(static::$itemEntity, $id);
-        }
-    }
-
-    /**
      * @param $locale
      * @return \Sulu\Component\Rest\ListBuilder\Doctrine\FieldDescriptor\DoctrineFieldDescriptor[]
      */

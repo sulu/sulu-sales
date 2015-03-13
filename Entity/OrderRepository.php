@@ -34,7 +34,7 @@ class OrderRepository extends EntityRepository
      * @param $id
      * @return Order|null
      */
-    public function findOrderForItemWithId($id)
+    public function findOrderForItemWithId($id, $multipleResults = false)
     {
         try {
             $qb = $this->createQueryBuilder('o')
@@ -42,7 +42,13 @@ class OrderRepository extends EntityRepository
                 ->where('items.id = :id')
                 ->setParameter('id', $id);
 
-            return $qb->getQuery()->getSingleResult();
+            $query = $qb->getQuery();
+            
+            if (!$multipleResults) {
+                return $query->getSingleResult();
+            } else {
+                return $query->getResult();
+            }
         } catch (NoResultException $exc) {
             return null;
         }

@@ -17,6 +17,8 @@ use Sulu\Bundle\ContactBundle\Entity\Account;
 use Sulu\Bundle\ContactBundle\Entity\Address;
 use Sulu\Bundle\ContactBundle\Entity\Contact;
 use Sulu\Bundle\ContactBundle\Entity\TermsOfDelivery;
+use Sulu\Bundle\Sales\CoreBundle\Entity\Item as ItemEntity;
+use Sulu\Bundle\Sales\CoreBundle\Item\Exception\ItemNotFoundException;
 use Sulu\Bundle\Sales\CoreBundle\Item\ItemManager;
 use Sulu\Bundle\Sales\OrderBundle\Entity\OrderActivityLog;
 use Sulu\Bundle\Sales\OrderBundle\Entity\OrderAddress;
@@ -409,15 +411,14 @@ class OrderManager
      * find order for item with id
      * @param $id
      * @throws \Sulu\Component\Rest\Exception\EntityNotFoundException
-     * @internal param $statusId
      * @return OrderEntity
      */
-    public function findOrderEntityForItemWithId($id)
+    public function findOrderEntityForItemWithId($id, $returnMultipleResults = false)
     {
         try {
             return $this->em
                 ->getRepository(static::$orderEntityName)
-                ->findOrderForItemWithId($id);
+                ->findOrderForItemWithId($id, $returnMultipleResults);
         } catch (NoResultException $nre) {
             throw new EntityNotFoundException(static::$itemEntity, $id);
         }
@@ -908,6 +909,69 @@ class OrderManager
         $item = $this->itemManager->save($itemData, $locale, $userId);
         return $order->addItem($item->getEntity());
     }
+
+    /**
+     * @param $item
+     * @param $itemData
+     * @param $locale
+     * @param $userId
+     *
+     * @return null|\Sulu\Bundle\Sales\CoreBundle\Api\Item
+     */
+    public function updateItem($item, $itemData, $locale, $userId)
+    {
+        return $this->itemManager->save($itemData, $locale, $userId, $item);
+    }
+
+    /**
+     * @param $item
+     * @param $order
+     */
+    public function removeItem(ItemEntity $item, OrderEntity $order, $deleteEntity = true)
+    {
+        // remove from order
+        $order->removeItem($item);
+        if ($deleteEntity) {
+            // delete item
+            $this->em->remove($item);
+        }
+    }
+
+    /**
+     * get order item by id and checks if item belongs to the order
+     *
+     * @param $itemId
+     * @param $order
+     *
+     * @return null|\Sulu\Bundle\Sales\CoreBundle\Api\Item
+     * @throws ItemNotFoundException
+     * @throws OrderException
+     */
+    public function getOrderItemById($itemId, OrderEntity $order, &$hasMultiple = false) 
+    {
+        $item = $this->itemManager->findEntityById($itemId);
+        if (!$item) {
+            throw new ItemNotFoundException($itemId);
+        }
+
+        $match = false;
+        $orders = $this->findOrderEntityForItemWithId($itemId, true);
+        if ($orders) {
+            if (count($orders > 1)) {
+                $hasMultiple = true;
+            }
+            foreach ($orders as $itemOrders) {
+                if ($order === $itemOrders) {
+                    $match = true;
+                }
+            }
+        }
+        if (!$match) {
+            throw new OrderException('User not owner of order');
+        }
+        
+        return $item;
+    }
     
     /**
      * processes items defined in an order and creates item entities
@@ -935,15 +999,11 @@ class OrderManager
                 };
 
                 $delete = function ($item) use ($order) {
-                    $entity = $item->getEntity();
-                    // remove from order
-                    $order->removeItem($entity);
-                    // delete item
-                    $this->em->remove($entity);
+                    $this->removeItem($item->getEntity, $order);
                 };
 
                 $update = function ($item, $matchedEntry) use ($locale, $userId, $order) {
-                    $itemEntity = $this->itemManager->save($matchedEntry, $locale, $userId, $item);
+                    $itemEntity = $this->updateItem($item, $matchedEntry, $locale, $userId);
                     return $itemEntity ? true : false;
                 };
 

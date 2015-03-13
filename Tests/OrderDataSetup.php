@@ -29,6 +29,8 @@ use Sulu\Bundle\ProductBundle\Entity\StatusTranslation;
 use Sulu\Bundle\ProductBundle\Entity\Type;
 use Sulu\Bundle\ProductBundle\Entity\TypeTranslation;
 
+use Sulu\Bundle\ProductBundle\Entity\Unit;
+use Sulu\Bundle\ProductBundle\Entity\UnitTranslation;
 use Sulu\Bundle\Sales\CoreBundle\Entity\Item;
 use Sulu\Bundle\Sales\OrderBundle\DataFixtures\ORM\LoadOrderStatus;
 use Sulu\Bundle\Sales\OrderBundle\Entity\Order;
@@ -105,6 +107,10 @@ class OrderDataSetup {
      * @var Product
      */
     public $product;
+    /**
+     * @var Product
+     */
+    public $product2;
 
     /**
      * @var ProductTranslation
@@ -123,22 +129,31 @@ class OrderDataSetup {
      * @var EntityManager
      */
     protected $em;
+    
+    protected $productEntity;
 
 
-    public function __construct(EntityManager $entityManager) {
+    public function __construct(
+        EntityManager $entityManager,
+        $productEntity = 'Sulu\Bundle\ProductBundle\Entity\Product'
+    ) {
+        $this->productEntity = $productEntity;
+        
         $this->em = $entityManager;
 
         $this->loadFixtures();
         $this->setUpTestData();
     }
     
-    public function prepareCart()
+    public function setupCartTests()
     {
         // set order to cart order
         $this->orderStatus = $this->em->getRepository(static::$orderStatusEntityName)->find(OrderStatus::STATUS_IN_CART);
         
         $this->order->setStatus($this->orderStatus);
         $this->order->setSessionId('IamASessionKey');
+        
+        $this->em->flush();
     }
 
     protected function loadFixtures()
@@ -282,6 +297,16 @@ class OrderDataSetup {
         $order2->setDeliveryAddress(null);
         $order2->setInvoiceAddress(null);
 
+        // product order unit
+        $orderUnit = new Unit();
+        $orderUnit->setId(1);
+        $orderUnitTranslation = new UnitTranslation();
+        $orderUnitTranslation->setUnit($orderUnit);
+        $orderUnitTranslation->setName('pc');
+        $orderUnitTranslation->setLocale('en');
+        $orderUnit->addTranslation($orderUnitTranslation);
+        $this->em->persist($orderUnit);
+        $this->em->persist($orderUnitTranslation);
         // product type
         $productType = new Type();
         $productTypeTranslation = new TypeTranslation();
@@ -295,14 +320,15 @@ class OrderDataSetup {
         $productStatusTranslation->setName('EnglishProductStatus-1');
         $productStatusTranslation->setStatus($productStatus);
         // product
-        $this->product = new Product();
+        $this->product = new $this->productEntity;
         $this->product->setNumber('ProductNumber-1');
         $this->product->setManufacturer('EnglishManufacturer-1');
         $this->product->setType($productType);
         $this->product->setStatus($productStatus);
         $this->product->setCreated(new DateTime());
         $this->product->setChanged(new DateTime());
-
+        $this->product->setOrderUnit($orderUnit);
+        
         // product translation
         $this->productTranslation = new ProductTranslation();
         $this->productTranslation->setProduct($this->product);
@@ -312,6 +338,13 @@ class OrderDataSetup {
         $this->productTranslation->setLongDescription('EnglishProductLongDescription-1');
         $this->product->addTranslation($this->productTranslation);
 
+        // product
+        $this->product2 = clone($this->product);
+        $translation2 = clone($this->productTranslation);
+        $translation2->setProduct($this->product2);
+        $this->product2->addTranslation($translation2);
+        $this->em->persist($translation2);
+        
         // Item
         $this->item = new Item();
         $this->item->setName('Product1');
@@ -398,10 +431,13 @@ class OrderDataSetup {
         $this->em->persist($this->orderAddressInvoice);
         $this->em->persist($this->item);
         $this->em->persist($this->product);
+        $this->em->persist($this->product2);
         $this->em->persist($this->productTranslation);
         $this->em->persist($productType);
         $this->em->persist($productTypeTranslation);
         $this->em->persist($productStatus);
         $this->em->persist($productStatusTranslation);
+        
+        $this->em->flush();
     }
 }

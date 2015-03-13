@@ -23,6 +23,7 @@ use Sulu\Bundle\Sales\OrderBundle\Order\OrderManager;
 use Sulu\Component\Security\Authentication\UserRepositoryInterface;
 use Sulu\Component\Persistence\RelationTrait;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 class CartManager extends BaseSalesManager
 {
@@ -119,7 +120,7 @@ class CartManager extends BaseSalesManager
             $cartArray = $this->findCartBySessionId();
         } else {
             // TODO: check if cart for this sessionId exists and assign it to user
-            
+
             // default locale from user
             $locale = $locale ?: $user->getLocale();
             // get carts
@@ -142,19 +143,20 @@ class CartManager extends BaseSalesManager
         $apiOrder = new ApiOrder($cart, $locale, $currency);
 
         // TODO: calcualte difference to previous cart
-        
+
         $items = $apiOrder->getItems();
 
         // perform price calucaltion
+        $prices = $supplierItems = null;
         $totalPrice = $this->priceCalculation->calculate($items, $prices, $supplierItems, true);
-        
+
         if ($supplierItems) {
             // set grouped items
             $apiOrder->setSupplierItems(array_values($supplierItems));
         }
         // set total price
         $apiOrder->setTotalNetPrice($totalPrice);
-        
+
         $this->em->flush();
 
         return $apiOrder;
@@ -245,32 +247,48 @@ class CartManager extends BaseSalesManager
         // define user-id
         $userId = $user ? $user->getId() : null;
         $this->orderManager->addItem($data, $locale, $userId, $cart);
+
+        return $cart;
+    }
+
+    /**
+     * @param $itemId
+     * @param $data
+     * @param null $user
+     * @param null $locale
+     *
+     * @return null|Order
+     * @throws ItemNotFoundException
+     */
+    public function updateItem($itemId, $data, $user = null, $locale = null)
+    {
+        $cart = $this->getUserCart($user, $locale);
+        $userId = $user ? $user->getId() : null;
+
         
+        $item = $this->orderManager->getOrderItemById($itemId, $cart->getEntity());
+
+        $this->orderManager->updateItem($item, $data, $locale, $userId);
+
         return $cart;
     }
 
     /**
      * patches an item in cart
      *
-     * @param int $itemId
-     * @param array $data
      * @param null $user
      * @param null $locale
-     */
-    public function updateItem($itemId, $data, $user = null, $locale = null)
-    {
-        // TODO: update items
-    }
-
-    /**
-     * patches an item in cart
      *
-     * @param $data
-     * @param null $user
-     * @param null $locale
+     * @return null|Order
      */
-    public function removeItem($data, $user = null, $locale = null)
+    public function removeItem($itemId, $user = null, $locale = null)
     {
-        // TODO: remove item
+        $cart = $this->getUserCart($user, $locale);
+
+        $item = $this->orderManager->getOrderItemById($itemId, $cart->getEntity(), $hasMultiple);
+
+        $this->orderManager->removeItem($item, $cart->getEntity(), !$hasMultiple);
+        
+        return $cart;
     }
 }

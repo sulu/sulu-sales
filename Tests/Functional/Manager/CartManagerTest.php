@@ -26,12 +26,7 @@ class CartManagerTest extends OrderTestBase
         parent::setUpTestData();
 
         // set order to cart order
-        $this->orderStatus = $this->em->getRepository(static::$orderStatusEntityName)->find(OrderStatus::STATUS_IN_CART);
-        $this->data->order->setStatus($this->orderStatus);
-
-        $this->data->order->setSessionId('IamASessionKey');
-
-        $this->em->flush();
+        $this->data->setupCartTests();
     }
 
     public function testGetCartByUser()
