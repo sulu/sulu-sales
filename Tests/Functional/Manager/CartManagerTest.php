@@ -10,6 +10,7 @@
 
 namespace Sulu\Bundle\Sales\OrderBundle\Tests\Functional\Manager;
 
+use Sulu\Bundle\Sales\OrderBundle\Cart\CartManager;
 use Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatus;
 use Sulu\Bundle\Sales\OrderBundle\Tests\OrderTestBase;
 use Sulu\Bundle\SecurityBundle\Entity\UserRepository;
@@ -49,6 +50,19 @@ class CartManagerTest extends OrderTestBase
 //        $this->assertEquals($cart->getEntity(), $this->order);
 
         $this->assertTrue(true);
+    }
+    
+    public function testGetNumberItemsAndTotalPrice()
+    {
+        $result = $this->getCartManager()->getNumberItemsAndTotalPrice($this->data->user, $this->data->locale);
+        
+        $this->assertEquals($result['totalItems'], 1);
+        
+        // calculate price 26.1
+        $expectedPrice = $this->data->item->getQuantity() * $this->data->productPrice->getPrice();
+        $expectedPrice -= ($expectedPrice / 100) * $this->data->item->getDiscount();
+        
+        $this->assertEquals($result['totalPrice'], $expectedPrice);
     }
 
     /**
