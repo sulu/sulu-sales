@@ -319,12 +319,18 @@ class OrderManager
      * @param bool $flush
      * @throws \Sulu\Component\Rest\Exception\EntityNotFoundException
      */
-    public function convertStatus(Order $order, $statusId, $flush = false)
+    public function convertStatus($order, $statusId, $flush = false)
     {
+        if ($order instanceof Order) {
+            $order = $order->getEntity();
+        }
+        
         // get current status
-        $currentStatus = null;
-        if ($order->getStatus()) {
-            $currentStatus = $order->getStatus()->getEntity();
+        $currentStatus = $order->getStatus();
+        if ($currentStatus) {
+            if ($currentStatus instanceof \Massive\Bundle\Purchase\OrderBundle\Api\OrderStatus) {
+                $currentStatus = $order->getStatus()->getEntity();
+            }
 
             // if status has not changed, skip
             if ($currentStatus->getId() === $statusId) {
@@ -342,7 +348,7 @@ class OrderManager
 
         // ACTIVITY LOG
         $orderActivity = new OrderActivityLog();
-        $orderActivity->setOrder($order->getEntity());
+        $orderActivity->setOrder($order);
         if ($currentStatus) {
             $orderActivity->setStatusFrom($currentStatus);
         }

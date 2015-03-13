@@ -22,7 +22,9 @@ use Sulu\Bundle\ContactBundle\Entity\Phone;
 use Sulu\Bundle\ContactBundle\Entity\PhoneType;
 use Sulu\Bundle\ContactBundle\Entity\TermsOfDelivery;
 use Sulu\Bundle\ContactBundle\Entity\TermsOfPayment;
+use Sulu\Bundle\ProductBundle\Entity\Currency;
 use Sulu\Bundle\ProductBundle\Entity\Product;
+use Sulu\Bundle\ProductBundle\Entity\ProductPrice;
 use Sulu\Bundle\ProductBundle\Entity\ProductTranslation;
 use Sulu\Bundle\ProductBundle\Entity\Status;
 use Sulu\Bundle\ProductBundle\Entity\StatusTranslation;
@@ -124,6 +126,14 @@ class OrderDataSetup {
      * @var User
      */
     public $user;
+    /**
+     * @var Currency
+     */
+    public $currency;
+    /**
+     * @var ProductPrice
+     */
+    public $productPrice;
 
     /**
      * @var EntityManager
@@ -346,6 +356,23 @@ class OrderDataSetup {
         $translation2->setProduct($this->product2);
         $this->product2->addTranslation($translation2);
         $this->em->persist($translation2);
+
+        $this->currency = new Currency();
+        $this->currency->setCode('EUR');
+        $this->currency->setNumber('1');
+        $this->currency->setId('1');
+        $this->currency->setName('Euro');
+        $this->productPrice = new ProductPrice();
+        $this->productPrice->setCurrency($this->currency);
+        $this->productPrice->setMinimumQuantity(0);
+        $this->productPrice->setPrice(14.5);
+        $this->productPrice->setProduct($this->product);
+        $this->product->addPrice($this->productPrice);
+        
+        $price2 = clone($this->productPrice);
+        $price2->setProduct($this->product2);
+        $this->em->persist($price2);
+        $this->product2->addPrice($price2);
         
         // Item
         $this->item = new Item();
@@ -407,6 +434,8 @@ class OrderDataSetup {
         $this->order->setType($this->orderTypeManual);
         $order2->setType($this->orderTypeManual);
 
+        $this->em->persist($this->currency);
+        $this->em->persist($this->productPrice);
         $this->em->persist($user);
         $this->em->persist($this->orderTypeManual);
         $this->em->persist($this->orderTypeShop);

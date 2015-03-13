@@ -109,7 +109,7 @@ class CartManager extends BaseSalesManager
      *
      * @return null|\Sulu\Bundle\Sales\OrderBundle\Entity\Order
      */
-    public function getUserCart($user = null, $locale = null, $currency = null)
+    public function getUserCart($user = null, $locale = null, $currency = null, $persist = false)
     {
         // cart by session ID
         if (!$user) {
@@ -134,7 +134,7 @@ class CartManager extends BaseSalesManager
             $cart = $cartArray[0];
         } else {
             // user has no cart - return empty one
-            $cart = new Order();
+            $cart = $this->createEmptyCart($user, $persist);
         }
 
         $currency = $currency ?: $this->defaultCurrency;
@@ -239,7 +239,7 @@ class CartManager extends BaseSalesManager
     {
         //TODO: locale
         // get cart
-        $cart = $this->getUserCart($user, $locale);
+        $cart = $this->getUserCart($user, $locale, null, true);
         // define user-id
         $userId = $user ? $user->getId() : null;
         $this->orderManager->addItem($data, $locale, $userId, $cart);
@@ -284,6 +284,30 @@ class CartManager extends BaseSalesManager
 
         $this->orderManager->removeItem($item, $cart->getEntity(), !$hasMultiple);
         
+        return $cart;
+    }
+    
+    protected function createEmptyCart($user, $persist)
+    {
+        $cart = new Order();
+        $cart->setCreator($user);
+        $cart->setChanger($user);
+        $cart->setCreated(new \DateTime());
+        $cart->setChanged(new \DateTime());
+        
+        // TODO:
+        if ($user) {
+            $name = $user->getContact()->getFullName();
+        } else {
+            $name = 'Anonymous';
+        }
+        $cart->setCustomerName($name);
+        
+        $this->orderManager->convertStatus($cart, OrderStatus::STATUS_IN_CART);
+        
+        if($persist) {
+            $this->em->persist($cart);
+        }
         return $cart;
     }
 }
