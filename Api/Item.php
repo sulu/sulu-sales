@@ -635,7 +635,9 @@ class Item extends ApiWrapper implements CalculableBulkPriceItemInterface, Calcu
         // TODO: if ($this->getUseProductsPrice()) {
         if (($product = $this->getProduct())) {
             $price = $product->getBulkPriceForCurrency($quantity, $this->currency);
-            return $price->getPrice();
+            if ($price) {
+                return $price->getPrice();
+            }
         }
         return $this->getPrice();
     }
