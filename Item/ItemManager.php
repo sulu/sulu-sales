@@ -108,6 +108,9 @@ class ItemManager
         // get user
         $user = $userId ? $this->userRepository->findUserById($userId) : null;
 
+        // set item data
+        $item->setQuantity($this->getProperty($data, 'quantity', null));
+        
         // get product and set Product's data to item
         $product = $this->setItemByProductData($data, $item, $locale);
         // if product is not set, set data manually
@@ -118,11 +121,14 @@ class ItemManager
             $item->setSupplierName($this->getProperty($data, 'supplierName', $item->getSupplierName()));
             $item->setTax($this->getProperty($data, 'tax', $item->getTax()));
             $item->setQuantityUnit($this->getProperty($data, 'quantityUnit', $item->getQuantityUnit()));
+            
+            $item->setPrice($this->getProperty($data, 'price', $item->getPrice()));
         }
-        $item->setPrice($this->getProperty($data, 'price', $item->getPrice()));
 
-        // set item data
-        $item->setQuantity($this->getProperty($data, 'quantity', null));
+        if ($item->getUseProductsPrice() === false) {
+            $item->setPrice($this->getProperty($data, 'price', $item->getPrice()));
+        }
+
         $item->setDiscount($this->getProperty($data, 'discount', $item->getDiscount()));
 
         // create new item
@@ -409,7 +415,7 @@ class ItemManager
                     $product,
                     $item->getQuantity()
                 );
-                $item->setPrice($price);
+                $item->setPrice($price->getPrice());
             }
 
             return $product;
