@@ -280,10 +280,10 @@ class ItemManager
             // product-id must be defined
             $this->getProductId($data['product']);
         } else {
-            $this->checkDataSet($data, 'name', !$isNew);
-            $this->checkDataSet($data, 'quantityUnit', !$isNew);
+            $this->checkDataSet($data, 'name', $isNew);
+            $this->checkDataSet($data, 'quantityUnit', $isNew);
         }
-        $this->checkDataSet($data, 'quantity', !$isNew);
+        $this->checkDataSet($data, 'quantity', $isNew);
     }
 
     /**
@@ -403,6 +403,7 @@ class ItemManager
 //            $item->setTax($product->getTaxClass()->getTax($locale));
 
             // TODO: product-price
+            // TODO: define CURRENCY
             if ($item->getUseProductsPrice() === true) {
                 $price = $this->productPriceManager->getBulkPriceForCurrency(
                     $product,

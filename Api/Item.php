@@ -60,7 +60,6 @@ class Item extends ApiWrapper implements CalculableBulkPriceItemInterface, Calcu
 
     /**
      * @param $name
-     *
      * @return Item
      */
     public function setName($name)
@@ -82,7 +81,6 @@ class Item extends ApiWrapper implements CalculableBulkPriceItemInterface, Calcu
 
     /**
      * @param $number
-     *
      * @return Item
      */
     public function setNumber($number)
@@ -105,7 +103,6 @@ class Item extends ApiWrapper implements CalculableBulkPriceItemInterface, Calcu
 
     /**
      * @param DateTime $created
-     *
      * @return Item
      */
     public function setCreated(DateTime $created)
@@ -128,7 +125,6 @@ class Item extends ApiWrapper implements CalculableBulkPriceItemInterface, Calcu
 
     /**
      * @param DateTime $changed
-     *
      * @return Item
      */
     public function setChanged(DateTime $changed)
@@ -140,9 +136,7 @@ class Item extends ApiWrapper implements CalculableBulkPriceItemInterface, Calcu
 
     /**
      * Set changer
-     *
      * @param UserInterface $changer
-     *
      * @return Item
      */
     public function setChanger(UserInterface $changer = null)
@@ -154,7 +148,6 @@ class Item extends ApiWrapper implements CalculableBulkPriceItemInterface, Calcu
 
     /**
      * Get changer
-     *
      * @return UserInterface
      * @VirtualProperty
      * @SerializedName("changer")
@@ -171,9 +164,7 @@ class Item extends ApiWrapper implements CalculableBulkPriceItemInterface, Calcu
 
     /**
      * Set creator
-     *
      * @param UserInterface $creator
-     *
      * @return Item
      */
     public function setCreator(UserInterface $creator = null)
@@ -185,7 +176,6 @@ class Item extends ApiWrapper implements CalculableBulkPriceItemInterface, Calcu
 
     /**
      * Get creator
-     *
      * @return UserInterface
      * @VirtualProperty
      * @SerializedName("creator")
@@ -202,7 +192,6 @@ class Item extends ApiWrapper implements CalculableBulkPriceItemInterface, Calcu
 
     /**
      * @param float
-     *
      * @return Item
      */
     public function setQuantity($quantity)
@@ -225,7 +214,6 @@ class Item extends ApiWrapper implements CalculableBulkPriceItemInterface, Calcu
 
     /**
      * @param string
-     *
      * @return Item
      */
     public function setQuantityUnit($quantityUnit)
@@ -247,7 +235,6 @@ class Item extends ApiWrapper implements CalculableBulkPriceItemInterface, Calcu
 
     /**
      * @param bool
-     *
      * @return Item
      */
     public function setUseProductsPrice($useProductsPrice)
@@ -269,7 +256,6 @@ class Item extends ApiWrapper implements CalculableBulkPriceItemInterface, Calcu
 
     /**
      * @param float
-     *
      * @return Item
      */
     public function setTax($tax)
@@ -291,7 +277,6 @@ class Item extends ApiWrapper implements CalculableBulkPriceItemInterface, Calcu
 
     /**
      * @param float
-     *
      * @return Item
      */
     public function setPrice($value)
@@ -315,7 +300,6 @@ class Item extends ApiWrapper implements CalculableBulkPriceItemInterface, Calcu
     /**
      * @VirtualProperty
      * @SerializedName("priceFormatted")
-     *
      * @return string
      */
     public function getPriceFormatted($locale = null)
@@ -328,7 +312,6 @@ class Item extends ApiWrapper implements CalculableBulkPriceItemInterface, Calcu
     /**
      * @VirtualProperty
      * @SerializedName("totalNetPriceFormatted")
-     *
      * @return string
      */
     public function getTotalNetPriceFormatted($locale = null)
@@ -340,7 +323,6 @@ class Item extends ApiWrapper implements CalculableBulkPriceItemInterface, Calcu
 
     /**
      * @param float
-     *
      * @return Item
      */
     public function setDiscount($value)
@@ -362,7 +344,6 @@ class Item extends ApiWrapper implements CalculableBulkPriceItemInterface, Calcu
 
     /**
      * @param string
-     *
      * @return Item
      */
     public function setDescription($value)
@@ -384,7 +365,6 @@ class Item extends ApiWrapper implements CalculableBulkPriceItemInterface, Calcu
 
     /**
      * @param float
-     *
      * @return Item
      */
     public function setWeight($value)
@@ -406,7 +386,6 @@ class Item extends ApiWrapper implements CalculableBulkPriceItemInterface, Calcu
 
     /**
      * @param float
-     *
      * @return Item
      */
     public function setWidth($value)
@@ -428,7 +407,6 @@ class Item extends ApiWrapper implements CalculableBulkPriceItemInterface, Calcu
 
     /**
      * @param float
-     *
      * @return Item
      */
     public function setHeight($value)
@@ -450,7 +428,6 @@ class Item extends ApiWrapper implements CalculableBulkPriceItemInterface, Calcu
 
     /**
      * @param float
-     *
      * @return Item
      */
     public function setLength($value)
@@ -472,7 +449,6 @@ class Item extends ApiWrapper implements CalculableBulkPriceItemInterface, Calcu
 
     /**
      * @param int
-     *
      * @return Item
      */
     public function setBitmaskStatus($status)
@@ -494,7 +470,6 @@ class Item extends ApiWrapper implements CalculableBulkPriceItemInterface, Calcu
 
     /**
      * @param Account
-     *
      * @return Item
      */
     public function setSupplier($value)
@@ -514,7 +489,6 @@ class Item extends ApiWrapper implements CalculableBulkPriceItemInterface, Calcu
 
     /**
      * @param string
-     *
      * @return Item
      */
     public function setSupplierName($value)
@@ -536,7 +510,6 @@ class Item extends ApiWrapper implements CalculableBulkPriceItemInterface, Calcu
 
     /**
      * @param ItemAttributeEntity $value
-     *
      * @return $this
      */
     public function addAttribute(ItemAttributeEntity $value)
@@ -558,7 +531,6 @@ class Item extends ApiWrapper implements CalculableBulkPriceItemInterface, Calcu
 
     /**
      * @param $product
-     *
      * @return Item
      */
     public function setProduct($product)
@@ -580,27 +552,22 @@ class Item extends ApiWrapper implements CalculableBulkPriceItemInterface, Calcu
         if ($product) {
             return new Product($product, $this->locale);
         }
-
         return null;
     }
 
     /**
      * Set deliveryAddress
-     *
      * @param OrderAddressEntity $deliveryAddress
-     *
      * @return Item
      */
     public function setDeliveryAddress(OrderAddressEntity $deliveryAddress = null)
     {
         $this->entity->setDeliveryAddress($deliveryAddress);
-
         return $this;
     }
 
     /**
      * Get deliveryAddress
-     *
      * @return OrderAddress $deliveryAddress
      * @VirtualProperty
      * @SerializedName("deliveryAddress")
@@ -612,17 +579,16 @@ class Item extends ApiWrapper implements CalculableBulkPriceItemInterface, Calcu
         if ($address) {
             return new OrderAddress($address);
         }
+        return null;
     }
 
     /**
      * @param $locale
-     *
      * @return Formatter
      */
     private function getFormatter($locale)
     {
         $sysLocale = $locale ? $locale : 'de-AT';
-
         return new \NumberFormatter($sysLocale, \NumberFormatter::CURRENCY);
     }
 
@@ -633,7 +599,8 @@ class Item extends ApiWrapper implements CalculableBulkPriceItemInterface, Calcu
     public function getCalcPrice($quantity)
     {
         // TODO: if ($this->getUseProductsPrice()) {
-        if (($product = $this->getProduct())) {
+        $product = $this->getProduct();
+        if ($product) {
             $price = $product->getBulkPriceForCurrency($quantity, $this->currency);
             if ($price) {
                 return $price->getPrice();
@@ -655,7 +622,8 @@ class Item extends ApiWrapper implements CalculableBulkPriceItemInterface, Calcu
      */
     public function getCalcPriceGroup()
     {
-        if ($supplier = $this->getSupplier()) {
+        $supplier = $this->getSupplier();
+        if ($supplier) {
             return $supplier->getId();
         }
 
@@ -683,13 +651,13 @@ class Item extends ApiWrapper implements CalculableBulkPriceItemInterface, Calcu
      */
     public function getCalcPriceGroupContent()
     {
-        if ($supplier = $this->getSupplier()) {
+        $supplier = $this->getSupplier();
+        if ($supplier) {
             return array(
                 'id' => $supplier->getId(),
                 'name' => $supplier->getName(),
             );
         }
-
         return null;
     }
 }

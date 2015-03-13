@@ -108,11 +108,6 @@ class GroupedItemsPriceCalculator implements GroupedItemsPriceCalculatorInterfac
      */
     protected function validateItem($item)
     {
-//        // item must be instance of PriceCalcualtionInterface
-//        if (!($item instanceof PriceCalculationItemInterface)) {
-//            throw new PriceCalculationException('Not an instance of PriceCalculationInterface');
-//        }
-
         // validate not null
         $this->validateNotNull('quantity', $item->getCalcQuantity());
 //        $this->validateNotNull('price', $item->getCalcPrice($item->getCalcQuantity()));

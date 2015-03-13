@@ -154,9 +154,7 @@ class Item
 
     /**
      * Set name
-     *
      * @param string $name
-     *
      * @return Item
      */
     public function setName($name)
@@ -168,7 +166,6 @@ class Item
 
     /**
      * Get name
-     *
      * @return string
      */
     public function getName()
@@ -178,9 +175,7 @@ class Item
 
     /**
      * Set number
-     *
      * @param string $number
-     *
      * @return Item
      */
     public function setNumber($number)
@@ -192,7 +187,6 @@ class Item
 
     /**
      * Get number
-     *
      * @return string
      */
     public function getNumber()
@@ -202,9 +196,7 @@ class Item
 
     /**
      * Set quantity
-     *
      * @param float $quantity
-     *
      * @return Item
      */
     public function setQuantity($quantity)
@@ -218,7 +210,6 @@ class Item
 
     /**
      * Get quantity
-     *
      * @return float
      */
     public function getQuantity()
@@ -228,9 +219,7 @@ class Item
 
     /**
      * Set quantityUnit
-     *
      * @param string $quantityUnit
-     *
      * @return Item
      */
     public function setQuantityUnit($quantityUnit)
@@ -242,7 +231,6 @@ class Item
 
     /**
      * Get quantityUnit
-     *
      * @return string
      */
     public function getQuantityUnit()
@@ -252,9 +240,7 @@ class Item
 
     /**
      * Set useProductsPrice
-     *
      * @param boolean $useProductsPrice
-     *
      * @return Item
      */
     public function setUseProductsPrice($useProductsPrice)
@@ -266,7 +252,6 @@ class Item
 
     /**
      * Get useProductsPrice
-     *
      * @return boolean
      */
     public function getUseProductsPrice()
@@ -276,9 +261,7 @@ class Item
 
     /**
      * Set tax
-     *
      * @param float $tax
-     *
      * @return Item
      */
     public function setTax($tax)
@@ -290,7 +273,6 @@ class Item
 
     /**
      * Get tax
-     *
      * @return float
      */
     public function getTax()
@@ -300,9 +282,7 @@ class Item
 
     /**
      * Set price
-     *
      * @param float $price
-     *
      * @return Item
      */
     public function setPrice($price)
@@ -316,7 +296,6 @@ class Item
 
     /**
      * Get price
-     *
      * @return float
      */
     public function getPrice()
@@ -326,9 +305,7 @@ class Item
 
     /**
      * Set discount
-     *
      * @param float $discount
-     *
      * @return Item
      */
     public function setDiscount($discount)
@@ -342,7 +319,6 @@ class Item
 
     /**
      * Get discount
-     *
      * @return float
      */
     public function getDiscount()
@@ -352,9 +328,7 @@ class Item
 
     /**
      * Set description
-     *
      * @param string $description
-     *
      * @return Item
      */
     public function setDescription($description)
@@ -366,7 +340,6 @@ class Item
 
     /**
      * Get description
-     *
      * @return string
      */
     public function getDescription()
@@ -376,9 +349,7 @@ class Item
 
     /**
      * Set weight
-     *
      * @param float $weight
-     *
      * @return Item
      */
     public function setWeight($weight)
@@ -390,7 +361,6 @@ class Item
 
     /**
      * Get weight
-     *
      * @return float
      */
     public function getWeight()
@@ -400,9 +370,7 @@ class Item
 
     /**
      * Set width
-     *
      * @param float $width
-     *
      * @return Item
      */
     public function setWidth($width)
@@ -414,7 +382,6 @@ class Item
 
     /**
      * Get width
-     *
      * @return float
      */
     public function getWidth()
@@ -424,9 +391,7 @@ class Item
 
     /**
      * Set height
-     *
      * @param float $height
-     *
      * @return Item
      */
     public function setHeight($height)
@@ -438,7 +403,6 @@ class Item
 
     /**
      * Get height
-     *
      * @return float
      */
     public function getHeight()
@@ -448,9 +412,7 @@ class Item
 
     /**
      * Set length
-     *
      * @param float $length
-     *
      * @return Item
      */
     public function setLength($length)
@@ -462,7 +424,6 @@ class Item
 
     /**
      * Get length
-     *
      * @return float
      */
     public function getLength()
@@ -472,9 +433,7 @@ class Item
 
     /**
      * Set supplierName
-     *
      * @param string $supplierName
-     *
      * @return Item
      */
     public function setSupplierName($supplierName)
@@ -486,7 +445,6 @@ class Item
 
     /**
      * Get supplierName
-     *
      * @return string
      */
     public function getSupplierName()
@@ -496,9 +454,7 @@ class Item
 
     /**
      * Set created
-     *
      * @param \DateTime $created
-     *
      * @return Item
      */
     public function setCreated($created)
@@ -510,7 +466,6 @@ class Item
 
     /**
      * Get created
-     *
      * @return \DateTime
      */
     public function getCreated()
@@ -520,9 +475,7 @@ class Item
 
     /**
      * Set changed
-     *
      * @param \DateTime $changed
-     *
      * @return Item
      */
     public function setChanged($changed)
@@ -534,7 +487,6 @@ class Item
 
     /**
      * Get changed
-     *
      * @return \DateTime
      */
     public function getChanged()
@@ -544,7 +496,6 @@ class Item
 
     /**
      * Get id
-     *
      * @return integer
      */
     public function getId()
@@ -554,9 +505,7 @@ class Item
 
     /**
      * Add attributes
-     *
      * @param \Sulu\Bundle\Sales\CoreBundle\Entity\ItemAttribute $attributes
-     *
      * @return Item
      */
     public function addAttribute(\Sulu\Bundle\Sales\CoreBundle\Entity\ItemAttribute $attributes)
@@ -568,7 +517,6 @@ class Item
 
     /**
      * Remove attributes
-     *
      * @param \Sulu\Bundle\Sales\CoreBundle\Entity\ItemAttribute $attributes
      */
     public function removeAttribute(\Sulu\Bundle\Sales\CoreBundle\Entity\ItemAttribute $attributes)
@@ -578,7 +526,6 @@ class Item
 
     /**
      * Get attributes
-     *
      * @return \Doctrine\Common\Collections\Collection
      */
     public function getAttributes()
@@ -588,9 +535,7 @@ class Item
 
     /**
      * Set product
-     *
      * @param \Sulu\Bundle\ProductBundle\Entity\ProductInterface $product
-     *
      * @return Item
      */
     public function setProduct(\Sulu\Bundle\ProductBundle\Entity\ProductInterface $product = null)
@@ -602,7 +547,6 @@ class Item
 
     /**
      * Get product
-     *
      * @return \Sulu\Bundle\ProductBundle\Entity\Product
      */
     public function getProduct()
@@ -612,9 +556,7 @@ class Item
 
     /**
      * Set changer
-     *
      * @param UserInterface $changer
-     *
      * @return Item
      */
     public function setChanger(UserInterface $changer = null)
@@ -626,7 +568,6 @@ class Item
 
     /**
      * Get changer
-     *
      * @return UserInterface
      */
     public function getChanger()
@@ -636,9 +577,7 @@ class Item
 
     /**
      * Set creator
-     *
      * @param UserInterface $creator
-     *
      * @return Item
      */
     public function setCreator(UserInterface $creator = null)
@@ -650,7 +589,6 @@ class Item
 
     /**
      * Get creator
-     *
      * @return UserInterface
      */
     public function getCreator()
@@ -665,9 +603,7 @@ class Item
 
     /**
      * Set supplier
-     *
      * @param \Sulu\Bundle\ContactBundle\Entity\Account $supplier
-     *
      * @return Item
      */
     public function setSupplier(\Sulu\Bundle\ContactBundle\Entity\Account $supplier = null)
@@ -679,7 +615,6 @@ class Item
 
     /**
      * Get supplier
-     *
      * @return \Sulu\Bundle\ContactBundle\Entity\Account
      */
     public function getSupplier()
@@ -689,9 +624,7 @@ class Item
 
     /**
      * Set bitmaskStatus
-     *
      * @param integer $bitmaskStatus
-     *
      * @return Item
      */
     public function setBitmaskStatus($bitmaskStatus)
@@ -703,7 +636,6 @@ class Item
 
     /**
      * Get bitmaskStatus
-     *
      * @return integer
      */
     public function getBitmaskStatus()
@@ -713,9 +645,7 @@ class Item
 
     /**
      * Set totalNetPrice
-     *
      * @param float $totalNetPrice
-     *
      * @return Item
      */
     private function setTotalNetPrice($totalNetPrice)
@@ -727,7 +657,6 @@ class Item
 
     /**
      * Get totalNetPrice
-     *
      * @return float
      */
     public function getTotalNetPrice()
@@ -747,9 +676,7 @@ class Item
 
     /**
      * Set deliveryAddress
-     *
      * @param \Sulu\Bundle\Sales\OrderBundle\Entity\OrderAddress $deliveryAddress
-     *
      * @return Item
      */
     public function setDeliveryAddress(\Sulu\Bundle\Sales\OrderBundle\Entity\OrderAddress $deliveryAddress = null)
@@ -761,7 +688,6 @@ class Item
 
     /**
      * Get deliveryAddress
-     *
      * @return \Sulu\Bundle\Sales\OrderBundle\Entity\OrderAddress $deliveryAddress
      */
     public function getDeliveryAddress()

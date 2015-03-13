@@ -16,7 +16,6 @@ abstract class BaseSalesManager
 {
     /**
      * sets a date if it's set in data
-     *
      * @param $data
      * @param $key
      * @param $currentDate
@@ -24,7 +23,8 @@ abstract class BaseSalesManager
      */
     protected function setDate($data, $key, $currentDate, callable $setCallback)
     {
-        if (($date = $this->getProperty($data, $key, $currentDate)) !== null) {
+        $date = $this->getProperty($data, $key, $currentDate);
+        if ($date !== null) {
             if (is_string($date)) {
                 $date = new DateTime($data[$key]);
             }
@@ -34,11 +34,9 @@ abstract class BaseSalesManager
 
     /**
      * checks data for attributes
-     *
      * @param array $data
      * @param $key
      * @param $isNew
-     *
      * @return bool
      * @throws \Exception
      */
@@ -55,10 +53,8 @@ abstract class BaseSalesManager
 
     /**
      * checks if data is set
-     *
      * @param $key
      * @param $data
-     *
      * @return bool
      */
     protected function checkIfSet($key, $data)
@@ -70,11 +66,9 @@ abstract class BaseSalesManager
 
     /**
      * searches for contact in specified data and calls callback function
-     *
      * @param array $data
      * @param $dataKey
      * @param $addCallback
-     *
      * @return null|Contact
      * @throws \Exception
      */
@@ -91,17 +85,14 @@ abstract class BaseSalesManager
             }
             $addCallback($contact);
         }
-
         return $contact;
     }
 
     /**
      * Returns the entry from the data with the given key, or the given default value, if the key does not exist
-     *
      * @param array $data
      * @param string $key
      * @param string $default
-     *
      * @return mixed
      */
     protected function getProperty(array $data, $key, $default = null)
@@ -111,11 +102,10 @@ abstract class BaseSalesManager
 
     /**
      * @param $data
-     * @param Order $order
-     *
+     * @param $entity
      * @return null|object
-     * @throws OrderDependencyNotFoundException
      * @throws \Exception
+     * @internal param Order $order
      */
     protected function setAccount($data, $entity)
     {
@@ -132,12 +122,9 @@ abstract class BaseSalesManager
                 throw new \Exception(sprintf("Entity '%s' with id %s not found", static::$accountEntityName, $accountData['id']));
             }
             $entity->setAccount($account);
-
             return $account;
-        } else {
-            $entity->setAccount(null);
         }
-
+        $entity->setAccount(null);
         return null;
     }
 }
