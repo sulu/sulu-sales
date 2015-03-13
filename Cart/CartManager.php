@@ -159,6 +159,25 @@ class CartManager extends BaseSalesManager
     }
 
     /**
+     * updates the cart
+     *
+     * @param $data
+     * @param $user
+     * @param $locale
+     * @return null|Order
+     * @throws \Sulu\Bundle\Sales\OrderBundle\Order\Exception\OrderException
+     * @throws \Sulu\Bundle\Sales\OrderBundle\Order\Exception\OrderNotFoundException
+     */
+    public function updateCart($data, $user, $locale)
+    {
+        $cart = $this->getUserCart($user, $locale);
+        $userId = $user ? $user->getId() : null;
+        $this->orderManager->save($data, $locale, $userId, $cart->getId());
+        
+        return $cart;
+    }
+
+    /**
      * finds cart by session-id
      *
      * @return array
