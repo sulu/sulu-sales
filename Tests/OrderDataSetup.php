@@ -148,7 +148,9 @@ class OrderDataSetup {
     public function setupCartTests()
     {
         // set order to cart order
-        $this->orderStatus = $this->em->getRepository(static::$orderStatusEntityName)->find(OrderStatus::STATUS_IN_CART);
+        $this->orderStatus = $this->em
+            ->getRepository(static::$orderStatusEntityName)
+            ->find(OrderStatus::STATUS_IN_CART);
         
         $this->order->setStatus($this->orderStatus);
         $this->order->setSessionId('IamASessionKey');

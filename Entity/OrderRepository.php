@@ -132,8 +132,6 @@ class OrderRepository extends EntityRepository
                 ->setParameter('statusId', $statusId)
                 ->orderBy('o.created', 'DESC');
             
-            // TODO use expiryDate
-
             return $qb->getQuery()->getResult();
         } catch (NoResultException $exc) {
             return null;

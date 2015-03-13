@@ -94,12 +94,11 @@ class CartManager extends BaseSalesManager
         OrderManager $orderManager,
         GroupedItemsPriceCalculatorInterface $priceCalculation,
         $defaultCurrency
-    )
-    {
+    ) {
         $this->em = $em;
         $this->session = $session;
         $this->orderRepository = $orderRepository;
-        $this->orderManager = $orderManager; //FIXME: unused
+        $this->orderManager = $orderManager;
         $this->priceCalculation = $priceCalculation;
         $this->defaultCurrency = $defaultCurrency;
     }
@@ -115,7 +114,6 @@ class CartManager extends BaseSalesManager
         // cart by session ID
         if (!$user) {
             // TODO: get correct locale
-            // TODO: QUESTION: add locale to order?
             $locale = 'de';
             $cartArray = $this->findCartBySessionId();
         } else {
@@ -212,7 +210,6 @@ class CartManager extends BaseSalesManager
         if ($cartArray && count($cartArray) > 0) {
             // handle cartArray count is > 1
             foreach ($cartArray as $index => $cart) {
-                // TODO: QUESTION: delete expired carts?
                 // delete expired carts
                 if ($cart->getChanged()->getTimestamp() < strtotime(static::EXPIRY_MONTHS . ' months ago')) {
                     $this->em->remove($cart);
@@ -223,7 +220,6 @@ class CartManager extends BaseSalesManager
                 if ($index === 0) {
                     continue;
                 }
-                // TODO: QUESTION remove duplicated carts? => if expiry check is active, only one cart can exist
                 // remove duplicated carts
                 $this->em->remove($cart);
             }
@@ -265,7 +261,6 @@ class CartManager extends BaseSalesManager
         $cart = $this->getUserCart($user, $locale);
         $userId = $user ? $user->getId() : null;
 
-        
         $item = $this->orderManager->getOrderItemById($itemId, $cart->getEntity());
 
         $this->orderManager->updateItem($item, $data, $locale, $userId);

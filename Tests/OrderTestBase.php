@@ -82,10 +82,6 @@ class OrderTestBase extends SuluTestCase
             $this->assertEqualsIfExists($account->getName(), $orderAddress, 'accountName');
             $this->assertEqualsIfExists($account->getUid(), $orderAddress, 'uid');
         }
-
-        // TODO: check phone
-//        $this->assertEquals('+43 123 / 456 789', $orderAddress->phone);
-//        $this->assertEquals('+43 123 / 456', $orderAddress->phoneMobile);
     }
 
     /**
