@@ -308,4 +308,26 @@ class CartManager extends BaseSalesManager
         }
         return $cart;
     }
+
+    /**
+     * returns array containing number of items and total-price
+     * array('totalItems', 'totalPrice')
+     *
+     * @param $user
+     * @param $locale
+     * @return array
+     */
+    public function getNumberItemsAndTotalPrice($user, $locale)
+    {
+        $cart = $this->getUserCart($user, $locale);
+        
+        $numberItems = count($cart->getItems());
+        
+        $totalPrice = $cart->getTotalNetPrice();
+        
+        return array(
+            'totalItems' => $numberItems,
+            'totalPrice' => $totalPrice
+        );
+    }
 }

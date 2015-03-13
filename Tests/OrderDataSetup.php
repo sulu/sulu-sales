@@ -46,8 +46,8 @@ use Symfony\Component\HttpKernel\Client;
 
 class OrderDataSetup {
 
-    protected $locale = 'en';
-    
+    public $locale = 'en';
+
     protected static $orderStatusEntityName = 'SuluSalesOrderBundle:OrderStatus';
 
     /**
@@ -371,6 +371,8 @@ class OrderDataSetup {
         
         $price2 = clone($this->productPrice);
         $price2->setProduct($this->product2);
+        $price2->setPrice(15.5);
+
         $this->em->persist($price2);
         $this->product2->addPrice($price2);
         
