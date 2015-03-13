@@ -155,8 +155,6 @@ class CartManager extends BaseSalesManager
         // set total price
         $apiOrder->setTotalNetPrice($totalPrice);
 
-        $this->em->flush();
-
         return $apiOrder;
     }
 

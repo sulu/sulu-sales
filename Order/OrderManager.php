@@ -343,7 +343,7 @@ class OrderManager
             ->getRepository(self::$orderStatusEntityName)
             ->find($statusId);
         if (!$statusEntity) {
-            throw new EntityNotFoundException($statusEntity, $statusEntity);
+            throw new EntityNotFoundException(self::$orderStatusEntityName, $statusId);
         }
 
         // ACTIVITY LOG
