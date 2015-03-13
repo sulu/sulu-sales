@@ -92,9 +92,9 @@ class ItemManager
      */
     public function save(array $data, $locale, $userId = null, $item = null, $itemStatusId = null)
     {
-        // check requiresd data
+        // check required data
         if (!$item) {
-            $this->checkRequiredData($data, !!$item);
+            $this->checkRequiredData($data, true);
         }
 
         // get item
