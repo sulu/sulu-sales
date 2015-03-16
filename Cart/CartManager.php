@@ -94,7 +94,8 @@ class CartManager extends BaseSalesManager
         OrderManager $orderManager,
         GroupedItemsPriceCalculatorInterface $priceCalculation,
         $defaultCurrency
-    ) {
+    )
+    {
         $this->em = $em;
         $this->session = $session;
         $this->orderRepository = $orderRepository;
@@ -107,7 +108,7 @@ class CartManager extends BaseSalesManager
      * @param $user
      * @param null $locale
      *
-     * @return null|\Sulu\Bundle\Sales\OrderBundle\Entity\Order
+     * @return null|\Sulu\Bundle\Sales\OrderBundle\Api\Order
      */
     public function getUserCart($user = null, $locale = null, $currency = null, $persist = false)
     {
@@ -156,6 +157,25 @@ class CartManager extends BaseSalesManager
         $apiOrder->setTotalNetPrice($totalPrice);
 
         return $apiOrder;
+    }
+
+    /**
+     * updates the cart
+     *
+     * @param $data
+     * @param $user
+     * @param $locale
+     * @return null|Order
+     * @throws \Sulu\Bundle\Sales\OrderBundle\Order\Exception\OrderException
+     * @throws \Sulu\Bundle\Sales\OrderBundle\Order\Exception\OrderNotFoundException
+     */
+    public function updateCart($data, $user, $locale)
+    {
+        $cart = $this->getUserCart($user, $locale);
+        $userId = $user ? $user->getId() : null;
+        $this->orderManager->save($data, $locale, $userId, $cart->getId());
+
+        return $cart;
     }
 
     /**
@@ -281,10 +301,19 @@ class CartManager extends BaseSalesManager
         $item = $this->orderManager->getOrderItemById($itemId, $cart->getEntity(), $hasMultiple);
 
         $this->orderManager->removeItem($item, $cart->getEntity(), !$hasMultiple);
-        
+
         return $cart;
     }
-    
+
+    /**
+     * Function creates an empty cart
+     * this means an order with status 'in_cart' is created and all necessary data is set
+     *
+     * @param $user
+     * @param $persist
+     * @return Order
+     * @throws \Sulu\Component\Rest\Exception\EntityNotFoundException
+     */
     protected function createEmptyCart($user, $persist)
     {
         $cart = new Order();
@@ -292,7 +321,7 @@ class CartManager extends BaseSalesManager
         $cart->setChanger($user);
         $cart->setCreated(new \DateTime());
         $cart->setChanged(new \DateTime());
-        
+
         // TODO:
         if ($user) {
             $name = $user->getContact()->getFullName();
@@ -300,12 +329,13 @@ class CartManager extends BaseSalesManager
             $name = 'Anonymous';
         }
         $cart->setCustomerName($name);
-        
+
         $this->orderManager->convertStatus($cart, OrderStatus::STATUS_IN_CART);
-        
-        if($persist) {
+
+        if ($persist) {
             $this->em->persist($cart);
         }
+
         return $cart;
     }
 
@@ -320,14 +350,12 @@ class CartManager extends BaseSalesManager
     public function getNumberItemsAndTotalPrice($user, $locale)
     {
         $cart = $this->getUserCart($user, $locale);
-        
-        $numberItems = count($cart->getItems());
-        
-        $totalPrice = $cart->getTotalNetPrice();
-        
+
         return array(
-            'totalItems' => $numberItems,
-            'totalPrice' => $totalPrice
+            'totalItems' => count($cart->getItems()),
+            'totalPrice' => $cart->getTotalNetPrice(),
+            'totalPriceFormatted' => $cart->getTotalNetPriceFormatted(),
+            'currency' => $cart->getCurrency()
         );
     }
 }
