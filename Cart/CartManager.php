@@ -266,27 +266,6 @@ class CartManager extends BaseSalesManager
     }
 
     /**
-     * @param $itemId
-     * @param $data
-     * @param null $user
-     * @param null $locale
-     *
-     * @return null|Order
-     * @throws ItemNotFoundException
-     */
-    public function updateItem($itemId, $data, $user = null, $locale = null)
-    {
-        $cart = $this->getUserCart($user, $locale);
-        $userId = $user ? $user->getId() : null;
-
-        $item = $this->orderManager->getOrderItemById($itemId, $cart->getEntity());
-
-        $this->orderManager->updateItem($item, $data, $locale, $userId);
-
-        return $cart;
-    }
-
-    /**
      * patches an item in cart
      *
      * @param null $user
