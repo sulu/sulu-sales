@@ -160,25 +160,6 @@ class CartManager extends BaseSalesManager
     }
 
     /**
-     * updates the cart
-     *
-     * @param $data
-     * @param $user
-     * @param $locale
-     * @return null|Order
-     * @throws \Sulu\Bundle\Sales\OrderBundle\Order\Exception\OrderException
-     * @throws \Sulu\Bundle\Sales\OrderBundle\Order\Exception\OrderNotFoundException
-     */
-    public function updateCart($data, $user, $locale)
-    {
-        $cart = $this->getUserCart($user, $locale);
-        $userId = $user ? $user->getId() : null;
-        $this->orderManager->save($data, $locale, $userId, $cart->getId());
-
-        return $cart;
-    }
-
-    /**
      * finds cart by session-id
      *
      * @return array
@@ -261,6 +242,27 @@ class CartManager extends BaseSalesManager
         // define user-id
         $userId = $user ? $user->getId() : null;
         $this->orderManager->addItem($data, $locale, $userId, $cart);
+
+        return $cart;
+    }
+
+    /**
+     * @param $itemId
+     * @param $data
+     * @param null $user
+     * @param null $locale
+     *
+     * @return null|Order
+     * @throws ItemNotFoundException
+     */
+    public function updateItem($itemId, $data, $user = null, $locale = null)
+    {
+        $cart = $this->getUserCart($user, $locale);
+        $userId = $user ? $user->getId() : null;
+
+        $item = $this->orderManager->getOrderItemById($itemId, $cart->getEntity());
+
+        $this->orderManager->updateItem($item, $data, $locale, $userId);
 
         return $cart;
     }
