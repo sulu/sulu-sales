@@ -39,6 +39,7 @@ use Sulu\Component\Rest\ListBuilder\Doctrine\FieldDescriptor\DoctrineJoinDescrip
 use Sulu\Component\Security\Authentication\UserRepositoryInterface;
 use DateTime;
 use Sulu\Component\Persistence\RelationTrait;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 class OrderManager
 {
@@ -96,6 +97,11 @@ class OrderManager
     private $fieldDescriptors = array();
 
     /**
+     * @var SessionInterface
+     */
+    protected $session;
+
+    /**
      * constructor
      *
      * @param ObjectManager $em
@@ -111,7 +117,8 @@ class OrderManager
         UserRepositoryInterface $userRepository,
         ItemManager $itemManager,
         EntityRepository $orderStatusRepository,
-        EntityRepository $orderTypeRepository
+        EntityRepository $orderTypeRepository,
+        SessionInterface $session
     ) {
         $this->orderRepository = $orderRepository;
         $this->userRepository = $userRepository;
@@ -119,6 +126,7 @@ class OrderManager
         $this->itemManager = $itemManager;
         $this->orderStatusRepository = $orderStatusRepository;
         $this->orderTypeRepository = $orderTypeRepository;
+        $this->session = $session;
     }
 
     /**
@@ -172,15 +180,21 @@ class OrderManager
             $order->getDesiredDeliveryDate(),
             array($order, 'setDesiredDeliveryDate')
         );
-        $this->setDate($data, 'orderDate', $order->getOrderDate(), array($order, 'setOrderDate'));
+        $this->setDate(
+            $data,
+            'orderDate', 
+            $order->getOrderDate(), 
+            array($order, 'setOrderDate')
+        );
 
         $this->setTermsOfDelivery($data, $order);
         $this->setTermsOfPayment($data, $order);
 
         $account = $this->setAccount($data, $order);
 
-        // TODO: check sessionID
-//        $order->setSessionId($this->getProperty($data, 'number', $order->getNumber()));
+        // set session - id
+        $sessionId = $this->session->getId();
+        $order->setOrderNumber($sessionId);
 
         // add contact
         $contact = $this->addContactRelation(
