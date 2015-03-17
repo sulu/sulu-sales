@@ -10,6 +10,7 @@
 
 namespace Sulu\Bundle\Sales\CoreBundle\Pricing;
 
+use Sulu\Bundle\ProductBundle\Product\ProductPriceManagerInterface;
 use Sulu\Bundle\Sales\CoreBundle\Pricing\Exceptions\PriceCalculationException;
 
 /**
@@ -17,6 +18,15 @@ use Sulu\Bundle\Sales\CoreBundle\Pricing\Exceptions\PriceCalculationException;
  */
 class GroupedItemsPriceCalculator implements GroupedItemsPriceCalculatorInterface
 {
+    protected $itemPriceCalculator;
+
+    public function __construct(
+        ItemPriceCalculator $itemPriceCalculator
+    )
+    {
+        $this->itemPriceCalculator = $itemPriceCalculator;
+    }
+
     /**
      * caclucaltes the overall total price of an items array and prices per price group
      *
@@ -25,39 +35,31 @@ class GroupedItemsPriceCalculator implements GroupedItemsPriceCalculatorInterfac
      *
      * @return int
      */
-    public function calculate($items, &$groupPrices = array(), &$groupedItems = array(), $setPrice = false)
+    public function calculate(
+        $items,
+        &$groupPrices = array(),
+        &$groupedItems = array(),
+        $setPrice = false,
+        $currency = 'EUR'
+    )
     {
         $overallPrice = 0;
 
         /** @var PriceCalcilationInterface $item */
         foreach ($items as $item) {
-            // validate item
-            $this->validateItem($item);
-
-            // TODO: item-price calculation more modular
             
-            // get bulk price
-            $price = $item->getCalcPrice($item->getCalcQuantity());
-            $this->validateNotNull('price', $price);
-            
-            $itemPrice =  $price * $item->getCalcQuantity();
-
-            // calculate items discount
-            $discount = ($itemPrice / 100) * $item->getCalcDiscount();
-
-            // calculate total item price
-            $totalItemPrice = $itemPrice - $discount;
+            $itemPrice = $this->itemPriceCalculator->calculate($item, $currency);
 
             // add total-item-price to group
-            $this->addPriceToPriceGroup($totalItemPrice, $item, $groupPrices, $groupedItems);
+            $this->addPriceToPriceGroup($itemPrice, $item, $groupPrices, $groupedItems);
 
-            // set price on item
-            if ($setPrice && method_exists($item, 'setPrice')) {
-                $item->setPrice($totalItemPrice);
-            }
+//            // set price on item
+//            if ($setPrice && method_exists($item, 'setPrice')) {
+//                $item->setPrice($totalItemPrice);
+//            }
 
             // add to overall price
-            $overallPrice += $totalItemPrice;
+            $overallPrice += $itemPrice;
         }
 
         return $overallPrice;
@@ -77,60 +79,31 @@ class GroupedItemsPriceCalculator implements GroupedItemsPriceCalculatorInterfac
     {
         $itemPriceGroup = $item->getCalcPriceGroup();
 
-        if ($itemPriceGroup !== null) {
-            if (!isset($groupPrices[$itemPriceGroup])) {
-                $groupPrices[$itemPriceGroup] = 0;
-            }
-            $groupPrices[$itemPriceGroup] += $price;
-        } else {
+        if ($itemPriceGroup === null) {
             $itemPriceGroup = 'undefined';
         }
+        
+        if (!isset($groupPrices[$itemPriceGroup])) {
+            $groupPrices[$itemPriceGroup] = 0;
+        }
+        $groupPrices[$itemPriceGroup] += $price;
+        
         // add to grouped items
         if (!isset($groupedItems[$itemPriceGroup])) {
             $groupedItems[$itemPriceGroup] = array(
                 'items' => array()
             );
             if (method_exists($item, 'getCalcPriceGroupContent') &&
-                $content = $item->getCalcPriceGroupContent()) {
+                $content = $item->getCalcPriceGroupContent()
+            ) {
                 $groupedItems[$itemPriceGroup] = array_merge($content, $groupedItems[$itemPriceGroup]);
             }
         }
         $groupedItems[$itemPriceGroup]['items'][] = $item;
         $groupedItems[$itemPriceGroup]['price'] = $groupPrices[$itemPriceGroup];
-    }
-
-    /**
-     * validate item values
-     *
-     * @param $item
-     *
-     * @throws PriceCalculationException
-     */
-    protected function validateItem($item)
-    {
-        // validate not null
-        $this->validateNotNull('quantity', $item->getCalcQuantity());
-//        $this->validateNotNull('price', $item->getCalcPrice($item->getCalcQuantity()));
-
-        // validate discount
-        $discountPercent = $item->getCalcDiscount();
-        if ($discountPercent < 0 || $discountPercent > 100) {
-            throw new PriceCalculationException('Discount must be within 0 and 100 percent');
-        }
-    }
-
-    /**
-     * throws an exception if value is null
-     *
-     * @param $key
-     * @param $value
-     *
-     * @throws PriceCalculationException
-     */
-    protected function validateNotNull($key, $value)
-    {
-        if ($value === null) {
-            throw new PriceCalculationException('Attribute ' . $key . ' must not be null');
-        }
+        $groupedItems[$itemPriceGroup]['formattedPrice'] = $this->itemPriceCalculator->formatPrice(
+            $groupPrices[$itemPriceGroup],
+            null
+        );
     }
 }

@@ -23,6 +23,7 @@ use Sulu\Bundle\Sales\CoreBundle\Entity\ItemRepository;
 use Sulu\Bundle\Sales\CoreBundle\Item\Exception\ItemException;
 use Sulu\Bundle\Sales\CoreBundle\Item\Exception\ItemNotFoundException;
 use Sulu\Bundle\Sales\CoreBundle\Item\Exception\MissingItemAttributeException;
+use Sulu\Bundle\Sales\CoreBundle\Pricing\ItemPriceCalculator;
 use Sulu\Component\Persistence\RelationTrait;
 use Sulu\Component\Security\Authentication\UserRepositoryInterface;
 use DateTime;
@@ -60,6 +61,11 @@ class ItemManager
     protected $productPriceManager;
 
     /**
+     * @var ItemPriceCalculator
+     */
+    protected $itemPriceCalculator;
+
+    /**
      * constructor
      *
      * @param ObjectManager $em
@@ -71,7 +77,8 @@ class ItemManager
         ItemRepository $itemRepository,
         UserRepositoryInterface $userRepository,
         ProductRepositoryInterface $productRepository,
-        ProductPriceManagerInterface $productPriceManager
+        ProductPriceManagerInterface $productPriceManager,
+        ItemPriceCalculator $itemPriceCalculator
     )
     {
         $this->em = $em;
@@ -79,6 +86,7 @@ class ItemManager
         $this->userRepository = $userRepository;
         $this->productRepository = $productRepository;
         $this->productPriceManager = $productPriceManager;
+        $this->itemPriceCalculator = $itemPriceCalculator;
     }
 
     /**
@@ -92,15 +100,14 @@ class ItemManager
      */
     public function save(array $data, $locale, $userId = null, $item = null, $itemStatusId = null)
     {
+        $isNewItem = !$item; 
+        
         // check required data
-        if (!$item) {
+        if ($isNewItem) {
             $this->checkRequiredData($data, true);
-        }
-
-        // get item
-        if (!$item) {
             $item = new Item(new ItemEntity(), $locale);
         }
+
         if ($item instanceof ItemEntity) {
             $item = new Item($item, $locale);
         }
@@ -110,13 +117,22 @@ class ItemManager
 
         // set item data
         $item->setQuantity($this->getProperty($data, 'quantity', null));
-        
-        // get product and set Product's data to item
-        $product = $this->setItemByProductData($data, $item, $locale);
+
+        $product = null;
+        if ($isNewItem) {
+            // get product and set Product's data to item
+            $product = $this->setItemByProductData($data, $item, $locale);
+        }
+
+        // update item by data from product
+        $this->updateProduct($item);
+
         // if product is not set, set data manually
         if (!$product) {
+            if ($isNewItem) {
+                $item->setUseProductsPrice(false);
+            }
             $item->setName($this->getProperty($data, 'name', $item->getName()));
-            $item->setUseProductsPrice(false);
             // TODO: set supplier based on if its a string  or object (fetch account and set it to setSupplier)
             $item->setSupplierName($this->getProperty($data, 'supplierName', $item->getSupplierName()));
             $item->setTax($this->getProperty($data, 'tax', $item->getTax()));
@@ -408,19 +424,24 @@ class ItemManager
             $item->setTax(0);
 //            $item->setTax($product->getTaxClass()->getTax($locale));
 
-            // TODO: product-price
-            // TODO: define CURRENCY
-            if ($item->getUseProductsPrice() === true) {
-                $price = $this->productPriceManager->getBulkPriceForCurrency(
-                    $product,
-                    $item->getQuantity()
-                );
-                $item->setPrice($price->getPrice());
-            }
-
             return $product;
         }
         return null;
+    }
+
+    /**
+     * function updates item by its product data
+     *
+     * @param $item
+     */
+    private function updateProduct($item)
+    {
+        // update prices
+        if ($item->getUseProductsPrice() === true) {
+            $price = $this->itemPriceCalculator->calculate($item);
+            $item->setPrice($price);
+        }
+        
     }
 
     /**

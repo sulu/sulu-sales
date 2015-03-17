@@ -16,7 +16,7 @@ interface CalculableBulkPriceItemInterface
      * 
      * @return float
      */
-    public function getCalcPrice($quantity);
+    public function getCalcProduct();
 
     /**
      * returns quantity of items
