@@ -589,24 +589,19 @@ class Item extends ApiWrapper implements CalculableBulkPriceItemInterface, Calcu
     private function getFormatter($locale)
     {
         $sysLocale = $locale ? $locale : 'de-AT';
-        return new \NumberFormatter($sysLocale, \NumberFormatter::CURRENCY);
+        $formatter = new \NumberFormatter($sysLocale, \NumberFormatter::DECIMAL);
+        $formatter->setAttribute(\NumberFormatter::MIN_FRACTION_DIGITS, 2);
+        $formatter->setAttribute(\NumberFormatter::DECIMAL_ALWAYS_SHOWN, 1);
+        return $formatter;
     }
 
     /**
      * {@inheritDoc}
      * TODO: default-price EUR?
      */
-    public function getCalcPrice($quantity)
+    public function getCalcProduct()
     {
-        // TODO: if ($this->getUseProductsPrice()) {
-        $product = $this->getProduct();
-        if ($product) {
-            $price = $product->getBulkPriceForCurrency($quantity, $this->currency);
-            if ($price) {
-                return $price->getPrice();
-            }
-        }
-        return $this->getPrice();
+        return $this->getProduct()->getEntity();
     }
 
     /**
