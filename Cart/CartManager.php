@@ -141,20 +141,21 @@ class CartManager extends BaseSalesManager
         $currency = $currency ?: $this->defaultCurrency;
         $apiOrder = new ApiOrder($cart, $locale, $currency);
 
-        // TODO: calcualte difference to previous cart
+        // TODO: calculate difference to previous cart
 
-        $this->updateCart($apiOrder);
+        
+        $this->updateCartApiEntity($apiOrder);
 
         return $apiOrder;
     }
 
     /**
-     * Updates Cart:
+     * Updates Cart Api-Entity
      * Calculates Prices of and set supplier-items
      *
      * @param \Sulu\Bundle\Sales\OrderBundle\Api\Order $apiOrder
      */
-    public function updateCart(ApiOrder $apiOrder)
+    protected function updateCartApiEntity(ApiOrder $apiOrder)
     {
         $items = $apiOrder->getItems();
 
@@ -254,7 +255,7 @@ class CartManager extends BaseSalesManager
         $userId = $user ? $user->getId() : null;
         $this->orderManager->addItem($data, $locale, $userId, $cart);
 
-        $this->updateCart($cart);
+        $this->updateCartApiEntity($cart);
 
         return $cart;
     }
@@ -277,7 +278,7 @@ class CartManager extends BaseSalesManager
 
         $this->orderManager->updateItem($item, $data, $locale, $userId);
 
-        $this->updateCart($cart);
+        $this->updateCartApiEntity($cart);
 
         return $cart;
     }
@@ -298,7 +299,7 @@ class CartManager extends BaseSalesManager
 
         $this->orderManager->removeItem($item, $cart->getEntity(), !$hasMultiple);
 
-        $this->updateCart($cart);
+        $this->updateCartApiEntity($cart);
 
         return $cart;
     }
