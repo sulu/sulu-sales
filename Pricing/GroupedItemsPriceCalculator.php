@@ -94,7 +94,7 @@ class GroupedItemsPriceCalculator implements GroupedItemsPriceCalculatorInterfac
         }
         $groupedItems[$itemPriceGroup]['items'][] = $item;
         $groupedItems[$itemPriceGroup]['price'] = $groupPrices[$itemPriceGroup];
-        $groupedItems[$itemPriceGroup]['formattedPrice'] = $this->itemPriceCalculator->formatPrice(
+        $groupedItems[$itemPriceGroup]['priceFormatted'] = $this->itemPriceCalculator->formatPrice(
             $groupPrices[$itemPriceGroup],
             null
         );
