@@ -143,6 +143,19 @@ class CartManager extends BaseSalesManager
 
         // TODO: calcualte difference to previous cart
 
+        $this->updateCart($apiOrder);
+
+        return $apiOrder;
+    }
+
+    /**
+     * Updates Cart:
+     * Calculates Prices of and set supplier-items
+     *
+     * @param \Sulu\Bundle\Sales\OrderBundle\Api\Order $apiOrder
+     */
+    public function updateCart(ApiOrder $apiOrder)
+    {
         $items = $apiOrder->getItems();
 
         // perform price calucaltion
@@ -155,8 +168,6 @@ class CartManager extends BaseSalesManager
         }
         // set total price
         $apiOrder->setTotalNetPrice($totalPrice);
-
-        return $apiOrder;
     }
 
     /**
@@ -243,6 +254,8 @@ class CartManager extends BaseSalesManager
         $userId = $user ? $user->getId() : null;
         $this->orderManager->addItem($data, $locale, $userId, $cart);
 
+        $this->updateCart($cart);
+
         return $cart;
     }
 
@@ -264,6 +277,8 @@ class CartManager extends BaseSalesManager
 
         $this->orderManager->updateItem($item, $data, $locale, $userId);
 
+        $this->updateCart($cart);
+
         return $cart;
     }
 
@@ -282,6 +297,8 @@ class CartManager extends BaseSalesManager
         $item = $this->orderManager->getOrderItemById($itemId, $cart->getEntity(), $hasMultiple);
 
         $this->orderManager->removeItem($item, $cart->getEntity(), !$hasMultiple);
+
+        $this->updateCart($cart);
 
         return $cart;
     }
