@@ -300,6 +300,7 @@ class Item extends ApiWrapper implements CalculableBulkPriceItemInterface, Calcu
     /**
      * @VirtualProperty
      * @SerializedName("priceFormatted")
+     * @Groups({"cart"})
      * @return string
      */
     public function getPriceFormatted($locale = null)
