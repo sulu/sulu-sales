@@ -441,7 +441,6 @@ class ItemManager
             $price = $this->itemPriceCalculator->calculate($item);
             $item->setPrice($price);
         }
-        
     }
 
     /**

@@ -34,7 +34,7 @@ class ItemPriceCalculator
      * caclucaltes the overall total price of an item
      * @param $item
      * @param string $currency
-     * @return int|null|\Sulu\Bundle\ProductBundle\Entity\ProductPrice
+     * @return int
      * @throws PriceCalculationException
      */
     public function calculate($item, $currency = null)

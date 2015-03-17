@@ -20,9 +20,7 @@ class GroupedItemsPriceCalculator implements GroupedItemsPriceCalculatorInterfac
 {
     protected $itemPriceCalculator;
 
-    public function __construct(
-        ItemPriceCalculator $itemPriceCalculator
-    )
+    public function __construct(ItemPriceCalculator $itemPriceCalculator)
     {
         $this->itemPriceCalculator = $itemPriceCalculator;
     }
@@ -47,16 +45,11 @@ class GroupedItemsPriceCalculator implements GroupedItemsPriceCalculatorInterfac
 
         /** @var PriceCalcilationInterface $item */
         foreach ($items as $item) {
-            
+
             $itemPrice = $this->itemPriceCalculator->calculate($item, $currency);
 
             // add total-item-price to group
             $this->addPriceToPriceGroup($itemPrice, $item, $groupPrices, $groupedItems);
-
-//            // set price on item
-//            if ($setPrice && method_exists($item, 'setPrice')) {
-//                $item->setPrice($totalItemPrice);
-//            }
 
             // add to overall price
             $overallPrice += $itemPrice;
@@ -82,12 +75,12 @@ class GroupedItemsPriceCalculator implements GroupedItemsPriceCalculatorInterfac
         if ($itemPriceGroup === null) {
             $itemPriceGroup = 'undefined';
         }
-        
+
         if (!isset($groupPrices[$itemPriceGroup])) {
             $groupPrices[$itemPriceGroup] = 0;
         }
         $groupPrices[$itemPriceGroup] += $price;
-        
+
         // add to grouped items
         if (!isset($groupedItems[$itemPriceGroup])) {
             $groupedItems[$itemPriceGroup] = array(
