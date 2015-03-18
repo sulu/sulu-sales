@@ -339,12 +339,14 @@ class CartManager extends BaseSalesManager
             $addressSource = $account;
         }
         // get billing address
+        $invoiceOrderAddress = null;
         $invoiceAddress = $this->accountManager->getBillingAddress($addressSource, true);
         if ($invoiceAddress) {
             // convert to order-address
             $invoiceOrderAddress = $this->orderManager->getOrderAddressByContactAddress($invoiceAddress, $contact, $account);
             $cart->setInvoiceAddress($invoiceOrderAddress);
         }
+        $deliveryOrderAddress = null;
         $deliveryAddress = $this->accountManager->getDeliveryAddress($addressSource, true);
         if ($deliveryAddress) {
             // convert to order-address
