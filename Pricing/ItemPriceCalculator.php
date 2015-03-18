@@ -48,11 +48,11 @@ class ItemPriceCalculator
         if ($useProductsPrice) {
             $product = $item->getCalcProduct();
             $price = $this->priceManager->getBulkPriceForCurrency($product, $item->getCalcQuantity(), $currency);
+            $price = $price->getPrice();
         } else {
             $price = $item->getPrice();
         }
         $this->validateNotNull('price', $price);
-        $price = $price->getPrice();
 
         $itemPrice = $price * $item->getCalcQuantity();
 
