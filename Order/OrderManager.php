@@ -150,7 +150,9 @@ class OrderManager
         $statusId = null,
         $flush = true
     ) {
-        if ($id) {
+        $isNewOrder = !$id;
+        
+        if (!$isNewOrder) {
             $order = $this->findByIdAndLocale($id, $locale);
 
             if (!$order) {
@@ -158,10 +160,8 @@ class OrderManager
             }
         } else {
             $order = new Order(new OrderEntity(), $locale);
+            $this->checkRequiredData($data, $id === null);
         }
-
-        // check for data
-        $this->checkRequiredData($data, $id === null);
 
         $user = $userId ? $this->userRepository->findUserById($userId) : null;
 
@@ -241,15 +241,33 @@ class OrderManager
             $this->convertStatus($order, $statusId);
         }
 
+        // if not new and contact is not set, use old contact
+        if (!$isNewOrder && !$contact) {
+            $contact = $order->getEntity()->getContact();
+        }
         // set customer name to account if set, otherwise to contact
         $contactFullName = $this->getContactData($data['invoiceAddress'], $contact)['fullName'];
         $customerName = $account !== null ? $account->getName() : $contactFullName;
         $order->setCustomerName($customerName);
 
         // set OrderAddress data
-        $this->setOrderAddress($order->getEntity()->getInvoiceAddress(), $data['invoiceAddress'], $contact, $account);
-        $this->setOrderAddress($order->getEntity()->getDeliveryAddress(), $data['deliveryAddress'], $contact, $account);
-
+        if (isset($data['invoiceAddress'])) {
+            $this->setOrderAddress(
+                $order->getEntity()->getInvoiceAddress(),
+                $data['invoiceAddress'],
+                $contact,
+                $account
+            );
+        }
+        if (isset($data['deliveryAddress'])) {
+            $this->setOrderAddress(
+                $order->getEntity()->getDeliveryAddress(),
+                $data['deliveryAddress'],
+                $contact,
+                $account
+            );
+        }
+        
         // handle items
         if (!$this->processItems($data, $order, $locale, $userId)) {
             throw new OrderException('Error while processing items');
@@ -267,12 +285,17 @@ class OrderManager
 
     /**
      * returns contact data as an array. either by provided address or contact
+     *
+     * @param $addressData
+     * @param $contact
+     * @return array
+     * @throws MissingOrderAttributeException
      */
     public function getContactData($addressData, $contact)
     {
         $result = array();
         // if account is set, take account's name
-        if (isset($addressData['firstName']) && isset($addressData['lastName'])) {
+        if ($addressData && isset($addressData['firstName']) && isset($addressData['lastName'])) {
             $result['firstName'] = $addressData['firstName'];
             $result['lastName'] = $addressData['lastName'];
             $result['fullName'] = $result['firstName'] . ' ' . $result['lastName'];
