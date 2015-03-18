@@ -327,7 +327,7 @@ class CartManager extends BaseSalesManager
         $cart->setCreated(new \DateTime());
         $cart->setChanged(new \DateTime());
 
-        // currency
+        // set currency - if not defined use default
         $currency = $currency ?: $this->defaultCurrency;
         $cart->setCurrency($currency);
 
