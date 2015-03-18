@@ -150,7 +150,6 @@ class CartManager extends BaseSalesManager
 
         // TODO: calculate difference to previous cart
 
-        
         $this->updateCartApiEntity($apiOrder);
 
         return $apiOrder;
@@ -320,14 +319,18 @@ class CartManager extends BaseSalesManager
      * @return Order
      * @throws \Sulu\Component\Rest\Exception\EntityNotFoundException
      */
-    protected function createEmptyCart($user, $persist)
+    protected function createEmptyCart($user, $persist, $currency = null)
     {
         $cart = new Order();
         $cart->setCreator($user);
         $cart->setChanger($user);
         $cart->setCreated(new \DateTime());
         $cart->setChanged(new \DateTime());
-        
+
+        // currency
+        $currency = $currency ?: $this->defaultCurrency;
+        $cart->setCurrency($currency);
+
         // get address from contact and account
         $contact = $user->getContact();
         $account = $contact->getMainAccount();
@@ -339,13 +342,13 @@ class CartManager extends BaseSalesManager
         $invoiceAddress = $this->accountManager->getBillingAddress($addressSource, true);
         if ($invoiceAddress) {
             // convert to order-address
-            $invoiceOrderAddress = $this->orderManager->getOrderAddressByContactAddress($invoiceAddress , $contact, $account);
+            $invoiceOrderAddress = $this->orderManager->getOrderAddressByContactAddress($invoiceAddress, $contact, $account);
             $cart->setInvoiceAddress($invoiceOrderAddress);
         }
         $deliveryAddress = $this->accountManager->getBillingAddress($addressSource, true);
         if ($deliveryAddress) {
             // convert to order-address
-            $deliveryOrderAddress = $this->orderManager->getOrderAddressByContactAddress($deliveryAddress , $contact, $account);
+            $deliveryOrderAddress = $this->orderManager->getOrderAddressByContactAddress($deliveryAddress, $contact, $account);
             $cart->setInvoiceAddress($deliveryOrderAddress);
         }
 
