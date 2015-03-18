@@ -364,8 +364,12 @@ class CartManager extends BaseSalesManager
 
         if ($persist) {
             $this->em->persist($cart);
-            $this->em->persist($invoiceOrderAddress);
-            $this->em->persist($deliveryOrderAddress);
+            if ($invoiceOrderAddress) {
+                $this->em->persist($invoiceOrderAddress);
+            }
+            if ($deliveryOrderAddress) {
+                $this->em->persist($deliveryOrderAddress);
+            }
         }
 
         return $cart;
