@@ -781,6 +781,47 @@ class OrderManager
     }
 
     /**
+     * @param Address $address
+     * @param $contact
+     * @param $account
+     * @return OrderAddress
+     */
+    public function getOrderAddressByContactAddress(Address $address, $contact, $account)
+    {
+        $orderAddress = new OrderAddress();
+        $orderAddress->setStreet($address->getStreet());
+        $orderAddress->setNumber($address->getNumber());
+        $orderAddress->setAddition($address->getAddition());
+        $orderAddress->setCity($address->getCity());
+        $orderAddress->setZip($address->getZip());
+        $orderAddress->setState($address->getState());
+        $orderAddress->setCountry($address->getCountry()->getName());
+
+        $orderAddress->setPostboxCity($address->getPostboxCity());
+        $orderAddress->setPostboxPostcode($address->getPostboxPostcode());
+        $orderAddress->setPostboxNumber($address->getPostboxNumber());
+
+        // add account data
+        if ($account) {
+            $orderAddress->setAccountName($account->getName());
+            $orderAddress->setUid($account->getUid());
+        }
+
+        if ($contact) {
+            if ($contact->getTitle()) {
+                $orderAddress->setTitle($contact->getTitle()->getTitle());
+            }
+            $orderAddress->setSalutation($contact->getSalutation());
+            $orderAddress->setFirstName($contact->getFirstName());
+            $orderAddress->setLastName($contact->getLastName());
+            $orderAddress->setEmail($contact->getMainEmail());
+            $orderAddress->setPhone($contact->getMainPhone());
+        }
+
+        return $orderAddress;
+    }
+
+    /**
      * copies address data to order address
      * @param OrderAddress $orderAddress
      * @param $addressData

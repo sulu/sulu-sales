@@ -81,6 +81,11 @@ class CartManager extends BaseSalesManager
     private $defaultCurrency;
 
     /**
+     * @var
+     */
+    private $accountManager;
+
+    /**
      * @param ObjectManager $em
      * @param SessionInterface $session
      * @param OrderRepository $orderRepository
@@ -93,7 +98,8 @@ class CartManager extends BaseSalesManager
         OrderRepository $orderRepository,
         OrderManager $orderManager,
         GroupedItemsPriceCalculatorInterface $priceCalculation,
-        $defaultCurrency
+        $defaultCurrency,
+        $accountManager
     )
     {
         $this->em = $em;
@@ -102,6 +108,7 @@ class CartManager extends BaseSalesManager
         $this->orderManager = $orderManager;
         $this->priceCalculation = $priceCalculation;
         $this->defaultCurrency = $defaultCurrency;
+        $this->accountManager = $accountManager;
     }
 
     /**
@@ -141,8 +148,21 @@ class CartManager extends BaseSalesManager
         $currency = $currency ?: $this->defaultCurrency;
         $apiOrder = new ApiOrder($cart, $locale, $currency);
 
-        // TODO: calcualte difference to previous cart
+        // TODO: calculate difference to previous cart
 
+        $this->updateCartApiEntity($apiOrder);
+
+        return $apiOrder;
+    }
+
+    /**
+     * Updates Cart Api-Entity
+     * Calculates Prices of and set supplier-items
+     *
+     * @param \Sulu\Bundle\Sales\OrderBundle\Api\Order $apiOrder
+     */
+    protected function updateCartApiEntity(ApiOrder $apiOrder)
+    {
         $items = $apiOrder->getItems();
 
         // perform price calucaltion
@@ -155,8 +175,6 @@ class CartManager extends BaseSalesManager
         }
         // set total price
         $apiOrder->setTotalNetPrice($totalPrice);
-
-        return $apiOrder;
     }
 
     /**
@@ -262,6 +280,8 @@ class CartManager extends BaseSalesManager
         $userId = $user ? $user->getId() : null;
         $this->orderManager->addItem($data, $locale, $userId, $cart);
 
+        $this->updateCartApiEntity($cart);
+
         return $cart;
     }
 
@@ -283,6 +303,8 @@ class CartManager extends BaseSalesManager
 
         $this->orderManager->updateItem($item, $data, $locale, $userId);
 
+        $this->updateCartApiEntity($cart);
+
         return $cart;
     }
 
@@ -302,6 +324,8 @@ class CartManager extends BaseSalesManager
 
         $this->orderManager->removeItem($item, $cart->getEntity(), !$hasMultiple);
 
+        $this->updateCartApiEntity($cart);
+
         return $cart;
     }
 
@@ -314,13 +338,40 @@ class CartManager extends BaseSalesManager
      * @return Order
      * @throws \Sulu\Component\Rest\Exception\EntityNotFoundException
      */
-    protected function createEmptyCart($user, $persist)
+    protected function createEmptyCart($user, $persist, $currency = null)
     {
         $cart = new Order();
         $cart->setCreator($user);
         $cart->setChanger($user);
         $cart->setCreated(new \DateTime());
         $cart->setChanged(new \DateTime());
+
+        // set currency - if not defined use default
+        $currency = $currency ?: $this->defaultCurrency;
+        $cart->setCurrency($currency);
+
+        // get address from contact and account
+        $contact = $user->getContact();
+        $account = $contact->getMainAccount();
+        $addressSource = $contact;
+        if ($account) {
+            $addressSource = $account;
+        }
+        // get billing address
+        $invoiceOrderAddress = null;
+        $invoiceAddress = $this->accountManager->getBillingAddress($addressSource, true);
+        if ($invoiceAddress) {
+            // convert to order-address
+            $invoiceOrderAddress = $this->orderManager->getOrderAddressByContactAddress($invoiceAddress, $contact, $account);
+            $cart->setInvoiceAddress($invoiceOrderAddress);
+        }
+        $deliveryOrderAddress = null;
+        $deliveryAddress = $this->accountManager->getDeliveryAddress($addressSource, true);
+        if ($deliveryAddress) {
+            // convert to order-address
+            $deliveryOrderAddress = $this->orderManager->getOrderAddressByContactAddress($deliveryAddress, $contact, $account);
+            $cart->setDeliveryAddress($deliveryOrderAddress);
+        }
 
         // TODO:
         if ($user) {
@@ -334,6 +385,12 @@ class CartManager extends BaseSalesManager
 
         if ($persist) {
             $this->em->persist($cart);
+            if ($invoiceOrderAddress) {
+                $this->em->persist($invoiceOrderAddress);
+            }
+            if ($deliveryOrderAddress) {
+                $this->em->persist($deliveryOrderAddress);
+            }
         }
 
         return $cart;
