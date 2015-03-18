@@ -323,6 +323,27 @@ class Item extends ApiWrapper implements CalculableBulkPriceItemInterface, Calcu
     }
 
     /**
+     * get total net price of an item
+     */
+    public function getTotalNetPrice()
+    {
+        return $this->entity->getTotalNetPrice();
+    }
+
+    /**
+     * set total net price of an item
+     *
+     * @param $price
+     * @return Item
+     */
+    public function setTotalNetPrice($price)
+    {
+        $this->entity->setTotalNetPrice($price);
+        
+        return $this;
+    }
+
+    /**
      * @param float
      * @return Item
      */

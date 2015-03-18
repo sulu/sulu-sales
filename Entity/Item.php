@@ -203,8 +203,6 @@ class Item
     {
         $this->quantity = $quantity;
 
-        $this->updateTotalNetPrice();
-
         return $this;
     }
 
@@ -289,8 +287,6 @@ class Item
     {
         $this->price = $price;
 
-        $this->updateTotalNetPrice();
-
         return $this;
     }
 
@@ -311,8 +307,6 @@ class Item
     public function setDiscount($discount)
     {
         $this->discount = $discount;
-
-        $this->updateTotalNetPrice();
 
         return $this;
     }
@@ -648,7 +642,7 @@ class Item
      * @param float $totalNetPrice
      * @return Item
      */
-    private function setTotalNetPrice($totalNetPrice)
+    public function setTotalNetPrice($totalNetPrice)
     {
         $this->totalNetPrice = $totalNetPrice;
 
@@ -662,16 +656,6 @@ class Item
     public function getTotalNetPrice()
     {
         return $this->totalNetPrice;
-    }
-
-    /**
-     * Updates and sets the total net price
-     */
-    private function updateTotalNetPrice()
-    {
-        $quantityPrice = $this->price * $this->quantity;
-        $total = $quantityPrice - ($quantityPrice * ($this->discount / 100));
-        $this->setTotalNetPrice(round($total, 2));
     }
 
     /**

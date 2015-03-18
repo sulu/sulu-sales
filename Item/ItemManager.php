@@ -124,9 +124,6 @@ class ItemManager
             $product = $this->setItemByProductData($data, $item, $locale);
         }
 
-        // update item by data from product
-        $this->updateProduct($item);
-
         // if product is not set, set data manually
         if (!$product) {
             if ($isNewItem) {
@@ -137,13 +134,10 @@ class ItemManager
             $item->setSupplierName($this->getProperty($data, 'supplierName', $item->getSupplierName()));
             $item->setTax($this->getProperty($data, 'tax', $item->getTax()));
             $item->setQuantityUnit($this->getProperty($data, 'quantityUnit', $item->getQuantityUnit()));
-            
-            $item->setPrice($this->getProperty($data, 'price', $item->getPrice()));
         }
 
-        if ($item->getUseProductsPrice() === false) {
-            $item->setPrice($this->getProperty($data, 'price', $item->getPrice()));
-        }
+        // update prices
+        $this->updatePrices($item, $data);
 
         $item->setDiscount($this->getProperty($data, 'discount', $item->getDiscount()));
 
@@ -434,13 +428,23 @@ class ItemManager
      *
      * @param $item
      */
-    private function updateProduct($item)
+    private function updatePrices($item, $data)
     {
-        // update prices
-        if ($item->getUseProductsPrice() === true) {
-            $price = $this->itemPriceCalculator->calculate($item);
-            $item->setPrice($price);
+        //TODO: currency
+        $currency = null;
+
+        // set products price by data
+        if ($item->getUseProductsPrice() === false) {
+            $item->setPrice($this->getProperty($data, 'price', $item->getPrice()));
         }
+        
+        // set items total net price
+        $price = $this->itemPriceCalculator->calculate($item, $currency, $item->getUseProductsPrice());
+        $item->setTotalNetPrice($price);
+
+        // set items price
+        $itemPrice = $this->itemPriceCalculator->getItemPrice($item, $currency, $item->getUseProductsPrice());
+        $item->setPrice($itemPrice);
     }
 
     /**
