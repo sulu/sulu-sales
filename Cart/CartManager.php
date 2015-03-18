@@ -180,7 +180,7 @@ class CartManager extends BaseSalesManager
     /**
      * updates the cart
      *
-     * @param $data
+     * @param array $data
      * @param $user
      * @param $locale
      * @return null|Order
