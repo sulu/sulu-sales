@@ -313,6 +313,7 @@ class Item extends ApiWrapper implements CalculableBulkPriceItemInterface, Calcu
     /**
      * @VirtualProperty
      * @SerializedName("totalNetPriceFormatted")
+     * @Groups({"cart"})
      * @return string
      */
     public function getTotalNetPriceFormatted($locale = null)
@@ -320,6 +321,31 @@ class Item extends ApiWrapper implements CalculableBulkPriceItemInterface, Calcu
         $formatter = $this->getFormatter($locale);
 
         return $formatter->format((float)$this->entity->getTotalNetPrice());
+    }
+
+    /**
+     * get total net price of an item
+     *
+     * @VirtualProperty
+     * @SerializedName("totalNetPrice")
+     * @Groups({"cart"})
+     */
+    public function getTotalNetPrice()
+    {
+        return $this->entity->getTotalNetPrice();
+    }
+
+    /**
+     * set total net price of an item
+     *
+     * @param $price
+     * @return Item
+     */
+    public function setTotalNetPrice($price)
+    {
+        $this->entity->setTotalNetPrice($price);
+        
+        return $this;
     }
 
     /**

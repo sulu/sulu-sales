@@ -37,7 +37,7 @@ class ItemPriceCalculator
      * @return int
      * @throws PriceCalculationException
      */
-    public function calculate($item, $currency = null)
+    public function calculate($item, $currency = null, $useProductsPrice = true)
     {
         $currency = $this->getCurrency($currency);
 
@@ -45,12 +45,14 @@ class ItemPriceCalculator
         $this->validateItem($item);
 
         // get bulk price
-        $product = $item->getCalcProduct();
-        if ($product) {
+        if ($useProductsPrice) {
+            $product = $item->getCalcProduct();
             $price = $this->priceManager->getBulkPriceForCurrency($product, $item->getCalcQuantity(), $currency);
+            $price = $price->getPrice();
+        } else {
+            $price = $item->getPrice();
         }
         $this->validateNotNull('price', $price);
-        $price = $price->getPrice();
 
         $itemPrice = $price * $item->getCalcQuantity();
 
@@ -108,6 +110,29 @@ class ItemPriceCalculator
     public function formatPrice($price, $currency, $locale = 'de')
     {
         return $this->priceManager->getFormattedPrice($price, $currency, $locale);
+    }
+
+    /**
+     * format price
+     *
+     * @param $price
+     * @param $currency
+     * @param string $locale
+     * @return String
+     */
+    public function getItemPrice($item, $currency, $useProductPrice = true)
+    {
+        $currency = $this->getCurrency($currency);
+        
+        if ($useProductPrice) {
+            $product = $item->getCalcProduct();
+            $price = $this->priceManager->getBulkPriceForCurrency($product, $item->getCalcQuantity(), $currency);
+            $price = $price->getPrice();
+        } else {
+            $price = $item->getPrice();
+        }
+        
+        return $price;
     }
 
     /**
