@@ -345,11 +345,11 @@ class CartManager extends BaseSalesManager
             $invoiceOrderAddress = $this->orderManager->getOrderAddressByContactAddress($invoiceAddress, $contact, $account);
             $cart->setInvoiceAddress($invoiceOrderAddress);
         }
-        $deliveryAddress = $this->accountManager->getBillingAddress($addressSource, true);
+        $deliveryAddress = $this->accountManager->getDeliveryAddress($addressSource, true);
         if ($deliveryAddress) {
             // convert to order-address
             $deliveryOrderAddress = $this->orderManager->getOrderAddressByContactAddress($deliveryAddress, $contact, $account);
-            $cart->setInvoiceAddress($deliveryOrderAddress);
+            $cart->setDeliveryAddress($deliveryOrderAddress);
         }
 
         // TODO:
