@@ -313,6 +313,7 @@ class Item extends ApiWrapper implements CalculableBulkPriceItemInterface, Calcu
     /**
      * @VirtualProperty
      * @SerializedName("totalNetPriceFormatted")
+     * @Groups({"cart"})
      * @return string
      */
     public function getTotalNetPriceFormatted($locale = null)
@@ -324,6 +325,10 @@ class Item extends ApiWrapper implements CalculableBulkPriceItemInterface, Calcu
 
     /**
      * get total net price of an item
+     *
+     * @VirtualProperty
+     * @SerializedName("totalNetPrice")
+     * @Groups({"cart"})
      */
     public function getTotalNetPrice()
     {
