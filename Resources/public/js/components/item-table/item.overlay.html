@@ -5,7 +5,7 @@
             <div class="form-group-vertical">
                 <label><%= translate('address.delivery') %></label>
                 <select class="address form-element" data-type="select" data-mapper-property="deliveryAddress">
-                    <option value="-1"><%= translate('public.please-choose') %></option>
+                    <option value="-1"><%= defaultAddressLabel %></option>
                     <% _.each(settings.addresses, function(address) { %>
                     <option value="<%=address.id%>"
                     <% if (address.id == deliveryAddress.id){%> selected="selected"<%}%> >
@@ -33,7 +33,7 @@
         <div class="grid-col-3">
             <div class="form-group-vertical">
                 <label><%= translate('salescore.item.quantity') %></label>
-                <input class="form-element" type="text" data-mapper-property="quantity" value="<%= quantity %>"/>
+                <input class="form-element" type="text" data-mapper-property="quantity" value="<%= numberFormat(quantity) %>"/>
             </div>
         </div>
         <div class="grid-col-3">
@@ -47,7 +47,7 @@
         <div class="grid-col-6">
             <div class="form-group-vertical">
                 <label><%= translate('salescore.item.price') %></label>
-                <input class="form-element" type="text" data-mapper-property="price" value="<%= price %>"/>
+                <input class="form-element" type="text" data-mapper-property="price" value="<%= numberFormat(price) %>"/>
             </div>
         </div>
         <% } %>
@@ -58,7 +58,7 @@
         <% if (settings.columns.indexOf('delivery-date') > -1) { %>
         <div class="grid-col-6">
             <div class="form-group-vertical">
-                <label><%= translate('salescore.item.delivery-date') %></label>
+                <label><%= translate('salescore.delivery-date') %></label>
 
                 <div id="delivery-date"
                      data-mapper-property="deliveryDate"
@@ -83,7 +83,7 @@
         <div class="grid-col-6">
             <div class="form-group-vertical">
                 <label><%= translate('salescore.item.discount') %></label>
-                <input class="form-element" type="text" data-mapper-property="discount" value="<%= discount %>"/>
+                <input class="form-element" type="text" data-mapper-property="discount" value="<%= numberFormat(discount) %>"/>
             </div>
         </div>
         <% } %>

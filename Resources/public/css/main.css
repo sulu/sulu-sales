@@ -128,27 +128,32 @@ body {
   text-align: right;
 }
 
-/* line 145, ../scss/modules/item-table.scss */
+/* line 144, ../scss/modules/item-table.scss */
+.item-price {
+  min-width: 100px;
+}
+
+/* line 149, ../scss/modules/item-table.scss */
 .global-price-container {
   padding-top: 15px;
   position: relative;
 }
-/* line 149, ../scss/modules/item-table.scss */
+/* line 153, ../scss/modules/item-table.scss */
 .global-price-container .global-price-table {
   width: initial;
   float: right;
   margin-right: 31px;
   text-align: right;
 }
-/* line 155, ../scss/modules/item-table.scss */
+/* line 159, ../scss/modules/item-table.scss */
 .global-price-container .global-price-table td {
   padding: 0 20px 0 0;
 }
-/* line 159, ../scss/modules/item-table.scss */
+/* line 163, ../scss/modules/item-table.scss */
 .global-price-container .global-price-table tr {
   height: 30px;
 }
-/* line 161, ../scss/modules/item-table.scss */
+/* line 165, ../scss/modules/item-table.scss */
 .global-price-container .global-price-table tr:last-child {
   font-weight: bold;
   border-top: 1px solid #ccc;

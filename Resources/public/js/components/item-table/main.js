@@ -21,20 +21,23 @@
  * @param {Object}  [options.columnCallbacks] if a specific column is clicked (as name) a callback can be defined
  *        by provide key with a function
  * @param {Object}  [options.rowCallback] Is called, when a row is clicked. Passes rowId and rowData
- * @param {Bool}  [options.showSettings] If true, the items settings overlay is displayed on click on a row
+ * @param {Object}  [options.settings] Configuration Object for displaying Options overlay
  * @param {Object}  [options.urlFilter] Object containing key value pairs to extend the url
+ * @param {String}  [options.addressKey] Defines how to access address value over api
  */
 define([
     'text!sulusalescore/components/item-table/item.form.html',
     'text!sulusalescore/components/item-table/item.row.html',
     'text!sulusalescore/components/item-table/item.row-head.html',
     'text!sulusalescore/components/item-table/item.overlay.html',
-    'config'
-], function(FormTpl, RowTpl, RowHeadTpl, Overlay, Config) {
+    'config',
+    'suluproduct/util/price-calculation-util'
+], function(FormTpl, RowTpl, RowHeadTpl, Overlay, Config, PriceCalcUtil) {
 
     'use strict';
 
     // TODO: implement taxfree
+    // TODO: order-address handling: set contact-data as well
 
     var defaults = {
             urlFilter: {},
@@ -55,7 +58,8 @@ define([
             defaultData: {},
             columnCallbacks: {},
             rowCallback: null,
-            settings: false
+            settings: false,
+            addressKey: 'deliveryAddress'
         },
 
         urls = {
@@ -80,7 +84,12 @@ define([
             overallEmptyString: '-',
             loaderSelector: '.item-table-loader',
             loaderClass: 'item-table-loader',
-            overlayClassSelector: '.settings-overlay'
+            overlayClassSelector: '.settings-overlay',
+            autocompleteLimit: 20
+        },
+        
+        translations = {
+            defaultAddress: 'salescore.use-main-delivery-address'
         },
 
         /**
@@ -92,7 +101,7 @@ define([
             rowNumber: null,
             address: null,
             addressObject: null,
-            description: null,
+            description: '',
             rowId: '',
             name: '',
             number: '',
@@ -157,6 +166,17 @@ define([
         },
 
         /**
+         * TODO: Reset all addresses to a certain address
+         *
+         * @param {object} address
+         *
+         * @event sulu.item-table[.INSTANCENAME].reset-item-addresses
+         */
+        EVENT_RESET_ITEM_ADDRESSES = function() {
+            return getEventName.call(this, 'reset-item-addresses');
+        },
+
+        /**
          * Changes the currency and selects related price if available
          * @event sulu.item-table[.INSTANCENAME].change-currency
          */
@@ -209,6 +229,7 @@ define([
             this.sandbox.on(EVENT_SET_DEFAULT_DATA.call(this), setDefaultData.bind(this));
             this.sandbox.on(EVENT_CHANGE_CURRENCY.call(this), changeCurrency.bind(this));
             this.sandbox.on(EVENT_SET_ADRESSES.call(this), setAddresses.bind(this));
+            this.sandbox.on(EVENT_RESET_ITEM_ADDRESSES.call(this), resetItemAddresses.bind(this));
         },
 
         /**
@@ -244,6 +265,25 @@ define([
         setAddresses = function(addresses) {
             if (!!this.options.settings) {
                 this.options.settings.addresses = addresses;
+            }
+        },
+
+        /**
+         * Resets addresses of all items to a certain address
+         * @param address
+         */
+        resetItemAddresses = function(address) {
+            var i, item;
+            
+            // reset default address
+            setDefaultData.call(this, 'address', address);
+            
+            // reset addresses of all items
+            for (i in this.items) {
+                if (this.items.hasOwnProperty(i)) {
+                    item = this.items[i];
+                    item.address = address;
+                }
             }
         },
 
@@ -425,14 +465,15 @@ define([
                 return;
             }
 
-            var rowId = this.sandbox.dom.attr(event.currentTarget, 'id');
+            var rowId = this.sandbox.dom.attr(event.currentTarget, 'id'),
+                dataId = this.sandbox.dom.data(event.currentTarget, 'id');
             // call rowCallback
             if (!!this.options.rowCallback) {
                 this.options.rowCallback.call(this, rowId, this.items[rowId]);
             }
 
             // if settings are activated, show them
-            if (!!this.options.settings && this.options.settings !== 'false') {
+            if (!!this.options.settings && this.options.settings !== 'false' && (!!dataId || dataId === 0)) {
                 initSettingsOverlay.call(this, this.items[rowId], this.options.settings, rowId);
             }
         },
@@ -537,45 +578,42 @@ define([
          * updates row with global prices
          */
         updateGlobalPrice = function() {
-            var tax, item, price, taxPrice,
-                $table,
-                taxCategory = {},
-                netPrice = 0,
-                globalPrice = 0;
+            var items = this.getItems(), result, $table, i;
 
-            for (var i in this.items) {
-                item = this.items[i];
-                price = parseFloat(getOverallPrice.call(this, item));
-                taxPrice = 0;
+            if (!!items && items.length > 0 && !!items[0].price) {
+                result = PriceCalcUtil.getTotalPricesAndTaxes(this.sandbox, this.items);
 
-                if (!!item.tax && item.tax > 0 && item.tax <= 100) {
-                    tax = parseFloat(item.tax);
-                    taxPrice = (price / 100) * tax;
-                    // tax group
-                    taxCategory[tax] = !taxCategory[tax] ? taxPrice : taxCategory[tax] + taxPrice;
+                // visualize
+                $table = this.$find(constants.globalPriceTableClass);
+                this.sandbox.dom.empty($table);
+
+                if (!!result) {
+                    // add net price
+                    addPriceRow.call(
+                        this,
+                        $table,
+                        this.sandbox.translate('salescore.item.net-price'),
+                        PriceCalcUtil.getFormattedAmountAndUnit(this.sandbox, result.netPrice, this.currency)
+                    );
+
+                    // add row for every tax group
+                    for (i in result.taxes) {
+                        addPriceRow.call(
+                            this,
+                            $table,
+                            this.sandbox.translate('salescore.item.vat') + '.(' + i + '%)',
+                            PriceCalcUtil.getFormattedAmountAndUnit(this.sandbox, result.taxes[i], this.currency)
+                        );
+                    }
+
+                    addPriceRow.call(
+                        this,
+                        $table,
+                        this.sandbox.translate('salescore.item.overall-price'),
+                        PriceCalcUtil.getFormattedAmountAndUnit(this.sandbox, result.grossPrice, this.currency)
+                    );
                 }
 
-                // sum up prices
-                // net
-                netPrice += price;
-                // overall
-                globalPrice += price + taxPrice;
-            }
-
-            // visualize
-            $table = this.$find(constants.globalPriceTableClass);
-            this.sandbox.dom.html($table, '');
-
-            if (Object.keys(this.items).length > 0) {
-                // add net price
-                addPriceRow.call(this, $table, this.sandbox.translate('salescore.item.net-price'), getFormatedPriceCurrencyString.call(this, netPrice));
-
-                // add row for every tax group
-                for (var i in taxCategory) {
-                    addPriceRow.call(this, $table, this.sandbox.translate('salescore.item.vat') + '.(' + i + '%)', getFormatedPriceCurrencyString.call(this, taxCategory[i]));
-                }
-
-                addPriceRow.call(this, $table, this.sandbox.translate('salescore.item.overall-price'), getFormatedPriceCurrencyString.call(this, globalPrice));
             }
         },
 
@@ -587,48 +625,30 @@ define([
         /**
          * returns formated overallPrice + currency as string (based on item)
          * @param item
-         * @param mode
          * @returns {string}
          */
-        getOverallPriceString = function(item, mode) {
-            return getFormatedPriceCurrencyString.call(this,
-                getOverallPrice.call(this, item, mode),
-                getCurrency.call(this, item));
+        getOverallPriceString = function(item) {
+            setItemDefaults(item);
+            return PriceCalcUtil.getTotalPrice(
+                this.sandbox,
+                item.price,
+                getCurrency.call(this, item),
+                item.discount,
+                item.quantity,
+                item.tax,
+                true
+            );
         },
 
         /**
-         * returns formated overallprice + currency as string (based on value)
-         * @param value
-         * @param currency
-         * @returns {string}
-         */
-        getFormatedPriceCurrencyString = function(value, currency) {
-            currency = !!currency ? currency : this.currency;
-            return this.sandbox.numberFormat(value, 'n') + ' ' + currency;
-        },
-
-        /**
-         * returns the overall price
+         * Sets defaults for items for proper calculation
          * @param item
-         * @param mode
-         * @returns number
          */
-        getOverallPrice = function(item, mode) {
-            var value = 0;
-            if (!mode || mode === 'default') {
-                if (!!item.price && !!item.quantity) {
-
-                    // TODO numbers should parsed with globalize #336
-                    value = (item.price * item.quantity);
-
-                    // discount
-                    if (!!item.discount && item.discount > 0 && item.discount <= 100) {
-                        value -= (value / 100) * item.discount;
-                    }
-                }
-            }
-
-            return value;
+        setItemDefaults = function(item) {
+            item.price = item.price || 0;
+            item.discount = item.discount || 0;
+            item.quantity = item.quantity || 0;
+            item.tax = item.tax || 0;
         },
 
         /**
@@ -688,9 +708,12 @@ define([
             var options = Config.get('suluproduct.components.autocomplete.default');
             options.el = this.sandbox.dom.find(constants.productSearchClass, $row);
             options.selectCallback = productSelected.bind(this);
-            options.remoteUrl = this.sandbox.uritemplate.parse(urls.productsFlat).expand({
+            var remoteUrl = this.sandbox.uritemplate.parse(urls.productsFlat).expand({
                 filter: this.options.urlFilter
             });
+            options.remoteUrl = remoteUrl + '&limit=' + constants.autocompleteLimit;
+            options.limit = constants.autocompleteLimit;
+            options.instanceName += this.rowCount;
 
             // initialize auto-complete when adding a new Item
             this.sandbox.start([
@@ -698,7 +721,13 @@ define([
                     name: 'auto-complete@husky',
                     options: options
                 }
-            ]);
+            ]).then(function() {
+                if (!!this.$lastAddedRow) {
+                    var $input = this.sandbox.dom.find('input', this.$lastAddedRow)[0];
+                    this.sandbox.dom.focus($input);
+                    this.$lastAddedRow = null;
+                }
+            }.bind(this));
         },
 
         /**
@@ -767,8 +796,8 @@ define([
         /**
          * creates and returns a new row element
          */
-        createItemRow = function(itemData, increaseCount) {
-            if (increaseCount !== false) {
+        createItemRow = function(itemData, rowId) {
+            if (!rowId) {
                 this.rowCount++;
             }
 
@@ -777,7 +806,7 @@ define([
                     {
                         isEditable: this.options.isEditable,
                         columns: this.options.columns,
-                        rowId: constants.rowIdPrefix + this.rowCount,
+                        rowId: rowId ? rowId : constants.rowIdPrefix + this.rowCount,
                         rowNumber: this.rowCount
                     });
 
@@ -816,6 +845,7 @@ define([
 
             // create row
             $row = createItemRow.call(this, itemData);
+            this.$lastAddedRow = $row;
             this.sandbox.dom.append(this.$find(constants.listClass), $row);
             return $row;
         },
@@ -826,7 +856,7 @@ define([
          * @param itemData
          */
         updateItemRow = function(rowId, itemData) {
-            var $row = createItemRow.call(this, itemData, false);
+            var $row = createItemRow.call(this, itemData, rowId);
             this.sandbox.dom.replaceWith(this.$find('#' + rowId), $row);
 
             // add item to data
@@ -952,21 +982,32 @@ define([
          * Inits the overlay with a specific template
          */
         initSettingsOverlay = function(data, settings, rowId) {
-            var $overlay, $content, title, subTitle;
+            var $overlay, $content, title, subTitle,
+                defaultAddressLabel = this.sandbox.translate(translations.defaultAddress);
 
             settings = this.sandbox.util.extend({
                 columns: [],
                 addresses: []
             }, settings);
 
+            if (!!data[this.options.addressKey]) {
+                defaultAddressLabel = this.sandbox.sulu.createAddressString(data[this.options.addressKey]);
+            }
+
             data = this.sandbox.util.extend({
                 settings: settings,
+                defaultAddressLabel: defaultAddressLabel,
                 createAddressString: this.sandbox.sulu.createAddressString,
                 translate: this.sandbox.translate,
                 deliveryDate: null,
-                deliveryAddress: {id: null},
-                costCenter: null
+                costCenter: null,
+                discount: null,
+                numberFormat: this.sandbox.numberFormat
             }, data);
+            
+            if (!data.hasOwnProperty(this.options.addressKey) || !data[this.options.addressKey]) {
+                data[this.options.addressKey] = {id: null};
+            }
 
             // prevent multiple initialization of the overlay
             this.sandbox.stop(this.sandbox.dom.find(constants.overlayClassSelector, this.$el));
@@ -978,7 +1019,7 @@ define([
 
             title = data.name;
             subTitle = '#' + data.number;
-            if (data.supplierName !== '') {
+            if (data.supplierName && data.supplierName !== '') {
                 subTitle += '<br/>' + data.supplierName;
             }
 
@@ -1000,11 +1041,22 @@ define([
                                 costCenter = this.sandbox.dom.val(constants.overlayClassSelector + ' *[data-mapper-property="costCenter"]');
 
                             this.items[rowId].description = this.sandbox.dom.val(constants.overlayClassSelector + ' *[data-mapper-property="description"]');
-                            this.items[rowId].quantity = this.sandbox.dom.val(constants.overlayClassSelector + ' *[data-mapper-property="quantity"]');
-                            this.items[rowId].price = this.sandbox.dom.val(constants.overlayClassSelector + ' *[data-mapper-property="price"]');
-                            this.items[rowId].discount = this.sandbox.dom.val(constants.overlayClassSelector + ' *[data-mapper-property="discount"]');
+                            this.items[rowId].quantity = this.sandbox.parseFloat(
+                                this.sandbox.dom.val(constants.overlayClassSelector + ' *[data-mapper-property="quantity"]')
+                            );
+                            this.items[rowId].price = this.sandbox.parseFloat( 
+                                this.sandbox.dom.val(constants.overlayClassSelector + ' *[data-mapper-property="price"]')
+                            );
+                            this.items[rowId].discount = this.sandbox.parseFloat( 
+                                this.sandbox.dom.val(constants.overlayClassSelector + ' *[data-mapper-property="discount"]')
+                            );
 
-                            this.items[rowId].deliveryAddress = deliveryAddress !== '-1' ? deliveryAddress : {id: null};
+                            // set address
+                            if (deliveryAddress !== '-1') {
+                                // TODO: set whole order-address (contact-data as well)
+                                this.items[rowId][this.options.addressKey] = getAddressById.call(this, deliveryAddress);
+                                //delete this.items[rowId][this.options.addressKey].id; // delete reference to contact-address
+                            }
                             this.items[rowId].deliveryDate = deliveryDate !== '' ? deliveryDate : null;
                             this.items[rowId].costCenter = costCenter !== '' ? costCenter : null;
 
@@ -1024,6 +1076,17 @@ define([
                     }
                 }
             ]);
+        },
+        
+        getAddressById = function(id) {
+            var i,len,
+                addresses = this.options.settings.addresses;
+            for (i = -1, len = addresses.length; ++i < len;) {
+                if (addresses[i].id.toString() === id.toString()) {
+                    return addresses[i];
+                }
+            }
+            return null;
         },
 
         /**

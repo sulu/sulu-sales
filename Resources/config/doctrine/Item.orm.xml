@@ -27,7 +27,12 @@
 
         <one-to-many field="attributes" target-entity="Sulu\Bundle\Sales\CoreBundle\Entity\ItemAttribute" mapped-by="item"/>
 
-        <many-to-one field="product" target-entity="Sulu\Bundle\ProductBundle\Entity\Product">
+        <many-to-one field="deliveryAddress" target-entity="Sulu\Bundle\Sales\OrderBundle\Entity\OrderAddress">
+            <join-columns>
+                <join-column name="idOrderAddressesDelivery" nullable="true"/>
+            </join-columns>
+        </many-to-one>
+        <many-to-one field="product" target-entity="Sulu\Bundle\ProductBundle\Entity\ProductInterface">
             <join-columns>
                 <join-column name="idProducts" referenced-column-name="id" on-delete="SET NULL" nullable="true"/>
             </join-columns>
@@ -37,12 +42,12 @@
                 <join-column name="idAccountsSupplier" referenced-column-name="id" on-delete="SET NULL" nullable="true"/>
             </join-columns>
         </many-to-one>
-        <many-to-one field="changer" target-entity="Sulu\Component\Security\UserInterface">
+        <many-to-one field="changer" target-entity="Sulu\Component\Security\Authentication\UserInterface">
             <join-columns>
                 <join-column name="idUsersChanger" referenced-column-name="id" on-delete="SET NULL" nullable="true"/>
             </join-columns>
         </many-to-one>
-        <many-to-one field="creator" target-entity="Sulu\Component\Security\UserInterface">
+        <many-to-one field="creator" target-entity="Sulu\Component\Security\Authentication\UserInterface">
             <join-columns>
                 <join-column name="idUsersCreator" referenced-column-name="id" on-delete="SET NULL" nullable="true"/>
             </join-columns>
