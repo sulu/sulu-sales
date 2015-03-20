@@ -194,7 +194,7 @@ class OrderManager
 
         // set session - id
         $sessionId = $this->session->getId();
-        $order->setOrderNumber($sessionId);
+        $order->setSessionId($sessionId);
 
         // add contact
         $contact = $this->addContactRelation(
