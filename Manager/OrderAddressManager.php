@@ -12,8 +12,11 @@ namespace Sulu\Bundle\Sales\CoreBundle\Manager;
 
 use Sulu\Bundle\Sales\CoreBundle\Exceptions\MissingAttributeException;
 
-abstract class OrderAddressManager
+class OrderAddressManager
 {
+    protected static $orderAddressEntityName = 'SuluSalesCoreBundle:OrderAddress';
+    protected static $orderAddressEntity = 'Sulu\Bundle\Sales\CoreBundle\Entity\OrderAddress';
+
     /**
      * Returns the entry from the data with the given key, or the given default value, if the key does not exist
      * @param array $data
@@ -33,7 +36,7 @@ abstract class OrderAddressManager
      * @param Account|null $account
      * @throws OrderDependencyNotFoundException
      */
-    protected function setOrderAddress(OrderAddress $orderAddress, $addressData, $contact = null, $account = null)
+    protected function setOrderAddress($orderAddress, $addressData, $contact = null, $account = null)
     {
         // check if address with id can be found
 
@@ -70,7 +73,7 @@ abstract class OrderAddressManager
      */
     public function getOrderAddressByContactAddress(Address $address, $contact, $account)
     {
-        $orderAddress = new OrderAddress();
+        $orderAddress = new static::$orderAddressEntity;
         $orderAddress->setStreet($address->getStreet());
         $orderAddress->setNumber($address->getNumber());
         $orderAddress->setAddition($address->getAddition());
@@ -108,7 +111,7 @@ abstract class OrderAddressManager
      * @param OrderAddress $orderAddress
      * @param $addressData
      */
-    private function setAddressDataForOrder(OrderAddress &$orderAddress, $addressData)
+    private function setAddressDataForOrder(&$orderAddress, $addressData)
     {
         $orderAddress->setStreet($this->getProperty($addressData, 'street', ''));
         $orderAddress->setNumber($this->getProperty($addressData, 'number', ''));
