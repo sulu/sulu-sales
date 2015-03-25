@@ -13,12 +13,16 @@
         <parameter key="sulu_sales_core.widgets.multiple_accounts.class">Sulu\Bundle\Sales\CoreBundle\Widgets\MultipleAccounts</parameter>
         <parameter key="sulu_sales_core.grouped_price_calculator.class">Sulu\Bundle\Sales\CoreBundle\Pricing\GroupedItemsPriceCalculator</parameter>
         <parameter key="sulu_sales_core.item_price_calculator.class">Sulu\Bundle\Sales\CoreBundle\Pricing\ItemPriceCalculator</parameter>
+        <parameter key="sulu_sales_core.order_address_manager.class">Sulu\Bundle\Sales\CoreBundle\Manager\OderAddressManager</parameter>
     </parameters>
 
     <services>
         <service id="sulu_sales_core.admin" class="%sulu_sales_core.admin.class%">
             <tag name="sulu.admin" />
             <argument>%sulu_admin.name%</argument>
+        </service>
+
+        <service id="sulu_sales_core.order_address_manager" class="%sulu_sales_core.order_address_manager.class%">
         </service>
 
         <service id="sulu_sales_core.item_price_calculator" class="%sulu_sales_core.item_price_calculator.class%">
@@ -37,6 +41,7 @@
             <argument type="service" id="sulu_product.product_repository" />
             <argument type="service" id="sulu_product.price_manager" />
             <argument type="service" id="sulu_sales_core.item_price_calculator" />
+            <argument type="service" id="sulu_sales_core.order_address_managerr" />
         </service>
 
         <!--REPOSITORIES-->

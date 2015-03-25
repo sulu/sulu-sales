@@ -660,10 +660,10 @@ class Item
 
     /**
      * Set deliveryAddress
-     * @param \Sulu\Bundle\Sales\OrderBundle\Entity\OrderAddress $deliveryAddress
+     * @param OrderAddress $deliveryAddress
      * @return Item
      */
-    public function setDeliveryAddress(\Sulu\Bundle\Sales\OrderBundle\Entity\OrderAddress $deliveryAddress = null)
+    public function setDeliveryAddress(OrderAddress $deliveryAddress = null)
     {
         $this->deliveryAddress = $deliveryAddress;
 

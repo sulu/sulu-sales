@@ -23,12 +23,14 @@ use Sulu\Bundle\Sales\CoreBundle\Entity\ItemRepository;
 use Sulu\Bundle\Sales\CoreBundle\Item\Exception\ItemException;
 use Sulu\Bundle\Sales\CoreBundle\Item\Exception\ItemNotFoundException;
 use Sulu\Bundle\Sales\CoreBundle\Item\Exception\MissingItemAttributeException;
+use Sulu\Bundle\Sales\CoreBundle\Manager\BaseSalesManager;
 use Sulu\Bundle\Sales\CoreBundle\Pricing\ItemPriceCalculator;
+use Sulu\Bundle\Sales\CoreBundle\Entity\OrderAddress;
 use Sulu\Component\Persistence\RelationTrait;
 use Sulu\Component\Security\Authentication\UserRepositoryInterface;
 use DateTime;
 
-class ItemManager
+class ItemManager extends BaseSalesManager
 {
     use RelationTrait;
 
@@ -142,6 +144,25 @@ class ItemManager
         $this->updatePrices($item, $data);
 
         $item->setDiscount($this->getProperty($data, 'discount', $item->getDiscount()));
+
+        // set delivery-address
+        if (isset($data['deliveryAddress'])) {
+            if ($isNewItem || $item->getDeliveryAddress() === null) {
+                // create delivery address
+                $deliveryAddress = new OrderAddress();
+                // persist entities
+                $this->em->persist($deliveryAddress);
+                // assign to order
+                $item->setDeliveryAddress($deliveryAddress);
+            }
+
+            $this->setOrderAddress(
+                $item->getDeliveryAddress(),
+                $data['deliveryAddress'],
+                $customerContact,
+                $customerAccount
+            );
+        }
 
         // create new item
         if ($item->getId() == null) {
