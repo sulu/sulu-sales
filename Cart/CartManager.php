@@ -43,7 +43,7 @@ class CartManager extends BaseSalesManager
     protected static $orderStatusEntityName = 'SuluSalesOrderBundle:OrderStatus';
     protected static $orderTypeEntityName = 'SuluSalesOrderBundle:OrderType';
     protected static $orderTypeTranslationEntityName = 'SuluSalesOrderBundle:OrderTypeTranslation';
-    protected static $orderAddressEntityName = 'SuluSalesOrderBundle:OrderAddress';
+    protected static $orderAddressEntityName = 'SuluSalesCoreBundle:OrderAddress';
     protected static $orderStatusTranslationEntityName = 'SuluSalesOrderBundle:OrderStatusTranslation';
     protected static $itemEntityName = 'SuluSalesCoreBundle:Item';
     protected static $termsOfDeliveryEntityName = 'SuluContactBundle:TermsOfDelivery';
