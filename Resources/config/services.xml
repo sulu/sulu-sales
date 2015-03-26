@@ -13,7 +13,7 @@
         <parameter key="sulu_sales_core.widgets.multiple_accounts.class">Sulu\Bundle\Sales\CoreBundle\Widgets\MultipleAccounts</parameter>
         <parameter key="sulu_sales_core.grouped_price_calculator.class">Sulu\Bundle\Sales\CoreBundle\Pricing\GroupedItemsPriceCalculator</parameter>
         <parameter key="sulu_sales_core.item_price_calculator.class">Sulu\Bundle\Sales\CoreBundle\Pricing\ItemPriceCalculator</parameter>
-        <parameter key="sulu_sales_core.order_address_manager.class">Sulu\Bundle\Sales\CoreBundle\Manager\OderAddressManager</parameter>
+        <parameter key="sulu_sales_core.order_address_manager.class">Sulu\Bundle\Sales\CoreBundle\Manager\OrderAddressManager</parameter>
     </parameters>
 
     <services>

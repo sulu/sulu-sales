@@ -30,7 +30,7 @@ use Sulu\Component\Persistence\RelationTrait;
 use Sulu\Component\Security\Authentication\UserRepositoryInterface;
 use DateTime;
 
-class ItemManager extends BaseSalesManager
+class ItemManager
 {
     use RelationTrait;
 
@@ -145,24 +145,24 @@ class ItemManager extends BaseSalesManager
 
         $item->setDiscount($this->getProperty($data, 'discount', $item->getDiscount()));
 
-        // set delivery-address
-        if (isset($data['deliveryAddress'])) {
-            if ($isNewItem || $item->getDeliveryAddress() === null) {
-                // create delivery address
-                $deliveryAddress = new OrderAddress();
-                // persist entities
-                $this->em->persist($deliveryAddress);
-                // assign to order
-                $item->setDeliveryAddress($deliveryAddress);
-            }
-
-            $this->setOrderAddress(
-                $item->getDeliveryAddress(),
-                $data['deliveryAddress'],
-                $customerContact,
-                $customerAccount
-            );
-        }
+//        // set delivery-address
+//        if (isset($data['deliveryAddress'])) {
+//            if ($isNewItem || $item->getDeliveryAddress() === null) {
+//                // create delivery address
+//                $deliveryAddress = new OrderAddress();
+//                // persist entities
+//                $this->em->persist($deliveryAddress);
+//                // assign to order
+//                $item->setDeliveryAddress($deliveryAddress);
+//            }
+//
+//            $this->setOrderAddress(
+//                $item->getDeliveryAddress(),
+//                $data['deliveryAddress'],
+//                $customerContact,
+//                $customerAccount
+//            );
+//        }
 
         // create new item
         if ($item->getId() == null) {

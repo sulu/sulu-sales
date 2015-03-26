@@ -10,6 +10,7 @@
 
 namespace Sulu\Bundle\Sales\CoreBundle\Manager;
 
+use Sulu\Bundle\ContactBundle\Entity\Address;
 use Sulu\Bundle\Sales\CoreBundle\Exceptions\MissingAttributeException;
 
 class OrderAddressManager
