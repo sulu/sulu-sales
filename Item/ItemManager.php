@@ -106,10 +106,9 @@ class ItemManager
      * @param $userId
      * @param \Sulu\Bundle\Sales\CoreBundle\Api\Item $item
      * @param null $itemStatusId
-     * @param $owner The owner entity of the item
      * @return null|\Sulu\Bundle\Sales\CoreBundle\Api\Item
      */
-    public function save(array $data, $locale, $userId = null, $item = null, $itemStatusId = null, $owner = null)
+    public function save(array $data, $locale, $userId = null, $item = null, $itemStatusId = null)
     {
         $isNewItem = !$item; 
         
