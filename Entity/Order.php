@@ -84,12 +84,12 @@ class Order
     private $id;
 
     /**
-     * @var \Sulu\Bundle\Sales\OrderBundle\Entity\OrderAddress
+     * @var OrderAddress
      */
     private $deliveryAddress;
 
     /**
-     * @var \Sulu\Bundle\Sales\OrderBundle\Entity\OrderAddress
+     * @var OrderAddress
      */
     private $invoiceAddress;
 

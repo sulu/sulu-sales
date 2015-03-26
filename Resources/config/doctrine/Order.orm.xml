@@ -29,12 +29,12 @@
         <field name="orderDate" type="datetime" column="orderDate" nullable="true"></field>
         <field name="desiredDeliveryDate" type="datetime" column="desiredDeliveryDate" nullable="true"></field>
 
-        <many-to-one field="deliveryAddress" target-entity="Sulu\Bundle\Sales\OrderBundle\Entity\OrderAddress">
+        <many-to-one field="deliveryAddress" target-entity="Sulu\Bundle\Sales\CoreBundle\Entity\OrderAddress">
             <join-columns>
                 <join-column name="idOrderAddressesDelivery"/>
             </join-columns>
         </many-to-one>
-        <many-to-one field="invoiceAddress" target-entity="Sulu\Bundle\Sales\OrderBundle\Entity\OrderAddress">
+        <many-to-one field="invoiceAddress" target-entity="Sulu\Bundle\Sales\CoreBundle\Entity\OrderAddress">
             <join-columns>
                 <join-column name="idOrderAddressesInvoice"/>
             </join-columns>
