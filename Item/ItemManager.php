@@ -24,6 +24,7 @@ use Sulu\Bundle\Sales\CoreBundle\Item\Exception\ItemException;
 use Sulu\Bundle\Sales\CoreBundle\Item\Exception\ItemNotFoundException;
 use Sulu\Bundle\Sales\CoreBundle\Item\Exception\MissingItemAttributeException;
 use Sulu\Bundle\Sales\CoreBundle\Manager\BaseSalesManager;
+use Sulu\Bundle\Sales\CoreBundle\Manager\OrderAddressManager;
 use Sulu\Bundle\Sales\CoreBundle\Pricing\ItemPriceCalculator;
 use Sulu\Bundle\Sales\CoreBundle\Entity\OrderAddress;
 use Sulu\Component\Persistence\RelationTrait;
@@ -68,6 +69,11 @@ class ItemManager
     protected $itemPriceCalculator;
 
     /**
+     * @var OrderAddressManager
+     */
+    protected $orderAddressManager;
+
+    /**
      * constructor
      *
      * @param ObjectManager $em
@@ -80,7 +86,8 @@ class ItemManager
         UserRepositoryInterface $userRepository,
         ProductRepositoryInterface $productRepository,
         ProductPriceManagerInterface $productPriceManager,
-        ItemPriceCalculator $itemPriceCalculator
+        ItemPriceCalculator $itemPriceCalculator,
+        OrderAddressManager $orderAddressManager
     )
     {
         $this->em = $em;
@@ -89,6 +96,7 @@ class ItemManager
         $this->productRepository = $productRepository;
         $this->productPriceManager = $productPriceManager;
         $this->itemPriceCalculator = $itemPriceCalculator;
+        $this->orderAddressManager = $orderAddressManager;
     }
 
     /**
@@ -98,9 +106,10 @@ class ItemManager
      * @param $userId
      * @param \Sulu\Bundle\Sales\CoreBundle\Api\Item $item
      * @param null $itemStatusId
+     * @param $owner The owner entity of the item
      * @return null|\Sulu\Bundle\Sales\CoreBundle\Api\Item
      */
-    public function save(array $data, $locale, $userId = null, $item = null, $itemStatusId = null)
+    public function save(array $data, $locale, $userId = null, $item = null, $itemStatusId = null, $owner = null)
     {
         $isNewItem = !$item; 
         
@@ -116,6 +125,13 @@ class ItemManager
 
         // get user
         $user = $userId ? $this->userRepository->findUserById($userId) : null;
+
+        $contact = null;
+        $account = null;
+        if ($user) {
+            $contact = $user->getContact();
+            $account = $contact->getMainAccount();
+        }
 
         // set item data
         $item->setQuantity($this->getProperty($data, 'quantity', null));
@@ -145,24 +161,44 @@ class ItemManager
 
         $item->setDiscount($this->getProperty($data, 'discount', $item->getDiscount()));
 
-//        // set delivery-address
-//        if (isset($data['deliveryAddress'])) {
-//            if ($isNewItem || $item->getDeliveryAddress() === null) {
-//                // create delivery address
-//                $deliveryAddress = new OrderAddress();
-//                // persist entities
-//                $this->em->persist($deliveryAddress);
-//                // assign to order
-//                $item->setDeliveryAddress($deliveryAddress);
-//            }
-//
-//            $this->setOrderAddress(
-//                $item->getDeliveryAddress(),
-//                $data['deliveryAddress'],
-//                $customerContact,
-//                $customerAccount
-//            );
-//        }
+        // set delivery-address
+        if (isset($data['deliveryAddress'])) {
+            if (is_array($data['deliveryAddress'])) {
+                // if no delivery address is set, create new one
+                if ($isNewItem || $item->getDeliveryAddress() === null) {
+                    // create delivery address
+                    $deliveryAddress = new OrderAddress();
+                    // persist entities
+                    $this->em->persist($deliveryAddress);
+                    // assign to order
+                    $item->setDeliveryAddress($deliveryAddress);
+                }
+
+                $this->orderAddressManager->setOrderAddress(
+                    $item->getDeliveryAddress(),
+                    $data['deliveryAddress'],
+                    $contact,
+                    $account
+                );
+            } else {
+                $deliveryAddress = $item->getEntity()->getDeliveryAddress();
+
+                $orderAddress = $this->orderAddressManager->getOrderAddressByContactAddressId(
+                    $data['deliveryAddress'],
+                    $contact,
+                    $account,
+                    $deliveryAddress
+                );
+
+                // set delivery address
+                $item->setDeliveryAddress($orderAddress);
+
+                // if new delivery address persist
+                if (!$deliveryAddress) {
+                    $this->em->persist($orderAddress);
+                }
+            }
+        }
 
         // create new item
         if ($item->getId() == null) {

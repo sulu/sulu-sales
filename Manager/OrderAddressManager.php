@@ -10,24 +10,30 @@
 
 namespace Sulu\Bundle\Sales\CoreBundle\Manager;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Sulu\Bundle\ContactBundle\Entity\Address;
 use Sulu\Bundle\Sales\CoreBundle\Exceptions\MissingAttributeException;
+use Sulu\Component\Rest\Exception\EntityNotFoundException;
 
 class OrderAddressManager
 {
+    protected static $addressEntityName = 'SuluContactBundle:Address';
     protected static $orderAddressEntityName = 'SuluSalesCoreBundle:OrderAddress';
     protected static $orderAddressEntity = 'Sulu\Bundle\Sales\CoreBundle\Entity\OrderAddress';
 
     /**
-     * Returns the entry from the data with the given key, or the given default value, if the key does not exist
-     * @param array $data
-     * @param string $key
-     * @param string $default
-     * @return mixed
+     * @var EntityManagerInterface
      */
-    protected function getProperty(array $data, $key, $default = null)
+    protected $em;
+
+    /**
+     * @param EntityManagerInterface $em
+     */
+    public function __construct(
+        EntityManagerInterface $em
+    )
     {
-        return array_key_exists($key, $data) ? $data[$key] : $default;
+        $this->em = $em;
     }
 
     /**
@@ -37,19 +43,21 @@ class OrderAddressManager
      * @param Account|null $account
      * @throws OrderDependencyNotFoundException
      */
-    protected function setOrderAddress($orderAddress, $addressData, $contact = null, $account = null)
+    public function setOrderAddress($orderAddress, $addressData, $contact = null, $account = null)
     {
         // check if address with id can be found
 
         $contactData = $this->getContactData($addressData, $contact);
         // add contact data
-        $orderAddress->setFirstName($contactData['firstName']);
-        $orderAddress->setLastName($contactData['lastName']);
-        if (isset($contactData['title'])) {
-            $orderAddress->setTitle($contactData['title']);
-        }
-        if (isset($contactData['salutation'])) {
-            $orderAddress->setSalutation($contactData['salutation']);
+        if ($contactData) {
+            $orderAddress->setFirstName($contactData['firstName']);
+            $orderAddress->setLastName($contactData['lastName']);
+            if (isset($contactData['title'])) {
+                $orderAddress->setTitle($contactData['title']);
+            }
+            if (isset($contactData['salutation'])) {
+                $orderAddress->setSalutation($contactData['salutation']);
+            }
         }
 
         // add account data
@@ -67,14 +75,46 @@ class OrderAddressManager
     }
 
     /**
+     * @param int $addressId
+     * @param null|Contact $contact
+     * @param null|Account $account
+     * @param null|OrderAddress $orderAddress
+     * @return OrderAddress
+     * @throws EntityNotFoundException
+     */
+    public function getOrderAddressByContactAddressId(
+        $addressId,
+        $contact = null,
+        $account = null,
+        $orderAddress = null
+    )
+    {
+        $address = $this->em->getRepository(static::$addressEntityName)->find($addressId);
+
+        if (!$address) {
+            throw new EntityNotFoundException(static::$addressEntityName, $addressId);
+        }
+
+        return $this->getOrderAddressByContactAddress($address, $contact, $account, $orderAddress);
+    }
+
+    /**
      * @param Address $address
-     * @param $contact
-     * @param $account
+     * @param null|Contact $contact
+     * @param null|Account $account
+     * @param null|OrderAddress $orderAddress
      * @return OrderAddress
      */
-    public function getOrderAddressByContactAddress(Address $address, $contact, $account)
+    public function getOrderAddressByContactAddress(
+        Address $address,
+        $contact = null,
+        $account = null,
+        $orderAddress = null
+    )
     {
-        $orderAddress = new static::$orderAddressEntity;
+        if (!$orderAddress) {
+            $orderAddress = new static::$orderAddressEntity;
+        }
         $orderAddress->setStreet($address->getStreet());
         $orderAddress->setNumber($address->getNumber());
         $orderAddress->setAddition($address->getAddition());
@@ -86,6 +126,8 @@ class OrderAddressManager
         $orderAddress->setPostboxCity($address->getPostboxCity());
         $orderAddress->setPostboxPostcode($address->getPostboxPostcode());
         $orderAddress->setPostboxNumber($address->getPostboxNumber());
+
+        $orderAddress->setContactAddress($address);
 
         // add account data
         if ($account) {
@@ -127,6 +169,8 @@ class OrderAddressManager
         $orderAddress->setPostboxCity($this->getProperty($addressData, 'postboxCity', ''));
         $orderAddress->setPostboxPostcode($this->getProperty($addressData, 'postboxPostcode', ''));
         $orderAddress->setPostboxNumber($this->getProperty($addressData, 'postboxNumber', ''));
+
+        $orderAddress->setContactAddress($this->getProperty($addressData, 'address', ''));
     }
 
     /**
@@ -151,20 +195,31 @@ class OrderAddressManager
             if (isset($addressData['salutation'])) {
                 $result['salutation'] = $addressData['salutation'];
             }
-        } else {
-            if ($contact) {
-                $result['firstName'] = $contact->getFirstName();
-                $result['lastName'] = $contact->getLastName();
-                $result['fullName'] = $contact->getFullName();
-                $result['salutation'] = $contact->getFormOfAddress();
-                if ($contact->getTitle() !== null) {
-                    $result['title'] = $contact->getTitle()->getTitle();
-                }
-            } else {
-                throw new MissingAttributeException('firstName, lastName or contact');
+        } elseif ($contact) {
+            $result['firstName'] = $contact->getFirstName();
+            $result['lastName'] = $contact->getLastName();
+            $result['fullName'] = $contact->getFullName();
+            $result['salutation'] = $contact->getFormOfAddress();
+            if ($contact->getTitle() !== null) {
+                $result['title'] = $contact->getTitle()->getTitle();
             }
+        } else {
+
+            throw new MissingAttributeException('firstName, lastName or contact');
         }
 
         return $result;
+    }
+
+    /**
+     * Returns the entry from the data with the given key, or the given default value, if the key does not exist
+     * @param array $data
+     * @param string $key
+     * @param string $default
+     * @return mixed
+     */
+    protected function getProperty(array $data, $key, $default = null)
+    {
+        return array_key_exists($key, $data) ? $data[$key] : $default;
     }
 }
