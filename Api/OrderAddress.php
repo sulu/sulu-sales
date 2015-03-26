@@ -11,7 +11,7 @@ use JMS\Serializer\Annotation\SerializedName;
 
 /**
  * Defines the type of an order
- * @package Sulu\Bundle\Sales\OrderBundle\Api
+ * @package Sulu\Bundle\Sales\CoreBundle\Api
  */
 class OrderAddress extends ApiWrapper
 {

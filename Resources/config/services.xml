@@ -41,7 +41,7 @@
             <argument type="service" id="sulu_product.product_repository" />
             <argument type="service" id="sulu_product.price_manager" />
             <argument type="service" id="sulu_sales_core.item_price_calculator" />
-            <argument type="service" id="sulu_sales_core.order_address_managerr" />
+            <argument type="service" id="sulu_sales_core.order_address_manager" />
         </service>
 
         <!--REPOSITORIES-->

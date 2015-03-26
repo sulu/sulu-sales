@@ -27,7 +27,7 @@
 
         <one-to-many field="attributes" target-entity="Sulu\Bundle\Sales\CoreBundle\Entity\ItemAttribute" mapped-by="item"/>
 
-        <many-to-one field="deliveryAddress" target-entity="Sulu\Bundle\Sales\OrderBundle\Entity\OrderAddress">
+        <many-to-one field="deliveryAddress" target-entity="Sulu\Bundle\Sales\CoreBundle\Entity\OrderAddress">
             <join-columns>
                 <join-column name="idOrderAddressesDelivery" nullable="true"/>
             </join-columns>
