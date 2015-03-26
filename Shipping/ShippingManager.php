@@ -22,7 +22,7 @@ use Sulu\Component\Rest\ListBuilder\Doctrine\FieldDescriptor\DoctrineJoinDescrip
 use Sulu\Component\Rest\RestHelperInterface;
 use Sulu\Component\Security\Authentication\UserRepositoryInterface;
 use Sulu\Bundle\Sales\CoreBundle\Item\ItemManager;
-use Sulu\Bundle\Sales\OrderBundle\Entity\OrderAddress;
+use Sulu\Bundle\Sales\CoreBundle\Entity\OrderAddress;
 use Sulu\Bundle\Sales\ShippingBundle\Shipping\Exception\MissingShippingAttributeException;
 use Sulu\Bundle\Sales\ShippingBundle\Shipping\Exception\ShippingDependencyNotFoundException;
 use Sulu\Bundle\Sales\ShippingBundle\Shipping\Exception\ShippingException;

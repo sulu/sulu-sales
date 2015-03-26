@@ -33,7 +33,7 @@ use Sulu\Bundle\ProductBundle\Entity\TypeTranslation;
 
 use Sulu\Bundle\Sales\CoreBundle\Entity\Item;
 use Sulu\Bundle\Sales\OrderBundle\Entity\Order;
-use Sulu\Bundle\Sales\OrderBundle\Entity\OrderAddress;
+use Sulu\Bundle\Sales\CoreBundle\Entity\OrderAddress;
 use Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatus;
 use Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatusTranslation;
 use Sulu\Bundle\Sales\ShippingBundle\Entity\Shipping;
