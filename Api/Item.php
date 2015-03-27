@@ -25,6 +25,8 @@ use Symfony\Component\Intl\NumberFormatter\NumberFormatter;
  */
 class Item extends ApiWrapper implements CalculableBulkPriceItemInterface, CalculablePriceGroupItemInterface
 {
+    public static $productEntity = 'Sulu\Bundle\ProductBundle\Api\Product';
+
     /**
      * @param Entity $item The item to wrap
      * @param string $locale The locale of this item
@@ -577,7 +579,7 @@ class Item extends ApiWrapper implements CalculableBulkPriceItemInterface, Calcu
     {
         $product = $this->getEntity()->getProduct();
         if ($product) {
-            return new Product($product, $this->locale);
+            return new static::$productEntity($product, $this->locale);
         }
         return null;
     }

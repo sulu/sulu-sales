@@ -99,6 +99,11 @@ class ItemManager
         $this->orderAddressManager = $orderAddressManager;
     }
 
+    public function setProductEntity($productEntity)
+    {
+        Item::$productEntity = $productEntity;
+    }
+
     /**
      * creates an item, but does not flush
      * @param array $data
@@ -110,7 +115,7 @@ class ItemManager
      */
     public function save(array $data, $locale, $userId = null, $item = null, $itemStatusId = null)
     {
-        $isNewItem = !$item; 
+        $isNewItem = !$item;
         
         // check required data
         if ($isNewItem) {
