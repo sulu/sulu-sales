@@ -21,7 +21,7 @@ use Sulu\Bundle\Sales\CoreBundle\Entity\Item as ItemEntity;
 use Sulu\Bundle\Sales\CoreBundle\Item\Exception\ItemNotFoundException;
 use Sulu\Bundle\Sales\CoreBundle\Item\ItemManager;
 use Sulu\Bundle\Sales\OrderBundle\Entity\OrderActivityLog;
-use Sulu\Bundle\Sales\OrderBundle\Entity\OrderAddress;
+use Sulu\Bundle\Sales\CoreBundle\Entity\OrderAddress;
 use Sulu\Bundle\Sales\OrderBundle\Entity\OrderRepository;
 use Sulu\Bundle\Sales\OrderBundle\Entity\Order as OrderEntity;
 use Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatus as OrderStatusEntity;
@@ -52,7 +52,7 @@ class OrderManager
     protected static $orderStatusEntityName = 'SuluSalesOrderBundle:OrderStatus';
     protected static $orderTypeEntityName = 'SuluSalesOrderBundle:OrderType';
     protected static $orderTypeTranslationEntityName = 'SuluSalesOrderBundle:OrderTypeTranslation';
-    protected static $orderAddressEntityName = 'SuluSalesOrderBundle:OrderAddress';
+    protected static $orderAddressEntityName = 'SuluSalesCoreBundle:OrderAddress';
     protected static $orderStatusTranslationEntityName = 'SuluSalesOrderBundle:OrderStatusTranslation';
     protected static $itemEntityName = 'SuluSalesCoreBundle:Item';
     protected static $termsOfDeliveryEntityName = 'SuluContactBundle:TermsOfDelivery';

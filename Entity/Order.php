@@ -4,6 +4,7 @@ namespace Sulu\Bundle\Sales\OrderBundle\Entity;
 
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Mapping as ORM;
+use Sulu\Bundle\Sales\CoreBundle\Entity\OrderAddress;
 use Sulu\Component\Security\Authentication\UserInterface;
 
 /**
@@ -83,12 +84,12 @@ class Order
     private $id;
 
     /**
-     * @var \Sulu\Bundle\Sales\OrderBundle\Entity\OrderAddress
+     * @var OrderAddress
      */
     private $deliveryAddress;
 
     /**
-     * @var \Sulu\Bundle\Sales\OrderBundle\Entity\OrderAddress
+     * @var OrderAddress
      */
     private $invoiceAddress;
 
@@ -482,10 +483,10 @@ class Order
     /**
      * Set deliveryAddress
      *
-     * @param \Sulu\Bundle\Sales\OrderBundle\Entity\OrderAddress $deliveryAddress
+     * @param OrderAddress $deliveryAddress
      * @return Order
      */
-    public function setDeliveryAddress(\Sulu\Bundle\Sales\OrderBundle\Entity\OrderAddress $deliveryAddress = null)
+    public function setDeliveryAddress(OrderAddress $deliveryAddress = null)
     {
         $this->deliveryAddress = $deliveryAddress;
 
@@ -495,7 +496,7 @@ class Order
     /**
      * Get deliveryAddress
      *
-     * @return \Sulu\Bundle\Sales\OrderBundle\Entity\OrderAddress
+     * @return OrderAddress
      */
     public function getDeliveryAddress()
     {
@@ -505,10 +506,10 @@ class Order
     /**
      * Set invoiceAddress
      *
-     * @param \Sulu\Bundle\Sales\OrderBundle\Entity\OrderAddress $invoiceAddress
+     * @param OrderAddress $invoiceAddress
      * @return Order
      */
-    public function setInvoiceAddress(\Sulu\Bundle\Sales\OrderBundle\Entity\OrderAddress $invoiceAddress = null)
+    public function setInvoiceAddress(OrderAddress $invoiceAddress = null)
     {
         $this->invoiceAddress = $invoiceAddress;
 
@@ -518,7 +519,7 @@ class Order
     /**
      * Get invoiceAddress
      *
-     * @return \Sulu\Bundle\Sales\OrderBundle\Entity\OrderAddress
+     * @return OrderAddress
      */
     public function getInvoiceAddress()
     {
