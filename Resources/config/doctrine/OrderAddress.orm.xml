@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+    <entity name="Sulu\Bundle\Sales\CoreBundle\Entity\OrderAddress" table="sc_order_addresses">
+        <id name="id" type="integer" column="id">
+            <generator strategy="AUTO"/>
+        </id>
+        <field name="salutation" type="string" column="salutation" length="255" nullable="true"/>
+        <field name="firstName" type="string" column="firstName" length="255" nullable="false"/>
+        <field name="lastName" type="string" column="lastName" length="255" nullable="false"/>
+        <field name="accountName" type="string" column="accountName" length="255" nullable="true"/>
+        <field name="title" type="string" column="title" length="255" nullable="true"/>
+        <field name="street" type="string" column="street" length="255" nullable="false"/>
+        <field name="addition" type="string" column="addition" length="255" nullable="true"/>
+        <field name="number" type="string" column="number" length="25" nullable="false"/>
+        <field name="city" type="string" column="city" length="255" nullable="false"/>
+        <field name="zip" type="string" column="zip" length="10" nullable="false"/>
+        <field name="state" type="string" column="state" length="255" nullable="true"/>
+        <field name="country" type="string" column="country" length="255" nullable="false"/>
+        <field name="email" type="string" column="email" length="255" nullable="true"/>
+        <field name="postboxCity" type="string" column="postboxCity" length="255" nullable="true"/>
+        <field name="postboxNumber" type="string" column="postboxNumber" length="255" nullable="true"/>
+        <field name="postboxPostcode" type="string" column="postboxPostcode" length="255" nullable="true"/>
+        <field name="uid" type="string" column="uid" length="255" nullable="true"/>
+        <field name="phone" type="string" column="phone" length="255" nullable="true"/>
+        <field name="phoneMobile" type="string" column="phoneMobile" length="255" nullable="true"/>
+
+        <many-to-one target-entity="Sulu\Bundle\ContactBundle\Entity\Address" field="contactAddress">
+            <join-columns>
+                <join-column name="idContactAddresses" referenced-column-name="id" nullable="true"/>
+            </join-columns>
+        </many-to-one>
+    </entity>
+</doctrine-mapping>

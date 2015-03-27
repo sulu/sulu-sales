@@ -9,8 +9,8 @@ use Sulu\Bundle\Sales\CoreBundle\Entity\Item as Entity;
 use Sulu\Bundle\Sales\CoreBundle\Entity\ItemAttributeEntity;
 use Sulu\Bundle\Sales\CoreBundle\Pricing\CalculableBulkPriceItemInterface;
 use Sulu\Bundle\Sales\CoreBundle\Pricing\CalculablePriceGroupItemInterface;
-use Sulu\Bundle\Sales\OrderBundle\Entity\OrderAddressEntity;
-use Sulu\Bundle\Sales\OrderBundle\Api\OrderAddress;
+use Sulu\Bundle\Sales\CoreBundle\Entity\OrderAddress as OrderAddressEntity;
+use Sulu\Bundle\Sales\CoreBundle\Api\OrderAddress;
 use Sulu\Component\Rest\ApiWrapper;
 use Hateoas\Configuration\Annotation\Relation;
 use JMS\Serializer\Annotation\SerializedName;
@@ -25,6 +25,8 @@ use Symfony\Component\Intl\NumberFormatter\NumberFormatter;
  */
 class Item extends ApiWrapper implements CalculableBulkPriceItemInterface, CalculablePriceGroupItemInterface
 {
+    public static $productEntity = 'Sulu\Bundle\ProductBundle\Api\Product';
+
     /**
      * @param Entity $item The item to wrap
      * @param string $locale The locale of this item
@@ -577,7 +579,7 @@ class Item extends ApiWrapper implements CalculableBulkPriceItemInterface, Calcu
     {
         $product = $this->getEntity()->getProduct();
         if ($product) {
-            return new Product($product, $this->locale);
+            return new static::$productEntity($product, $this->locale);
         }
         return null;
     }

@@ -5,6 +5,7 @@ namespace Sulu\Bundle\Sales\CoreBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Sulu\Bundle\ProductBundle\Api\Product;
 use Sulu\Component\Security\Authentication\UserInterface;
+use Sulu\Bundle\Sales\CoreBundle\Entity\OrderAddress as OrderAddress;
 
 /**
  * Item
@@ -140,7 +141,7 @@ class Item
     private $totalNetPrice;
 
     /**
-     * @var \Sulu\Bundle\Sales\OrderBundle\Entity\OrderAddress
+     * @var OrderAddress
      */
     private $deliveryAddress;
 
@@ -660,10 +661,10 @@ class Item
 
     /**
      * Set deliveryAddress
-     * @param \Sulu\Bundle\Sales\OrderBundle\Entity\OrderAddress $deliveryAddress
+     * @param OrderAddress $deliveryAddress
      * @return Item
      */
-    public function setDeliveryAddress(\Sulu\Bundle\Sales\OrderBundle\Entity\OrderAddress $deliveryAddress = null)
+    public function setDeliveryAddress(OrderAddress $deliveryAddress = null)
     {
         $this->deliveryAddress = $deliveryAddress;
 
@@ -672,7 +673,7 @@ class Item
 
     /**
      * Get deliveryAddress
-     * @return \Sulu\Bundle\Sales\OrderBundle\Entity\OrderAddress $deliveryAddress
+     * @return OrderAddress $deliveryAddress
      */
     public function getDeliveryAddress()
     {
