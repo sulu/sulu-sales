@@ -8,6 +8,7 @@ use Hateoas\Configuration\Annotation\Relation;
 use JMS\Serializer\Annotation\SerializedName;
 use JMS\Serializer\Annotation\Exclude;
 use Sulu\Bundle\Sales\CoreBundle\Core\SalesDocument;
+use Sulu\Bundle\Sales\CoreBundle\Entity\OrderAddress;
 use Sulu\Component\Rest\ApiWrapper;
 use Sulu\Component\Security\Authentication\UserInterface;
 use Sulu\Bundle\Sales\CoreBundle\Api\Item;
@@ -454,10 +455,10 @@ class Shipping extends ApiWrapper implements SalesDocument
     /**
      * Set deliveryAddress
      *
-     * @param \Sulu\Bundle\Sales\OrderBundle\Entity\OrderAddress $deliveryAddress
+     * @param OrderAddress $deliveryAddress
      * @return Shipping
      */
-    public function setDeliveryAddress(\Sulu\Bundle\Sales\OrderBundle\Entity\OrderAddress $deliveryAddress = null)
+    public function setDeliveryAddress(OrderAddress $deliveryAddress = null)
     {
         $this->entity->setDeliveryAddress($deliveryAddress);
 
@@ -467,7 +468,7 @@ class Shipping extends ApiWrapper implements SalesDocument
     /**
      * Get deliveryAddress
      *
-     * @return \Sulu\Bundle\Sales\OrderBundle\Entity\OrderAddress
+     * @return OrderAddress
      * @VirtualProperty
      * @SerializedName("deliveryAddress")
      */

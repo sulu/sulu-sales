@@ -31,7 +31,7 @@
         <field name="changed" type="datetime" column="changed"></field>
         <field name="expectedDeliveryDate" type="datetime" column="desiredDeliveryDate" nullable="true"></field>
 
-        <one-to-one field="deliveryAddress" target-entity="Sulu\Bundle\Sales\OrderBundle\Entity\OrderAddress">
+        <one-to-one field="deliveryAddress" target-entity="Sulu\Bundle\Sales\CoreBundle\Entity\OrderAddress">
             <join-columns>
                 <join-column name="idOrderAddressesDelivery"/>
             </join-columns>
