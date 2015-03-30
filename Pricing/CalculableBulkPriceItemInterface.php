@@ -34,6 +34,20 @@ interface CalculableBulkPriceItemInterface
 
     /**
      * returns the currency of an item
+     *
+     * @return string
      */
     public function getCalcCurrencyCode();
+
+    /**
+     * get items current price
+     *
+     * @return float
+     */
+    public function getPrice();
+
+    /**
+     * set price-change to item
+     */
+    public function setPriceChange($from, $to);
 }
