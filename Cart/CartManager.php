@@ -99,7 +99,8 @@ class CartManager extends BaseSalesManager
         OrderManager $orderManager,
         GroupedItemsPriceCalculatorInterface $priceCalculation,
         $defaultCurrency,
-        $accountManager
+        $accountManager,
+        \Twig_Environment $twig
     )
     {
         $this->em = $em;
@@ -109,6 +110,7 @@ class CartManager extends BaseSalesManager
         $this->priceCalculation = $priceCalculation;
         $this->defaultCurrency = $defaultCurrency;
         $this->accountManager = $accountManager;
+        $this->twig = $twig;
     }
 
     /**
@@ -117,7 +119,12 @@ class CartManager extends BaseSalesManager
      *
      * @return null|\Sulu\Bundle\Sales\OrderBundle\Api\Order
      */
-    public function getUserCart($user = null, $locale = null, $currency = null, $persist = false)
+    public function getUserCart(
+        $user = null,
+        $locale = null,
+        $currency = null,
+        $persist = false
+    )
     {
         // cart by session ID
         if (!$user) {
@@ -152,6 +159,10 @@ class CartManager extends BaseSalesManager
 
         $this->updateCartApiEntity($apiOrder);
 
+        // check if prices have changed
+        $hasChangedPrices = $this->updateCartPrices($apiOrder->getItems());
+        $apiOrder->setHasChangedPrices($hasChangedPrices);
+
         return $apiOrder;
     }
 
@@ -173,8 +184,24 @@ class CartManager extends BaseSalesManager
             // set grouped items
             $apiOrder->setSupplierItems(array_values($supplierItems));
         }
+
         // set total price
         $apiOrder->setTotalNetPrice($totalPrice);
+    }
+
+    /**
+     * Updates changed prices
+     *
+     * @param $items
+     * @return bool
+     */
+    public function updateCartPrices($items)
+    {
+        // set prices to changed
+        $hasChanged = $this->priceCalculation->setPricesOfChanged($items);
+        $this->em->flush();
+
+        return $hasChanged;
     }
 
     /**
@@ -192,8 +219,28 @@ class CartManager extends BaseSalesManager
         $cart = $this->getUserCart($user, $locale);
         $userId = $user ? $user->getId() : null;
         $this->orderManager->save($data, $locale, $userId, $cart->getId());
-        
+
         return $cart;
+    }
+
+    /**
+     * submits a cart order
+     */
+    public function submit($user, $locale, &$orderWasSubmitted = true)
+    {
+        $cart = $this->getUserCart($user, $locale);
+        if ($cart->hasChangedPrices()) {
+            $orderWasSubmitted = false;
+            return $cart;
+        } else {
+            // change status of order to confirmed
+            $this->orderManager->convertStatus($cart, OrderStatus::STATUS_CONFIRMED);
+
+            // send confirmation email
+            $this->sendConfirmationEmail($user->getContact()->getMainEmail(), $cart);
+        }
+
+        return $this->createEmptyCart($user, false);
     }
 
     /**
@@ -373,7 +420,7 @@ class CartManager extends BaseSalesManager
             $cart->setDeliveryAddress($deliveryOrderAddress);
         }
 
-        // TODO:
+        // TODO: anonymous order
         if ($user) {
             $name = $user->getContact()->getFullName();
         } else {
@@ -414,5 +461,29 @@ class CartManager extends BaseSalesManager
             'totalPriceFormatted' => $cart->getTotalNetPriceFormatted(),
             'currency' => $cart->getCurrency()
         );
+    }
+
+    /**
+     * @param $emailAddress
+     */
+    public function sendConfirmationEmail($recipient, $order)
+    {
+        $template = $this->twig->loadTemplate('SuluSalesOrderBundle:Emails:order.confirmation.twig');
+        $subject = $template->renderBlock('subject', $order);
+        $emailBodyText = $template->renderBlock('body_text', $params);
+        $emailBodyHtml = $template->renderBlock('body_html', $params);
+
+        if ($recipient) {
+            // now send mail
+            /** @var \Swift_Message $message */
+            $message = \Swift_Message::newInstance()
+                ->setSubject($subject)
+                ->setFrom($recipient)
+                ->setTo($recipient)
+                ->setBody($emailBodyText, 'text/plain')
+                ->addPart($emailBodyHtml, 'text/html');
+
+            return $this->mailer->send($message);
+        }
     }
 }
