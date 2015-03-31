@@ -25,7 +25,8 @@ interface GroupedItemsPriceCalculatorInterface
 
     /**
      * Sets all item prices to the changed prices
-     * Note: This will only work, if price changes have been calculated before
+     * Note: This will only work, if price changes have been calculated before. Since this is a service which can be
+     *       called multiple times with many different items.
      *
      * @param $items
      * @return bool If prices have changed

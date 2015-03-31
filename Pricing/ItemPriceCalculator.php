@@ -151,6 +151,5 @@ class ItemPriceCalculator
     private function getCurrency($currency)
     {
         return $currency?: $this->defaultLocale;
-        
     }
 }

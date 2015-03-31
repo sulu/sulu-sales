@@ -27,8 +27,22 @@ class Item extends ApiWrapper implements CalculableBulkPriceItemInterface, Calcu
 {
     public static $productEntity = 'Sulu\Bundle\ProductBundle\Api\Product';
 
+    /**
+     * indicates if prices have been changed
+     * @var bool
+     */
     protected $priceChanged = false;
+
+    /**
+     * price value before change
+     * @var float
+     */
     protected $priceChangeFrom;
+
+    /**
+     * price value after change (current price)
+     * @var float
+     */
     protected $priceChangeTo;
 
     /**
@@ -691,7 +705,7 @@ class Item extends ApiWrapper implements CalculableBulkPriceItemInterface, Calcu
 
     /**
      * Get price changes
-     * @return array
+     * @return array|null
      * @VirtualProperty
      * @SerializedName("priceChange")
      * @Groups({"cart"})
@@ -709,8 +723,8 @@ class Item extends ApiWrapper implements CalculableBulkPriceItemInterface, Calcu
     }
 
     /**
-     * @param $from
-     * @param $to
+     * @param float $from
+     * @param float $to
      */
     public function setPriceChange($from, $to)
     {
