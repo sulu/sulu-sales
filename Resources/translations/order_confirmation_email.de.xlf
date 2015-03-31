@@ -7,8 +7,8 @@
                 <target>Your order %number% has been received</target>
             </trans-unit>
             <trans-unit id="2">
-                <source>Thanks for your order</source>
-                <target>Thank you for your order.</target>
+                <source>Thank you for your order</source>
+                <target>Thank you for your order!</target>
             </trans-unit>
         </body>
     </file>
