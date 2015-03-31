@@ -32,7 +32,7 @@ class PdfController extends RestController
      */
     private function getPdfManager()
     {
-        return $this->get('massive_pdf.pdf_manager');
+        return $this->get('sulu_sales_order.order_pdf_manager');
     }
 
     /**
@@ -51,6 +51,7 @@ class PdfController extends RestController
      * @param Request $request
      * @param $id
      * @return Response
+     * @throws OrderNotFoundException
      */
     public function orderConfirmationAction(Request $request, $id)
     {
@@ -59,50 +60,19 @@ class PdfController extends RestController
         try {
             $orderApiEntity = $this->getOrderManager()->findByIdAndLocale($id, $locale);
             $order = $orderApiEntity->getEntity();
-        } catch(OrderNotFoundException $exc) {
+        } catch (OrderNotFoundException $exc) {
             throw new OrderNotFoundException($id);
         }
 
-        $data = array(
-            'baseUrl' => $this->getBaseUrl($request),
-            'recipient' => $order->getDeliveryAddress(),
-            'responsibleContact' => $order->getResponsibleContact(),
-            'deliveryAddress' => $order->getInvoiceAddress(),
-            'order' => $order,
-            'orderApiEntity' => $orderApiEntity,
-            'itemApiEntities' => $orderApiEntity->getItems(),
-            'website_locale' => $this->container->getParameter('website_locale')
-        );
+        $pdf = $this->getPdfManager()->createOrderConfirmation($orderApiEntity, $this->getBaseUrl($request));
 
-        $header = $this->getPdfManager()->renderTemplate(
-            'PoolAlpinBaseBundle:Default:pdf-base-header.html.twig',
-            array(
-                'baseUrl' => $this->getBaseUrl($request),
-            )
-        );
-
-        $footer = $this->getPdfManager()->renderTemplate(
-            'PoolAlpinBaseBundle:Default:pdf-base-footer.html.twig',
-            array(
-                'baseUrl' => $this->getBaseUrl($request),
-            )
-        );
-
-        $pdf = $this->getPdfManager()->convertToPdf(
-            'SuluSalesOrderBundle:Template:order.confirmation.pdf.html.twig',
-            $data,
-            false,
-            array('footer-html' => $footer,
-            'header-html' => $header)
-        );
-
-        $pdfName = 'PA_OrderConfirmation-' . $order->getNumber() . '.pdf';
+        $pdfName = $this->getPdfManager()->getPdfName($order);
 
         return new Response(
             $pdf,
             200,
             array(
-                'Content-Type'        => 'application/pdf',
+                'Content-Type' => 'application/pdf',
                 'Content-Disposition' => 'attachment; filename="' . $pdfName . '"'
             )
         );
