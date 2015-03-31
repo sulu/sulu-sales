@@ -437,8 +437,9 @@ class CartManager extends BaseSalesManager
         $cart->setAccount($account);
         
         /** Account $account */
-        if ($account && $account->getResponsiblePerson())
-        $cart->setResponsibleContact($account->getResponsiblePerson());
+        if ($account && $account->getResponsiblePerson()) {
+            $cart->setResponsibleContact($account->getResponsiblePerson());
+        }
 
         $addressSource = $contact;
         if ($account) {
