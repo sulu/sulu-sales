@@ -36,16 +36,6 @@ class PdfController extends RestController
     }
 
     /**
-     * returns a baseURL for the current host
-     * @param request
-     * @return string
-     */
-    public function getBaseUrl($request)
-    {
-        return $request->getScheme() . '://' . $request->getHost();
-    }
-
-    /**
      * Finds a order object by a given id from the url
      * and returns a rendered pdf in a download window
      * @param Request $request
@@ -64,7 +54,7 @@ class PdfController extends RestController
             throw new OrderNotFoundException($id);
         }
 
-        $pdf = $this->getPdfManager()->createOrderConfirmation($orderApiEntity, $this->getBaseUrl($request));
+        $pdf = $this->getPdfManager()->createOrderConfirmation($orderApiEntity);
 
         $pdfName = $this->getPdfManager()->getPdfName($order);
 

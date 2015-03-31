@@ -50,15 +50,13 @@ class OrderPdfManager
 
     /**
      * @param ApiOrder $apiOrder
-     * @param $baseUrl
      * @return file
      */
-    public function createOrderConfirmation(ApiOrder $apiOrder, $baseUrl)
+    public function createOrderConfirmation(ApiOrder $apiOrder)
     {
         $order = $apiOrder->getEntity();
 
         $data = array(
-            'baseUrl' => $baseUrl,
             'recipient' => $order->getDeliveryAddress(),
             'responsibleContact' => $order->getResponsibleContact(),
             'deliveryAddress' => $order->getInvoiceAddress(),
@@ -70,16 +68,12 @@ class OrderPdfManager
 
         $header = $this->pdfManager->renderTemplate(
             'PoolAlpinBaseBundle:Default:pdf-base-header.html.twig',
-            array(
-                'baseUrl' => $baseUrl,
-            )
+            array()
         );
 
         $footer = $this->pdfManager->renderTemplate(
             'PoolAlpinBaseBundle:Default:pdf-base-footer.html.twig',
-            array(
-                'baseUrl' => $baseUrl,
-            )
+            array()
         );
 
         $pdf = $this->pdfManager->convertToPdf(

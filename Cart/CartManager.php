@@ -19,7 +19,9 @@ use Sulu\Bundle\Sales\OrderBundle\Api\Order as ApiOrder;
 use Sulu\Bundle\Sales\OrderBundle\Entity\Order;
 use Sulu\Bundle\Sales\OrderBundle\Entity\OrderRepository;
 use Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatus;
+use Sulu\Bundle\Sales\OrderBundle\Order\Exception\OrderException;
 use Sulu\Bundle\Sales\OrderBundle\Order\OrderManager;
+use Sulu\Bundle\Sales\OrderBundle\Order\OrderPdfManager;
 use Sulu\Component\Security\Authentication\UserRepositoryInterface;
 use Sulu\Component\Persistence\RelationTrait;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
@@ -86,6 +88,16 @@ class CartManager extends BaseSalesManager
     private $accountManager;
 
     /**
+     * @var OrderPdfManager
+     */
+    private $pdfManager;
+
+    /**
+     * @var \Swift_Mailer
+     */
+    protected $mailer;
+
+    /**
      * @param ObjectManager $em
      * @param SessionInterface $session
      * @param OrderRepository $orderRepository
@@ -100,7 +112,9 @@ class CartManager extends BaseSalesManager
         GroupedItemsPriceCalculatorInterface $priceCalculation,
         $defaultCurrency,
         $accountManager,
-        \Twig_Environment $twig
+        \Twig_Environment $twig,
+        OrderPdfManager $pdfManager,
+        \Swift_Mailer $mailer
     )
     {
         $this->em = $em;
@@ -111,6 +125,8 @@ class CartManager extends BaseSalesManager
         $this->defaultCurrency = $defaultCurrency;
         $this->accountManager = $accountManager;
         $this->twig = $twig;
+        $this->pdfManager = $pdfManager;
+        $this->mailer = $mailer;
     }
 
     /**
@@ -224,15 +240,29 @@ class CartManager extends BaseSalesManager
     }
 
     /**
-     * submits a cart order
+     * Submits an order
+     *
+     * @param $user
+     * @param $locale
+     * @param bool $orderWasSubmitted
+     * @return null|ApiOrder
+     * @throws OrderException
+     * @throws \Sulu\Component\Rest\Exception\EntityNotFoundException
      */
     public function submit($user, $locale, &$orderWasSubmitted = true)
     {
+        $orderWasSubmitted = true;
+
         $cart = $this->getUserCart($user, $locale);
         if ($cart->hasChangedPrices()) {
             $orderWasSubmitted = false;
+
             return $cart;
         } else {
+            if (count($cart->getItems()) < 1) {
+                throw new OrderException('Empty Cart');
+            }
+
             // change status of order to confirmed
             $this->orderManager->convertStatus($cart, OrderStatus::STATUS_CONFIRMED);
 
@@ -240,7 +270,10 @@ class CartManager extends BaseSalesManager
             $this->sendConfirmationEmail($user->getContact()->getMainEmail(), $cart);
         }
 
-        return $this->createEmptyCart($user, false);
+        // flush on success
+        $this->em->flush();
+
+        return $this->getUserCart($user, $locale);
     }
 
     /**
@@ -400,6 +433,9 @@ class CartManager extends BaseSalesManager
         // get address from contact and account
         $contact = $user->getContact();
         $account = $contact->getMainAccount();
+        $cart->setContact($contact);
+        $cart->setAccount($account);
+
         $addressSource = $contact;
         if ($account) {
             $addressSource = $account;
@@ -428,7 +464,7 @@ class CartManager extends BaseSalesManager
         }
         $cart->setCustomerName($name);
 
-        $this->orderManager->convertStatus($cart, OrderStatus::STATUS_IN_CART);
+        $this->orderManager->convertStatus($cart, OrderStatus::STATUS_IN_CART, false, $persist);
 
         if ($persist) {
             $this->em->persist($cart);
@@ -464,26 +500,44 @@ class CartManager extends BaseSalesManager
     }
 
     /**
-     * @param $emailAddress
+     * @param $recipient
+     * @param $apiOrder
+     * @return bool
      */
-    public function sendConfirmationEmail($recipient, $order)
+    public function sendConfirmationEmail($recipient, $apiOrder)
     {
+        $tmplData = array(
+            'order' => $apiOrder
+        );
+
         $template = $this->twig->loadTemplate('SuluSalesOrderBundle:Emails:order.confirmation.twig');
-        $subject = $template->renderBlock('subject', $order);
-        $emailBodyText = $template->renderBlock('body_text', $params);
-        $emailBodyHtml = $template->renderBlock('body_html', $params);
+        $subject = $template->renderBlock('subject', $tmplData);
+
+        $emailBodyText = $template->renderBlock('body_text', $tmplData);
+        $emailBodyHtml = $template->renderBlock('body_html', $tmplData);
+
+        $pdf = $this->pdfManager->createOrderConfirmation($apiOrder);
+        $pdfFileName = $this->pdfManager->getPdfName($apiOrder);
 
         if ($recipient) {
             // now send mail
+            $attachment = \Swift_Attachment::newInstance()
+                ->setFilename($pdfFileName)
+                ->setContentType('application/pdf')
+                ->setBody($pdf);
+
             /** @var \Swift_Message $message */
             $message = \Swift_Message::newInstance()
                 ->setSubject($subject)
                 ->setFrom($recipient)
                 ->setTo($recipient)
                 ->setBody($emailBodyText, 'text/plain')
-                ->addPart($emailBodyHtml, 'text/html');
+                ->addPart($emailBodyHtml, 'text/html')
+                ->attach($attachment);
 
             return $this->mailer->send($message);
         }
+
+        return false;
     }
 }
