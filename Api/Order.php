@@ -884,6 +884,20 @@ class Order extends ApiWrapper implements SalesDocument
     }
 
     /**
+     * @VirtualProperty
+     * @SerializedName("deliveryCostFormatted")
+     *
+     * @return string
+     * @Groups({"cart"})
+     */
+    public function getDeliveryCostFormatted($locale = null)
+    {
+        $formatter = $this->getFormatter($locale);
+
+        return $formatter->format((float)$this->entity->getDeliveryCost());
+    }
+
+    /**
      * @param DateTime
      *
      * @return Order

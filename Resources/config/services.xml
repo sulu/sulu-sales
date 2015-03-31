@@ -75,7 +75,6 @@
 
         <service id="sulu_sales_order.order_pdf_manager" class="%sulu_sales_order.order_pdf_manager.class%">
             <argument type="service" id="massive_pdf.pdf_manager" />
-            <argument>%website_locale%</argument>
         </service>
 
         <service id="sulu_sales_order.order_dependency_manager"

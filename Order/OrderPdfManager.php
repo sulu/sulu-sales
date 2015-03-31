@@ -15,26 +15,16 @@ use \Sulu\Bundle\Sales\OrderBundle\Api\Order as ApiOrder;
 class OrderPdfManager
 {
     /**
-     * @var string
-     */
-    protected $websiteLocale;
-
-    /**
      * @var PdfManager
      */
     protected $pdfManager;
 
     /**
      * @param PdfManager $pdfManager
-     * @param $websiteLocale
      */
-    public function __construct(
-        PdfManager $pdfManager,
-        $websiteLocale
-    )
+    public function __construct(PdfManager $pdfManager)
     {
         $this->pdfManager = $pdfManager;
-        $this->websiteLocale = $websiteLocale;
     }
 
     /**
@@ -63,7 +53,6 @@ class OrderPdfManager
             'order' => $order,
             'orderApiEntity' => $apiOrder,
             'itemApiEntities' => $apiOrder->getItems(),
-            'website_locale' => $this->websiteLocale
         );
 
         $header = $this->pdfManager->renderTemplate(
