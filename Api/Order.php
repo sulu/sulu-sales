@@ -56,7 +56,7 @@ class Order extends ApiWrapper implements SalesDocument
      *
      * @var array
      */
-    private $items;
+    private $cacheItems;
 
     /**
      * Indicated if items have been changed
@@ -694,17 +694,17 @@ class Order extends ApiWrapper implements SalesDocument
      */
     public function getItems()
     {
-        if (!$this->itemsChanged && $this->items && count($this->items) === count($this->entity->getItems())) {
-            return $this->items;
+        if (!$this->itemsChanged && $this->cacheItems && count($this->cacheItems) === count($this->entity->getItems())) {
+            return $this->cacheItems;
         } else {
             $this->itemsChanged = false;
-            $this->items = array();
+            $this->cacheItems = array();
             foreach ($this->entity->getItems() as $item) {
-                $this->items[] = new Item($item, $this->locale, $this->getCurrency());
+                $this->cacheItems[] = new Item($item, $this->locale, $this->getCurrency());
             }
         }
 
-        return $this->items;
+        return $this->cacheItems;
     }
 
     /**
