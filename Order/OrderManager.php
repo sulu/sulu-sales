@@ -284,7 +284,7 @@ class OrderManager
         $order->setChanged(new DateTime());
         $order->setChanger($user);
 
-        $this->processApiEntity($order);
+        $this->updateApiEntity($order);
 
         if ($flush) {
             $this->em->flush();
@@ -296,7 +296,7 @@ class OrderManager
     /**
      * @param Order $apiOrder
      */
-    public function processApiEntity(Order $apiOrder)
+    public function updateApiEntity(Order $apiOrder)
     {
         $items = $apiOrder->getItems();
 
@@ -534,7 +534,7 @@ class OrderManager
 
         if ($order) {
             $order = new Order($order, $locale);
-            $this->processApiEntity($order);
+            $this->updateApiEntity($order);
             return $order;
         } else {
             return null;
@@ -559,7 +559,7 @@ class OrderManager
                 $order,
                 function (&$order) use ($locale) {
                     $order = new Order($order, $locale);
-                    $this->processApiEntity($order);
+                    $this->updateApiEntity($order);
                 }
             );
         }
