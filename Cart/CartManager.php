@@ -139,7 +139,8 @@ class CartManager extends BaseSalesManager
         $user = null,
         $locale = null,
         $currency = null,
-        $persist = false
+        $persist = false,
+        $updatePrices = false
     )
     {
         // cart by session ID
@@ -173,9 +174,9 @@ class CartManager extends BaseSalesManager
 
         $this->orderManager->updateApiEntity($apiOrder);
 
-        // check if prices have changed
-        $hasChangedPrices = $this->updateCartPrices($apiOrder->getItems());
-        $apiOrder->setHasChangedPrices($hasChangedPrices);
+        if ($updatePrices) {
+            $this->updateCartPrices($apiOrder->getItems());
+        }
 
         return $apiOrder;
     }
@@ -230,7 +231,7 @@ class CartManager extends BaseSalesManager
     {
         $orderWasSubmitted = true;
 
-        $cart = $this->getUserCart($user, $locale);
+        $cart = $this->getUserCart($user, $locale, null, false, true);
         if ($cart->hasChangedPrices()) {
             $orderWasSubmitted = false;
 

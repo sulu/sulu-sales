@@ -26,7 +26,16 @@ use DateTime;
  */
 class Order extends ApiWrapper implements SalesDocument
 {
+    /**
+     * Define permissions for front-end
+     * @var array
+     */
     private $permissions = array();
+
+    /**
+     * Define workflows for front-end
+     * @var array
+     */
     private $workflows = array();
 
     /**
@@ -36,7 +45,25 @@ class Order extends ApiWrapper implements SalesDocument
      */
     private $groupedItems = array();
 
+    /**
+     * Defines if changes of items have been changed since last view
+     * @var bool
+     */
     private $hasChangedPrices = false;
+
+    /**
+     * Cache for items
+     *
+     * @var array
+     */
+    private $items;
+
+    /**
+     * Indicated if items have been changed
+     *
+     * @var bool
+     */
+    private $itemsChanged = false;
 
     /**
      * @param OrderEntity $order The order to wrap
@@ -639,6 +666,7 @@ class Order extends ApiWrapper implements SalesDocument
      */
     public function addItem(\Sulu\Bundle\Sales\CoreBundle\Entity\Item $item)
     {
+        $this->itemsChanged = true;
         $this->entity->addItem($item);
 
         return $this;
@@ -651,6 +679,7 @@ class Order extends ApiWrapper implements SalesDocument
      */
     public function removeItem(\Sulu\Bundle\Sales\CoreBundle\Entity\Item $item)
     {
+        $this->itemsChanged = true;
         $this->entity->removeItem($item);
     }
 
@@ -665,12 +694,17 @@ class Order extends ApiWrapper implements SalesDocument
      */
     public function getItems()
     {
-        $items = array();
-        foreach ($this->entity->getItems() as $item) {
-            $items[] = new Item($item, $this->locale, $this->getCurrency());
+        if (!$this->itemsChanged && $this->items && count($this->items) === count($this->entity->getItems())) {
+            return $this->items;
+        } else {
+            $this->itemsChanged = false;
+            $this->items = array();
+            foreach ($this->entity->getItems() as $item) {
+                $this->items[] = new Item($item, $this->locale, $this->getCurrency());
+            }
         }
 
-        return $items;
+        return $this->items;
     }
 
     /**

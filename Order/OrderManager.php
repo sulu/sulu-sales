@@ -311,6 +311,15 @@ class OrderManager
             $apiOrder->setSupplierItems(array_values($supplierItems));
         }
 
+        $hasChangedPrices = false;
+        foreach ($items as $item) {
+            if ($item->getPriceChange()) {
+                $hasChangedPrices = true;
+                break;
+            }
+        }
+        $apiOrder->setHasChangedPrices($hasChangedPrices);
+
         // set total price
         $apiOrder->setTotalNetPrice($totalPrice);
     }
