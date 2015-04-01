@@ -19,7 +19,9 @@ use Sulu\Bundle\Sales\OrderBundle\Api\Order as ApiOrder;
 use Sulu\Bundle\Sales\OrderBundle\Entity\Order;
 use Sulu\Bundle\Sales\OrderBundle\Entity\OrderRepository;
 use Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatus;
+use Sulu\Bundle\Sales\OrderBundle\Order\Exception\OrderException;
 use Sulu\Bundle\Sales\OrderBundle\Order\OrderManager;
+use Sulu\Bundle\Sales\OrderBundle\Order\OrderPdfManager;
 use Sulu\Component\Security\Authentication\UserRepositoryInterface;
 use Sulu\Component\Persistence\RelationTrait;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
@@ -86,6 +88,16 @@ class CartManager extends BaseSalesManager
     private $accountManager;
 
     /**
+     * @var OrderPdfManager
+     */
+    private $pdfManager;
+
+    /**
+     * @var \Swift_Mailer
+     */
+    protected $mailer;
+
+    /**
      * @param ObjectManager $em
      * @param SessionInterface $session
      * @param OrderRepository $orderRepository
@@ -99,7 +111,10 @@ class CartManager extends BaseSalesManager
         OrderManager $orderManager,
         GroupedItemsPriceCalculatorInterface $priceCalculation,
         $defaultCurrency,
-        $accountManager
+        $accountManager,
+        \Twig_Environment $twig,
+        OrderPdfManager $pdfManager,
+        \Swift_Mailer $mailer
     )
     {
         $this->em = $em;
@@ -109,6 +124,9 @@ class CartManager extends BaseSalesManager
         $this->priceCalculation = $priceCalculation;
         $this->defaultCurrency = $defaultCurrency;
         $this->accountManager = $accountManager;
+        $this->twig = $twig;
+        $this->pdfManager = $pdfManager;
+        $this->mailer = $mailer;
     }
 
     /**
@@ -117,7 +135,12 @@ class CartManager extends BaseSalesManager
      *
      * @return null|\Sulu\Bundle\Sales\OrderBundle\Api\Order
      */
-    public function getUserCart($user = null, $locale = null, $currency = null, $persist = false)
+    public function getUserCart(
+        $user = null,
+        $locale = null,
+        $currency = null,
+        $persist = false
+    )
     {
         // cart by session ID
         if (!$user) {
@@ -152,6 +175,10 @@ class CartManager extends BaseSalesManager
 
         $this->updateCartApiEntity($apiOrder);
 
+        // check if prices have changed
+        $hasChangedPrices = $this->updateCartPrices($apiOrder->getItems());
+        $apiOrder->setHasChangedPrices($hasChangedPrices);
+
         return $apiOrder;
     }
 
@@ -173,8 +200,24 @@ class CartManager extends BaseSalesManager
             // set grouped items
             $apiOrder->setSupplierItems(array_values($supplierItems));
         }
+
         // set total price
         $apiOrder->setTotalNetPrice($totalPrice);
+    }
+
+    /**
+     * Updates changed prices
+     *
+     * @param $items
+     * @return bool
+     */
+    public function updateCartPrices($items)
+    {
+        // set prices to changed
+        $hasChanged = $this->priceCalculation->setPricesOfChanged($items);
+        $this->em->flush();
+
+        return $hasChanged;
     }
 
     /**
@@ -192,8 +235,45 @@ class CartManager extends BaseSalesManager
         $cart = $this->getUserCart($user, $locale);
         $userId = $user ? $user->getId() : null;
         $this->orderManager->save($data, $locale, $userId, $cart->getId());
-        
+
         return $cart;
+    }
+
+    /**
+     * Submits an order
+     *
+     * @param $user
+     * @param $locale
+     * @param bool $orderWasSubmitted
+     * @return null|ApiOrder
+     * @throws OrderException
+     * @throws \Sulu\Component\Rest\Exception\EntityNotFoundException
+     */
+    public function submit($user, $locale, &$orderWasSubmitted = true)
+    {
+        $orderWasSubmitted = true;
+
+        $cart = $this->getUserCart($user, $locale);
+        if ($cart->hasChangedPrices()) {
+            $orderWasSubmitted = false;
+
+            return $cart;
+        } else {
+            if (count($cart->getItems()) < 1) {
+                throw new OrderException('Empty Cart');
+            }
+
+            // change status of order to confirmed
+            $this->orderManager->convertStatus($cart, OrderStatus::STATUS_CONFIRMED);
+
+            // send confirmation email
+            $this->sendConfirmationEmail($user->getContact()->getMainEmail(), $cart);
+        }
+
+        // flush on success
+        $this->em->flush();
+
+        return $this->getUserCart($user, $locale);
     }
 
     /**
@@ -353,6 +433,14 @@ class CartManager extends BaseSalesManager
         // get address from contact and account
         $contact = $user->getContact();
         $account = $contact->getMainAccount();
+        $cart->setContact($contact);
+        $cart->setAccount($account);
+        
+        /** Account $account */
+        if ($account && $account->getResponsiblePerson()) {
+            $cart->setResponsibleContact($account->getResponsiblePerson());
+        }
+
         $addressSource = $contact;
         if ($account) {
             $addressSource = $account;
@@ -373,7 +461,7 @@ class CartManager extends BaseSalesManager
             $cart->setDeliveryAddress($deliveryOrderAddress);
         }
 
-        // TODO:
+        // TODO: anonymous order
         if ($user) {
             $name = $user->getContact()->getFullName();
         } else {
@@ -381,7 +469,7 @@ class CartManager extends BaseSalesManager
         }
         $cart->setCustomerName($name);
 
-        $this->orderManager->convertStatus($cart, OrderStatus::STATUS_IN_CART);
+        $this->orderManager->convertStatus($cart, OrderStatus::STATUS_IN_CART, false, $persist);
 
         if ($persist) {
             $this->em->persist($cart);
@@ -414,5 +502,47 @@ class CartManager extends BaseSalesManager
             'totalPriceFormatted' => $cart->getTotalNetPriceFormatted(),
             'currency' => $cart->getCurrency()
         );
+    }
+
+    /**
+     * @param $recipient
+     * @param $apiOrder
+     * @return bool
+     */
+    public function sendConfirmationEmail($recipient, $apiOrder)
+    {
+        $tmplData = array(
+            'order' => $apiOrder
+        );
+
+        $template = $this->twig->loadTemplate('SuluSalesOrderBundle:Emails:order.confirmation.twig');
+        $subject = $template->renderBlock('subject', $tmplData);
+
+        $emailBodyText = $template->renderBlock('body_text', $tmplData);
+        $emailBodyHtml = $template->renderBlock('body_html', $tmplData);
+
+        $pdf = $this->pdfManager->createOrderConfirmation($apiOrder);
+        $pdfFileName = $this->pdfManager->getPdfName($apiOrder);
+
+        if ($recipient) {
+            // now send mail
+            $attachment = \Swift_Attachment::newInstance()
+                ->setFilename($pdfFileName)
+                ->setContentType('application/pdf')
+                ->setBody($pdf);
+
+            /** @var \Swift_Message $message */
+            $message = \Swift_Message::newInstance()
+                ->setSubject($subject)
+                ->setFrom($recipient)
+                ->setTo($recipient)
+                ->setBody($emailBodyText, 'text/plain')
+                ->addPart($emailBodyHtml, 'text/html')
+                ->attach($attachment);
+
+            return $this->mailer->send($message);
+        }
+
+        return false;
     }
 }

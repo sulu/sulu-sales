@@ -2,7 +2,7 @@
 {% import "PoolAlpinBaseBundle:Default:pdf-macros.html.twig" as macros %}
 
 {% block recipient_business_info %}
-    {% if order.getAccount().getUid() %}
+    {% if order.getAccount() and order.getAccount().getUid() %}
         UID: {{ order.getAccount().getUid() |default('-') }} |
         TEL: {{ order.getAccount().getMainPhone() |default('-') }}
     {% endif %}
@@ -44,10 +44,12 @@
             Kundennummer:<br>
             {{ order.getAccountNumber() |default('-') }}
         </p>
+        {% if order.getOrderDate() %}
         <p>
             Bestelldatum:<br/>
             {{ order.getOrderDate().date |date('d.m.Y') }}
         </p>
+        {% endif %}
     </div>
 {% endblock %}
 
@@ -75,14 +77,14 @@
 
 {% block productlist_items %}
     {% for item in itemApiEntities %}
-        {{ macros.item(loop.index, item, website_locale) }}
+        {{ macros.item(loop.index, item) }}
     {% endfor %}
 {% endblock %}
 
 {% block productlist_footer_shippingcost_value %}
-    {{ orderApiEntity.getDeliveryCostFormatted(website_locale) |default('-') }}
+    {{ orderApiEntity.getDeliveryCostFormatted() |default('-') }}
 {% endblock %}
 
 {% block productlist_footer_total_value %}
-    {{ orderApiEntity.getTotalNetPriceFormatted(website_locale) |default('-') }}
+    {{ orderApiEntity.getTotalNetPriceFormatted() |default('-') }}
 {% endblock %}

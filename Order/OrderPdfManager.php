@@ -15,26 +15,16 @@ use \Sulu\Bundle\Sales\OrderBundle\Api\Order as ApiOrder;
 class OrderPdfManager
 {
     /**
-     * @var string
-     */
-    protected $websiteLocale;
-
-    /**
      * @var PdfManager
      */
     protected $pdfManager;
 
     /**
      * @param PdfManager $pdfManager
-     * @param $websiteLocale
      */
-    public function __construct(
-        PdfManager $pdfManager,
-        $websiteLocale
-    )
+    public function __construct(PdfManager $pdfManager)
     {
         $this->pdfManager = $pdfManager;
-        $this->websiteLocale = $websiteLocale;
     }
 
     /**
@@ -50,36 +40,29 @@ class OrderPdfManager
 
     /**
      * @param ApiOrder $apiOrder
-     * @param $baseUrl
      * @return file
      */
-    public function createOrderConfirmation(ApiOrder $apiOrder, $baseUrl)
+    public function createOrderConfirmation(ApiOrder $apiOrder)
     {
         $order = $apiOrder->getEntity();
 
         $data = array(
-            'baseUrl' => $baseUrl,
             'recipient' => $order->getDeliveryAddress(),
             'responsibleContact' => $order->getResponsibleContact(),
             'deliveryAddress' => $order->getInvoiceAddress(),
             'order' => $order,
             'orderApiEntity' => $apiOrder,
             'itemApiEntities' => $apiOrder->getItems(),
-            'website_locale' => $this->websiteLocale
         );
 
         $header = $this->pdfManager->renderTemplate(
             'PoolAlpinBaseBundle:Default:pdf-base-header.html.twig',
-            array(
-                'baseUrl' => $baseUrl,
-            )
+            array()
         );
 
         $footer = $this->pdfManager->renderTemplate(
             'PoolAlpinBaseBundle:Default:pdf-base-footer.html.twig',
-            array(
-                'baseUrl' => $baseUrl,
-            )
+            array()
         );
 
         $pdf = $this->pdfManager->convertToPdf(

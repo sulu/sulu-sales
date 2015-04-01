@@ -1,0 +1,26 @@
+{% trans_default_domain "order_confirmation_email" %}
+
+{% block subject %}{% trans with {'%number%': order.number} %}Subject{% endtrans %}{% endblock %}
+
+{% block body_html %}
+    <html>
+    <head>
+        <style type="text/css">
+            body {
+                font-family: Helvetica, Arial;
+            }
+        </style>
+    </head>
+    <body>
+
+    {% trans %}Thank you for your order{% endtrans %}
+
+    </body>
+    </html>
+{% endblock %}
+
+{% block body_text %}
+    {% spaceless %}
+        {% trans %}Thank you for your order{% endtrans %}
+    {% endspaceless %}
+{% endblock %}

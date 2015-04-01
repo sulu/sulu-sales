@@ -36,6 +36,8 @@ class Order extends ApiWrapper implements SalesDocument
      */
     private $groupedItems = array();
 
+    private $hasChangedPrices = false;
+
     /**
      * @param OrderEntity $order The order to wrap
      * @param string $locale The locale of this order
@@ -882,6 +884,20 @@ class Order extends ApiWrapper implements SalesDocument
     }
 
     /**
+     * @VirtualProperty
+     * @SerializedName("deliveryCostFormatted")
+     *
+     * @return string
+     * @Groups({"cart"})
+     */
+    public function getDeliveryCostFormatted($locale = null)
+    {
+        $formatter = $this->getFormatter($locale);
+
+        return $formatter->format((float)$this->entity->getDeliveryCost());
+    }
+
+    /**
      * @param DateTime
      *
      * @return Order
@@ -985,5 +1001,29 @@ class Order extends ApiWrapper implements SalesDocument
         $formatter->setAttribute(\NumberFormatter::MIN_FRACTION_DIGITS, 2);
         $formatter->setAttribute(\NumberFormatter::DECIMAL_ALWAYS_SHOWN, 1);
         return $formatter;
+    }
+
+    /**
+     * @return bool
+     * @VirtualProperty
+     * @SerializedName("hasChangedPrices")
+     * @Groups({"cart"})
+     */
+    public function hasChangedPrices()
+    {
+        return $this->hasChangedPrices;
+    }
+
+    /**
+     * set changed prices
+     *
+     * @param $hasChangedPrices
+     * @return $this
+     */
+    public function setHasChangedPrices($hasChangedPrices)
+    {
+        $this->hasChangedPrices = $hasChangedPrices;
+
+        return $this;
     }
 }

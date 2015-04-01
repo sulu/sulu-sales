@@ -354,9 +354,10 @@ class OrderManager
      * @param Order $order
      * @param $statusId
      * @param bool $flush
+     * @param bool $persist
      * @throws \Sulu\Component\Rest\Exception\EntityNotFoundException
      */
-    public function convertStatus($order, $statusId, $flush = false)
+    public function convertStatus($order, $statusId, $flush = false, $persist = true)
     {
         if ($order instanceof Order) {
             $order = $order->getEntity();
@@ -391,7 +392,9 @@ class OrderManager
         }
         $orderActivity->setStatusTo($statusEntity);
         $orderActivity->setCreated(new \DateTime());
-        $this->em->persist($orderActivity);
+        if ($persist) {
+            $this->em->persist($orderActivity);
+        }
 
         // BITMASK
         $currentBitmaskStatus = $order->getBitmaskStatus();
