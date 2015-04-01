@@ -20,6 +20,7 @@ use Sulu\Bundle\ContactBundle\Entity\TermsOfDelivery;
 use Sulu\Bundle\Sales\CoreBundle\Entity\Item as ItemEntity;
 use Sulu\Bundle\Sales\CoreBundle\Item\Exception\ItemNotFoundException;
 use Sulu\Bundle\Sales\CoreBundle\Item\ItemManager;
+use Sulu\Bundle\Sales\CoreBundle\Pricing\GroupedItemsPriceCalculatorInterface;
 use Sulu\Bundle\Sales\OrderBundle\Entity\OrderActivityLog;
 use Sulu\Bundle\Sales\CoreBundle\Entity\OrderAddress;
 use Sulu\Bundle\Sales\OrderBundle\Entity\OrderRepository;
@@ -102,6 +103,11 @@ class OrderManager
     protected $session;
 
     /**
+     * @var GroupedItemsPriceCalculatorInterface
+     */
+    private $priceCalculator;
+
+    /**
      * constructor
      *
      * @param ObjectManager $em
@@ -118,7 +124,8 @@ class OrderManager
         ItemManager $itemManager,
         EntityRepository $orderStatusRepository,
         EntityRepository $orderTypeRepository,
-        SessionInterface $session
+        SessionInterface $session,
+        GroupedItemsPriceCalculatorInterface $priceCalculator
     ) {
         $this->orderRepository = $orderRepository;
         $this->userRepository = $userRepository;
@@ -127,6 +134,7 @@ class OrderManager
         $this->orderStatusRepository = $orderStatusRepository;
         $this->orderTypeRepository = $orderTypeRepository;
         $this->session = $session;
+        $this->priceCalculator = $priceCalculator;
     }
 
     /**
@@ -276,11 +284,33 @@ class OrderManager
         $order->setChanged(new DateTime());
         $order->setChanger($user);
 
+        $this->processApiEntity($order);
+
         if ($flush) {
             $this->em->flush();
         }
 
         return $order;
+    }
+
+    /**
+     * @param Order $apiOrder
+     */
+    public function processApiEntity(Order $apiOrder)
+    {
+        $items = $apiOrder->getItems();
+
+        // perform price calucaltion
+        $prices = $supplierItems = null;
+        $totalPrice = $this->priceCalculator->calculate($items, $prices, $supplierItems, true);
+
+        if ($supplierItems) {
+            // set grouped items
+            $apiOrder->setSupplierItems(array_values($supplierItems));
+        }
+
+        // set total price
+        $apiOrder->setTotalNetPrice($totalPrice);
     }
 
     /**
@@ -503,7 +533,9 @@ class OrderManager
         $order = $this->orderRepository->findByIdAndLocale($id, $locale);
 
         if ($order) {
-            return new Order($order, $locale);
+            $order = new Order($order, $locale);
+            $this->processApiEntity($order);
+            return $order;
         } else {
             return null;
         }
@@ -527,6 +559,7 @@ class OrderManager
                 $order,
                 function (&$order) use ($locale) {
                     $order = new Order($order, $locale);
+                    $this->processApiEntity($order);
                 }
             );
         }
