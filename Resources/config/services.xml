@@ -58,6 +58,7 @@
             <argument type="service" id="sulu_sales_order.order_status_repository" />
             <argument type="service" id="sulu_sales_order.order_type_repository" />
             <argument type="service" id="session" />
+            <argument type="service" id="sulu_sales_core.grouped_price_calculator" />
         </service>
 
         <service id="sulu_sales_order.cart_manager" class="%sulu_sales_order.cart_manager.class%">
