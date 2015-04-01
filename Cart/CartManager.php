@@ -215,7 +215,9 @@ class CartManager extends BaseSalesManager
     {
         // set prices to changed
         $hasChanged = $this->priceCalculation->setPricesOfChanged($items);
-        $this->em->flush();
+        if ($hasChanged) {
+            $this->em->flush();
+        }
 
         return $hasChanged;
     }
