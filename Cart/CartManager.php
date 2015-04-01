@@ -175,7 +175,6 @@ class CartManager extends BaseSalesManager
         $this->orderManager->updateApiEntity($apiOrder);
 
         if ($updatePrices) {
-            // check if prices have changed
             $this->updateCartPrices($apiOrder->getItems());
         }
 

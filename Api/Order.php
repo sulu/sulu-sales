@@ -26,7 +26,16 @@ use DateTime;
  */
 class Order extends ApiWrapper implements SalesDocument
 {
+    /**
+     * Define permissions for front-end
+     * @var array
+     */
     private $permissions = array();
+
+    /**
+     * Define workflows for front-end
+     * @var array
+     */
     private $workflows = array();
 
     /**
@@ -36,14 +45,22 @@ class Order extends ApiWrapper implements SalesDocument
      */
     private $groupedItems = array();
 
+    /**
+     * Defines if changes of items have been changed since last view
+     * @var bool
+     */
     private $hasChangedPrices = false;
 
     /**
-     * @var
+     * Cache for items
+     *
+     * @var array
      */
     private $items;
 
     /**
+     * Indicated if items have been changed
+     *
      * @var bool
      */
     private $itemsChanged = false;
@@ -677,7 +694,7 @@ class Order extends ApiWrapper implements SalesDocument
      */
     public function getItems()
     {
-        if (!$this->itemsChanged && $this->items) {
+        if (!$this->itemsChanged && $this->items && count($this->items) === count($this->entity->getItems())) {
             return $this->items;
         } else {
             $this->itemsChanged = false;
