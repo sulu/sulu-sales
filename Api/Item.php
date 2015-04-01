@@ -28,6 +28,24 @@ class Item extends ApiWrapper implements CalculableBulkPriceItemInterface, Calcu
     public static $productEntity = 'Sulu\Bundle\ProductBundle\Api\Product';
 
     /**
+     * indicates if prices have been changed
+     * @var bool
+     */
+    protected $priceChanged = false;
+
+    /**
+     * price value before change
+     * @var float
+     */
+    protected $priceChangeFrom;
+
+    /**
+     * price value after change (current price)
+     * @var float
+     */
+    protected $priceChangeTo;
+
+    /**
      * @param Entity $item The item to wrap
      * @param string $locale The locale of this item
      */
@@ -683,5 +701,35 @@ class Item extends ApiWrapper implements CalculableBulkPriceItemInterface, Calcu
             );
         }
         return null;
+    }
+
+    /**
+     * Get price changes
+     * @return array|null
+     * @VirtualProperty
+     * @SerializedName("priceChange")
+     * @Groups({"cart"})
+     */
+    public function getPriceChange()
+    {
+        if ($this->priceChanged) {
+            return array(
+                'from' => $this->priceChangeFrom,
+                'to' => $this->priceChangeTo
+            );
+        }
+
+        return null;
+    }
+
+    /**
+     * @param float $from
+     * @param float $to
+     */
+    public function setPriceChange($from, $to)
+    {
+        $this->priceChanged = true;
+        $this->priceChangeFrom = $from;
+        $this->priceChangeTo = $to;
     }
 }

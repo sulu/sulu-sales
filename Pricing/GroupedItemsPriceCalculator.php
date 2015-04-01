@@ -26,18 +26,12 @@ class GroupedItemsPriceCalculator implements GroupedItemsPriceCalculatorInterfac
     }
 
     /**
-     * caclucaltes the overall total price of an items array and prices per price group
-     *
-     * @param $items
-     * @param array $groupPrices Will be filled with total prices per group
-     *
-     * @return int
+     * {@inheritdoc}
      */
     public function calculate(
         $items,
         &$groupPrices = array(),
         &$groupedItems = array(),
-        $setPrice = false,
         $currency = 'EUR'
     )
     {
@@ -56,6 +50,23 @@ class GroupedItemsPriceCalculator implements GroupedItemsPriceCalculatorInterfac
         }
 
         return $overallPrice;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setPricesOfChanged($items)
+    {
+        $hasChanged = false;
+        foreach ($items as $item) {
+            $priceChange = $item->getPriceChange();
+            if ($priceChange) {
+                $item->setPrice($priceChange['to']);
+                $hasChanged = true;
+            }
+        }
+
+        return $hasChanged;
     }
 
     /**

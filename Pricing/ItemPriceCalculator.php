@@ -34,6 +34,7 @@ class ItemPriceCalculator
      * caclucaltes the overall total price of an item
      * @param $item
      * @param string $currency
+     * @param bool $useProductsPrice
      * @return int
      * @throws PriceCalculationException
      */
@@ -53,6 +54,10 @@ class ItemPriceCalculator
             $price = $item->getPrice();
         }
         $this->validateNotNull('price', $price);
+
+        if ($item->getPrice() && $item->getPrice() !== $price) {
+            $item->setPriceChange($item->getPrice(), $price);
+        }
 
         $itemPrice = $price * $item->getCalcQuantity();
 
@@ -115,10 +120,12 @@ class ItemPriceCalculator
     /**
      * format price
      *
-     * @param $price
+     * @param $item
      * @param $currency
-     * @param string $locale
+     * @param bool $useProductPrice
      * @return String
+     * @internal param $price
+     * @internal param string $locale
      */
     public function getItemPrice($item, $currency, $useProductPrice = true)
     {
@@ -144,6 +151,5 @@ class ItemPriceCalculator
     private function getCurrency($currency)
     {
         return $currency?: $this->defaultLocale;
-        
     }
 }
