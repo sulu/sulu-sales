@@ -21,6 +21,7 @@ class AppKernel extends SuluTestKernel
         );
 
         $bundles = array_merge($bundles, $extraBundles);
+
         return $bundles;
     }
 

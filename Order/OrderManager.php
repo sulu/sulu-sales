@@ -126,7 +126,8 @@ class OrderManager
         EntityRepository $orderTypeRepository,
         SessionInterface $session,
         GroupedItemsPriceCalculatorInterface $priceCalculator
-    ) {
+    )
+    {
         $this->orderRepository = $orderRepository;
         $this->userRepository = $userRepository;
         $this->em = $em;
@@ -157,9 +158,10 @@ class OrderManager
         $id = null,
         $statusId = null,
         $flush = true
-    ) {
+    )
+    {
         $isNewOrder = !$id;
-        
+
         if (!$isNewOrder) {
             $order = $this->findByIdAndLocale($id, $locale);
 
@@ -190,8 +192,8 @@ class OrderManager
         );
         $this->setDate(
             $data,
-            'orderDate', 
-            $order->getOrderDate(), 
+            'orderDate',
+            $order->getOrderDate(),
             array($order, 'setOrderDate')
         );
 
@@ -275,7 +277,7 @@ class OrderManager
                 $account
             );
         }
-        
+
         // handle items
         if (!$this->processItems($data, $order, $locale, $userId)) {
             throw new OrderException('Error while processing items');
@@ -370,12 +372,14 @@ class OrderManager
         $this->em->flush();
     }
 
-    public function getOrderTypeEntityById($typeId) {
+    public function getOrderTypeEntityById($typeId)
+    {
         // get desired status
-        $typeEntity= $this->orderTypeRepository->find($typeId);
+        $typeEntity = $this->orderTypeRepository->find($typeId);
         if (!$typeEntity) {
             throw new EntityNotFoundException($typeEntity, $typeId);
         }
+
         return $typeEntity;
     }
 
@@ -392,7 +396,7 @@ class OrderManager
         if ($order instanceof Order) {
             $order = $order->getEntity();
         }
-        
+
         // get current status
         $currentStatus = $order->getStatus();
         if ($currentStatus) {
@@ -509,6 +513,7 @@ class OrderManager
         if ($locale !== $this->currentLocale) {
             $this->initializeFieldDescriptors($locale);
         }
+
         return $this->fieldDescriptors;
     }
 
@@ -535,6 +540,7 @@ class OrderManager
         if ($order) {
             $order = new Order($order, $locale);
             $this->updateApiEntity($order);
+
             return $order;
         } else {
             return null;
@@ -599,7 +605,7 @@ class OrderManager
             if (is_array($type) && isset($type['id'])) {
                 // if provided as array
                 $typeId = $type['id'];
-            } else if(is_numeric($type)) {
+            } else if (is_numeric($type)) {
                 // if is numeric
                 $typeId = $type;
             } else {
@@ -800,6 +806,7 @@ class OrderManager
             }
             $addCallback($contact);
         }
+
         return $contact;
     }
 
@@ -977,7 +984,6 @@ class OrderManager
             }
             $order->setTermsOfPayment($terms);
             $order->setTermsOfPaymentContent($terms->getTerms());
-
         } else {
             $order->setTermsOfPayment(null);
             $order->setTermsOfPaymentContent(null);
@@ -986,6 +992,7 @@ class OrderManager
         if ($termsOfPaymentContentData) {
             $order->setTermsOfPaymentContent($termsOfPaymentContentData);
         }
+
         return $terms;
     }
 
@@ -1009,10 +1016,12 @@ class OrderManager
                 throw new OrderDependencyNotFoundException(static::$accountEntityName, $accountData['id']);
             }
             $order->setAccount($account);
+
             return $account;
         } else {
             $order->setAccount(null);
         }
+
         return null;
     }
 
@@ -1027,6 +1036,7 @@ class OrderManager
     public function addItem($itemData, $locale, $userId, $order)
     {
         $item = $this->itemManager->save($itemData, $locale, $userId);
+
         return $order->addItem($item->getEntity());
     }
 
@@ -1067,7 +1077,7 @@ class OrderManager
      * @throws ItemNotFoundException
      * @throws OrderException
      */
-    public function getOrderItemById($itemId, OrderEntity $order, &$hasMultiple = false) 
+    public function getOrderItemById($itemId, OrderEntity $order, &$hasMultiple = false)
     {
         $item = $this->itemManager->findEntityById($itemId);
         if (!$item) {
@@ -1089,10 +1099,10 @@ class OrderManager
         if (!$match) {
             throw new OrderException('User not owner of order');
         }
-        
+
         return $item;
     }
-    
+
     /**
      * processes items defined in an order and creates item entities
      * @param $data
@@ -1124,6 +1134,7 @@ class OrderManager
 
                 $update = function ($item, $matchedEntry) use ($locale, $userId, $order) {
                     $itemEntity = $this->updateItem($item, $matchedEntry, $locale, $userId);
+
                     return $itemEntity ? true : false;
                 };
 
@@ -1143,6 +1154,7 @@ class OrderManager
         } catch (\Exception $e) {
             throw new OrderException('Error while creating items: ' . $e->getMessage());
         }
+
         return $result;
     }
 }
