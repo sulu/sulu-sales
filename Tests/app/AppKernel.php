@@ -9,10 +9,18 @@ class AppKernel extends SuluTestKernel
     public function registerBundles()
     {
         $bundles = parent::registerBundles();
-        $bundles[] = new \Sulu\Bundle\Sales\OrderBundle\SuluSalesOrderBundle();
-        $bundles[] = new \Sulu\Bundle\Sales\CoreBundle\SuluSalesCoreBundle();
-        $bundles[] = new \Sulu\Bundle\ProductBundle\SuluProductBundle();
+        $extraBundles = array(
+            new \Sulu\Bundle\Sales\OrderBundle\SuluSalesOrderBundle(),
+            new \Sulu\Bundle\Sales\CoreBundle\SuluSalesCoreBundle(),
+            new \Sulu\Bundle\ProductBundle\SuluProductBundle(),
+            // test mails
+            new \Symfony\Bundle\SwiftmailerBundle\SwiftmailerBundle(),
+            // test pdf
+            new Knp\Bundle\SnappyBundle\KnpSnappyBundle(),
+            new Massive\Bundle\PdfBundle\MassivePdfBundle(),
+        );
 
+        $bundles = array_merge($bundles, $extraBundles);
         return $bundles;
     }
 
