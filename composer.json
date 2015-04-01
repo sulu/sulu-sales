@@ -11,6 +11,12 @@
             "homepage": "https://github.com/sulu-cmf/SuluSalesOrderBundle/contributors"
         }
     ],
+    "repositories": [
+      {
+        "type": "vcs",
+        "url": "https://github.com/massiveart/sulu.git"
+      }
+    ],
     "require": {
         "php": ">=5.5",
         "doctrine/orm": "2.4.*",
@@ -29,6 +35,8 @@
         "symfony-cmf/routing-bundle": "1.2.*",
         "symfony/symfony": "2.6.*",
 
+        "massive/pdf-bundle": "@dev",
+
         "sulu/sulu": "dev-develop",
         "sulu/admin-bundle": "dev-develop",
         "sulu/product-bundle": "dev-develop",
@@ -41,6 +49,7 @@
         "sulu/media-bundle": "dev-develop"
     },
     "require-dev": {
+        "knplabs/knp-snappy-bundle": "dev-master",
         "doctrine/doctrine-fixtures-bundle": "2.2.*",
         "doctrine/orm": "~2.2,>=2.2.3",
         "guzzle/plugin-mock": "3.9.*",

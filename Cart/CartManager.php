@@ -171,38 +171,13 @@ class CartManager extends BaseSalesManager
         $currency = $currency ?: $this->defaultCurrency;
         $apiOrder = new ApiOrder($cart, $locale, $currency);
 
-        // TODO: calculate difference to previous cart
-
-        $this->updateCartApiEntity($apiOrder);
+        $this->orderManager->updateApiEntity($apiOrder);
 
         // check if prices have changed
         $hasChangedPrices = $this->updateCartPrices($apiOrder->getItems());
         $apiOrder->setHasChangedPrices($hasChangedPrices);
 
         return $apiOrder;
-    }
-
-    /**
-     * Updates Cart Api-Entity
-     * Calculates Prices of and set supplier-items
-     *
-     * @param \Sulu\Bundle\Sales\OrderBundle\Api\Order $apiOrder
-     */
-    protected function updateCartApiEntity(ApiOrder $apiOrder)
-    {
-        $items = $apiOrder->getItems();
-
-        // perform price calucaltion
-        $prices = $supplierItems = null;
-        $totalPrice = $this->priceCalculation->calculate($items, $prices, $supplierItems, true);
-
-        if ($supplierItems) {
-            // set grouped items
-            $apiOrder->setSupplierItems(array_values($supplierItems));
-        }
-
-        // set total price
-        $apiOrder->setTotalNetPrice($totalPrice);
     }
 
     /**
@@ -360,7 +335,7 @@ class CartManager extends BaseSalesManager
         $userId = $user ? $user->getId() : null;
         $this->orderManager->addItem($data, $locale, $userId, $cart);
 
-        $this->updateCartApiEntity($cart);
+        $this->orderManager->updateApiEntity($cart);
 
         return $cart;
     }
@@ -383,7 +358,7 @@ class CartManager extends BaseSalesManager
 
         $this->orderManager->updateItem($item, $data, $locale, $userId);
 
-        $this->updateCartApiEntity($cart);
+        $this->orderManager->updateApiEntity($cart);
 
         return $cart;
     }
@@ -404,7 +379,7 @@ class CartManager extends BaseSalesManager
 
         $this->orderManager->removeItem($item, $cart->getEntity(), !$hasMultiple);
 
-        $this->updateCartApiEntity($cart);
+        $this->orderManager->updateApiEntity($cart);
 
         return $cart;
     }
@@ -435,7 +410,7 @@ class CartManager extends BaseSalesManager
         $account = $contact->getMainAccount();
         $cart->setContact($contact);
         $cart->setAccount($account);
-        
+
         /** Account $account */
         if ($account && $account->getResponsiblePerson()) {
             $cart->setResponsibleContact($account->getResponsiblePerson());
