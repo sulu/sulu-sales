@@ -4,11 +4,11 @@
         <body>
             <trans-unit id="1">
                 <source>Subject</source>
-                <target>Ihre Bestellung %number% is eingelangt</target>
+                <target>Your order %number% has been received</target>
             </trans-unit>
             <trans-unit id="2">
                 <source>Thank you for your order</source>
-                <target>Vielen Dank für Ihre Bestellung!</target>
+                <target>Thank you for your order!</target>
             </trans-unit>
         </body>
     </file>
