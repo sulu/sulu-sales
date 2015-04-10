@@ -1,6 +1,11 @@
 {% trans_default_domain "order_confirmation_email" %}
 
-{% block subject %}{% trans with {'%number%': order.number} %}Subject{% endtrans %}{% endblock %}
+{% block subject %}
+    {% trans with {
+        '%number%': order.number,
+        '%date%': order.orderDate|date('Y-m-d')|default('')
+    } %}Subject{% endtrans %}
+{% endblock %}
 
 {% block body_html %}
     <html>
@@ -13,6 +18,9 @@
     </head>
     <body>
 
+    <p>
+        <strong>{{ contact.getSalutation()|default('')}} {{ contact.getFullName() }},</strong>
+    </p>
     <p>
         {% trans %}Thank you for your order{% endtrans %}
     </p>
