@@ -499,15 +499,15 @@ class CartManager extends BaseSalesManager
         $emailBodyText = $template->renderBlock('body_text', $tmplData);
         $emailBodyHtml = $template->renderBlock('body_html', $tmplData);
 
-//        $pdf = $this->pdfManager->createOrderConfirmation($apiOrder);
-//        $pdfFileName = $this->pdfManager->getPdfName($apiOrder);
+        $pdf = $this->pdfManager->createOrderConfirmation($apiOrder);
+        $pdfFileName = $this->pdfManager->getPdfName($apiOrder);
 
         if ($recipient) {
             // now send mail
-//            $attachment = \Swift_Attachment::newInstance()
-//                ->setFilename($pdfFileName)
-//                ->setContentType('application/pdf')
-//                ->setBody($pdf);
+            $attachment = \Swift_Attachment::newInstance()
+                ->setFilename($pdfFileName)
+                ->setContentType('application/pdf')
+                ->setBody($pdf);
 
             /** @var \Swift_Message $message */
             $message = \Swift_Message::newInstance()
@@ -515,8 +515,8 @@ class CartManager extends BaseSalesManager
                 ->setFrom($recipient)
                 ->setTo($recipient)
                 ->setBody($emailBodyText, 'text/plain')
-                ->addPart($emailBodyHtml, 'text/html');
-//                ->attach($attachment);
+                ->addPart($emailBodyHtml, 'text/html')
+                ->attach($attachment);
 
             return $this->mailer->send($message);
         }
