@@ -10,6 +10,22 @@
                 <source>Thank you for your order</source>
                 <target>Thank you for your order!</target>
             </trans-unit>
+            <trans-unit id="3">
+                <source>label.telephone</source>
+                <target>Phone</target>
+            </trans-unit>
+            <trans-unit id="4">
+                <source>label.email</source>
+                <target>E-mail</target>
+            </trans-unit>
+            <trans-unit id="5">
+                <source>Your</source>
+                <target>Your</target>
+            </trans-unit>
+            <trans-unit id="6">
+                <source>default.salutation</source>
+                <target>Dear sir or madam</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>
