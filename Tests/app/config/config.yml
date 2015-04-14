@@ -4,3 +4,5 @@ doctrine:
         auto_mapping: true
         resolve_target_entities:
             Sulu\Bundle\ProductBundle\Entity\ProductInterface: Sulu\Bundle\ProductBundle\Entity\Product
+parameters:
+    mailer_from: test@test.com
