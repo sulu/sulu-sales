@@ -282,7 +282,6 @@ class OrderManager
 
         // set customer name
         $customerName = $account !== null ? $account->getName() : $contactFullName;
-
         if ($customerName) {
             $order->setCustomerName($customerName);
         }
