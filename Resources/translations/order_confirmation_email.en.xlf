@@ -3,12 +3,28 @@
     <file source-language="en" datatype="plaintext" original="file.ext">
         <body>
             <trans-unit id="1">
-                <source>Subject</source>
-                <target>Your order %number% has been received</target>
+                <source>subject</source>
+                <target>Order %number% from %date%</target>
             </trans-unit>
             <trans-unit id="2">
                 <source>Thank you for your order</source>
                 <target>Thank you for your order!</target>
+            </trans-unit>
+            <trans-unit id="3">
+                <source>label.telephone</source>
+                <target>Phone</target>
+            </trans-unit>
+            <trans-unit id="4">
+                <source>label.email</source>
+                <target>E-mail</target>
+            </trans-unit>
+            <trans-unit id="5">
+                <source>your</source>
+                <target>Your</target>
+            </trans-unit>
+            <trans-unit id="6">
+                <source>default.salutation</source>
+                <target>Dear sir or madam</target>
             </trans-unit>
         </body>
     </file>

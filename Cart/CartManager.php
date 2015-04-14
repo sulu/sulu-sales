@@ -98,6 +98,11 @@ class CartManager extends BaseSalesManager
     protected $mailer;
 
     /**
+     * @var string
+     */
+    protected $mailerFrom;
+
+    /**
      * @param ObjectManager $em
      * @param SessionInterface $session
      * @param OrderRepository $orderRepository
@@ -114,7 +119,8 @@ class CartManager extends BaseSalesManager
         $accountManager,
         \Twig_Environment $twig,
         OrderPdfManager $pdfManager,
-        \Swift_Mailer $mailer
+        \Swift_Mailer $mailer,
+        $mailerFrom
     )
     {
         $this->em = $em;
@@ -127,6 +133,7 @@ class CartManager extends BaseSalesManager
         $this->twig = $twig;
         $this->pdfManager = $pdfManager;
         $this->mailer = $mailer;
+        $this->mailerFrom = $mailerFrom;
     }
 
     /**
@@ -490,7 +497,8 @@ class CartManager extends BaseSalesManager
     public function sendConfirmationEmail($recipient, $apiOrder)
     {
         $tmplData = array(
-            'order' => $apiOrder
+            'order' => $apiOrder,
+            'contact' => $apiOrder->getEntity()->getContact()
         );
 
         $template = $this->twig->loadTemplate('SuluSalesOrderBundle:Emails:order.confirmation.twig');
@@ -512,7 +520,7 @@ class CartManager extends BaseSalesManager
             /** @var \Swift_Message $message */
             $message = \Swift_Message::newInstance()
                 ->setSubject($subject)
-                ->setFrom($recipient)
+                ->setFrom($this->mailerFrom)
                 ->setTo($recipient)
                 ->setBody($emailBodyText, 'text/plain')
                 ->addPart($emailBodyHtml, 'text/html')
