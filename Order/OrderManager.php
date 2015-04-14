@@ -255,6 +255,7 @@ class OrderManager
         if (!$isNewOrder && !$contact) {
             $contact = $order->getEntity()->getContact();
         }
+        $contactFullName = null;
         if ($contact) {
             $contactFullName = $contact->getFullName();
         }
