@@ -255,13 +255,12 @@ class OrderManager
         if (!$isNewOrder && !$contact) {
             $contact = $order->getEntity()->getContact();
         }
-        $contactFullName = $contact->getFullName();
-        if (isset($data['invoiceAddress'])) {
-            // set customer name to account if set, otherwise to contact
+        if ($contact) {
+            $contactFullName = $contact->getFullName();
         }
 
         if (isset($data['invoiceAddress'])) {
-            // get full name from invoice address
+            // set customer name to account if set, otherwise to contact
             $contactFullName = $this->getContactData($data['invoiceAddress'], $contact)['fullName'];
 
             // set OrderAddress data
@@ -280,8 +279,12 @@ class OrderManager
                 $account
             );
         }
+
+        // set customer name
         $customerName = $account !== null ? $account->getName() : $contactFullName;
-        $order->setCustomerName($customerName);
+        if ($customerName) {
+            $order->setCustomerName($customerName);
+        }
 
         // handle items
         if (!$this->processItems($data, $order, $locale, $userId)) {
