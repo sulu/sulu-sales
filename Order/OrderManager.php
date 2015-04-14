@@ -330,6 +330,9 @@ class OrderManager
             $apiOrder->setSupplierItems($supplierItems);
         }
 
+        $this->createMediaForItems($items, $locale);
+
+        // check if any price in cart has changed
         $hasChangedPrices = false;
         foreach ($items as $item) {
             if ($item->getPriceChange()) {
