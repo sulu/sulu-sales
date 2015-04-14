@@ -492,7 +492,7 @@ class CartManager extends BaseSalesManager
     /**
      * @param $recipient
      * @param $apiOrder
-     * @return bool<
+     * @return bool
      */
     public function sendConfirmationEmail($recipient, $apiOrder)
     {

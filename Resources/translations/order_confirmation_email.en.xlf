@@ -3,7 +3,7 @@
     <file source-language="en" datatype="plaintext" original="file.ext">
         <body>
             <trans-unit id="1">
-                <source>Subject</source>
+                <source>subject</source>
                 <target>Order %number% from %date%</target>
             </trans-unit>
             <trans-unit id="2">
@@ -19,7 +19,7 @@
                 <target>E-mail</target>
             </trans-unit>
             <trans-unit id="5">
-                <source>Your</source>
+                <source>your</source>
                 <target>Your</target>
             </trans-unit>
             <trans-unit id="6">

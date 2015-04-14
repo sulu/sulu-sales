@@ -3,7 +3,7 @@
     <file source-language="de" datatype="plaintext" original="file.ext">
         <body>
             <trans-unit id="1">
-                <source>Subject</source>
+                <source>subject</source>
                 <target>POOL-ALPIN Bestellung %number% vom %date%</target>
             </trans-unit>
             <trans-unit id="2">
@@ -19,7 +19,7 @@
                 <target>E-mail</target>
             </trans-unit>
             <trans-unit id="5">
-                <source>Your</source>
+                <source>your</source>
                 <target>Ihr</target>
             </trans-unit>
             <trans-unit id="6">

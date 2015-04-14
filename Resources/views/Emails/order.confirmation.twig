@@ -4,7 +4,7 @@
     {% trans with {
         '%number%': order.number,
         '%date%': order.orderDate|date('d. m. Y.')|default('')
-    } %}Subject{% endtrans %}
+    } %}subject{% endtrans %}
 {% endblock %}
 
 {% block body_html %}
@@ -22,7 +22,7 @@
         {% if contact.getSalutation() %}
             {% set salutation = contact.getSalutation() %}
         {% else %}
-            {% set salutation =  'default.salutation'|trans %}
+            {% set salutation = 'default.salutation'|trans %}
         {% endif %}
 
         <strong>{{ salutation }} {{ contact.getFullName() }},</strong>
@@ -31,7 +31,7 @@
         {% trans %}Thank you for your order{% endtrans %}
     </p>
     <p>
-        {% trans %}Your{% endtrans %} POOL-ALPIN Team</br>
+        {% trans %}your{% endtrans %} POOL-ALPIN Team</br>
         {% trans %}label.telephone{% endtrans %}: 43 (0)5522/240 40 -108</br>
         {% trans %}label.email{% endtrans %}: office@pool-alpin.com</br>
     </p>
