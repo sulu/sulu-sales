@@ -179,7 +179,7 @@ class CartManager extends BaseSalesManager
         $currency = $currency ?: $this->defaultCurrency;
         $apiOrder = new ApiOrder($cart, $locale, $currency);
 
-        $this->orderManager->updateApiEntity($apiOrder);
+        $this->orderManager->updateApiEntity($apiOrder, $locale);
 
         if ($updatePrices) {
             $this->updateCartPrices($apiOrder->getItems());
@@ -345,7 +345,7 @@ class CartManager extends BaseSalesManager
         $userId = $user ? $user->getId() : null;
         $this->orderManager->addItem($data, $locale, $userId, $cart);
 
-        $this->orderManager->updateApiEntity($cart);
+        $this->orderManager->updateApiEntity($cart, $locale);
 
         return $cart;
     }
@@ -368,7 +368,7 @@ class CartManager extends BaseSalesManager
 
         $this->orderManager->updateItem($item, $data, $locale, $userId);
 
-        $this->orderManager->updateApiEntity($cart);
+        $this->orderManager->updateApiEntity($cart, $locale);
 
         return $cart;
     }
@@ -389,7 +389,7 @@ class CartManager extends BaseSalesManager
 
         $this->orderManager->removeItem($item, $cart->getEntity(), !$hasMultiple);
 
-        $this->orderManager->updateApiEntity($cart);
+        $this->orderManager->updateApiEntity($cart, $locale);
 
         return $cart;
     }
