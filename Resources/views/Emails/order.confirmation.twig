@@ -3,7 +3,7 @@
 {% block subject %}
     {% trans with {
         '%number%': order.number,
-        '%date%': order.orderDate|date('d. m. Y.')|default('')
+        '%date%': order.orderDate|date('d.m.Y.')|default('')
     } %}subject{% endtrans %}
 {% endblock %}
 
