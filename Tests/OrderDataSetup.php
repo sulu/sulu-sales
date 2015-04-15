@@ -44,7 +44,8 @@ use Sulu\Bundle\SecurityBundle\Entity\User;
 use Sulu\Bundle\TestBundle\Testing\SuluTestCase;
 use Symfony\Component\HttpKernel\Client;
 
-class OrderDataSetup {
+class OrderDataSetup
+{
 
     public $locale = 'en';
 
@@ -139,32 +140,32 @@ class OrderDataSetup {
      * @var EntityManager
      */
     protected $em;
-    
-    protected $productEntity;
 
+    protected $productEntity;
 
     public function __construct(
         EntityManager $entityManager,
         $productEntity = 'Sulu\Bundle\ProductBundle\Entity\Product'
-    ) {
+    )
+    {
         $this->productEntity = $productEntity;
-        
+
         $this->em = $entityManager;
 
         $this->loadFixtures();
         $this->setUpTestData();
     }
-    
+
     public function setupCartTests()
     {
         // set order to cart order
         $this->orderStatus = $this->em
             ->getRepository(static::$orderStatusEntityName)
             ->find(OrderStatus::STATUS_IN_CART);
-        
+
         $this->order->setStatus($this->orderStatus);
         $this->order->setSessionId('IamASessionKey');
-        
+
         $this->em->flush();
     }
 
@@ -174,7 +175,7 @@ class OrderDataSetup {
         $statusFixtures = new LoadOrderStatus();
         $statusFixtures->load($this->em);
     }
-    
+
     protected function setUpTestData()
     {
         // account
@@ -340,7 +341,7 @@ class OrderDataSetup {
         $this->product->setCreated(new DateTime());
         $this->product->setChanged(new DateTime());
         $this->product->setOrderUnit($orderUnit);
-        
+
         // product translation
         $this->productTranslation = new ProductTranslation();
         $this->productTranslation->setProduct($this->product);
@@ -368,14 +369,14 @@ class OrderDataSetup {
         $this->productPrice->setPrice(14.5);
         $this->productPrice->setProduct($this->product);
         $this->product->addPrice($this->productPrice);
-        
+
         $price2 = clone($this->productPrice);
         $price2->setProduct($this->product2);
         $price2->setPrice(15.5);
 
         $this->em->persist($price2);
         $this->product2->addPrice($price2);
-        
+
         // Item
         $this->item = new Item();
         $this->item->setName('Product1');
@@ -384,7 +385,7 @@ class OrderDataSetup {
         $this->item->setQuantityUnit('Pcs');
         $this->item->setUseProductsPrice(true);
         $this->item->setTax(20);
-        $this->item->setPrice(125.99);
+        $this->item->setPrice($this->productPrice->getPrice());
         $this->item->setDiscount(10);
         $this->item->setDescription('This is a description');
         $this->item->setWeight(15.8);
@@ -470,7 +471,7 @@ class OrderDataSetup {
         $this->em->persist($productTypeTranslation);
         $this->em->persist($productStatus);
         $this->em->persist($productStatusTranslation);
-        
+
         $this->em->flush();
     }
 }
