@@ -38,7 +38,7 @@ class CartManagerTest extends OrderTestBase
         // $cart is an ApiOrder, so get entity first
         $this->assertEquals($cart->getEntity(), $this->data->order);
     }
-    
+
     public function testGetCartBySessionId()
     {
         // TODO: fix mock of session
@@ -51,17 +51,17 @@ class CartManagerTest extends OrderTestBase
 
         $this->assertTrue(true);
     }
-    
+
     public function testGetNumberItemsAndTotalPrice()
     {
         $result = $this->getCartManager()->getNumberItemsAndTotalPrice($this->data->user, $this->data->locale);
-        
+
         $this->assertEquals($result['totalItems'], 1);
-        
+
         // calculate price 26.1
         $expectedPrice = $this->data->item->getQuantity() * $this->data->productPrice->getPrice();
         $expectedPrice -= ($expectedPrice / 100) * $this->data->item->getDiscount();
-        
+
         $this->assertEquals($result['totalPrice'], $expectedPrice);
     }
 

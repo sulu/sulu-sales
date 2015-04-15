@@ -230,10 +230,12 @@ class OrderDataSetup
         $this->contact->setFirstName('John');
         $this->contact->setLastName('Doe');
         $this->contact->setTitle($title);
+        $this->contact->setMainEmail('test@test.com');
         // contact
         $this->contact2 = new Contact();
         $this->contact2->setFirstName('Johanna');
         $this->contact2->setLastName('Dole');
+        $this->contact2->setMainEmail('test@test.com');
 
         $contact = new Contact();
         $contact->setFirstName('Max');
