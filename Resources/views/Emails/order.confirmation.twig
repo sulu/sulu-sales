@@ -21,8 +21,10 @@
     <p>
         {% if contact.getSalutation() %}
             {% set salutation = contact.getSalutation() %}
+            <strong>{{ salutation }} {{ contact.getFullName() }},</strong>
         {% else %}
             {% set salutation = 'default.salutation'|trans %}
+            <strong>{{ salutation }},</strong>
         {% endif %}
 
         <strong>{{ salutation }} {{ contact.getFullName() }},</strong>

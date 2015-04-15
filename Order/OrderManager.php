@@ -17,6 +17,7 @@ use Sulu\Bundle\ContactBundle\Entity\Account;
 use Sulu\Bundle\ContactBundle\Entity\Address;
 use Sulu\Bundle\ContactBundle\Entity\Contact;
 use Sulu\Bundle\ContactBundle\Entity\TermsOfDelivery;
+use Sulu\Bundle\ProductBundle\Product\ProductManagerInterface;
 use Sulu\Bundle\Sales\CoreBundle\Entity\Item as ItemEntity;
 use Sulu\Bundle\Sales\CoreBundle\Item\Exception\ItemNotFoundException;
 use Sulu\Bundle\Sales\CoreBundle\Item\ItemManager;
@@ -108,6 +109,11 @@ class OrderManager
     private $priceCalculator;
 
     /**
+     * @var ProductManagerInterface
+     */
+    private $productManager;
+
+    /**
      * constructor
      *
      * @param ObjectManager $em
@@ -125,7 +131,8 @@ class OrderManager
         EntityRepository $orderStatusRepository,
         EntityRepository $orderTypeRepository,
         SessionInterface $session,
-        GroupedItemsPriceCalculatorInterface $priceCalculator
+        GroupedItemsPriceCalculatorInterface $priceCalculator,
+        ProductManagerInterface $productManager
     )
     {
         $this->orderRepository = $orderRepository;
@@ -136,6 +143,7 @@ class OrderManager
         $this->orderTypeRepository = $orderTypeRepository;
         $this->session = $session;
         $this->priceCalculator = $priceCalculator;
+        $this->productManager = $productManager;
     }
 
     /**
@@ -295,7 +303,7 @@ class OrderManager
         $order->setChanged(new DateTime());
         $order->setChanger($user);
 
-        $this->updateApiEntity($order);
+        $this->updateApiEntity($order, $locale);
 
         if ($flush) {
             $this->em->flush();
@@ -307,7 +315,7 @@ class OrderManager
     /**
      * @param Order $apiOrder
      */
-    public function updateApiEntity(Order $apiOrder)
+    public function updateApiEntity(Order $apiOrder, $locale)
     {
         $items = $apiOrder->getItems();
 
@@ -316,10 +324,16 @@ class OrderManager
         $totalPrice = $this->priceCalculator->calculate($items, $prices, $supplierItems, true);
 
         if ($supplierItems) {
+            $supplierItems = array_values($supplierItems);
+            // update media api entities
+            $this->createMediaForSupplierItems($supplierItems, $locale);
             // set grouped items
-            $apiOrder->setSupplierItems(array_values($supplierItems));
+            $apiOrder->setSupplierItems($supplierItems);
         }
 
+        $this->createMediaForItems($items, $locale);
+
+        // check if any price in cart has changed
         $hasChangedPrices = false;
         foreach ($items as $item) {
             if ($item->getPriceChange()) {
@@ -331,6 +345,38 @@ class OrderManager
 
         // set total price
         $apiOrder->setTotalNetPrice($totalPrice);
+    }
+
+    /**
+     * Creates correct media-api for supplier-items array
+     *
+     * @param array $items
+     * @param string $locale
+     */
+    protected function createMediaForSupplierItems($items, $locale)
+    {
+        foreach ($items as $item) {
+            if (isset($item['items']) && count($item['items'] > 0)) {
+                $this->createMediaForItems($item['items'], $locale);
+            }
+        }
+    }
+
+    /**
+     * Creates correct media-api for items array
+     *
+     * @param array $items
+     * @param string $locale
+     */
+    protected function createMediaForItems($items, $locale)
+    {
+        foreach ($items as $item) {
+            $product = $item->getProduct();
+            if ($product) {
+                $this->productManager->createProductMedia($product, $locale);
+                $item->setProduct($product);
+            }
+        }
     }
 
     /**
@@ -557,7 +603,7 @@ class OrderManager
 
         if ($order) {
             $order = new Order($order, $locale);
-            $this->updateApiEntity($order);
+            $this->updateApiEntity($order, $locale);
 
             return $order;
         } else {
