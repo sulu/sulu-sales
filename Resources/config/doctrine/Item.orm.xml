@@ -5,6 +5,8 @@
     <entity name="Sulu\Bundle\Sales\CoreBundle\Entity\Item" table="sc_item"
             repository-class="Sulu\Bundle\Sales\CoreBundle\Entity\ItemRepository">
 
+        <field name="supplierName" type="string" column="supplierName" length="255" nullable="true"/>
+
         <one-to-many field="attributes" target-entity="Sulu\Bundle\Sales\CoreBundle\Entity\ItemAttribute" mapped-by="item"/>
 
         <many-to-one field="deliveryAddress" target-entity="Sulu\Bundle\Sales\CoreBundle\Entity\OrderAddress">

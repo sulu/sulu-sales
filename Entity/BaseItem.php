@@ -1,16 +1,19 @@
 <?php
+/*
+ * This file is part of the Sulu CMS.
+ *
+ * (c) MASSIVE ART WebServices GmbH
+ *
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
+ */
 
 namespace Sulu\Bundle\Sales\CoreBundle\Entity;
 
-use Doctrine\ORM\Mapping as ORM;
-use Sulu\Bundle\ProductBundle\Api\Product;
+use Sulu\Bundle\ProductBundle\Entity\ProductInterface;
 use Sulu\Component\Security\Authentication\UserInterface;
-use Sulu\Bundle\Sales\CoreBundle\Entity\OrderAddress as OrderAddress;
 
-/**
- * Item
- */
-class Item
+abstract class BaseItem implements ItemInterface
 {
     const STATUS_IN_CART = 1;
     const STATUS_OFFERED = 2;
@@ -91,11 +94,6 @@ class Item
     private $length;
 
     /**
-     * @var string
-     */
-    private $supplierName;
-
-    /**
      * @var \DateTime
      */
     private $created;
@@ -111,12 +109,7 @@ class Item
     private $id;
 
     /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $attributes;
-
-    /**
-     * @var \Sulu\Bundle\ProductBundle\Entity\ProductInterface
+     * @var ProductInterface
      */
     private $product;
 
@@ -139,19 +132,6 @@ class Item
      * @var float
      */
     private $totalNetPrice;
-
-    /**
-     * @var OrderAddress
-     */
-    private $deliveryAddress;
-
-    /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        $this->attributes = new \Doctrine\Common\Collections\ArrayCollection();
-    }
 
     /**
      * Set name
@@ -427,27 +407,6 @@ class Item
     }
 
     /**
-     * Set supplierName
-     * @param string $supplierName
-     * @return Item
-     */
-    public function setSupplierName($supplierName)
-    {
-        $this->supplierName = $supplierName;
-
-        return $this;
-    }
-
-    /**
-     * Get supplierName
-     * @return string
-     */
-    public function getSupplierName()
-    {
-        return $this->supplierName;
-    }
-
-    /**
      * Set created
      * @param \DateTime $created
      * @return Item
@@ -499,41 +458,11 @@ class Item
     }
 
     /**
-     * Add attributes
-     * @param \Sulu\Bundle\Sales\CoreBundle\Entity\ItemAttribute $attributes
-     * @return Item
-     */
-    public function addAttribute(\Sulu\Bundle\Sales\CoreBundle\Entity\ItemAttribute $attributes)
-    {
-        $this->attributes[] = $attributes;
-
-        return $this;
-    }
-
-    /**
-     * Remove attributes
-     * @param \Sulu\Bundle\Sales\CoreBundle\Entity\ItemAttribute $attributes
-     */
-    public function removeAttribute(\Sulu\Bundle\Sales\CoreBundle\Entity\ItemAttribute $attributes)
-    {
-        $this->attributes->removeElement($attributes);
-    }
-
-    /**
-     * Get attributes
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getAttributes()
-    {
-        return $this->attributes;
-    }
-
-    /**
      * Set product
-     * @param \Sulu\Bundle\ProductBundle\Entity\ProductInterface $product
+     * @param ProductInterface $product
      * @return Item
      */
-    public function setProduct(\Sulu\Bundle\ProductBundle\Entity\ProductInterface $product = null)
+    public function setProduct(ProductInterface $product = null)
     {
         $this->product = $product;
 
@@ -592,32 +521,6 @@ class Item
     }
 
     /**
-     * @var \Sulu\Bundle\ContactBundle\Entity\Account
-     */
-    private $supplier;
-
-    /**
-     * Set supplier
-     * @param \Sulu\Bundle\ContactBundle\Entity\Account $supplier
-     * @return Item
-     */
-    public function setSupplier(\Sulu\Bundle\ContactBundle\Entity\Account $supplier = null)
-    {
-        $this->supplier = $supplier;
-
-        return $this;
-    }
-
-    /**
-     * Get supplier
-     * @return \Sulu\Bundle\ContactBundle\Entity\Account
-     */
-    public function getSupplier()
-    {
-        return $this->supplier;
-    }
-
-    /**
      * Set bitmaskStatus
      * @param integer $bitmaskStatus
      * @return Item
@@ -657,26 +560,5 @@ class Item
     public function getTotalNetPrice()
     {
         return $this->totalNetPrice;
-    }
-
-    /**
-     * Set deliveryAddress
-     * @param OrderAddress $deliveryAddress
-     * @return Item
-     */
-    public function setDeliveryAddress(OrderAddress $deliveryAddress = null)
-    {
-        $this->deliveryAddress = $deliveryAddress;
-
-        return $this;
-    }
-
-    /**
-     * Get deliveryAddress
-     * @return OrderAddress $deliveryAddress
-     */
-    public function getDeliveryAddress()
-    {
-        return $this->deliveryAddress;
     }
 }
