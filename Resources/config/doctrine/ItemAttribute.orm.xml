@@ -9,7 +9,7 @@
         <field name="attribute" type="string" column="attribute" length="255"/>
         <field name="value" type="string" column="value" length="255"/>
 
-        <many-to-one field="item" target-entity="Sulu\Bundle\Sales\CoreBundle\Entity\Item" inversed-by="attributes">
+        <many-to-one field="item" target-entity="Sulu\Bundle\Sales\CoreBundle\Entity\ItemInterface" inversed-by="attributes">
             <join-columns>
                 <join-column name="idItems" referenced-column-name="id"/>
             </join-columns>
