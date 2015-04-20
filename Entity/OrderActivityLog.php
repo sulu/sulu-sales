@@ -2,11 +2,6 @@
 
 namespace Sulu\Bundle\Sales\OrderBundle\Entity;
 
-use Doctrine\ORM\Mapping as ORM;
-
-/**
- * OrderActivityLog
- */
 class OrderActivityLog
 {
     /**
@@ -20,20 +15,19 @@ class OrderActivityLog
     private $id;
 
     /**
-     * @var \Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatus
+     * @var OrderStatusInterface
      */
     private $statusFrom;
 
     /**
-     * @var \Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatus
+     * @var OrderStatusInterface
      */
     private $statusTo;
 
     /**
-     * @var \Sulu\Bundle\Sales\OrderBundle\Entity\Order
+     * @var OrderInterface
      */
     private $order;
-
 
     /**
      * Set created
@@ -44,14 +38,14 @@ class OrderActivityLog
     public function setCreated($created)
     {
         $this->created = $created;
-    
+
         return $this;
     }
 
     /**
      * Get created
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getCreated()
     {
@@ -61,7 +55,7 @@ class OrderActivityLog
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
     public function getId()
     {
@@ -71,20 +65,20 @@ class OrderActivityLog
     /**
      * Set statusFrom
      *
-     * @param \Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatus $statusFrom
+     * @param OrderStatusInterface $statusFrom
      * @return OrderActivityLog
      */
-    public function setStatusFrom(\Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatus $statusFrom)
+    public function setStatusFrom(OrderStatusInterface $statusFrom)
     {
         $this->statusFrom = $statusFrom;
-    
+
         return $this;
     }
 
     /**
      * Get statusFrom
      *
-     * @return \Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatus 
+     * @return OrderStatusInterface
      */
     public function getStatusFrom()
     {
@@ -94,20 +88,20 @@ class OrderActivityLog
     /**
      * Set statusTo
      *
-     * @param \Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatus $statusTo
+     * @param OrderStatusInterface $statusTo
      * @return OrderActivityLog
      */
-    public function setStatusTo(\Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatus $statusTo)
+    public function setStatusTo(OrderStatusInterface $statusTo)
     {
         $this->statusTo = $statusTo;
-    
+
         return $this;
     }
 
     /**
      * Get statusTo
      *
-     * @return \Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatus 
+     * @return OrderStatusInterface
      */
     public function getStatusTo()
     {
@@ -117,20 +111,20 @@ class OrderActivityLog
     /**
      * Set order
      *
-     * @param \Sulu\Bundle\Sales\OrderBundle\Entity\Order $order
+     * @param OrderInterface $order
      * @return OrderActivityLog
      */
-    public function setOrder(\Sulu\Bundle\Sales\OrderBundle\Entity\Order $order)
+    public function setOrder(OrderInterface $order)
     {
         $this->order = $order;
-    
+
         return $this;
     }
 
     /**
      * Get order
      *
-     * @return \Sulu\Bundle\Sales\OrderBundle\Entity\Order 
+     * @return OrderInterface
      */
     public function getOrder()
     {

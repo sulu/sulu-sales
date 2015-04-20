@@ -1,0 +1,464 @@
+<?php
+
+namespace Sulu\Bundle\Sales\OrderBundle\Entity;
+
+use Sulu\Bundle\Sales\CoreBundle\Entity\ItemInterface;
+use Sulu\Bundle\Sales\CoreBundle\Entity\OrderAddressInterface;
+use Sulu\Component\Security\Authentication\UserInterface;
+
+interface OrderInterface
+{
+    /**
+     * Set number
+     *
+     * @param string $number
+     * @return OrderInterface
+     */
+    public function setNumber($number);
+
+    /**
+     * Get number
+     *
+     * @return string
+     */
+    public function getNumber();
+
+    /**
+     * Set orderNumber
+     *
+     * @param string $orderNumber
+     * @return OrderInterface
+     */
+    public function setOrderNumber($orderNumber);
+
+    /**
+     * Get orderNumber
+     *
+     * @return string
+     */
+    public function getOrderNumber();
+
+//    /**
+//     * Set sessionId
+//     *
+//     * @param string $sessionId
+//     * @return OrderInterface
+//     */
+//    public function setSessionId($sessionId);
+//
+//    /**
+//     * Get sessionId
+//     *
+//     * @return string
+//     */
+//    public function getSessionId();
+
+    /**
+     * Set currency
+     *
+     * @param string $currency
+     * @return OrderInterface
+     */
+    public function setCurrency($currency);
+
+    /**
+     * Get currency
+     *
+     * @return string
+     */
+    public function getCurrency();
+
+    /**
+     * Set taxfree
+     *
+     * @param boolean $taxfree
+     * @return OrderInterface
+     */
+    public function setTaxfree($taxfree);
+
+    /**
+     * Get taxfree
+     *
+     * @return boolean
+     */
+    public function getTaxfree();
+
+    /**
+     * Set costCentre
+     *
+     * @param string $costCentre
+     * @return OrderInterface
+     */
+    public function setCostCentre($costCentre);
+
+    /**
+     * Get costCentre
+     *
+     * @return string
+     */
+    public function getCostCentre();
+
+    /**
+     * Set commission
+     *
+     * @param string $commission
+     * @return OrderInterface
+     */
+    public function setCommission($commission);
+
+    /**
+     * Get commission
+     *
+     * @return string
+     */
+    public function getCommission();
+
+    /**
+     * Set customerName
+     *
+     * @param string $customerName
+     * @return OrderInterface
+     */
+    public function setCustomerName($customerName);
+
+    /**
+     * Get customerName
+     *
+     * @return string
+     */
+    public function getCustomerName();
+
+    /**
+     * Set termsOfDeliveryContent
+     *
+     * @param string $termsOfDeliveryContent
+     * @return OrderInterface
+     */
+    public function setTermsOfDeliveryContent($termsOfDeliveryContent);
+
+    /**
+     * Get termsOfDeliveryContent
+     *
+     * @return string
+     */
+    public function getTermsOfDeliveryContent();
+
+    /**
+     * Set termsOfPaymentContent
+     *
+     * @param string $termsOfPaymentContent
+     * @return OrderInterface
+     */
+    public function setTermsOfPaymentContent($termsOfPaymentContent);
+
+    /**
+     * Get termsOfPaymentContent
+     *
+     * @return string
+     */
+    public function getTermsOfPaymentContent();
+
+    /**
+     * Set created
+     *
+     * @param \DateTime $created
+     * @return OrderInterface
+     */
+    public function setCreated($created);
+
+    /**
+     * Get created
+     *
+     * @return \DateTime
+     */
+    public function getCreated();
+
+    /**
+     * Set changed
+     *
+     * @param \DateTime $changed
+     * @return OrderInterface
+     */
+    public function setChanged($changed);
+
+    /**
+     * Get changed
+     *
+     * @return \DateTime
+     */
+    public function getChanged();
+
+    /**
+     * Set desiredDeliveryDate
+     *
+     * @param \DateTime $desiredDeliveryDate
+     * @return OrderInterface
+     */
+    public function setDesiredDeliveryDate($desiredDeliveryDate);
+
+    /**
+     * Get desiredDeliveryDate
+     *
+     * @return \DateTime
+     */
+    public function getDesiredDeliveryDate();
+
+    /**
+     * Get id
+     *
+     * @return integer
+     */
+    public function getId();
+
+    /**
+     * Set deliveryAddress
+     *
+     * @param OrderAddressInterface $deliveryAddress
+     * @return OrderInterfaceInterface
+     */
+    public function setDeliveryAddress(OrderAddressInterface $deliveryAddress = null);
+
+    /**
+     * Get deliveryAddress
+     *
+     * @return OrderInterfaceAddress
+     */
+    public function getDeliveryAddress();
+
+    /**
+     * Set invoiceAddress
+     *
+     * @param OrderAddressInterface $invoiceAddress
+     * @return OrderInterface
+     */
+    public function setInvoiceAddress(OrderAddressInterface $invoiceAddress = null);
+
+    /**
+     * Get invoiceAddress
+     *
+     * @return OrderInterfaceAddress
+     */
+    public function getInvoiceAddress();
+
+//    /**
+//     * Set termsOfDelivery
+//     *
+//     * @param \Sulu\Bundle\ContactBundle\Entity\TermsOfDelivery $termsOfDelivery
+//     * @return OrderInterface
+//     */
+//    public function setTermsOfDelivery(\Sulu\Bundle\ContactBundle\Entity\TermsOfDelivery $termsOfDelivery = null);
+//
+//    /**
+//     * Get termsOfDelivery
+//     *
+//     * @return \Sulu\Bundle\ContactBundle\Entity\TermsOfDelivery
+//     */
+//    public function getTermsOfDelivery();
+//
+//    /**
+//     * Set termsOfPayment
+//     *
+//     * @param \Sulu\Bundle\ContactBundle\Entity\TermsOfPayment $termsOfPayment
+//     * @return OrderInterface
+//     */
+//    public function setTermsOfPayment(\Sulu\Bundle\ContactBundle\Entity\TermsOfPayment $termsOfPayment = null);
+//
+//    /**
+//     * Get termsOfPayment
+//     *
+//     * @return \Sulu\Bundle\ContactBundle\Entity\TermsOfPayment
+//     */
+//    public function getTermsOfPayment();
+
+    /**
+     * Set status
+     *
+     * @param OrderStatusInterface $status
+     * @return OrderInterface
+     */
+    public function setStatus(OrderStatusInterface $status);
+
+    /**
+     * Get status
+     *
+     * @return OrderInterfaceStatusInterface
+     */
+    public function getStatus();
+
+//    /**
+//     * Set account
+//     *
+//     * @param \Sulu\Bundle\ContactBundle\Entity\Account $account
+//     * @return OrderInterface
+//     */
+//    public function setAccount(\Sulu\Bundle\ContactBundle\Entity\Account $account = null);
+
+    /**
+     * Get account
+     *
+     * @return \Sulu\Bundle\ContactBundle\Entity\Account
+     */
+    public function getAccount();
+
+    /**
+     * Set contact
+     *
+     * @param \Sulu\Bundle\ContactBundle\Entity\Contact $contact
+     * @return OrderInterface
+     */
+    public function setContact(\Sulu\Bundle\ContactBundle\Entity\Contact $contact = null);
+
+    /**
+     * Get contact
+     *
+     * @return \Sulu\Bundle\ContactBundle\Entity\Contact
+     */
+    public function getContact();
+
+//    /**
+//     * Set responsibleContact
+//     *
+//     * @param \Sulu\Bundle\ContactBundle\Entity\Contact $responsibleContact
+//     * @return OrderInterface
+//     */
+//    public function setResponsibleContact(\Sulu\Bundle\ContactBundle\Entity\Contact $responsibleContact = null);
+//
+//    /**
+//     * Get responsibleContact
+//     *
+//     * @return \Sulu\Bundle\ContactBundle\Entity\Contact
+//     */
+//    public function getResponsibleContact();
+
+    /**
+     * Add items
+     *
+     * @param ItemInterface $items
+     * @return OrderInterface
+     */
+    public function addItem(ItemInterface $items);
+
+    /**
+     * Remove items
+     *
+     * @param ItemInterface $items
+     */
+    public function removeItem(ItemInterface $items);
+
+    /**
+     * Get items
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getItems();
+
+    /**
+     * Set changer
+     *
+     * @param UserInterface $changer
+     * @return OrderInterface
+     */
+    public function setChanger(UserInterface $changer = null);
+
+    /**
+     * Get changer
+     *
+     * @return UserInterface
+     */
+    public function getChanger();
+
+    /**
+     * Set creator
+     *
+     * @param UserInterface $creator
+     * @return OrderInterface
+     */
+    public function setCreator(UserInterface $creator = null);
+
+    /**
+     * Get creator
+     *
+     * @return UserInterface
+     */
+    public function getCreator();
+
+    /**
+     * Set bitmaskStatus
+     *
+     * @param integer $bitmaskStatus
+     * @return OrderInterface
+     */
+    public function setBitmaskStatus($bitmaskStatus);
+
+    /**
+     * Get bitmaskStatus
+     *
+     * @return integer
+     */
+    public function getBitmaskStatus();
+
+    /**
+     * Set totalNetPrice
+     *
+     * @param float $totalNetPrice
+     * @return OrderInterface
+     */
+    public function setTotalNetPrice($totalNetPrice);
+
+    /**
+     * Get totalNetPrice
+     *
+     * @return float
+     */
+    public function getTotalNetPrice();
+
+    /**
+     * Set orderDate
+     *
+     * @param \DateTime $orderDate
+     * @return OrderInterface
+     */
+    public function setOrderDate($orderDate);
+
+    /**
+     * Get orderDate
+     *
+     * @return \DateTime
+     */
+    public function getOrderDate();
+
+    /**
+     * Updates the total net price
+     */
+    public function updateTotalNetPrice();
+
+//    /**
+//     * Set type
+//     *
+//     * @param OrderType $type
+//     * @return OrderInterface
+//     */
+//    public function setType(OrderType $type);
+//
+//    /**
+//     * Get type
+//     *
+//     * @return OrderInterfaceType
+//     */
+//    public function getType();
+
+    /**
+     * Set deliveryCost
+     *
+     * @param float $deliveryCost
+     * @return OrderInterface
+     */
+    public function setDeliveryCost($deliveryCost);
+
+    /**
+     * Get deliveryCost
+     *
+     * @return float 
+     */
+    public function getDeliveryCost();
+}
