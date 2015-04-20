@@ -31,7 +31,8 @@ class ItemPriceCalculator
     }
 
     /**
-     * caclucaltes the overall total price of an item
+     * Calculates the overall total price of an item
+     *
      * @param $item
      * @param string $currency
      * @param bool $useProductsPrice
@@ -71,6 +72,19 @@ class ItemPriceCalculator
     }
 
     /**
+     * format price
+     *
+     * @param $price
+     * @param $currency
+     * @param string $locale
+     * @return String
+     */
+    public function formatPrice($price, $currency, $locale = 'de')
+    {
+        return $this->priceManager->getFormattedPrice($price, $currency, $locale);
+    }
+
+    /**
      * validate item values
      *
      * @param $item
@@ -102,19 +116,6 @@ class ItemPriceCalculator
         if ($value === null) {
             throw new PriceCalculationException('Attribute ' . $key . ' must not be null');
         }
-    }
-
-    /**
-     * format price
-     *
-     * @param $price
-     * @param $currency
-     * @param string $locale
-     * @return String
-     */
-    public function formatPrice($price, $currency, $locale = 'de')
-    {
-        return $this->priceManager->getFormattedPrice($price, $currency, $locale);
     }
 
     /**
