@@ -23,9 +23,9 @@
                 <join-column name="idOrderTypes" referenced-column-name="id" nullable="true"/>
             </join-columns>
         </many-to-one>
-        <many-to-one field="account" target-entity="Sulu\Bundle\ContactBundle\Entity\Account">
+        <many-to-one field="customerAccount" target-entity="Sulu\Bundle\ContactBundle\Entity\Account">
             <join-columns>
-                <join-column name="idAccounts" referenced-column-name="id" on-delete="SET NULL"/>
+                <join-column name="idAccountsCustomer" referenced-column-name="id" on-delete="SET NULL"/>
             </join-columns>
         </many-to-one>
         <many-to-one field="responsibleContact" target-entity="Sulu\Bundle\ContactBundle\Entity\Contact">

@@ -2,8 +2,17 @@
 unreleased:
 ===========
 
-2015-01-12
 
+
+2015-04-21
+==========
+Refactoring and inheritance of order-bundle:
+
+* RENAMED `Order::$contact` to `Order::$customerContact`
+* RENAMED `Order::$account` to `Order::$customerAccount`
+
+2015-01-12
+==========
 Introduced order type:
 
 to set your own order type, your data array in OrderManagers save() method must contain either

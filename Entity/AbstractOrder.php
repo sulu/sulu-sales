@@ -32,7 +32,7 @@ abstract class AbstractOrder extends BaseOrder
     /**
      * @var Account
      */
-    protected $account;
+    protected $customerAccount;
 
     /**
      * @var Contact
@@ -137,9 +137,9 @@ abstract class AbstractOrder extends BaseOrder
      * @param Account $account
      * @return Order
      */
-    public function setAccount(Account $account = null)
+    public function setCustomerAccount(Account $account = null)
     {
-        $this->account = $account;
+        $this->customerAccount = $account;
 
         return $this;
     }
@@ -149,9 +149,9 @@ abstract class AbstractOrder extends BaseOrder
      *
      * @return Account
      */
-    public function getAccount()
+    public function getCustomerAccount()
     {
-        return $this->account;
+        return $this->customerAccount;
     }
 
     /**

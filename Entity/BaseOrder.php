@@ -90,7 +90,7 @@ abstract class BaseOrder implements OrderInterface
     /**
      * @var Contact
      */
-    private $contact;
+    private $customerContact;
 
     /**
      * @var \Doctrine\Common\Collections\Collection
@@ -380,9 +380,9 @@ abstract class BaseOrder implements OrderInterface
     /**
      * {@inheritDoc}
      */
-    public function setContact(Contact $contact = null)
+    public function setCustomerContact(Contact $contact = null)
     {
-        $this->contact = $contact;
+        $this->customerContact = $contact;
 
         return $this;
     }
@@ -390,9 +390,9 @@ abstract class BaseOrder implements OrderInterface
     /**
      * {@inheritDoc}
      */
-    public function getContact()
+    public function getCustomerContact()
     {
-        return $this->contact;
+        return $this->customerContact;
     }
 
     /**

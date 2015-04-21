@@ -41,7 +41,7 @@
                 <join-column name="idOrderStatus" referenced-column-name="id" nullable="false"/>
             </join-columns>
         </many-to-one>
-        <many-to-one field="contact" target-entity="Sulu\Bundle\ContactBundle\Entity\Contact">
+        <many-to-one field="customerContact" target-entity="Sulu\Bundle\ContactBundle\Entity\Contact">
             <join-columns>
                 <join-column name="idContactsCustomer" referenced-column-name="id" on-delete="SET NULL"/>
             </join-columns>

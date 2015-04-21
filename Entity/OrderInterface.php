@@ -2,6 +2,7 @@
 
 namespace Sulu\Bundle\Sales\OrderBundle\Entity;
 
+use Sulu\Bundle\ContactBundle\Entity\Contact;
 use Sulu\Bundle\Sales\CoreBundle\Entity\ItemInterface;
 use Sulu\Bundle\Sales\CoreBundle\Entity\OrderAddressInterface;
 use Sulu\Component\Security\Authentication\UserInterface;
@@ -303,17 +304,17 @@ interface OrderInterface
     /**
      * Set contact
      *
-     * @param \Sulu\Bundle\ContactBundle\Entity\Contact $contact
+     * @param Contact $contact
      * @return OrderInterface
      */
-    public function setContact(\Sulu\Bundle\ContactBundle\Entity\Contact $contact = null);
+    public function setCustomerContact(Contact $contact = null);
 
     /**
      * Get contact
      *
      * @return \Sulu\Bundle\ContactBundle\Entity\Contact
      */
-    public function getContact();
+    public function getCustomerContact();
 
 //    /**
 //     * Set responsibleContact
