@@ -1,6 +1,5 @@
 {% trans_default_domain "order_confirmation_email" %}
 
-
 {% block subject %}
     {% trans with {
         '%number%': order.number,
@@ -36,7 +35,7 @@
 {{ macros.getSalutation(contact) }},
 {% trans %}Thank you for your order{% endtrans %}
 {% endspaceless %}
-    
+
 {% endblock %}
 
 {% macro getSalutation(contact) %}{{ contact.getSalutation()|default('default.salutation'|trans) ~ ' ' ~ contact.getFullName() }}{% endmacro %}
