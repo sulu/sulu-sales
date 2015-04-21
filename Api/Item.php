@@ -49,7 +49,7 @@ class Item extends ApiWrapper implements CalculableBulkPriceItemInterface, Calcu
      * Temporary storage for product api entity
      * @var Product
      */
-    protected $product;
+    protected $tempProduct;
 
     /**
      * @param Entity $item The item to wrap
@@ -591,7 +591,7 @@ class Item extends ApiWrapper implements CalculableBulkPriceItemInterface, Calcu
         $productEntity = $product;
         // if api-product - temporarily save
         if ($product instanceof Product) {
-            $this->product = $product;
+            $this->tempProduct = $product;
             $productEntity = $product->getEntity();
         }
         $this->entity->setProduct($productEntity);
@@ -607,11 +607,11 @@ class Item extends ApiWrapper implements CalculableBulkPriceItemInterface, Calcu
      */
     public function getProduct()
     {
-        if ($this->product) {
-            return $this->product;
+        if ($this->tempProduct) {
+            return $this->tempProduct;
         }
 
-        $product = $this->getEntity()->getProduct();
+        $product = $this->entity->getProduct();
         if ($product) {
             return new static::$productEntity($product, $this->locale);
         }
