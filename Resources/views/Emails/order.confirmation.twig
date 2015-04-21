@@ -3,11 +3,12 @@
 {% block subject %}
     {% trans with {
         '%number%': order.number,
-        '%date%': order.orderDate|date('d.m.Y.')|default('')
+        '%date%': order.orderDate|localizeddate('medium', 'none')|default('')
     } %}subject{% endtrans %}
 {% endblock %}
 
 {% block body_html %}
+    {% import _self as macros %}
     <html>
     <head>
         <style type="text/css">
@@ -17,33 +18,24 @@
         </style>
     </head>
     <body>
-
-    <p>
-        {% if contact.getSalutation() %}
-            {% set salutation = contact.getSalutation() %}
-            <strong>{{ salutation }} {{ contact.getFullName() }},</strong>
-        {% else %}
-            {% set salutation = 'default.salutation'|trans %}
-            <strong>{{ salutation }},</strong>
-        {% endif %}
-
-        <strong>{{ salutation }} {{ contact.getFullName() }},</strong>
-    </p>
-    <p>
-        {% trans %}Thank you for your order{% endtrans %}
-    </p>
-    <p>
-        {% trans %}your{% endtrans %} POOL-ALPIN Team</br>
-        {% trans %}label.telephone{% endtrans %}: 43 (0)5522/240 40 -108</br>
-        {% trans %}label.email{% endtrans %}: office@pool-alpin.com</br>
-    </p>
-
+        <p>
+            <strong>{{ macros.getSalutation(contact) }},</strong>
+        </p>
+        <p>
+            {% trans %}Thank you for your order{% endtrans %}
+        </p>
     </body>
     </html>
 {% endblock %}
 
 {% block body_text %}
-    {% spaceless %}
-        {% trans %}Thank you for your order{% endtrans %}
-    {% endspaceless %}
+{% import _self as macros %}
+
+{% spaceless %}
+{{ macros.getSalutation(contact) }},
+{% trans %}Thank you for your order{% endtrans %}
+{% endspaceless %}
+
 {% endblock %}
+
+{% macro getSalutation(contact) %}{{ contact.getSalutation()|default('default.salutation'|trans) ~ ' ' ~ contact.getFullName() }}{% endmacro %}

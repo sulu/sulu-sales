@@ -4,27 +4,15 @@
         <body>
             <trans-unit id="1">
                 <source>subject</source>
-                <target>POOL-ALPIN Bestellung %number% vom %date%</target>
+                <target>Bestellung %number% vom %date%</target>
             </trans-unit>
             <trans-unit id="2">
-                <source>Thank you for your order</source>
-                <target>Vielen Dank für die Bestellung im POOL-ALPIN Webshop. Die Bestelldetails entnehmen Sie bitte der Bestellbestätigung im Anhang.</target>
+                <source>default.salutation</source>
+                <target>Liebe(r)</target>
             </trans-unit>
             <trans-unit id="3">
-                <source>label.telephone</source>
-                <target>Tel.</target>
-            </trans-unit>
-            <trans-unit id="4">
-                <source>label.email</source>
-                <target>E-mail</target>
-            </trans-unit>
-            <trans-unit id="5">
-                <source>your</source>
-                <target>Ihr</target>
-            </trans-unit>
-            <trans-unit id="6">
-                <source>default.salutation</source>
-                <target>Sehr geehrte Damen und Herren</target>
+                <source>Thank you for your order</source>
+                <target>Vielen Dank für die Bestellung in unserem Webshop. Weitere Details zur Bestellung findest du im Anhang.</target>
             </trans-unit>
         </body>
     </file>
