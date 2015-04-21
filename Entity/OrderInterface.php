@@ -293,13 +293,13 @@ interface OrderInterface
 //     * @return OrderInterface
 //     */
 //    public function setAccount(\Sulu\Bundle\ContactBundle\Entity\Account $account = null);
-
-    /**
-     * Get account
-     *
-     * @return \Sulu\Bundle\ContactBundle\Entity\Account
-     */
-    public function getAccount();
+//
+//    /**
+//     * Get account
+//     *
+//     * @return \Sulu\Bundle\ContactBundle\Entity\Account
+//     */
+//    public function getAccount();
 
     /**
      * Set contact

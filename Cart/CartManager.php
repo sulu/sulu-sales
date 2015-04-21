@@ -418,8 +418,8 @@ class CartManager extends BaseSalesManager
         // get address from contact and account
         $contact = $user->getContact();
         $account = $contact->getMainAccount();
-        $cart->setContact($contact);
-        $cart->setAccount($account);
+        $cart->setCustomerContact($contact);
+        $cart->setCustomerAccount($account);
 
         /** Account $account */
         if ($account && $account->getResponsiblePerson()) {
@@ -498,7 +498,7 @@ class CartManager extends BaseSalesManager
     {
         $tmplData = array(
             'order' => $apiOrder,
-            'contact' => $apiOrder->getEntity()->getContact()
+            'contact' => $apiOrder->getEntity()->getCustomerContact()
         );
 
         $template = $this->twig->loadTemplate('SuluSalesOrderBundle:Emails:order.confirmation.twig');

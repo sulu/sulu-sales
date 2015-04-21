@@ -219,7 +219,7 @@ class OrderManager
             $data,
             'contact',
             function ($contact) use ($order) {
-                $order->setContact($contact);
+                $order->setCustomerContact($contact);
             }
         );
 
@@ -261,7 +261,7 @@ class OrderManager
 
         // if not new and contact is not set, use old contact
         if (!$isNewOrder && !$contact) {
-            $contact = $order->getEntity()->getContact();
+            $contact = $order->getEntity()->getCustomerContact();
         }
         $contactFullName = null;
         if ($contact) {
@@ -1079,11 +1079,11 @@ class OrderManager
             if (!$account) {
                 throw new OrderDependencyNotFoundException(static::$accountEntityName, $accountData['id']);
             }
-            $order->setAccount($account);
+            $order->setCustomerAccount($account);
 
             return $account;
         } else {
-            $order->setAccount(null);
+            $order->setCustomerAccount(null);
         }
 
         return null;

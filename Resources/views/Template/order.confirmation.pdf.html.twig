@@ -2,9 +2,9 @@
 {% import "PoolAlpinBaseBundle:Default:pdf-macros.html.twig" as macros %}
 
 {% block recipient_business_info %}
-    {% if order.getAccount() and order.getAccount().getUid() %}
-        UID: {{ order.getAccount().getUid() |default('-') }} |
-        TEL: {{ order.getAccount().getMainPhone() |default('-') }}
+    {% if order.getCustomerAccount() and order.getCustomerAccount().getUid() %}
+        UID: {{ order.getCustomerAccount().getUid() |default('-') }} |
+        TEL: {{ order.getCustomerAccount().getMainPhone() |default('-') }}
     {% endif %}
 {% endblock %}
 

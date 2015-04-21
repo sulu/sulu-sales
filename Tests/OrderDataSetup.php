@@ -295,8 +295,8 @@ class OrderDataSetup {
         $this->order->setDesiredDeliveryDate(new DateTime('2015-01-01'));
         $this->order->setSessionId('abcd1234');
         $this->order->setTaxfree(true);
-        $this->order->setContact($this->contact);
-        $this->order->setAccount($this->account);
+        $this->order->setCustomerContact($this->contact);
+        $this->order->setCustomerAccount($this->account);
         $this->order->setStatus($this->orderStatus);
         $this->order->setBitmaskStatus($this->orderStatus->getId());
         $this->order->setDeliveryAddress($this->orderAddressDelivery);
