@@ -138,15 +138,17 @@ class CartManager extends BaseSalesManager
 
     /**
      * @param $user
-     * @param null $locale
-     *
-     * @return null|\Sulu\Bundle\Sales\OrderBundle\Api\Order
+     * @param null|string $locale
+     * @param null|string $currency
+     * @param bool $persistEmptyCart Define if an empty cart should be persisted
+     * @param bool $updatePrices Defines if prices should be updated
+     * @return null|ApiOrder
      */
     public function getUserCart(
         $user = null,
         $locale = null,
         $currency = null,
-        $persist = false,
+        $persistEmptyCart = false,
         $updatePrices = false
     )
     {
@@ -173,7 +175,7 @@ class CartManager extends BaseSalesManager
             $cart = $cartArray[0];
         } else {
             // user has no cart - return empty one
-            $cart = $this->createEmptyCart($user, $persist);
+            $cart = $this->createEmptyCart($user, $persistEmptyCart);
         }
 
         $currency = $currency ?: $this->defaultCurrency;
