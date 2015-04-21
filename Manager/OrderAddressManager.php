@@ -128,6 +128,7 @@ class OrderAddressManager
         $orderAddress->setPostboxNumber($address->getPostboxNumber());
 
         $orderAddress->setContactAddress($address);
+        $orderAddress->setNote($address->getNote());
 
         // add account data
         if ($account) {
@@ -165,6 +166,7 @@ class OrderAddressManager
         $orderAddress->setCountry($this->getProperty($addressData, 'country', ''));
         $orderAddress->setEmail($this->getProperty($addressData, 'email', ''));
         $orderAddress->setPhone($this->getProperty($addressData, 'phone', ''));
+        $orderAddress->setNote($this->getProperty($addressData, 'note', ''));
 
         $orderAddress->setPostboxCity($this->getProperty($addressData, 'postboxCity', ''));
         $orderAddress->setPostboxPostcode($this->getProperty($addressData, 'postboxPostcode', ''));
