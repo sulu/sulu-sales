@@ -440,6 +440,33 @@ class OrderAddress extends ApiWrapper
     }
 
     /**
+     * Set note
+     *
+     * @param string $note
+     *
+     * @return OrderAddress
+     */
+    public function setNote($note)
+    {
+        $this->entity->setNote($note);
+
+        return $this;
+    }
+
+    /**
+     * Get note
+     *
+     * @return string
+     * @VirtualProperty
+     * @SerializedName("note")
+     * @Groups({"cart"})
+     */
+    public function getNote()
+    {
+        return $this->entity->getNote();
+    }
+
+    /**
      * Set postboxCity
      *
      * @param string $postboxCity

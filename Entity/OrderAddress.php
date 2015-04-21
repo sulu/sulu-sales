@@ -90,6 +90,11 @@ class OrderAddress
     private $phoneMobile;
 
     /**
+     * @var string
+     */
+    private $note;
+
+    /**
      * @var integer
      */
     private $id;
@@ -472,6 +477,30 @@ class OrderAddress
     public function getPhoneMobile()
     {
         return $this->phoneMobile;
+    }
+
+    /**
+     * Set note
+     *
+     * @param string $note
+     *
+     * @return OrderAddress
+     */
+    public function setNote($note)
+    {
+        $this->note = $note;
+
+        return $this;
+    }
+
+    /**
+     * Get note
+     *
+     * @return string
+     */
+    public function getNote()
+    {
+        return $this->note;
     }
 
     /**
