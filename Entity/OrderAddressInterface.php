@@ -339,4 +339,20 @@ interface OrderAddressInterface
      * @return Address
      */
     public function getContactAddress();
+
+    /**
+     * Set note
+     *
+     * @param string $note
+     *
+     * @return OrderAddress
+     */
+    public function setNote($note);
+
+    /**
+     * Get note
+     *
+     * @return string
+     */
+    public function getNote();
 }

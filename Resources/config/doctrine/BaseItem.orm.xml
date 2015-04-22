@@ -9,8 +9,8 @@
 
         <field name="name" type="string" column="name" length="255"/>
         <field name="number" type="string" column="number" length="255" nullable="true"/>
-        <field name="quantity" type="float" column="quanity"/>
-        <field name="quantityUnit" type="string" column="quanityUnit" length="60"/>
+        <field name="quantity" type="float" column="quantity"/>
+        <field name="quantityUnit" type="string" column="quantityUnit" length="60"/>
         <field name="useProductsPrice" type="boolean" column="useProductsPrice"/>
         <field name="tax" type="float" column="tax"/>
         <field name="price" type="float" column="price" nullable="true"/>
@@ -20,29 +20,16 @@
         <field name="width" type="float" column="width" nullable="true"/>
         <field name="height" type="float" column="height" nullable="true"/>
         <field name="length" type="float" column="length" nullable="true"/>
-        <!--<field name="supplierName" type="string" column="supplierName" length="255" nullable="true"/>-->
         <field name="created" type="datetime" column="created"></field>
         <field name="changed" type="datetime" column="changed"></field>
         <field name="bitmaskStatus" type="integer" column="bitmaskStatus" nullable="true"/>
         <field name="totalNetPrice" type="float" column="totalNetPrice" nullable="true"></field>
-
-        <!--<one-to-many field="attributes" target-entity="Sulu\Bundle\Sales\CoreBundle\Entity\ItemAttribute" mapped-by="item"/>-->
 
         <many-to-one field="product" target-entity="Sulu\Bundle\ProductBundle\Entity\ProductInterface">
             <join-columns>
                 <join-column name="idProducts" referenced-column-name="id" on-delete="SET NULL" nullable="true"/>
             </join-columns>
         </many-to-one>
-        <!--<many-to-one field="deliveryAddress" target-entity="Sulu\Bundle\Sales\CoreBundle\Entity\OrderAddress">-->
-            <!--<join-columns>-->
-                <!--<join-column name="idOrderAddressesDelivery" on-delete="SET NULL" nullable="true"/>-->
-            <!--</join-columns>-->
-        <!--</many-to-one>-->
-        <!--<many-to-one field="supplier" target-entity="Sulu\Bundle\ContactBundle\Entity\Account">-->
-            <!--<join-columns>-->
-                <!--<join-column name="idAccountsSupplier" referenced-column-name="id" on-delete="SET NULL" nullable="true"/>-->
-            <!--</join-columns>-->
-        <!--</many-to-one>-->
         <many-to-one field="changer" target-entity="Sulu\Component\Security\Authentication\UserInterface">
             <join-columns>
                 <join-column name="idUsersChanger" referenced-column-name="id" on-delete="SET NULL" nullable="true"/>

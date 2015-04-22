@@ -112,6 +112,11 @@ abstract class BaseOrderAddress implements OrderAddressInterface
     private $contactAddress;
 
     /**
+     * @var string
+     */
+    private $note;
+
+    /**
      * Set salutation
      *
      * @param string $salutation
@@ -611,5 +616,29 @@ abstract class BaseOrderAddress implements OrderAddressInterface
     public function getContactAddress()
     {
         return $this->contactAddress;
+    }
+
+    /**
+     * Set note
+     *
+     * @param string $note
+     *
+     * @return OrderAddress
+     */
+    public function setNote($note)
+    {
+        $this->note = $note;
+
+        return $this;
+    }
+
+    /**
+     * Get note
+     *
+     * @return string
+     */
+    public function getNote()
+    {
+        return $this->note;
     }
 }
