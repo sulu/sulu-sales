@@ -89,8 +89,8 @@ define([
                 shipping.fetch({
                     success: function(response) {
                         model = response.toJSON();
-                        if (!!model.order.account && !!model.order.contact) {
-                            payload.callback(model.order.contact.id, model.order.account.id);
+                        if (!!model.order.customerAccount && !!model.order.customerContact) {
+                            payload.callback(model.order.customerContact.id, model.order.customerAccount.id);
                         } else {
                             this.sandbox.logger.error('received invalid data when initializing sidebar', model);
                         }
@@ -117,14 +117,14 @@ define([
 
             this.sandbox = sandbox;
 
-            if (!!data.order.contact && !!data.order.account && !!data.status) {
+            if (!!data.order.customerContact && !!data.order.customerAccount && !!data.status) {
                 uriTemplate = this.sandbox.uritemplate.parse(constants.widgetUrls.shippingDetail);
                 url = uriTemplate.expand({
                     params: {
                         id: data.id,
                         number: data.number,
-                        contact: data.order.contact.id,
-                        account: data.order.account.id,
+                        contact: data.order.customerContact.id,
+                        account: data.order.customerAccount.id,
                         status: data.status.status,
                         locale: AppConfig.getUser().locale,
                         date: data.expectedDeliveryDate,

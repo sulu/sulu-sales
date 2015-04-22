@@ -28,7 +28,6 @@ use Sulu\Bundle\Sales\ShippingBundle\Shipping\Exception\ShippingDependencyNotFou
 use Sulu\Bundle\Sales\ShippingBundle\Shipping\Exception\ShippingException;
 use Sulu\Bundle\Sales\ShippingBundle\Shipping\Exception\ShippingNotFoundException;
 use Sulu\Bundle\Sales\ShippingBundle\Entity\Shipping as ShippingEntity;
-use Sulu\Bundle\Sales\ShippingBundle\Api\ShippingItem;
 use Sulu\Bundle\Sales\ShippingBundle\Entity\ShippingItem as ShippingItemEntity;
 use Sulu\Bundle\Sales\ShippingBundle\Entity\ShippingStatus as ShippingStatusEntity;
 use Sulu\Bundle\Sales\ShippingBundle\Api\Shipping;
@@ -81,22 +80,29 @@ class ShippingManager
      */
     private $orderFieldDescriptors = array();
 
+    /**
+     * @var string
+     */
+    private $itemEntity;
+
     /** constructor */
     public function __construct(
         ObjectManager $em,
         UserRepositoryInterface $userRepository,
         ItemManager $itemManager,
-        RestHelperInterface $restHelper
+        RestHelperInterface $restHelper,
+        $itemEntity
     )
     {
         $this->em = $em;
         $this->userRepository = $userRepository;
         $this->itemManager = $itemManager;
         $this->restHelper = $restHelper;
+        $this->itemEntity = $itemEntity;
     }
 
     /**
-     * saves a shipping
+     * Saves a shipping
      *
      * @param array $data array of data to be set
      * @param $locale locale in which the data should be set
@@ -104,16 +110,18 @@ class ShippingManager
      * @param null|int $id
      * @param null|int $statusId
      * @param bool $flush
+     *
+     * @return null|Shipping
      * @throws Exception\ShippingNotFoundException
      * @throws Exception\ShippingException
-     * @return null|Shipping
      */
-    public function save(array $data,
-                         $locale,
-                         $userId,
-                         $id = null,
-                         $statusId = null,
-                         $flush = true)
+    public function save(
+        array $data,
+        $locale,
+        $userId,
+        $id = null,
+        $statusId = null,
+        $flush = true)
     {
         if ($id) {
             $shipping = $this->findByIdAndLocale($id, $locale);
@@ -219,7 +227,8 @@ class ShippingManager
     }
 
     /**
-     * delete a shipping
+     * Delete a shipping
+     *
      * @param $id
      * @throws Exception\ShippingNotFoundException
      */
@@ -305,6 +314,8 @@ class ShippingManager
      */
     private function convertItemStatus(Shipping $shipping, $shippingStatusId)
     {
+        $itemEntity = $this->itemEntity;
+
         foreach ($shipping->getItems() as $shippingItem) {
             // get item
             $item = $shippingItem->getItem();
@@ -314,14 +325,14 @@ class ShippingManager
                 // created
                 case ShippingStatusEntity::STATUS_CREATED:
                     // TODO: REMOVE PREVIOUS STATE
-                    $this->itemManager->addStatus($item, Item::STATUS_CREATED);
+                    $this->itemManager->addStatus($item, $itemEntity::STATUS_CREATED);
                     break;
                 // delivery note
                 case ShippingStatusEntity::STATUS_DELIVERY_NOTE:
                     if ($this->isPartiallyItem($shippingItem, true)) {
-                        $itemStatus = Item::STATUS_SHIPPING_NOTE_PARTIALLY;
+                        $itemStatus = $itemEntity::STATUS_SHIPPING_NOTE_PARTIALLY;
                     } else {
-                        $itemStatus = Item::STATUS_SHIPPING_NOTE;
+                        $itemStatus = $itemEntity::STATUS_SHIPPING_NOTE;
 
                     }
                     $this->itemManager->addStatus($item, $itemStatus);
@@ -329,16 +340,16 @@ class ShippingManager
                 // shipped
                 case ShippingStatusEntity::STATUS_SHIPPED:
                     if ($this->isPartiallyItem($shippingItem, false)) {
-                        $itemStatus = Item::STATUS_SHIPPED_PARTIALLY;
+                        $itemStatus = $itemEntity::STATUS_SHIPPED_PARTIALLY;
                     } else {
-                        $itemStatus = Item::STATUS_SHIPPED;
+                        $itemStatus = $itemEntity::STATUS_SHIPPED;
 
                     }
                     $this->itemManager->addStatus($item, $itemStatus);
                     break;
                 case ShippingStatusEntity::STATUS_CANCELED:
                     // TODO: check  if still fully shipped
-                    $this->itemManager->removeStatus($item, Item::STATUS_SHIPPED);
+                    $this->itemManager->removeStatus($item, $itemEntity::STATUS_SHIPPED);
                     // TODO: check if partially shipped
                     break;
             }

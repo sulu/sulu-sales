@@ -280,7 +280,7 @@ define([
 
         setDeliveryAddress = function(shippingData) {
             // load addresses of account
-            this.sandbox.util.load(this.sandbox.util.template(constants.accountAddressesUrl, {id: shippingData.order.account.id}))
+            this.sandbox.util.load(this.sandbox.util.template(constants.accountAddressesUrl, {id: shippingData.order.customerAccount.id}))
                 .then(function(response) {
                     // is already refactored in another branch
                     var addressesData = response._embedded.addresses,

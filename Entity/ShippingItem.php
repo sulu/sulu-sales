@@ -3,6 +3,7 @@
 namespace Sulu\Bundle\Sales\ShippingBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Sulu\Bundle\Sales\CoreBundle\Entity\ItemInterface;
 
 /**
  * ShippingItem
@@ -25,12 +26,12 @@ class ShippingItem
     private $id;
 
     /**
-     * @var \Sulu\Bundle\Sales\ShippingBundle\Entity\Shipping
+     * @var Shipping
      */
     private $shipping;
 
     /**
-     * @var \Sulu\Bundle\Sales\CoreBundle\Entity\Item
+     * @var ItemInterface
      */
     private $item;
 
@@ -94,10 +95,10 @@ class ShippingItem
     /**
      * Set shipping
      *
-     * @param \Sulu\Bundle\Sales\ShippingBundle\Entity\Shipping $shipping
+     * @param Shipping $shipping
      * @return ShippingItem
      */
-    public function setShipping(\Sulu\Bundle\Sales\ShippingBundle\Entity\Shipping $shipping)
+    public function setShipping(Shipping $shipping)
     {
         $this->shipping = $shipping;
     
@@ -107,7 +108,7 @@ class ShippingItem
     /**
      * Get shipping
      *
-     * @return \Sulu\Bundle\Sales\ShippingBundle\Entity\Shipping 
+     * @return Shipping
      */
     public function getShipping()
     {
@@ -117,10 +118,10 @@ class ShippingItem
     /**
      * Set item
      *
-     * @param \Sulu\Bundle\Sales\CoreBundle\Entity\Item $item
+     * @param ItemInterface $item
      * @return ShippingItem
      */
-    public function setItem(\Sulu\Bundle\Sales\CoreBundle\Entity\Item $item)
+    public function setItem(ItemInterface $item)
     {
         $this->item = $item;
     
@@ -130,7 +131,7 @@ class ShippingItem
     /**
      * Get item
      *
-     * @return \Sulu\Bundle\Sales\CoreBundle\Entity\Item 
+     * @return ItemInterface
      */
     public function getItem()
     {
