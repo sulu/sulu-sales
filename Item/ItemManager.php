@@ -11,22 +11,21 @@
 namespace Sulu\Bundle\Sales\CoreBundle\Item;
 
 use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\ORM\EntityRepository;
 use Sulu\Bundle\ProductBundle\Entity\Product;
 use Sulu\Bundle\ProductBundle\Product\Exception\ProductException;
 use Sulu\Bundle\ProductBundle\Product\Exception\ProductNotFoundException;
 use Sulu\Bundle\ProductBundle\Product\ProductPriceManagerInterface;
 use Sulu\Bundle\ProductBundle\Product\ProductRepositoryInterface;
-use Sulu\Bundle\Sales\CoreBundle\Api\Item;
-use Sulu\Bundle\Sales\CoreBundle\Entity\Item as ItemEntity;
+use Sulu\Bundle\Sales\CoreBundle\Api\ApiItemInterface;
 use Sulu\Bundle\Sales\CoreBundle\Entity\ItemAttribute;
+use Sulu\Bundle\Sales\CoreBundle\Entity\ItemInterface;
 use Sulu\Bundle\Sales\CoreBundle\Entity\ItemRepository;
 use Sulu\Bundle\Sales\CoreBundle\Item\Exception\ItemException;
 use Sulu\Bundle\Sales\CoreBundle\Item\Exception\ItemNotFoundException;
 use Sulu\Bundle\Sales\CoreBundle\Item\Exception\MissingItemAttributeException;
-use Sulu\Bundle\Sales\CoreBundle\Manager\BaseSalesManager;
 use Sulu\Bundle\Sales\CoreBundle\Manager\OrderAddressManager;
 use Sulu\Bundle\Sales\CoreBundle\Pricing\ItemPriceCalculator;
-use Sulu\Bundle\Sales\CoreBundle\Entity\OrderAddress;
 use Sulu\Component\Persistence\RelationTrait;
 use Sulu\Component\Security\Authentication\UserRepositoryInterface;
 use DateTime;
@@ -36,7 +35,6 @@ class ItemManager
     use RelationTrait;
 
     protected static $productEntityName = 'SuluProductBundle:Product';
-    protected static $itemEntityName = 'SuluSalesCoreBundle:Item';
 
     /**
      * @var ObjectManager
@@ -74,20 +72,43 @@ class ItemManager
     protected $orderAddressManager;
 
     /**
-     * constructor
-     *
+     * @var string
+     */
+    protected $itemEntity;
+
+    /**
+     * @var string
+     */
+    protected $orderAddressEntity;
+
+    /**
+     * @var string
+     */
+    protected $itemApiEntity;
+
+    /**
      * @param ObjectManager $em
-     * @param ItemRepository $itemRepository
+     * @param EntityRepository|ItemRepository $itemRepository
      * @param UserRepositoryInterface $userRepository
+     * @param ProductRepositoryInterface $productRepository
+     * @param ProductPriceManagerInterface $productPriceManager
+     * @param ItemPriceCalculator $itemPriceCalculator
+     * @param OrderAddressManager $orderAddressManager
+     * @param string $itemEntity
+     * @param string $itemApiEntity
+     * @param string $orderAddressEntity
      */
     public function __construct(
         ObjectManager $em,
-        ItemRepository $itemRepository,
+        EntityRepository $itemRepository,
         UserRepositoryInterface $userRepository,
         ProductRepositoryInterface $productRepository,
         ProductPriceManagerInterface $productPriceManager,
         ItemPriceCalculator $itemPriceCalculator,
-        OrderAddressManager $orderAddressManager
+        OrderAddressManager $orderAddressManager,
+        $itemEntity,
+        $itemApiEntity,
+        $orderAddressEntity
     )
     {
         $this->em = $em;
@@ -97,34 +118,46 @@ class ItemManager
         $this->productPriceManager = $productPriceManager;
         $this->itemPriceCalculator = $itemPriceCalculator;
         $this->orderAddressManager = $orderAddressManager;
-    }
-
-    public function setProductEntity($productEntity)
-    {
-        Item::$productEntity = $productEntity;
+        $this->itemEntity = $itemEntity;
+        $this->itemApiEntity = $itemApiEntity;
+        $this->orderAddressEntity = $orderAddressEntity;
     }
 
     /**
-     * creates an item, but does not flush
+     * Set correct product-entity to api-item
+     *
+     * @param $productEntity
+     */
+    public function setProductEntity($productEntity)
+    {
+        $entity = $this->itemApiEntity;
+        $entity::$productEntity = $productEntity;
+    }
+
+    /**
+     * Creates an item, but does not flush
+     *
      * @param array $data
      * @param $locale
      * @param $userId
-     * @param \Sulu\Bundle\Sales\CoreBundle\Api\Item $item
+     * @param ApiItemInterface $item
      * @param null $itemStatusId
-     * @return null|\Sulu\Bundle\Sales\CoreBundle\Api\Item
+     *
+     * @return null|ApiItemInterface
      */
-    public function save(array $data, $locale, $userId = null, $item = null, $itemStatusId = null)
+    public function save(array $data, $locale, $userId = null, ApiItemInterface $item = null, $itemStatusId = null)
     {
+        $itemEntity = $this->itemEntity;
         $isNewItem = !$item;
-        
+
         // check required data
         if ($isNewItem) {
             $this->checkRequiredData($data, true);
-            $item = new Item(new ItemEntity(), $locale);
+            $item = new $this->itemApiEntity(new $this->itemEntity(), $locale);
         }
 
-        if ($item instanceof ItemEntity) {
-            $item = new Item($item, $locale);
+        if ($item instanceof ItemInterface) {
+            $item = new $this->itemApiEntity($item, $locale);
         }
 
         // get user
@@ -171,7 +204,7 @@ class ItemManager
                 // if no delivery address is set, create new one
                 if ($isNewItem || $item->getDeliveryAddress() === null) {
                     // create delivery address
-                    $deliveryAddress = new OrderAddress();
+                    $deliveryAddress = new $this->orderAddressEntity();
                     // persist entities
                     $this->em->persist($deliveryAddress);
                     // assign to order
@@ -211,7 +244,7 @@ class ItemManager
             $this->em->persist($item->getEntity());
 
             if (!$itemStatusId = null) {
-                $itemStatusId = ItemEntity::STATUS_CREATED;
+                $itemStatusId = $itemEntity::STATUS_CREATED;
             }
         }
 
@@ -229,12 +262,13 @@ class ItemManager
     }
 
     /**
-     * converts status of an item
-     * @param Item $item
+     * Converts status of an item
+     *
+     * @param ApiItemInterface $item
      * @param $status
      * @param bool $flush
      */
-    public function addStatus(Item $item, $status, $flush = false)
+    public function addStatus(ApiItemInterface $item, $status, $flush = false)
     {
         // BITMASK
         $currentBitmaskStatus = $item->getBitmaskStatus();
@@ -251,12 +285,13 @@ class ItemManager
     }
 
     /**
-     * converts status of an item
-     * @param Item $item
+     * Converts status of an item
+     *
+     * @param ApiItemInterface $item
      * @param $status
      * @param bool $flush
      */
-    public function removeStatus(Item $item, $status, $flush = false)
+    public function removeStatus(ApiItemInterface $item, $status, $flush = false)
     {
         // BITMASK
         $currentBitmaskStatus = $item->getBitmaskStatus();
@@ -271,11 +306,11 @@ class ItemManager
     }
 
     /**
-     * deletes an item
-     * @param $id
-     * @throws Exception\ItemNotFoundException
-     * @internal param $idπ
+     * Deletes an item
      *
+     * @param $id
+     *
+     * @throws Exception\ItemNotFoundException
      */
     public function delete($id)
     {
@@ -291,16 +326,18 @@ class ItemManager
 
     /**
      * Finds an item by id and locale
+     *
      * @param $id
      * @param $locale
-     * @return null|Item
+     *
+     * @return null|ApiItemInterface
      */
     public function findByIdAndLocale($id, $locale)
     {
         $item = $this->itemRepository->findByIdAndLocale($id, $locale);
 
         if ($item) {
-            return new Item($item, $locale);
+            return new $this->itemApiEntity($item, $locale);
         } else {
             return null;
         }
@@ -308,8 +345,10 @@ class ItemManager
 
     /**
      * Finds an item entity by id
+     *
      * @param $id
-     * @return null|Item
+     *
+     * @return null|ItemInterface
      */
     public function findEntityById($id)
     {
@@ -324,6 +363,7 @@ class ItemManager
     /**
      * @param $locale
      * @param array $filter
+     *
      * @return mixed
      */
     public function findAllByLocale($locale, $filter = array())
@@ -337,7 +377,7 @@ class ItemManager
         array_walk(
             $items,
             function (&$item) use ($locale) {
-                $item = new Item($item, $locale);
+                $item = new $this->itemApiEntity($item, $locale);
             }
         );
 
@@ -345,7 +385,7 @@ class ItemManager
     }
 
     /**
-     * check if necessary data is set
+     * Check if necessary data is set
      *
      * @param $data
      * @param $isNew
@@ -366,10 +406,12 @@ class ItemManager
     }
 
     /**
-     * checks data for attributes
+     * Checks data for attributes
+     *
      * @param array $data
      * @param $key
      * @param $isNew
+     *
      * @throws Exception\MissingItemAttributeException
      * @return bool
      */
@@ -386,9 +428,11 @@ class ItemManager
 
     /**
      * Returns the entry from the data with the given key, or the given default value, if the key does not exist
+     *
      * @param array $data
      * @param string $key
      * @param string $default
+     *
      * @return mixed
      */
     private function getProperty(array $data, $key, $default = null)
@@ -397,7 +441,7 @@ class ItemManager
     }
 
     /**
-     * returns productid - if not defined, throw an exception
+     * Returns productid - if not defined, throw an exception
      *
      * @param $data
      *
@@ -425,20 +469,21 @@ class ItemManager
      * Sets item based on given product data
      *
      * @param $data
-     * @param Item $item
+     * @param ApiItemInterface $item
      * @param $locale
+     *
      * @return null|object
      * @throws MissingItemAttributeException
      * @throws ProductException
      * @throws ProductNotFoundException
      */
-    private function setItemByProductData($data, Item $item, $locale)
+    private function setItemByProductData($data, ApiItemInterface $item, $locale)
     {
         // terms of delivery
         $productData = $this->getProperty($data, 'product');
         if ($productData) {
             $productId = $this->getProductId($productData);
-            
+
             /** @var Product $product */
             $product = $this->productRepository->find($productId);
             if (!$product) {
@@ -479,19 +524,21 @@ class ItemManager
 
             // TODO: get tax from product
             $item->setTax(0);
+
 //            $item->setTax($product->getTaxClass()->getTax($locale));
 
             return $product;
         }
+
         return null;
     }
 
     /**
-     * function updates item by its product data
+     * Function updates item by its product data
      *
-     * @param $item
+     * @param ApiItemInterface $item
      */
-    private function updatePrices($item, $data)
+    private function updatePrices(ApiItemInterface $item, $data)
     {
         //TODO: currency
         $currency = null;
@@ -500,7 +547,7 @@ class ItemManager
         if ($item->getUseProductsPrice() === false) {
             $item->setPrice($this->getProperty($data, 'price', $item->getPrice()));
         }
-        
+
         // set items total net price
         $price = $this->itemPriceCalculator->calculate($item, $currency, $item->getUseProductsPrice());
         $item->setTotalNetPrice($price);
@@ -512,11 +559,12 @@ class ItemManager
 
     /**
      * @param array $data
-     * @param Item $item
+     * @param ApiItemInterface $item
+     *
      * @return bool
      * @throws ItemException
      */
-    private function processAttributes($data, Item $item)
+    private function processAttributes($data, ApiItemInterface $item)
     {
         $result = true;
         try {
@@ -526,7 +574,6 @@ class ItemManager
                     return $itemAttribute->getId();
                 };
 
-                /** @var Item $item */
                 $delete = function ($itemAttribute) use ($item) {
                     // delete item
                     $this->em->remove($itemAttribute);
@@ -536,6 +583,7 @@ class ItemManager
                 $update = function ($itemAttribute, $matchedEntry) use ($item) {
                     $itemAttribute->setAttribute($matchedEntry['attribute']);
                     $itemAttribute->setValue($matchedEntry['value']);
+
                     return $itemAttribute ? true : false;
                 };
 
@@ -545,6 +593,7 @@ class ItemManager
                     $itemAttribute->setValue($itemData['value']);
                     $itemAttribute->setItem($item->getEntity());
                     $this->em->persist($itemAttribute);
+
                     return $item->addAttribute($itemAttribute);
                 };
 
@@ -560,6 +609,7 @@ class ItemManager
         } catch (\Exception $e) {
             throw new ItemException('Error while creating attributes: ' . $e->getMessage());
         }
+
         return $result;
     }
 }

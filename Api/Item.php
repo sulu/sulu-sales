@@ -5,11 +5,11 @@ namespace Sulu\Bundle\Sales\CoreBundle\Api;
 use JMS\Serializer\Annotation\VirtualProperty;
 use Sulu\Bundle\ContactBundle\Entity\Account;
 use Sulu\Bundle\ProductBundle\Api\Product;
-use Sulu\Bundle\Sales\CoreBundle\Entity\Item as Entity;
+use Sulu\Bundle\Sales\CoreBundle\Entity\ItemInterface as Entity;
 use Sulu\Bundle\Sales\CoreBundle\Entity\ItemAttributeEntity;
 use Sulu\Bundle\Sales\CoreBundle\Pricing\CalculableBulkPriceItemInterface;
 use Sulu\Bundle\Sales\CoreBundle\Pricing\CalculablePriceGroupItemInterface;
-use Sulu\Bundle\Sales\CoreBundle\Entity\OrderAddress as OrderAddressEntity;
+use Sulu\Bundle\Sales\CoreBundle\Entity\OrderAddressInterface as OrderAddressEntity;
 use Sulu\Bundle\Sales\CoreBundle\Api\OrderAddress;
 use Sulu\Component\Rest\ApiWrapper;
 use Hateoas\Configuration\Annotation\Relation;
@@ -17,13 +17,15 @@ use JMS\Serializer\Annotation\SerializedName;
 use JMS\Serializer\Annotation\Groups;
 use DateTime;
 use Sulu\Component\Security\Authentication\UserInterface;
-use Symfony\Component\Intl\NumberFormatter\NumberFormatter;
 
 /**
  * The item class which will be exported to the API
  * @package Sulu\Bundle\Sales\CoreBundle\Api
  */
-class Item extends ApiWrapper implements CalculableBulkPriceItemInterface, CalculablePriceGroupItemInterface
+class Item extends ApiWrapper implements
+    ApiItemInterface,
+    CalculableBulkPriceItemInterface,
+    CalculablePriceGroupItemInterface
 {
     public static $productEntity = 'Sulu\Bundle\ProductBundle\Api\Product';
 
@@ -50,6 +52,7 @@ class Item extends ApiWrapper implements CalculableBulkPriceItemInterface, Calcu
      * @var Product
      */
     protected $tempProduct;
+
 
     /**
      * @param Entity $item The item to wrap
@@ -495,7 +498,7 @@ class Item extends ApiWrapper implements CalculableBulkPriceItemInterface, Calcu
      * @VirtualProperty
      * @SerializedName("length")
      */
-    public function getLenght()
+    public function getLength()
     {
         return $this->entity->getLength();
     }
@@ -586,7 +589,7 @@ class Item extends ApiWrapper implements CalculableBulkPriceItemInterface, Calcu
      * @param $product
      * @return Item
      */
-    public function setProduct($product)
+    public function setProduct($product = null)
     {
         $productEntity = $product;
         // if api-product - temporarily save
@@ -664,7 +667,10 @@ class Item extends ApiWrapper implements CalculableBulkPriceItemInterface, Calcu
      */
     public function getCalcProduct()
     {
-        return $this->getProduct()->getEntity();
+        if ($this->getProduct()) {
+            return $this->getProduct()->getEntity();
+        }
+        return null;
     }
 
     /**
