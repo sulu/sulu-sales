@@ -11,7 +11,7 @@ Refactoring and inheritance of order-bundle:
 
 #### DEPLOY
 
-##### 1. Step
+##### 1. Step (SQL)
 
 ```{sql}
     SET FOREIGN_KEY_CHECKS=0;
@@ -29,13 +29,15 @@ Refactoring and inheritance of order-bundle:
     DROP TABLE IF EXISTS ss_shipping_items;
 ```
 
-##### 2. Step
+##### 2. Step (CONSOLE)
+
+Now in console type 
 
 ```
     app/console doctrine:schema:update --force
 ```
 
-##### 3. Step
+##### 3. Step (SQL)
 
 ```{sql}
     INSERT so_order_items SELECT * FROM temp_so_order_items;

@@ -322,13 +322,13 @@ define([
 
             this.sandbox.start(form);
 
-            if (!!data.account && !!data.account.id) {
-                initSelectsByAccountId.call(this, data.account.id, data);
+            if (!!data.customerAccount && !!data.customerAccount.id) {
+                initSelectsByAccountId.call(this, data.customerAccount.id, data);
             }
 
             var options = Config.get('sulucontact.components.autocomplete.default.account');
             options.el = constants.accountInputId;
-            options.value = !!data.account ? data.account : '';
+            options.value = !!data.customerAccount ? data.customerAccount : '';
             options.instanceName = this.accountInstanceName;
             options.remoteUrl += '&type=' + this.customerId + '&limit=' + constants.autocompleteLimit;
             options.limit = constants.autocompleteLimit;
@@ -503,7 +503,7 @@ define([
             this.sandbox.util.load(this.sandbox.util.template(constants.accountContactsUrl, {id: id}))
                 .then(function(response) {
                     data = response._embedded.contacts;
-                    preselect = !!orderData && orderData.contact ? [orderData.contact.id] : null;
+                    preselect = !!orderData && orderData.customerContact ? [orderData.customerContact.id] : null;
                     initContactSelect.call(this, data, preselect);
                 }.bind(this))
                 .fail(function(textStatus, error) {

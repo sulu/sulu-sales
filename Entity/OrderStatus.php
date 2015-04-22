@@ -2,7 +2,7 @@
 
 namespace Sulu\Bundle\Sales\OrderBundle\Entity;
 
-class OrderStatus
+class OrderStatus implements OrderStatusInterface
 {
     const STATUS_CREATED = 1;
 

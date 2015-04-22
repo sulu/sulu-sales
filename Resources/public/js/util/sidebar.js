@@ -89,8 +89,8 @@ define([
                 order.fetch({
                     success: function(response) {
                         model = response.toJSON();
-                        if (!!model.account && !!model.contact) {
-                            payload.callback(model.contact.id, model.account.id);
+                        if (!!model.customerAccount && !!model.customerContact) {
+                            payload.callback(model.customerContact.id, model.customerAccount.id);
                         } else {
                             this.sandbox.logger.error('received invalid data when initializing sidebar', model);
                         }
@@ -117,12 +117,12 @@ define([
 
             this.sandbox = sandbox;
 
-            if (!!data.contact && !!data.account && !!data.status) {
+            if (!!data.customerContact && !!data.customerAccount && !!data.status) {
                 uriTemplate = this.sandbox.uritemplate.parse(constants.widgetUrls.orderDetail);
                 url = uriTemplate.expand({
                     params: {
-                        contact: data.contact.id,
-                        account: data.account.id,
+                        contact: data.customerContact.id,
+                        account: data.customerAccount.id,
                         status: data.status.status,
                         locale: AppConfig.getUser().locale,
                         orderDate: data.orderDate,
