@@ -8,6 +8,6 @@
             <generator strategy="AUTO"/>
         </id>
         <one-to-many field="order" target-entity="Sulu\Bundle\Sales\OrderBundle\Entity\OrderInterface" mapped-by="status"/>
-        <one-to-many field="translations" target-entity="Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatusTranslationInterface" mapped-by="status"/>
+        <one-to-many field="translations" target-entity="Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatusTranslation" mapped-by="status"/>
     </entity>
 </doctrine-mapping>

@@ -39,21 +39,6 @@ interface OrderInterface
      */
     public function getOrderNumber();
 
-//    /**
-//     * Set sessionId
-//     *
-//     * @param string $sessionId
-//     * @return OrderInterface
-//     */
-//    public function setSessionId($sessionId);
-//
-//    /**
-//     * Get sessionId
-//     *
-//     * @return string
-//     */
-//    public function getSessionId();
-
     /**
      * Set currency
      *
@@ -241,36 +226,6 @@ interface OrderInterface
      */
     public function getInvoiceAddress();
 
-//    /**
-//     * Set termsOfDelivery
-//     *
-//     * @param \Sulu\Bundle\ContactBundle\Entity\TermsOfDelivery $termsOfDelivery
-//     * @return OrderInterface
-//     */
-//    public function setTermsOfDelivery(\Sulu\Bundle\ContactBundle\Entity\TermsOfDelivery $termsOfDelivery = null);
-//
-//    /**
-//     * Get termsOfDelivery
-//     *
-//     * @return \Sulu\Bundle\ContactBundle\Entity\TermsOfDelivery
-//     */
-//    public function getTermsOfDelivery();
-//
-//    /**
-//     * Set termsOfPayment
-//     *
-//     * @param \Sulu\Bundle\ContactBundle\Entity\TermsOfPayment $termsOfPayment
-//     * @return OrderInterface
-//     */
-//    public function setTermsOfPayment(\Sulu\Bundle\ContactBundle\Entity\TermsOfPayment $termsOfPayment = null);
-//
-//    /**
-//     * Get termsOfPayment
-//     *
-//     * @return \Sulu\Bundle\ContactBundle\Entity\TermsOfPayment
-//     */
-//    public function getTermsOfPayment();
-
     /**
      * Set status
      *
@@ -286,21 +241,6 @@ interface OrderInterface
      */
     public function getStatus();
 
-//    /**
-//     * Set account
-//     *
-//     * @param \Sulu\Bundle\ContactBundle\Entity\Account $account
-//     * @return OrderInterface
-//     */
-//    public function setAccount(\Sulu\Bundle\ContactBundle\Entity\Account $account = null);
-//
-//    /**
-//     * Get account
-//     *
-//     * @return \Sulu\Bundle\ContactBundle\Entity\Account
-//     */
-//    public function getAccount();
-
     /**
      * Set contact
      *
@@ -315,21 +255,6 @@ interface OrderInterface
      * @return \Sulu\Bundle\ContactBundle\Entity\Contact
      */
     public function getCustomerContact();
-
-//    /**
-//     * Set responsibleContact
-//     *
-//     * @param \Sulu\Bundle\ContactBundle\Entity\Contact $responsibleContact
-//     * @return OrderInterface
-//     */
-//    public function setResponsibleContact(\Sulu\Bundle\ContactBundle\Entity\Contact $responsibleContact = null);
-//
-//    /**
-//     * Get responsibleContact
-//     *
-//     * @return \Sulu\Bundle\ContactBundle\Entity\Contact
-//     */
-//    public function getResponsibleContact();
 
     /**
      * Add items
@@ -432,21 +357,6 @@ interface OrderInterface
      * Updates the total net price
      */
     public function updateTotalNetPrice();
-
-//    /**
-//     * Set type
-//     *
-//     * @param OrderType $type
-//     * @return OrderInterface
-//     */
-//    public function setType(OrderType $type);
-//
-//    /**
-//     * Get type
-//     *
-//     * @return OrderInterfaceType
-//     */
-//    public function getType();
 
     /**
      * Set deliveryCost
