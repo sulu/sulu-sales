@@ -16,14 +16,14 @@ use Doctrine\ORM\NoResultException;
 use Sulu\Bundle\ContactBundle\Entity\Account;
 use Sulu\Bundle\ContactBundle\Entity\Address;
 use Sulu\Bundle\ContactBundle\Entity\Contact;
-use Sulu\Bundle\ContactBundle\Entity\TermsOfDelivery;
 use Sulu\Bundle\ProductBundle\Product\ProductManagerInterface;
-use Sulu\Bundle\Sales\CoreBundle\Entity\Item as ItemEntity;
+use Sulu\Bundle\Sales\CoreBundle\Entity\ItemInterface;
 use Sulu\Bundle\Sales\CoreBundle\Item\Exception\ItemNotFoundException;
 use Sulu\Bundle\Sales\CoreBundle\Item\ItemManager;
 use Sulu\Bundle\Sales\CoreBundle\Pricing\GroupedItemsPriceCalculatorInterface;
 use Sulu\Bundle\Sales\OrderBundle\Entity\OrderActivityLog;
 use Sulu\Bundle\Sales\CoreBundle\Entity\OrderAddress;
+use Sulu\Bundle\Sales\OrderBundle\Entity\OrderInterface;
 use Sulu\Bundle\Sales\OrderBundle\Entity\OrderRepository;
 use Sulu\Bundle\Sales\OrderBundle\Entity\Order as OrderEntity;
 use Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatus as OrderStatusEntity;
@@ -184,7 +184,7 @@ class OrderManager
         $user = $userId ? $this->userRepository->findUserById($userId) : null;
 
         $order->setOrderNumber($this->getProperty($data, 'orderNumber', $order->getOrderNumber()));
-        $order->setCurrency($this->getProperty($data, 'currency', $order->getCurrency()));
+        $order->setCurrencyCode($this->getProperty($data, 'currencyCode', $order->getCurrencyCode()));
         $order->setCostCentre($this->getProperty($data, 'costCentre', $order->getCostCentre()));
         $order->setCommission($this->getProperty($data, 'commission', $order->getCommission()));
         $order->setTaxfree($this->getProperty($data, 'taxfree', $order->getTaxfree()));
@@ -217,9 +217,9 @@ class OrderManager
         // add contact
         $contact = $this->addContactRelation(
             $data,
-            'contact',
+            'customerContact',
             function ($contact) use ($order) {
-                $order->setContact($contact);
+                $order->setCustomerContact($contact);
             }
         );
 
@@ -261,7 +261,7 @@ class OrderManager
 
         // if not new and contact is not set, use old contact
         if (!$isNewOrder && !$contact) {
-            $contact = $order->getEntity()->getContact();
+            $contact = $order->getEntity()->getCustomerContact();
         }
         $contactFullName = null;
         if ($contact) {
@@ -629,7 +629,7 @@ class OrderManager
                 $order,
                 function (&$order) use ($locale) {
                     $order = new Order($order, $locale);
-                    $this->updateApiEntity($order);
+                    $this->updateApiEntity($order, $locale);
                 }
             );
         }
@@ -1069,7 +1069,7 @@ class OrderManager
      */
     private function setAccount($data, Order $order)
     {
-        $accountData = $this->getProperty($data, 'account');
+        $accountData = $this->getProperty($data, 'customerAccount');
         if ($accountData) {
             if (!array_key_exists('id', $accountData)) {
                 throw new MissingOrderAttributeException('account.id');
@@ -1079,11 +1079,11 @@ class OrderManager
             if (!$account) {
                 throw new OrderDependencyNotFoundException(static::$accountEntityName, $accountData['id']);
             }
-            $order->setAccount($account);
+            $order->setCustomerAccount($account);
 
             return $account;
         } else {
-            $order->setAccount(null);
+            $order->setCustomerAccount(null);
         }
 
         return null;
@@ -1121,7 +1121,7 @@ class OrderManager
      * @param $item
      * @param $order
      */
-    public function removeItem(ItemEntity $item, OrderEntity $order, $deleteEntity = true)
+    public function removeItem(ItemInterface $item, OrderInterface $order, $deleteEntity = true)
     {
         // remove from order
         $order->removeItem($item);
@@ -1132,7 +1132,7 @@ class OrderManager
     }
 
     /**
-     * get order item by id and checks if item belongs to the order
+     * Get order item by id and checks if item belongs to the order
      *
      * @param $itemId
      * @param $order
@@ -1141,7 +1141,7 @@ class OrderManager
      * @throws ItemNotFoundException
      * @throws OrderException
      */
-    public function getOrderItemById($itemId, OrderEntity $order, &$hasMultiple = false)
+    public function getOrderItemById($itemId, OrderInterface $order, &$hasMultiple = false)
     {
         $item = $this->itemManager->findEntityById($itemId);
         if (!$item) {

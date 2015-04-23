@@ -322,13 +322,13 @@ define([
 
             this.sandbox.start(form);
 
-            if (!!data.account && !!data.account.id) {
-                initSelectsByAccountId.call(this, data.account.id, data);
+            if (!!data.customerAccount && !!data.customerAccount.id) {
+                initSelectsByAccountId.call(this, data.customerAccount.id, data);
             }
 
             var options = Config.get('sulucontact.components.autocomplete.default.account');
             options.el = constants.accountInputId;
-            options.value = !!data.account ? data.account : '';
+            options.value = !!data.customerAccount ? data.customerAccount : '';
             options.instanceName = this.accountInstanceName;
             options.remoteUrl += '&type=' + this.customerId + '&limit=' + constants.autocompleteLimit;
             options.limit = constants.autocompleteLimit;
@@ -503,7 +503,7 @@ define([
             this.sandbox.util.load(this.sandbox.util.template(constants.accountContactsUrl, {id: id}))
                 .then(function(response) {
                     data = response._embedded.contacts;
-                    preselect = !!orderData && orderData.contact ? [orderData.contact.id] : null;
+                    preselect = !!orderData && orderData.customerContact ? [orderData.customerContact.id] : null;
                     initContactSelect.call(this, data, preselect);
                 }.bind(this))
                 .fail(function(textStatus, error) {
@@ -634,7 +634,7 @@ define([
                         isEditable: this.isEditable,
                         remoteUrl: constants.accountUrl,
                         data: this.options.data.items,
-                        currency: this.options.data.currency,
+                        currency: this.options.data.currencyCode,
                         el: constants.itemTableSelector,
                         settings: {
                             columns: ['addresses', 'description', 'quantity', 'single-price', 'delivery-date', 'cost-center', 'discount', 'tax-rate']
@@ -653,7 +653,7 @@ define([
                         repeatSelect: false,
                         valueName: 'code',
                         data: this.options.currencies,
-                        preSelectedElements: getCurrencyIdForCode.call(this, this.options.data.currency, this.options.currencies)
+                        preSelectedElements: getCurrencyIdForCode.call(this, this.options.data.currencyCode, this.options.currencies)
                     }
                 }
             ]);
@@ -673,11 +673,11 @@ define([
                 // because the preselected option of the select conflicts with the data mapper
                 // the data mapper property is not used and therefore the data.currency property
                 // has to be set this way
-                data.currency = !!this.currency ? this.currency : this.options.data.currency;
+                data.currencyCode = !!this.currency ? this.currency : this.options.data.currencyCode;
 
                 // FIXME auto complete in mapper
                 // only get id, if auto-complete is not empty:
-                data.account = {
+                data.customerAccount = {
                     id: this.sandbox.dom.attr('#' + this.accountInstanceName, 'data-id')
                 };
 

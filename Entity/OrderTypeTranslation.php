@@ -25,10 +25,9 @@ class OrderTypeTranslation
     private $id;
 
     /**
-     * @var \Sulu\Bundle\Sales\OrderBundle\Entity\OrderType
+     * @var OrderType
      */
     private $type;
-
 
     /**
      * Set name
@@ -46,7 +45,7 @@ class OrderTypeTranslation
     /**
      * Get name
      *
-     * @return string 
+     * @return string
      */
     public function getName()
     {
@@ -69,7 +68,7 @@ class OrderTypeTranslation
     /**
      * Get locale
      *
-     * @return string 
+     * @return string
      */
     public function getLocale()
     {
@@ -79,7 +78,7 @@ class OrderTypeTranslation
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
     public function getId()
     {
@@ -89,10 +88,10 @@ class OrderTypeTranslation
     /**
      * Set type
      *
-     * @param \Sulu\Bundle\Sales\OrderBundle\Entity\OrderType $type
+     * @param OrderType $type
      * @return OrderTypeTranslation
      */
-    public function setType(\Sulu\Bundle\Sales\OrderBundle\Entity\OrderType $type)
+    public function setType(OrderType $type)
     {
         $this->type = $type;
 
@@ -102,7 +101,7 @@ class OrderTypeTranslation
     /**
      * Get type
      *
-     * @return \Sulu\Bundle\Sales\OrderBundle\Entity\OrderType 
+     * @return OrderType
      */
     public function getType()
     {

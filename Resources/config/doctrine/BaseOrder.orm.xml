@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+    <mapped-superclass name="Sulu\Bundle\Sales\OrderBundle\Entity\BaseOrder">
+        <id name="id" type="integer" column="id">
+            <generator strategy="AUTO"/>
+        </id>
+
+        <field name="number" type="string" column="number" length="255" nullable="true"/>
+        <field name="orderNumber" type="string" column="orderNumber" nullable="true"/>
+        <field name="currencyCode" type="string" column="currency" length="255" nullable="true"/>
+        <field name="taxfree" type="boolean" column="taxfree" nullable="true"></field>
+        <field name="totalNetPrice" type="float" column="totalNetPrice" nullable="true"></field>
+
+        <field name="costCentre" type="string" column="costCentre" nullable="true"/>
+        <field name="commission" type="string" column="commission" nullable="true"/>
+        <field name="bitmaskStatus" type="integer" column="bitmaskStatus" length="3" nullable="false"/>
+
+        <field name="customerName" type="string" column="customerName" length="255" nullable="false"/>
+        <field name="deliveryCost" type="float" column="deliveryCost" nullable="true"/>
+
+        <field name="created" type="datetime" column="created"></field>
+        <field name="changed" type="datetime" column="changed"></field>
+        <field name="orderDate" type="datetime" column="orderDate" nullable="true"></field>
+        <field name="desiredDeliveryDate" type="datetime" column="desiredDeliveryDate" nullable="true"></field>
+
+        <many-to-one field="deliveryAddress" target-entity="Sulu\Bundle\Sales\CoreBundle\Entity\OrderAddressInterface">
+            <join-columns>
+                <join-column name="idOrderAddressesDelivery"/>
+            </join-columns>
+        </many-to-one>
+        <many-to-one field="invoiceAddress" target-entity="Sulu\Bundle\Sales\CoreBundle\Entity\OrderAddressInterface">
+            <join-columns>
+                <join-column name="idOrderAddressesInvoice"/>
+            </join-columns>
+        </many-to-one>
+        <many-to-one field="status" target-entity="Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatusInterface"
+                     inversed-by="order">
+            <join-columns>
+                <join-column name="idOrderStatus" referenced-column-name="id" nullable="false"/>
+            </join-columns>
+        </many-to-one>
+        <many-to-one field="customerContact" target-entity="Sulu\Bundle\ContactBundle\Entity\Contact">
+            <join-columns>
+                <join-column name="idContactsCustomer" referenced-column-name="id" on-delete="SET NULL"/>
+            </join-columns>
+        </many-to-one>
+        <many-to-one field="changer" target-entity="Sulu\Component\Security\Authentication\UserInterface">
+            <join-columns>
+                <join-column name="idUsersChanger" referenced-column-name="id" on-delete="SET NULL" nullable="true"/>
+            </join-columns>
+        </many-to-one>
+        <many-to-one field="creator" target-entity="Sulu\Component\Security\Authentication\UserInterface">
+            <join-columns>
+                <join-column name="idUsersCreator" referenced-column-name="id" on-delete="SET NULL" nullable="true"/>
+            </join-columns>
+        </many-to-one>
+        <many-to-many field="items" target-entity="Sulu\Bundle\Sales\CoreBundle\Entity\ItemInterface">
+            <join-table name="so_order_items">
+                <join-columns>
+                    <join-column name="idOrders" referenced-column-name="id"/>
+                </join-columns>
+                <inverse-join-columns>
+                    <join-column name="idItems" referenced-column-name="id"/>
+                </inverse-join-columns>
+            </join-table>
+        </many-to-many>
+    </mapped-superclass>
+</doctrine-mapping>

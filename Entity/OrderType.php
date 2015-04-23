@@ -60,10 +60,10 @@ class OrderType
     /**
      * Add order
      *
-     * @param \Sulu\Bundle\Sales\OrderBundle\Entity\Order $order
+     * @param OrderInterface $order
      * @return OrderType
      */
-    public function addOrder(\Sulu\Bundle\Sales\OrderBundle\Entity\Order $order)
+    public function addOrder(OrderInterface $order)
     {
         $this->order[] = $order;
 
@@ -73,9 +73,9 @@ class OrderType
     /**
      * Remove order
      *
-     * @param \Sulu\Bundle\Sales\OrderBundle\Entity\Order $order
+     * @param OrderInterface $order
      */
-    public function removeOrder(\Sulu\Bundle\Sales\OrderBundle\Entity\Order $order)
+    public function removeOrder(OrderInterface $order)
     {
         $this->order->removeElement($order);
     }
@@ -93,10 +93,10 @@ class OrderType
     /**
      * Add translations
      *
-     * @param \Sulu\Bundle\Sales\OrderBundle\Entity\OrderTypeTranslation $translations
+     * @param OrderTypeTranslation $translations
      * @return OrderType
      */
-    public function addTranslation(\Sulu\Bundle\Sales\OrderBundle\Entity\OrderTypeTranslation $translations)
+    public function addTranslation(OrderTypeTranslation $translations)
     {
         $this->translations[] = $translations;
 
@@ -106,9 +106,9 @@ class OrderType
     /**
      * Remove translations
      *
-     * @param \Sulu\Bundle\Sales\OrderBundle\Entity\OrderTypeTranslation $translations
+     * @param OrderTypeTranslation $translations
      */
-    public function removeTranslation(\Sulu\Bundle\Sales\OrderBundle\Entity\OrderTypeTranslation $translations)
+    public function removeTranslation(OrderTypeTranslation $translations)
     {
         $this->translations->removeElement($translations);
     }

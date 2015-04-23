@@ -287,7 +287,7 @@ class OrderDataSetup
         $this->order->setCommission('commission');
         $this->order->setCostCentre('cost-centre');
         $this->order->setCustomerName($this->contact->getFullName());
-        $this->order->setCurrency('EUR');
+        $this->order->setCurrencyCode('EUR');
         $this->order->setTermsOfDelivery($this->termsOfDelivery);
         $this->order->setTermsOfDeliveryContent($this->termsOfDelivery->getTerms());
         $this->order->setTermsOfPayment($this->termsOfPayment);
@@ -298,8 +298,8 @@ class OrderDataSetup
         $this->order->setDesiredDeliveryDate(new DateTime('2015-01-01'));
         $this->order->setSessionId('abcd1234');
         $this->order->setTaxfree(true);
-        $this->order->setContact($this->contact);
-        $this->order->setAccount($this->account);
+        $this->order->setCustomerContact($this->contact);
+        $this->order->setCustomerAccount($this->account);
         $this->order->setStatus($this->orderStatus);
         $this->order->setBitmaskStatus($this->orderStatus->getId());
         $this->order->setDeliveryAddress($this->orderAddressDelivery);

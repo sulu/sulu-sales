@@ -9,14 +9,14 @@
 
         <field name="created" type="datetime" column="created"></field>
 
-        <many-to-one field="statusFrom" target-entity="Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatus">
+        <many-to-one field="statusFrom" target-entity="Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatusInterface">
             <join-column name="idOrderStatusFrom" referenced-column-name="id" nullable="true"/>
         </many-to-one>
-        <many-to-one field="statusTo" target-entity="Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatus">
+        <many-to-one field="statusTo" target-entity="Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatusInterface">
             <join-column name="idOrderStatusTo" referenced-column-name="id" nullable="false"/>
         </many-to-one>
 
-        <many-to-one field="order" target-entity="Sulu\Bundle\Sales\OrderBundle\Entity\Order">
+        <many-to-one field="order" target-entity="Sulu\Bundle\Sales\OrderBundle\Entity\OrderInterface">
             <join-column name="idOrders" referenced-column-name="id" nullable="false" on-delete="CASCADE" />
         </many-to-one>
 

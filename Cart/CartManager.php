@@ -415,13 +415,13 @@ class CartManager extends BaseSalesManager
 
         // set currency - if not defined use default
         $currency = $currency ?: $this->defaultCurrency;
-        $cart->setCurrency($currency);
+        $cart->setCurrencyCode($currency);
 
         // get address from contact and account
         $contact = $user->getContact();
         $account = $contact->getMainAccount();
-        $cart->setContact($contact);
-        $cart->setAccount($account);
+        $cart->setCustomerContact($contact);
+        $cart->setCustomerAccount($account);
 
         /** Account $account */
         if ($account && $account->getResponsiblePerson()) {
@@ -487,7 +487,7 @@ class CartManager extends BaseSalesManager
             'totalItems' => count($cart->getItems()),
             'totalPrice' => $cart->getTotalNetPrice(),
             'totalPriceFormatted' => $cart->getTotalNetPriceFormatted(),
-            'currency' => $cart->getCurrency()
+            'currency' => $cart->getCurrencyCode()
         );
     }
 
@@ -500,7 +500,7 @@ class CartManager extends BaseSalesManager
     {
         $tmplData = array(
             'order' => $apiOrder,
-            'contact' => $apiOrder->getEntity()->getContact()
+            'contact' => $apiOrder->getEntity()->getCustomerContact()
         );
 
         $template = $this->twig->loadTemplate('SuluSalesOrderBundle:Emails:order.confirmation.twig');
