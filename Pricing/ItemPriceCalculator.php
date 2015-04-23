@@ -31,10 +31,12 @@ class ItemPriceCalculator
     }
 
     /**
-     * caclucaltes the overall total price of an item
-     * @param $item
-     * @param string $currency
-     * @param bool $useProductsPrice
+     * Calculates the overall total price of an item
+     *
+     * @param CalculableBulkPriceItemInterface $item
+     * @param string|null $currency
+     * @param bool|null $useProductsPrice
+     *
      * @return int
      * @throws PriceCalculationException
      */
@@ -71,7 +73,21 @@ class ItemPriceCalculator
     }
 
     /**
-     * validate item values
+     * Format price
+     *
+     * @param float $price
+     * @param string $currency
+     * @param string $locale
+     *
+     * @return string
+     */
+    public function formatPrice($price, $currency, $locale = 'de')
+    {
+        return $this->priceManager->getFormattedPrice($price, $currency, $locale);
+    }
+
+    /**
+     * Validate item values
      *
      * @param $item
      *
@@ -90,10 +106,10 @@ class ItemPriceCalculator
     }
 
     /**
-     * throws an exception if value is null
+     * Throws an exception if value is null
      *
-     * @param $key
-     * @param $value
+     * @param string $key
+     * @param mixed $value
      *
      * @throws PriceCalculationException
      */
@@ -105,27 +121,13 @@ class ItemPriceCalculator
     }
 
     /**
-     * format price
+     * Format price
      *
-     * @param $price
-     * @param $currency
-     * @param string $locale
-     * @return String
-     */
-    public function formatPrice($price, $currency, $locale = 'de')
-    {
-        return $this->priceManager->getFormattedPrice($price, $currency, $locale);
-    }
-
-    /**
-     * format price
-     *
-     * @param $item
-     * @param $currency
+     * @param CalculableBulkPriceItemInterface $item
+     * @param string $currency
      * @param bool $useProductPrice
-     * @return String
-     * @internal param $price
-     * @internal param string $locale
+     *
+     * @return string
      */
     public function getItemPrice($item, $currency, $useProductPrice = true)
     {
@@ -143,9 +145,9 @@ class ItemPriceCalculator
     }
 
     /**
-     * either returns currency or default currency
+     * Either returns currency or default currency
      *
-     * @param $currency
+     * @param string $currency
      * @return mixed
      */
     private function getCurrency($currency)

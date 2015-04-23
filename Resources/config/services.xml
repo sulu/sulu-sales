@@ -14,6 +14,11 @@
         <parameter key="sulu_sales_core.grouped_price_calculator.class">Sulu\Bundle\Sales\CoreBundle\Pricing\GroupedItemsPriceCalculator</parameter>
         <parameter key="sulu_sales_core.item_price_calculator.class">Sulu\Bundle\Sales\CoreBundle\Pricing\ItemPriceCalculator</parameter>
         <parameter key="sulu_sales_core.order_address_manager.class">Sulu\Bundle\Sales\CoreBundle\Manager\OrderAddressManager</parameter>
+        <parameter key="sulu_sales_core.item_entity">Sulu\Bundle\Sales\CoreBundle\Entity\Item</parameter>
+        <parameter key="sulu_sales_core.item_api_entity">Sulu\Bundle\Sales\CoreBundle\Api\Item</parameter>
+        <parameter key="sulu_sales_core.order_address_entity">Sulu\Bundle\Sales\CoreBundle\Entity\OrderAddress</parameter>
+        <parameter key="sulu_sales_core.order_address_api_entity">Sulu\Bundle\Sales\CoreBundle\Api\OrderAddress</parameter>
+
     </parameters>
 
     <services>
@@ -43,12 +48,15 @@
             <argument type="service" id="sulu_product.price_manager" />
             <argument type="service" id="sulu_sales_core.item_price_calculator" />
             <argument type="service" id="sulu_sales_core.order_address_manager" />
+            <argument>%sulu_sales_core.item_entity%</argument>
+            <argument>%sulu_sales_core.item_api_entity%</argument>
+            <argument>%sulu_sales_core.order_address_entity%</argument>
         </service>
 
         <!--REPOSITORIES-->
         <service id="sulu_sales_core.item_repository" class="%sulu_sales_core.item_repository.class%"
                  factory-method="getRepository" factory-service="doctrine.orm.entity_manager">
-            <argument>SuluSalesCoreBundle:Item</argument>
+            <argument>%sulu_sales_core.item_entity%</argument>
         </service>
 
         <!--WIDGETS-->
