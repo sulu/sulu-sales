@@ -74,17 +74,12 @@ class ItemManager
     /**
      * @var string
      */
-    protected $itemEntity;
-
-    /**
-     * @var string
-     */
     protected $orderAddressEntity;
 
     /**
-     * @var string
+     * @var ItemFactoryInterface
      */
-    protected $itemApiEntity;
+    protected $itemFactory;
 
     /**
      * @param ObjectManager $em
@@ -94,8 +89,7 @@ class ItemManager
      * @param ProductPriceManagerInterface $productPriceManager
      * @param ItemPriceCalculator $itemPriceCalculator
      * @param OrderAddressManager $orderAddressManager
-     * @param string $itemEntity
-     * @param string $itemApiEntity
+     * @param ItemFactoryInterface $itemFactory
      * @param string $orderAddressEntity
      */
     public function __construct(
@@ -106,8 +100,7 @@ class ItemManager
         ProductPriceManagerInterface $productPriceManager,
         ItemPriceCalculator $itemPriceCalculator,
         OrderAddressManager $orderAddressManager,
-        $itemEntity,
-        $itemApiEntity,
+        ItemFactoryInterface $itemFactory,
         $orderAddressEntity
     )
     {
@@ -118,8 +111,7 @@ class ItemManager
         $this->productPriceManager = $productPriceManager;
         $this->itemPriceCalculator = $itemPriceCalculator;
         $this->orderAddressManager = $orderAddressManager;
-        $this->itemEntity = $itemEntity;
-        $this->itemApiEntity = $itemApiEntity;
+        $this->itemFactory = $itemFactory;
         $this->orderAddressEntity = $orderAddressEntity;
     }
 
@@ -153,11 +145,11 @@ class ItemManager
         // check required data
         if ($isNewItem) {
             $this->checkRequiredData($data, true);
-            $item = new $this->itemApiEntity(new $this->itemEntity(), $locale);
+            $item = $this->itemFactory->createApiEntity($this->itemFactory->createEntity(), $locale);
         }
 
         if ($item instanceof ItemInterface) {
-            $item = new $this->itemApiEntity($item, $locale);
+            $item = $this->itemFactory->createApiEntity($item, $locale);
         }
 
         // get user
@@ -337,7 +329,7 @@ class ItemManager
         $item = $this->itemRepository->findByIdAndLocale($id, $locale);
 
         if ($item) {
-            return new $this->itemApiEntity($item, $locale);
+            return $this->itemFactory->createApiEntity($item, $locale);
         } else {
             return null;
         }
@@ -377,7 +369,7 @@ class ItemManager
         array_walk(
             $items,
             function (&$item) use ($locale) {
-                $item = new $this->itemApiEntity($item, $locale);
+                $item = $this->itemFactory->createApiEntity($item, $locale);
             }
         );
 

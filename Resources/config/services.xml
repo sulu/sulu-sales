@@ -18,7 +18,7 @@
         <parameter key="sulu_sales_core.item_api_entity">Sulu\Bundle\Sales\CoreBundle\Api\Item</parameter>
         <parameter key="sulu_sales_core.order_address_entity">Sulu\Bundle\Sales\CoreBundle\Entity\OrderAddress</parameter>
         <parameter key="sulu_sales_core.order_address_api_entity">Sulu\Bundle\Sales\CoreBundle\Api\OrderAddress</parameter>
-
+        <parameter key="sulu_sales_core.item_factory.class">Sulu\Bundle\Sales\CoreBundle\Item\ItemFactory</parameter>
     </parameters>
 
     <services>
@@ -40,6 +40,11 @@
             <argument type="service" id="sulu_sales_core.item_price_calculator"></argument>
         </service>
 
+        <service id="sulu_sales_core.item_factory" class="%sulu_sales_core.item_factory.class%">
+            <argument>%sulu_product.product_api_entity%</argument>
+            <argument>%sulu_product.default_currency%</argument>
+        </service>
+
         <service id="sulu_sales_core.item_manager" class="%sulu_sales_core.item_manager.class%">
             <argument type="service" id="doctrine.orm.entity_manager" />
             <argument type="service" id="sulu_sales_core.item_repository" />
@@ -48,8 +53,7 @@
             <argument type="service" id="sulu_product.price_manager" />
             <argument type="service" id="sulu_sales_core.item_price_calculator" />
             <argument type="service" id="sulu_sales_core.order_address_manager" />
-            <argument>%sulu_sales_core.item_entity%</argument>
-            <argument>%sulu_sales_core.item_api_entity%</argument>
+            <argument type="service" id="sulu_sales_core.item_factory" />
             <argument>%sulu_sales_core.order_address_entity%</argument>
         </service>
 
