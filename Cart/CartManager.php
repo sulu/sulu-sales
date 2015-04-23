@@ -12,7 +12,6 @@ namespace Sulu\Bundle\Sales\OrderBundle\Cart;
 
 use Doctrine\Common\Persistence\ObjectManager;
 
-use Doctrine\ORM\EntityRepository;
 use Sulu\Bundle\Sales\CoreBundle\Manager\BaseSalesManager;
 use Sulu\Bundle\Sales\CoreBundle\Pricing\GroupedItemsPriceCalculatorInterface;
 use Sulu\Bundle\Sales\OrderBundle\Api\Order as ApiOrder;
@@ -20,12 +19,11 @@ use Sulu\Bundle\Sales\OrderBundle\Entity\Order;
 use Sulu\Bundle\Sales\OrderBundle\Entity\OrderRepository;
 use Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatus;
 use Sulu\Bundle\Sales\OrderBundle\Order\Exception\OrderException;
+use Sulu\Bundle\Sales\OrderBundle\Order\OrderFactoryInterface;
 use Sulu\Bundle\Sales\OrderBundle\Order\OrderManager;
 use Sulu\Bundle\Sales\OrderBundle\Order\OrderPdfManager;
-use Sulu\Component\Security\Authentication\UserRepositoryInterface;
 use Sulu\Component\Persistence\RelationTrait;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
-use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 class CartManager extends BaseSalesManager
 {
@@ -103,11 +101,23 @@ class CartManager extends BaseSalesManager
     protected $mailerFrom;
 
     /**
+     * @var OrderFactoryInterface
+     */
+    protected $orderFactory;
+
+    /**
      * @param ObjectManager $em
      * @param SessionInterface $session
      * @param OrderRepository $orderRepository
      * @param OrderManager $orderManager
      * @param GroupedItemsPriceCalculatorInterface $priceCalculation
+     * @param string $defaultCurrency
+     * @param object $accountManager
+     * @param \Twig_Environment $twig
+     * @param OrderPdfManager $pdfManager
+     * @param \Swift_Mailer $mailer
+     * @param string $mailerFrom
+     * @param OrderFactoryInterface $orderFactory
      */
     public function __construct(
         ObjectManager $em,
@@ -120,7 +130,8 @@ class CartManager extends BaseSalesManager
         \Twig_Environment $twig,
         OrderPdfManager $pdfManager,
         \Swift_Mailer $mailer,
-        $mailerFrom
+        $mailerFrom,
+        OrderFactoryInterface $orderFactory
     )
     {
         $this->em = $em;
@@ -134,6 +145,7 @@ class CartManager extends BaseSalesManager
         $this->pdfManager = $pdfManager;
         $this->mailer = $mailer;
         $this->mailerFrom = $mailerFrom;
+        $this->orderFactory = $orderFactory;
     }
 
     /**
@@ -178,8 +190,7 @@ class CartManager extends BaseSalesManager
             $cart = $this->createEmptyCart($user, $persistEmptyCart);
         }
 
-        $currency = $currency ?: $this->defaultCurrency;
-        $apiOrder = new ApiOrder($cart, $locale, $currency);
+        $apiOrder = $this->orderFactory->createApiEntity($cart, $locale);
 
         $this->orderManager->updateApiEntity($apiOrder, $locale);
 

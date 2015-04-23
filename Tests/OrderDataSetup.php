@@ -34,6 +34,7 @@ use Sulu\Bundle\ProductBundle\Entity\TypeTranslation;
 use Sulu\Bundle\ProductBundle\Entity\Unit;
 use Sulu\Bundle\ProductBundle\Entity\UnitTranslation;
 use Sulu\Bundle\Sales\CoreBundle\Entity\Item;
+use Sulu\Bundle\Sales\CoreBundle\Item\ItemFactoryInterface;
 use Sulu\Bundle\Sales\OrderBundle\DataFixtures\ORM\LoadOrderStatus;
 use Sulu\Bundle\Sales\OrderBundle\Entity\Order;
 use Sulu\Bundle\Sales\CoreBundle\Entity\OrderAddress;
@@ -141,14 +142,24 @@ class OrderDataSetup
      */
     protected $em;
 
+    /**
+     * @var ItemFactoryInterface
+     */
+    protected $itemFactory;
+
+    /**
+     * @var string
+     */
     protected $productEntity;
 
     public function __construct(
         EntityManager $entityManager,
+        $itemFactory,
         $productEntity = 'Sulu\Bundle\ProductBundle\Entity\Product'
     )
     {
         $this->productEntity = $productEntity;
+        $this->itemFactory = $itemFactory;
 
         $this->em = $entityManager;
 
@@ -380,7 +391,7 @@ class OrderDataSetup
         $this->product2->addPrice($price2);
 
         // Item
-        $this->item = new Item();
+        $this->item = $this->itemFactory->createEntity();
         $this->item->setName('Product1');
         $this->item->setNumber('123');
         $this->item->setQuantity(2);
