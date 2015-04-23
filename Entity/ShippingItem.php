@@ -2,7 +2,6 @@
 
 namespace Sulu\Bundle\Sales\ShippingBundle\Entity;
 
-use Doctrine\ORM\Mapping as ORM;
 use Sulu\Bundle\Sales\CoreBundle\Entity\ItemInterface;
 
 /**
@@ -35,24 +34,24 @@ class ShippingItem
      */
     private $item;
 
-
     /**
      * Set quantity
      *
      * @param float $quantity
+     *
      * @return ShippingItem
      */
     public function setQuantity($quantity)
     {
         $this->quantity = $quantity;
-    
+
         return $this;
     }
 
     /**
      * Get quantity
      *
-     * @return float 
+     * @return float
      */
     public function getQuantity()
     {
@@ -63,19 +62,20 @@ class ShippingItem
      * Set note
      *
      * @param string $note
+     *
      * @return ShippingItem
      */
     public function setNote($note)
     {
         $this->note = $note;
-    
+
         return $this;
     }
 
     /**
      * Get note
      *
-     * @return string 
+     * @return string
      */
     public function getNote()
     {
@@ -85,7 +85,7 @@ class ShippingItem
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
     public function getId()
     {
@@ -96,12 +96,13 @@ class ShippingItem
      * Set shipping
      *
      * @param Shipping $shipping
+     *
      * @return ShippingItem
      */
     public function setShipping(Shipping $shipping)
     {
         $this->shipping = $shipping;
-    
+
         return $this;
     }
 
@@ -119,12 +120,13 @@ class ShippingItem
      * Set item
      *
      * @param ItemInterface $item
+     *
      * @return ShippingItem
      */
     public function setItem(ItemInterface $item)
     {
         $this->item = $item;
-    
+
         return $this;
     }
 

@@ -2,13 +2,9 @@
 
 namespace Sulu\Bundle\Sales\ShippingBundle\Entity;
 
-use Doctrine\ORM\Mapping as ORM;
 use Sulu\Bundle\Sales\CoreBundle\Entity\OrderAddress;
 use Sulu\Component\Security\Authentication\UserInterface;
 
-/**
- * Shipping
- */
 class Shipping
 {
     /**
@@ -22,7 +18,7 @@ class Shipping
     private $shippingNumber;
 
     /**
-     * @var stringgetst
+     * @var string
      */
     private $customerName;
 
