@@ -4,7 +4,7 @@ namespace Sulu\Bundle\Sales\OrderBundle\Api;
 
 use Sulu\Bundle\ContactBundle\Entity\Account;
 use Sulu\Bundle\ContactBundle\Entity\Contact;
-use Sulu\Bundle\ContactBundle\Entity\TermsOfDelivery;
+use Sulu\Bundle\ContactExtensionBundle\Entity\TermsOfDelivery;
 use Sulu\Bundle\ContactBundle\Entity\TermsOfPayment;
 use Sulu\Bundle\Sales\CoreBundle\Api\Item;
 use Sulu\Bundle\Sales\CoreBundle\Core\SalesDocument;

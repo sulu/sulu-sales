@@ -11,10 +11,9 @@ use Hateoas\Representation\CollectionRepresentation;
 
 class TemplateController extends RestController
 {
-
-    static $termsOfPaymentEntityName = 'SuluContactBundle:TermsOfPayment';
-    static $termsOfDeliveryEntityName = 'SuluContactBundle:TermsOfDelivery';
-    static $orderStatusEntityName = 'SuluSalesOrderBundle:OrderStatus';
+    protected static $termsOfPaymentEntityName = 'SuluContactExtensionBundle:TermsOfPayment';
+    protected static $termsOfDeliveryEntityName = 'SuluContactExtensionBundle:TermsOfDelivery';
+    protected static $orderStatusEntityName = 'SuluSalesOrderBundle:OrderStatus';
 
     /**
      * Returns Template for list
@@ -89,7 +88,8 @@ class TemplateController extends RestController
      * returns array of order statuses
      * @return array
      */
-    public function getOrderStatus() {
+    public function getOrderStatus()
+    {
         $statuses = $this->getDoctrine()->getRepository(self::$orderStatusEntityName)->findAll();
         $locale = $this->getUser()->getLocale();
         $statusArray = [];

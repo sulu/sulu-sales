@@ -4,8 +4,8 @@ namespace Sulu\Bundle\Sales\OrderBundle\Entity;
 
 use Sulu\Bundle\ContactBundle\Entity\Account;
 use Sulu\Bundle\ContactBundle\Entity\Contact;
-use Sulu\Bundle\ContactBundle\Entity\TermsOfDelivery;
-use Sulu\Bundle\ContactBundle\Entity\TermsOfPayment;
+use Sulu\Bundle\ContactExtensionBundle\Entity\TermsOfDelivery;
+use Sulu\Bundle\ContactExtensionBundle\Entity\TermsOfPayment;
 
 abstract class AbstractOrder extends BaseOrder
 {

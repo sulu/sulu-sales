@@ -8,12 +8,12 @@
         <field name="termsOfDeliveryContent" type="string" column="termsOfDeliveryContent" length="255" nullable="true"/>
         <field name="termsOfPaymentContent" type="string" column="termsOfPaymentContent" length="255" nullable="true"/>
 
-        <many-to-one field="termsOfDelivery" target-entity="Sulu\Bundle\ContactBundle\Entity\TermsOfDelivery">
+        <many-to-one field="termsOfDelivery" target-entity="Sulu\Bundle\ContactExtensionBundle\Entity\TermsOfDelivery">
             <join-columns>
                 <join-column name="idTermsOfDelivery"/>
             </join-columns>
         </many-to-one>
-        <many-to-one field="termsOfPayment" target-entity="Sulu\Bundle\ContactBundle\Entity\TermsOfPayment">
+        <many-to-one field="termsOfPayment" target-entity="Sulu\Bundle\ContactExtensionBundle\Entity\TermsOfPayment">
             <join-columns>
                 <join-column name="idTermsOfPayment"/>
             </join-columns>

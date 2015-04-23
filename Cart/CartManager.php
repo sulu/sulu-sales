@@ -48,8 +48,8 @@ class CartManager extends BaseSalesManager
     protected static $orderAddressEntityName = 'SuluSalesCoreBundle:OrderAddress';
     protected static $orderStatusTranslationEntityName = 'SuluSalesOrderBundle:OrderStatusTranslation';
     protected static $itemEntityName = 'SuluSalesCoreBundle:Item';
-    protected static $termsOfDeliveryEntityName = 'SuluContactBundle:TermsOfDelivery';
-    protected static $termsOfPaymentEntityName = 'SuluContactBundle:TermsOfPayment';
+    protected static $termsOfDeliveryEntityName = 'SuluContactExtensionBundle:TermsOfDelivery';
+    protected static $termsOfPaymentEntityName = 'SuluContactExtensionBundle:TermsOfPayment';
     protected static $statusClass = 'Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatus';
 
     /**
@@ -121,8 +121,7 @@ class CartManager extends BaseSalesManager
         OrderPdfManager $pdfManager,
         \Swift_Mailer $mailer,
         $mailerFrom
-    )
-    {
+    ) {
         $this->em = $em;
         $this->session = $session;
         $this->orderRepository = $orderRepository;
@@ -150,8 +149,7 @@ class CartManager extends BaseSalesManager
         $currency = null,
         $persistEmptyCart = false,
         $updatePrices = false
-    )
-    {
+    ) {
         // cart by session ID
         if (!$user) {
             // TODO: get correct locale
@@ -437,14 +435,22 @@ class CartManager extends BaseSalesManager
         $invoiceAddress = $this->accountManager->getBillingAddress($addressSource, true);
         if ($invoiceAddress) {
             // convert to order-address
-            $invoiceOrderAddress = $this->orderManager->getOrderAddressByContactAddress($invoiceAddress, $contact, $account);
+            $invoiceOrderAddress = $this->orderManager->getOrderAddressByContactAddress(
+                $invoiceAddress,
+                $contact,
+                $account
+            );
             $cart->setInvoiceAddress($invoiceOrderAddress);
         }
         $deliveryOrderAddress = null;
         $deliveryAddress = $this->accountManager->getDeliveryAddress($addressSource, true);
         if ($deliveryAddress) {
             // convert to order-address
-            $deliveryOrderAddress = $this->orderManager->getOrderAddressByContactAddress($deliveryAddress, $contact, $account);
+            $deliveryOrderAddress = $this->orderManager->getOrderAddressByContactAddress(
+                $deliveryAddress,
+                $contact,
+                $account
+            );
             $cart->setDeliveryAddress($deliveryOrderAddress);
         }
 
