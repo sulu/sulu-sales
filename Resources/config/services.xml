@@ -41,6 +41,7 @@
             <argument type="service" id="sulu_security.user_repository" />
             <argument type="service" id="sulu_sales_core.item_manager" />
             <argument type="service" id="sulu_core.rest_helper" strict="false"/>
+            <argument>%sulu_sales_core.item_entity%</argument>
         </service>
         <service id="sulu_sales_shipping.shipping_listener" class="%sulu_sales_shipping.shipping_listener.class%">
             <tag name="doctrine.event_listener" event="postPersist" method="postPersist"/>
