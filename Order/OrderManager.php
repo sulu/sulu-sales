@@ -184,7 +184,7 @@ class OrderManager
         $user = $userId ? $this->userRepository->findUserById($userId) : null;
 
         $order->setOrderNumber($this->getProperty($data, 'orderNumber', $order->getOrderNumber()));
-        $order->setCurrency($this->getProperty($data, 'currency', $order->getCurrency()));
+        $order->setCurrencyCode($this->getProperty($data, 'currencyCode', $order->getCurrency()));
         $order->setCostCentre($this->getProperty($data, 'costCentre', $order->getCostCentre()));
         $order->setCommission($this->getProperty($data, 'commission', $order->getCommission()));
         $order->setTaxfree($this->getProperty($data, 'taxfree', $order->getTaxfree()));
@@ -217,7 +217,7 @@ class OrderManager
         // add contact
         $contact = $this->addContactRelation(
             $data,
-            'contact',
+            'customerContact',
             function ($contact) use ($order) {
                 $order->setCustomerContact($contact);
             }
@@ -1069,7 +1069,7 @@ class OrderManager
      */
     private function setAccount($data, Order $order)
     {
-        $accountData = $this->getProperty($data, 'account');
+        $accountData = $this->getProperty($data, 'customerAccount');
         if ($accountData) {
             if (!array_key_exists('id', $accountData)) {
                 throw new MissingOrderAttributeException('account.id');

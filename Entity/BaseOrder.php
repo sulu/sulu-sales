@@ -30,7 +30,7 @@ abstract class BaseOrder implements OrderInterface
     /**
      * @var string
      */
-    private $currency;
+    private $currencyCode;
 
     /**
      * @var boolean
@@ -174,9 +174,9 @@ abstract class BaseOrder implements OrderInterface
     /**
      * {@inheritDoc}
      */
-    public function setCurrency($currency)
+    public function setCurrencyCode($currencyCode)
     {
-        $this->currency = $currency;
+        $this->currencyCode = $currencyCode;
 
         return $this;
     }
@@ -184,9 +184,9 @@ abstract class BaseOrder implements OrderInterface
     /**
      * {@inheritDoc}
      */
-    public function getCurrency()
+    public function getCurrencyCode()
     {
-        return $this->currency;
+        return $this->currencyCode;
     }
 
     /**

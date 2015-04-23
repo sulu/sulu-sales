@@ -487,7 +487,7 @@ class CartManager extends BaseSalesManager
             'totalItems' => count($cart->getItems()),
             'totalPrice' => $cart->getTotalNetPrice(),
             'totalPriceFormatted' => $cart->getTotalNetPriceFormatted(),
-            'currency' => $cart->getCurrency()
+            'currency' => $cart->getCurrencyCode()
         );
     }
 

@@ -72,13 +72,11 @@ class Order extends ApiWrapper implements SalesDocument
     /**
      * @param OrderEntity $order The order to wrap
      * @param string $locale The locale of this order
-     * @param string $currency
      */
-    public function __construct(OrderEntity $order, $locale, $currency = 'EUR')
+    public function __construct(OrderEntity $order, $locale)
     {
         $this->entity = $order;
         $this->locale = $locale;
-        $this->currency = $currency;
     }
 
     /**
@@ -265,29 +263,29 @@ class Order extends ApiWrapper implements SalesDocument
     }
 
     /**
-     * Set currency
+     * Set currency-code
      *
      * @param string $currency
      * @return Order
      */
-    public function setCurrency($currency)
+    public function setCurrencyCode($currency)
     {
-        $this->entity->setCurrency($currency);
+        $this->entity->setCurrencyCode($currency);
 
         return $this;
     }
 
     /**
-     * Get currency
+     * Get currency-code
      *
      * @VirtualProperty
-     * @SerializedName("currency")
+     * @SerializedName("currencyCode")
      * @Groups({"cart"})
      * @return string
      */
-    public function getCurrency()
+    public function getCurrencyCode()
     {
-        return $this->entity->getCurrency();
+        return $this->entity->getCurrencyCode();
     }
 
     /**
@@ -691,7 +689,7 @@ class Order extends ApiWrapper implements SalesDocument
             $this->itemsChanged = false;
             $this->cacheItems = array();
             foreach ($this->entity->getItems() as $item) {
-                $this->cacheItems[] = new Item($item, $this->locale, $this->getCurrency());
+                $this->cacheItems[] = new Item($item, $this->locale, $this->getCurrencyCode());
             }
         }
 

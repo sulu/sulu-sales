@@ -45,14 +45,14 @@ interface OrderInterface
      * @param string $currency
      * @return OrderInterface
      */
-    public function setCurrency($currency);
+    public function setCurrencyCode($currency);
 
     /**
      * Get currency
      *
      * @return string
      */
-    public function getCurrency();
+    public function getCurrencyCode();
 
     /**
      * Set taxfree
