@@ -184,7 +184,7 @@ class OrderManager
         $user = $userId ? $this->userRepository->findUserById($userId) : null;
 
         $order->setOrderNumber($this->getProperty($data, 'orderNumber', $order->getOrderNumber()));
-        $order->setCurrencyCode($this->getProperty($data, 'currencyCode', $order->getCurrency()));
+        $order->setCurrencyCode($this->getProperty($data, 'currencyCode', $order->getCurrencyCode()));
         $order->setCostCentre($this->getProperty($data, 'costCentre', $order->getCostCentre()));
         $order->setCommission($this->getProperty($data, 'commission', $order->getCommission()));
         $order->setTaxfree($this->getProperty($data, 'taxfree', $order->getTaxfree()));

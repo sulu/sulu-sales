@@ -287,7 +287,7 @@ class OrderDataSetup
         $this->order->setCommission('commission');
         $this->order->setCostCentre('cost-centre');
         $this->order->setCustomerName($this->contact->getFullName());
-        $this->order->setCurrency('EUR');
+        $this->order->setCurrencyCode('EUR');
         $this->order->setTermsOfDelivery($this->termsOfDelivery);
         $this->order->setTermsOfDeliveryContent($this->termsOfDelivery->getTerms());
         $this->order->setTermsOfPayment($this->termsOfPayment);

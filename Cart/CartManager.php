@@ -415,7 +415,7 @@ class CartManager extends BaseSalesManager
 
         // set currency - if not defined use default
         $currency = $currency ?: $this->defaultCurrency;
-        $cart->setCurrency($currency);
+        $cart->setCurrencyCode($currency);
 
         // get address from contact and account
         $contact = $user->getContact();
