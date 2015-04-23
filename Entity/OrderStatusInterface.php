@@ -7,12 +7,13 @@ interface OrderStatusInterface
     /**
      * Get id
      *
-     * @return integer 
+     * @return int
      */
     public function getId();
 
     /**
-     * @param $id
+     * @param int $id
+     *
      * @return $this
      */
     public function setId($id);
@@ -21,6 +22,7 @@ interface OrderStatusInterface
      * Add order
      *
      * @param OrderInterface $order
+     *
      * @return OrderStatus
      */
     public function addOrder(OrderInterface $order);
@@ -35,7 +37,7 @@ interface OrderStatusInterface
     /**
      * Get order
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return \Doctrine\Common\Collections\Collection
      */
     public function getOrder();
 
@@ -43,6 +45,7 @@ interface OrderStatusInterface
      * Add translations
      *
      * @param OrderStatusTranslationInterface $translations
+     *
      * @return OrderStatus
      */
     public function addTranslation(OrderStatusTranslationInterface $translations);
@@ -57,7 +60,7 @@ interface OrderStatusInterface
     /**
      * Get translations
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return \Doctrine\Common\Collections\Collection
      */
     public function getTranslations();
 }
