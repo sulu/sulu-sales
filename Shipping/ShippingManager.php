@@ -40,9 +40,6 @@ class ShippingManager
     protected static $shippingStatusEntityName = 'SuluSalesShippingBundle:ShippingStatus';
     protected static $shippingStatusTranslationEntityName = 'SuluSalesShippingBundle:ShippingStatusTranslation';
 
-    protected static $itemEntityName = 'SuluSalesCoreBundle:Item';
-    protected static $termsOfDeliveryEntityName = 'SuluContactBundle:TermsOfDelivery';
-
     /**
      * currently used locale
      */
