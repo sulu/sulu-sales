@@ -43,6 +43,7 @@ abstract class AbstractOrder extends BaseOrder
      * Set termsOfDeliveryContent
      *
      * @param string $termsOfDeliveryContent
+     *
      * @return Order
      */
     public function setTermsOfDeliveryContent($termsOfDeliveryContent)
@@ -66,6 +67,7 @@ abstract class AbstractOrder extends BaseOrder
      * Set termsOfPaymentContent
      *
      * @param string $termsOfPaymentContent
+     *
      * @return Order
      */
     public function setTermsOfPaymentContent($termsOfPaymentContent)
@@ -89,6 +91,7 @@ abstract class AbstractOrder extends BaseOrder
      * Set termsOfDelivery
      *
      * @param TermsOfDelivery $termsOfDelivery
+     *
      * @return Order
      */
     public function setTermsOfDelivery(TermsOfDelivery $termsOfDelivery = null)
@@ -112,6 +115,7 @@ abstract class AbstractOrder extends BaseOrder
      * Set termsOfPayment
      *
      * @param TermsOfPayment $termsOfPayment
+     *
      * @return Order
      */
     public function setTermsOfPayment(TermsOfPayment $termsOfPayment = null)
@@ -135,6 +139,7 @@ abstract class AbstractOrder extends BaseOrder
      * Set account
      *
      * @param Account $account
+     *
      * @return Order
      */
     public function setCustomerAccount(Account $account = null)
@@ -158,6 +163,7 @@ abstract class AbstractOrder extends BaseOrder
      * Set responsibleContact
      *
      * @param Contact $responsibleContact
+     *
      * @return Order
      */
     public function setResponsibleContact(Contact $responsibleContact = null)

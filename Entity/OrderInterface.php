@@ -13,6 +13,7 @@ interface OrderInterface
      * Set number
      *
      * @param string $number
+     *
      * @return OrderInterface
      */
     public function setNumber($number);
@@ -28,6 +29,7 @@ interface OrderInterface
      * Set orderNumber
      *
      * @param string $orderNumber
+     *
      * @return OrderInterface
      */
     public function setOrderNumber($orderNumber);
@@ -43,6 +45,7 @@ interface OrderInterface
      * Set currency
      *
      * @param string $currency
+     *
      * @return OrderInterface
      */
     public function setCurrencyCode($currency);
@@ -58,6 +61,7 @@ interface OrderInterface
      * Set taxfree
      *
      * @param boolean $taxfree
+     *
      * @return OrderInterface
      */
     public function setTaxfree($taxfree);
@@ -73,6 +77,7 @@ interface OrderInterface
      * Set costCentre
      *
      * @param string $costCentre
+     *
      * @return OrderInterface
      */
     public function setCostCentre($costCentre);
@@ -88,6 +93,7 @@ interface OrderInterface
      * Set commission
      *
      * @param string $commission
+     *
      * @return OrderInterface
      */
     public function setCommission($commission);
@@ -103,6 +109,7 @@ interface OrderInterface
      * Set customerName
      *
      * @param string $customerName
+     *
      * @return OrderInterface
      */
     public function setCustomerName($customerName);
@@ -118,6 +125,7 @@ interface OrderInterface
      * Set termsOfDeliveryContent
      *
      * @param string $termsOfDeliveryContent
+     *
      * @return OrderInterface
      */
     public function setTermsOfDeliveryContent($termsOfDeliveryContent);
@@ -133,6 +141,7 @@ interface OrderInterface
      * Set termsOfPaymentContent
      *
      * @param string $termsOfPaymentContent
+     *
      * @return OrderInterface
      */
     public function setTermsOfPaymentContent($termsOfPaymentContent);
@@ -148,6 +157,7 @@ interface OrderInterface
      * Set created
      *
      * @param \DateTime $created
+     *
      * @return OrderInterface
      */
     public function setCreated($created);
@@ -163,6 +173,7 @@ interface OrderInterface
      * Set changed
      *
      * @param \DateTime $changed
+     *
      * @return OrderInterface
      */
     public function setChanged($changed);
@@ -178,6 +189,7 @@ interface OrderInterface
      * Set desiredDeliveryDate
      *
      * @param \DateTime $desiredDeliveryDate
+     *
      * @return OrderInterface
      */
     public function setDesiredDeliveryDate($desiredDeliveryDate);
@@ -200,6 +212,7 @@ interface OrderInterface
      * Set deliveryAddress
      *
      * @param OrderAddressInterface $deliveryAddress
+     *
      * @return OrderInterfaceInterface
      */
     public function setDeliveryAddress(OrderAddressInterface $deliveryAddress = null);
@@ -215,6 +228,7 @@ interface OrderInterface
      * Set invoiceAddress
      *
      * @param OrderAddressInterface $invoiceAddress
+     *
      * @return OrderInterface
      */
     public function setInvoiceAddress(OrderAddressInterface $invoiceAddress = null);
@@ -230,6 +244,7 @@ interface OrderInterface
      * Set status
      *
      * @param OrderStatusInterface $status
+     *
      * @return OrderInterface
      */
     public function setStatus(OrderStatusInterface $status);
@@ -245,6 +260,7 @@ interface OrderInterface
      * Set contact
      *
      * @param Contact $contact
+     *
      * @return OrderInterface
      */
     public function setCustomerContact(Contact $contact = null);
@@ -260,6 +276,7 @@ interface OrderInterface
      * Add items
      *
      * @param ItemInterface $items
+     *
      * @return OrderInterface
      */
     public function addItem(ItemInterface $items);
@@ -282,6 +299,7 @@ interface OrderInterface
      * Set changer
      *
      * @param UserInterface $changer
+     *
      * @return OrderInterface
      */
     public function setChanger(UserInterface $changer = null);
@@ -297,6 +315,7 @@ interface OrderInterface
      * Set creator
      *
      * @param UserInterface $creator
+     *
      * @return OrderInterface
      */
     public function setCreator(UserInterface $creator = null);
@@ -312,6 +331,7 @@ interface OrderInterface
      * Set bitmaskStatus
      *
      * @param integer $bitmaskStatus
+     *
      * @return OrderInterface
      */
     public function setBitmaskStatus($bitmaskStatus);
@@ -327,6 +347,7 @@ interface OrderInterface
      * Set totalNetPrice
      *
      * @param float $totalNetPrice
+     *
      * @return OrderInterface
      */
     public function setTotalNetPrice($totalNetPrice);
@@ -342,6 +363,7 @@ interface OrderInterface
      * Set orderDate
      *
      * @param \DateTime $orderDate
+     *
      * @return OrderInterface
      */
     public function setOrderDate($orderDate);
@@ -362,6 +384,7 @@ interface OrderInterface
      * Set deliveryCost
      *
      * @param float $deliveryCost
+     *
      * @return OrderInterface
      */
     public function setDeliveryCost($deliveryCost);
@@ -369,7 +392,7 @@ interface OrderInterface
     /**
      * Get deliveryCost
      *
-     * @return float 
+     * @return float
      */
     public function getDeliveryCost();
 }
