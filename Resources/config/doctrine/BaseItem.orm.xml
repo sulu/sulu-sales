@@ -24,6 +24,8 @@
         <field name="changed" type="datetime" column="changed"></field>
         <field name="bitmaskStatus" type="integer" column="bitmaskStatus" nullable="true"/>
         <field name="totalNetPrice" type="float" column="totalNetPrice" nullable="true"></field>
+        <field name="costCentre" type="string" column="costCentre" nullable="true"/>
+        <field name="deliveryDate" type="datetime" column="deliveryDate" nullable="true"/>
 
         <many-to-one field="product" target-entity="Sulu\Bundle\ProductBundle\Entity\ProductInterface">
             <join-columns>

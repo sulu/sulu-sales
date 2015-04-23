@@ -132,14 +132,14 @@ class ItemManager
      * @param array $data
      * @param string $locale
      * @param int|null $userId
-     * @param ApiItemInterface|null $item
+     * @param ApiItemInterface|ItemInterface|null $item
      * @param int|null $itemStatusId
      *
      * @return ApiItemInterface|null
      */
-    public function save(array $data, $locale, $userId = null, ApiItemInterface $item = null, $itemStatusId = null)
+    public function save(array $data, $locale, $userId = null, $item = null, $itemStatusId = null)
     {
-        $itemEntity = $this->itemEntity;
+        $itemEntity = $this->itemFactory->createEntity();
         $isNewItem = !$item;
 
         // check required data
