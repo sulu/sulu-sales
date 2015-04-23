@@ -18,7 +18,8 @@ class Order extends AbstractOrder
      * Set sessionId
      *
      * @param string $sessionId
-     * @return Order1
+     *
+     * @return Order
      */
     public function setSessionId($sessionId)
     {
@@ -41,6 +42,7 @@ class Order extends AbstractOrder
      * Set type
      *
      * @param OrderType $type
+     *
      * @return Order
      */
     public function setType(OrderType $type)
