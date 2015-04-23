@@ -18,6 +18,5 @@
                 <join-column name="idAccountsSupplier" referenced-column-name="id" on-delete="SET NULL" nullable="true"/>
             </join-columns>
         </many-to-one>
-
     </entity>
 </doctrine-mapping>

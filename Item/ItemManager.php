@@ -138,12 +138,12 @@ class ItemManager
      * Creates an item, but does not flush
      *
      * @param array $data
-     * @param $locale
-     * @param $userId
-     * @param ApiItemInterface $item
-     * @param null $itemStatusId
+     * @param string $locale
+     * @param int|null $userId
+     * @param ApiItemInterface|null $item
+     * @param int|null $itemStatusId
      *
-     * @return null|ApiItemInterface
+     * @return ApiItemInterface|null
      */
     public function save(array $data, $locale, $userId = null, ApiItemInterface $item = null, $itemStatusId = null)
     {
@@ -265,7 +265,7 @@ class ItemManager
      * Converts status of an item
      *
      * @param ApiItemInterface $item
-     * @param $status
+     * @param int $status
      * @param bool $flush
      */
     public function addStatus(ApiItemInterface $item, $status, $flush = false)
@@ -288,7 +288,7 @@ class ItemManager
      * Converts status of an item
      *
      * @param ApiItemInterface $item
-     * @param $status
+     * @param int $status
      * @param bool $flush
      */
     public function removeStatus(ApiItemInterface $item, $status, $flush = false)
@@ -308,7 +308,7 @@ class ItemManager
     /**
      * Deletes an item
      *
-     * @param $id
+     * @param int $id
      *
      * @throws Exception\ItemNotFoundException
      */
@@ -327,8 +327,8 @@ class ItemManager
     /**
      * Finds an item by id and locale
      *
-     * @param $id
-     * @param $locale
+     * @param int $id
+     * @param string $locale
      *
      * @return null|ApiItemInterface
      */
@@ -346,7 +346,7 @@ class ItemManager
     /**
      * Finds an item entity by id
      *
-     * @param $id
+     * @param int $id
      *
      * @return null|ItemInterface
      */
@@ -361,10 +361,10 @@ class ItemManager
     }
 
     /**
-     * @param $locale
+     * @param string $locale
      * @param array $filter
      *
-     * @return mixed
+     * @return array
      */
     public function findAllByLocale($locale, $filter = array())
     {
@@ -387,8 +387,8 @@ class ItemManager
     /**
      * Check if necessary data is set
      *
-     * @param $data
-     * @param $isNew
+     * @param array $data
+     * @param bool $isNew
      *
      * @throws MissingItemAttributeException
      */
@@ -409,11 +409,11 @@ class ItemManager
      * Checks data for attributes
      *
      * @param array $data
-     * @param $key
-     * @param $isNew
+     * @param string $key
+     * @param bool $isNew
      *
-     * @throws Exception\MissingItemAttributeException
      * @return bool
+     * @throws Exception\MissingItemAttributeException
      */
     private function checkDataSet(array $data, $key, $isNew)
     {
@@ -445,7 +445,7 @@ class ItemManager
      *
      * @param $data
      *
-     * @return mixed
+     * @return int
      * @throws MissingItemAttributeException
      */
     private function getProductId($data)
@@ -468,11 +468,11 @@ class ItemManager
     /**
      * Sets item based on given product data
      *
-     * @param $data
+     * @param array $data
      * @param ApiItemInterface $item
-     * @param $locale
+     * @param string $locale
      *
-     * @return null|object
+     * @return null|ProductInterface
      * @throws MissingItemAttributeException
      * @throws ProductException
      * @throws ProductNotFoundException
@@ -525,8 +525,6 @@ class ItemManager
             // TODO: get tax from product
             $item->setTax(0);
 
-//            $item->setTax($product->getTaxClass()->getTax($locale));
-
             return $product;
         }
 
@@ -534,9 +532,10 @@ class ItemManager
     }
 
     /**
-     * Function updates item by its product data
+     * Function updates item prices its product data
      *
      * @param ApiItemInterface $item
+     * @param array $data
      */
     private function updatePrices(ApiItemInterface $item, $data)
     {

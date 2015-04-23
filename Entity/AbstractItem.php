@@ -10,9 +10,8 @@
 
 namespace Sulu\Bundle\Sales\CoreBundle\Entity;
 
-/**
- * Item
- */
+use Sulu\Bundle\ContactBundle\Entity\Account;
+
 class AbstractItem extends BaseItem implements ItemInterface
 {
     /**
@@ -45,7 +44,9 @@ class AbstractItem extends BaseItem implements ItemInterface
 
     /**
      * Set supplierName
+     *
      * @param string $supplierName
+     *
      * @return Item
      */
     public function setSupplierName($supplierName)
@@ -57,6 +58,7 @@ class AbstractItem extends BaseItem implements ItemInterface
 
     /**
      * Get supplierName
+     *
      * @return string
      */
     public function getSupplierName()
@@ -66,10 +68,12 @@ class AbstractItem extends BaseItem implements ItemInterface
 
     /**
      * Add attributes
-     * @param \Sulu\Bundle\Sales\CoreBundle\Entity\ItemAttribute $attributes
+     *
+     * @param ItemAttribute $attributes
+     *
      * @return Item
      */
-    public function addAttribute(\Sulu\Bundle\Sales\CoreBundle\Entity\ItemAttribute $attributes)
+    public function addAttribute(ItemAttribute $attributes)
     {
         $this->attributes[] = $attributes;
 
@@ -78,15 +82,17 @@ class AbstractItem extends BaseItem implements ItemInterface
 
     /**
      * Remove attributes
-     * @param \Sulu\Bundle\Sales\CoreBundle\Entity\ItemAttribute $attributes
+     *
+     * @param ItemAttribute $attributes
      */
-    public function removeAttribute(\Sulu\Bundle\Sales\CoreBundle\Entity\ItemAttribute $attributes)
+    public function removeAttribute(ItemAttribute $attributes)
     {
         $this->attributes->removeElement($attributes);
     }
 
     /**
      * Get attributes
+     *
      * @return \Doctrine\Common\Collections\Collection
      */
     public function getAttributes()
@@ -96,10 +102,12 @@ class AbstractItem extends BaseItem implements ItemInterface
 
     /**
      * Set supplier
-     * @param \Sulu\Bundle\ContactBundle\Entity\Account $supplier
+     *
+     * @param Account $supplier
+     *
      * @return Item
      */
-    public function setSupplier(\Sulu\Bundle\ContactBundle\Entity\Account $supplier = null)
+    public function setSupplier(Account $supplier = null)
     {
         $this->supplier = $supplier;
 
@@ -108,7 +116,8 @@ class AbstractItem extends BaseItem implements ItemInterface
 
     /**
      * Get supplier
-     * @return \Sulu\Bundle\ContactBundle\Entity\Account
+     *
+     * @return Account
      */
     public function getSupplier()
     {
@@ -117,7 +126,9 @@ class AbstractItem extends BaseItem implements ItemInterface
 
     /**
      * Set deliveryAddress
+     *
      * @param OrderAddress $deliveryAddress
+     *
      * @return Item
      */
     public function setDeliveryAddress(OrderAddress $deliveryAddress = null)
@@ -129,6 +140,7 @@ class AbstractItem extends BaseItem implements ItemInterface
 
     /**
      * Get deliveryAddress
+     *
      * @return OrderAddress $deliveryAddress
      */
     public function getDeliveryAddress()

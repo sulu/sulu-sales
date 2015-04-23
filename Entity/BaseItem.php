@@ -135,7 +135,9 @@ abstract class BaseItem implements ItemInterface
 
     /**
      * Set name
+     *
      * @param string $name
+     *
      * @return Item
      */
     public function setName($name)
@@ -147,6 +149,7 @@ abstract class BaseItem implements ItemInterface
 
     /**
      * Get name
+     *
      * @return string
      */
     public function getName()
@@ -156,7 +159,9 @@ abstract class BaseItem implements ItemInterface
 
     /**
      * Set number
+     *
      * @param string $number
+     *
      * @return Item
      */
     public function setNumber($number)
@@ -168,6 +173,7 @@ abstract class BaseItem implements ItemInterface
 
     /**
      * Get number
+     *
      * @return string
      */
     public function getNumber()
@@ -177,7 +183,9 @@ abstract class BaseItem implements ItemInterface
 
     /**
      * Set quantity
+     *
      * @param float $quantity
+     *
      * @return Item
      */
     public function setQuantity($quantity)
@@ -189,6 +197,7 @@ abstract class BaseItem implements ItemInterface
 
     /**
      * Get quantity
+     *
      * @return float
      */
     public function getQuantity()
@@ -198,7 +207,9 @@ abstract class BaseItem implements ItemInterface
 
     /**
      * Set quantityUnit
+     *
      * @param string $quantityUnit
+     *
      * @return Item
      */
     public function setQuantityUnit($quantityUnit)
@@ -210,6 +221,7 @@ abstract class BaseItem implements ItemInterface
 
     /**
      * Get quantityUnit
+     *
      * @return string
      */
     public function getQuantityUnit()
@@ -219,7 +231,9 @@ abstract class BaseItem implements ItemInterface
 
     /**
      * Set useProductsPrice
+     *
      * @param boolean $useProductsPrice
+     *
      * @return Item
      */
     public function setUseProductsPrice($useProductsPrice)
@@ -231,6 +245,7 @@ abstract class BaseItem implements ItemInterface
 
     /**
      * Get useProductsPrice
+     *
      * @return boolean
      */
     public function getUseProductsPrice()
@@ -240,7 +255,9 @@ abstract class BaseItem implements ItemInterface
 
     /**
      * Set tax
+     *
      * @param float $tax
+     *
      * @return Item
      */
     public function setTax($tax)
@@ -252,6 +269,7 @@ abstract class BaseItem implements ItemInterface
 
     /**
      * Get tax
+     *
      * @return float
      */
     public function getTax()
@@ -261,7 +279,9 @@ abstract class BaseItem implements ItemInterface
 
     /**
      * Set price
+     *
      * @param float $price
+     *
      * @return Item
      */
     public function setPrice($price)
@@ -273,6 +293,7 @@ abstract class BaseItem implements ItemInterface
 
     /**
      * Get price
+     *
      * @return float
      */
     public function getPrice()
@@ -282,7 +303,9 @@ abstract class BaseItem implements ItemInterface
 
     /**
      * Set discount
+     *
      * @param float $discount
+     *
      * @return Item
      */
     public function setDiscount($discount)
@@ -294,6 +317,7 @@ abstract class BaseItem implements ItemInterface
 
     /**
      * Get discount
+     *
      * @return float
      */
     public function getDiscount()
@@ -303,7 +327,9 @@ abstract class BaseItem implements ItemInterface
 
     /**
      * Set description
+     *
      * @param string $description
+     *
      * @return Item
      */
     public function setDescription($description)
@@ -315,6 +341,7 @@ abstract class BaseItem implements ItemInterface
 
     /**
      * Get description
+     *
      * @return string
      */
     public function getDescription()
@@ -324,7 +351,9 @@ abstract class BaseItem implements ItemInterface
 
     /**
      * Set weight
+     *
      * @param float $weight
+     *
      * @return Item
      */
     public function setWeight($weight)
@@ -336,6 +365,7 @@ abstract class BaseItem implements ItemInterface
 
     /**
      * Get weight
+     *
      * @return float
      */
     public function getWeight()
@@ -345,7 +375,9 @@ abstract class BaseItem implements ItemInterface
 
     /**
      * Set width
+     *
      * @param float $width
+     *
      * @return Item
      */
     public function setWidth($width)
@@ -357,6 +389,7 @@ abstract class BaseItem implements ItemInterface
 
     /**
      * Get width
+     *
      * @return float
      */
     public function getWidth()
@@ -366,7 +399,9 @@ abstract class BaseItem implements ItemInterface
 
     /**
      * Set height
+     *
      * @param float $height
+     *
      * @return Item
      */
     public function setHeight($height)
@@ -378,6 +413,7 @@ abstract class BaseItem implements ItemInterface
 
     /**
      * Get height
+     *
      * @return float
      */
     public function getHeight()
@@ -387,7 +423,9 @@ abstract class BaseItem implements ItemInterface
 
     /**
      * Set length
+     *
      * @param float $length
+     *
      * @return Item
      */
     public function setLength($length)
@@ -399,6 +437,7 @@ abstract class BaseItem implements ItemInterface
 
     /**
      * Get length
+     *
      * @return float
      */
     public function getLength()
@@ -408,7 +447,9 @@ abstract class BaseItem implements ItemInterface
 
     /**
      * Set created
+     *
      * @param \DateTime $created
+     *
      * @return Item
      */
     public function setCreated($created)
@@ -420,6 +461,7 @@ abstract class BaseItem implements ItemInterface
 
     /**
      * Get created
+     *
      * @return \DateTime
      */
     public function getCreated()
@@ -429,7 +471,9 @@ abstract class BaseItem implements ItemInterface
 
     /**
      * Set changed
+     *
      * @param \DateTime $changed
+     *
      * @return Item
      */
     public function setChanged($changed)
@@ -441,6 +485,7 @@ abstract class BaseItem implements ItemInterface
 
     /**
      * Get changed
+     *
      * @return \DateTime
      */
     public function getChanged()
@@ -450,6 +495,7 @@ abstract class BaseItem implements ItemInterface
 
     /**
      * Get id
+     *
      * @return integer
      */
     public function getId()
@@ -459,7 +505,9 @@ abstract class BaseItem implements ItemInterface
 
     /**
      * Set product
+     *
      * @param ProductInterface $product
+     *
      * @return Item
      */
     public function setProduct(ProductInterface $product = null)
@@ -471,6 +519,7 @@ abstract class BaseItem implements ItemInterface
 
     /**
      * Get product
+     *
      * @return \Sulu\Bundle\ProductBundle\Entity\Product
      */
     public function getProduct()
@@ -480,7 +529,9 @@ abstract class BaseItem implements ItemInterface
 
     /**
      * Set changer
+     *
      * @param UserInterface $changer
+     *
      * @return Item
      */
     public function setChanger(UserInterface $changer = null)
@@ -492,6 +543,7 @@ abstract class BaseItem implements ItemInterface
 
     /**
      * Get changer
+     *
      * @return UserInterface
      */
     public function getChanger()
@@ -501,7 +553,9 @@ abstract class BaseItem implements ItemInterface
 
     /**
      * Set creator
+     *
      * @param UserInterface $creator
+     *
      * @return Item
      */
     public function setCreator(UserInterface $creator = null)
@@ -513,6 +567,7 @@ abstract class BaseItem implements ItemInterface
 
     /**
      * Get creator
+     *
      * @return UserInterface
      */
     public function getCreator()
@@ -522,7 +577,9 @@ abstract class BaseItem implements ItemInterface
 
     /**
      * Set bitmaskStatus
+     *
      * @param integer $bitmaskStatus
+     *
      * @return Item
      */
     public function setBitmaskStatus($bitmaskStatus)
@@ -534,6 +591,7 @@ abstract class BaseItem implements ItemInterface
 
     /**
      * Get bitmaskStatus
+     *
      * @return integer
      */
     public function getBitmaskStatus()
@@ -543,7 +601,9 @@ abstract class BaseItem implements ItemInterface
 
     /**
      * Set totalNetPrice
+     *
      * @param float $totalNetPrice
+     *
      * @return Item
      */
     public function setTotalNetPrice($totalNetPrice)
@@ -555,6 +615,7 @@ abstract class BaseItem implements ItemInterface
 
     /**
      * Get totalNetPrice
+     *
      * @return float
      */
     public function getTotalNetPrice()
