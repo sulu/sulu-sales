@@ -10,23 +10,23 @@
 
 namespace Sulu\Bundle\Sales\OrderBundle\Api;
 
-use Sulu\Bundle\ContactBundle\Entity\Account;
-use Sulu\Bundle\ContactBundle\Entity\Contact;
-use Sulu\Bundle\ContactBundle\Entity\TermsOfDelivery;
-use Sulu\Bundle\ContactBundle\Entity\TermsOfPayment;
-use Sulu\Bundle\Sales\CoreBundle\Core\SalesDocument;
-use Sulu\Bundle\Sales\CoreBundle\Entity\ItemInterface;
-use Sulu\Bundle\Sales\CoreBundle\Api\OrderAddress;
-use Sulu\Bundle\Sales\CoreBundle\Entity\OrderAddressInterface;
-use Sulu\Bundle\Sales\CoreBundle\Item\ItemFactoryInterface;
-use Sulu\Bundle\Sales\OrderBundle\Entity\Order as OrderEntity;
-use Sulu\Component\Rest\ApiWrapper;
+use DateTime;
 use Hateoas\Configuration\Annotation\Relation;
 use JMS\Serializer\Annotation\VirtualProperty;
 use JMS\Serializer\Annotation\SerializedName;
 use JMS\Serializer\Annotation\Groups;
+use Sulu\Component\Rest\ApiWrapper;
 use Sulu\Component\Security\Authentication\UserInterface;
-use DateTime;
+use Sulu\Bundle\ContactBundle\Entity\Account;
+use Sulu\Bundle\ContactBundle\Entity\Contact;
+use Sulu\Bundle\ContactBundle\Entity\TermsOfDelivery;
+use Sulu\Bundle\ContactBundle\Entity\TermsOfPayment;
+use Sulu\Bundle\Sales\CoreBundle\Api\OrderAddress;
+use Sulu\Bundle\Sales\CoreBundle\Core\SalesDocument;
+use Sulu\Bundle\Sales\CoreBundle\Entity\ItemInterface;
+use Sulu\Bundle\Sales\CoreBundle\Entity\OrderAddressInterface;
+use Sulu\Bundle\Sales\CoreBundle\Item\ItemFactoryInterface;
+use Sulu\Bundle\Sales\OrderBundle\Entity\Order as OrderEntity;
 
 /**
  * The order class which will be exported to the API

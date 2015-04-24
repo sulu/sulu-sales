@@ -20,112 +20,112 @@ abstract class BaseOrder implements OrderInterface
     /**
      * @var string
      */
-    private $number;
+    protected $number;
 
     /**
      * @var int
      */
-    private $orderNumber;
+    protected $orderNumber;
 
     /**
      * @var string
      */
-    private $currencyCode;
+    protected $currencyCode;
 
     /**
      * @var boolean
      */
-    private $taxfree;
+    protected $taxfree;
 
     /**
      * @var string
      */
-    private $costCentre;
+    protected $costCentre;
 
     /**
      * @var string
      */
-    private $commission;
+    protected $commission;
 
     /**
      * @var string
      */
-    private $customerName;
+    protected $customerName;
 
     /**
      * @var \DateTime
      */
-    private $created;
+    protected $created;
 
     /**
      * @var \DateTime
      */
-    private $changed;
+    protected $changed;
 
     /**
      * @var \DateTime
      */
-    private $desiredDeliveryDate;
+    protected $desiredDeliveryDate;
 
     /**
      * @var integer
      */
-    private $id;
+    protected $id;
 
     /**
      * @var OrderAddressInterface
      */
-    private $deliveryAddress;
+    protected $deliveryAddress;
 
     /**
      * @var OrderAddressInterface
      */
-    private $invoiceAddress;
+    protected $invoiceAddress;
 
     /**
      * @var OrderStatusInterface
      */
-    private $status;
+    protected $status;
 
     /**
      * @var Contact
      */
-    private $customerContact;
+    protected $customerContact;
 
     /**
      * @var \Doctrine\Common\Collections\Collection
      */
-    private $items;
+    protected $items;
 
     /**
      * @var UserInterface
      */
-    private $changer;
+    protected $changer;
 
     /**
      * @var UserInterface
      */
-    private $creator;
+    protected $creator;
 
     /**
      * @var integer
      */
-    private $bitmaskStatus;
+    protected $bitmaskStatus;
 
     /**
      * @var float
      */
-    private $totalNetPrice;
+    protected $totalNetPrice;
 
     /**
      * @var \DateTime
      */
-    private $orderDate;
+    protected $orderDate;
 
     /**
      * @var float
      */
-    private $deliveryCost;
+    protected $deliveryCost;
 
     /**
      * Constructor
