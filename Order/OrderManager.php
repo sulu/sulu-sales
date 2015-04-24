@@ -114,14 +114,21 @@ class OrderManager
     private $productManager;
 
     /**
-     * constructor
-     *
+     * @var OrderFactoryInterface
+     */
+    private $orderFactory;
+
+    /**
      * @param ObjectManager $em
      * @param OrderRepository $orderRepository
      * @param UserRepositoryInterface $userRepository
      * @param ItemManager $itemManager
      * @param EntityRepository $orderStatusRepository
      * @param EntityRepository $orderTypeRepository
+     * @param SessionInterface $session
+     * @param GroupedItemsPriceCalculatorInterface $priceCalculator
+     * @param ProductManagerInterface $productManager
+     * @param OrderFactoryInterface $orderFactory
      */
     public function __construct(
         ObjectManager $em,
@@ -132,7 +139,8 @@ class OrderManager
         EntityRepository $orderTypeRepository,
         SessionInterface $session,
         GroupedItemsPriceCalculatorInterface $priceCalculator,
-        ProductManagerInterface $productManager
+        ProductManagerInterface $productManager,
+        OrderFactoryInterface $orderFactory
     )
     {
         $this->orderRepository = $orderRepository;
@@ -144,6 +152,7 @@ class OrderManager
         $this->session = $session;
         $this->priceCalculator = $priceCalculator;
         $this->productManager = $productManager;
+        $this->orderFactory = $orderFactory;
     }
 
     /**
@@ -177,7 +186,7 @@ class OrderManager
                 throw new OrderNotFoundException($id);
             }
         } else {
-            $order = new Order(new OrderEntity(), $locale);
+            $order = $this->orderFactory->createApiEntity($this->orderFactory->createEntity(), $locale);
             $this->checkRequiredData($data, $id === null);
         }
 
@@ -602,7 +611,7 @@ class OrderManager
         $order = $this->orderRepository->findByIdAndLocale($id, $locale);
 
         if ($order) {
-            $order = new Order($order, $locale);
+            $order = $this->orderFactory->createApiEntity($order, $locale);
             $this->updateApiEntity($order, $locale);
 
             return $order;
@@ -628,7 +637,7 @@ class OrderManager
             array_walk(
                 $order,
                 function (&$order) use ($locale) {
-                    $order = new Order($order, $locale);
+                    $order = $this->orderFactory->createApiEntity($order, $locale);
                     $this->updateApiEntity($order, $locale);
                 }
             );
