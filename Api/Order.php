@@ -1,4 +1,12 @@
 <?php
+/*
+ * This file is part of the Sulu CMS.
+ *
+ * (c) MASSIVE ART WebServices GmbH
+ *
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
+ */
 
 namespace Sulu\Bundle\Sales\OrderBundle\Api;
 
@@ -6,11 +14,10 @@ use Sulu\Bundle\ContactBundle\Entity\Account;
 use Sulu\Bundle\ContactBundle\Entity\Contact;
 use Sulu\Bundle\ContactBundle\Entity\TermsOfDelivery;
 use Sulu\Bundle\ContactBundle\Entity\TermsOfPayment;
-use Sulu\Bundle\Sales\CoreBundle\Api\Item;
 use Sulu\Bundle\Sales\CoreBundle\Core\SalesDocument;
 use Sulu\Bundle\Sales\CoreBundle\Entity\ItemInterface;
-use Sulu\Bundle\Sales\CoreBundle\Entity\OrderAddress as OrderAddressEntity;
 use Sulu\Bundle\Sales\CoreBundle\Api\OrderAddress;
+use Sulu\Bundle\Sales\CoreBundle\Entity\OrderAddressInterface;
 use Sulu\Bundle\Sales\CoreBundle\Item\ItemFactoryInterface;
 use Sulu\Bundle\Sales\OrderBundle\Entity\Order as OrderEntity;
 use Sulu\Component\Rest\ApiWrapper;
@@ -29,8 +36,6 @@ use DateTime;
  */
 class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
 {
-    public static $itemEntity = 'Sulu\Bundle\Sales\CoreBundle\Item';
-
     /**
      * Define permissions for front-end
      *
@@ -851,11 +856,11 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     /**
      * Set deliveryAddress
      *
-     * @param OrderAddressEntity $deliveryAddress
+     * @param OrderAddressInterface $deliveryAddress
      *
      * @return Order
      */
-    public function setDeliveryAddress(OrderAddressEntity $deliveryAddress = null)
+    public function setDeliveryAddress(OrderAddressInterface $deliveryAddress = null)
     {
         $this->entity->setDeliveryAddress($deliveryAddress);
 
@@ -869,7 +874,7 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
      * @SerializedName("deliveryAddress")
      * @Groups({"cart"})
      *
-     * @return OrderAddressEntity
+     * @return OrderAddressInterface
      */
     public function getDeliveryAddress()
     {
@@ -883,11 +888,11 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     /**
      * Set invoiceAddress
      *
-     * @param OrderAddressEntity $invoiceAddress
+     * @param OrderAddressInterface $invoiceAddress
      *
      * @return Order
      */
-    public function setInvoiceAddress(OrderAddressEntity $invoiceAddress = null)
+    public function setInvoiceAddress(OrderAddressInterface $invoiceAddress = null)
     {
         $this->entity->setInvoiceAddress($invoiceAddress);
 
@@ -901,7 +906,7 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
      * @SerializedName("invoiceAddress")
      * @Groups({"cart"})
      *
-     * @return OrderAddressEntity
+     * @return OrderAddressInterface
      */
     public function getInvoiceAddress()
     {
