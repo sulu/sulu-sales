@@ -670,6 +670,7 @@ abstract class BaseItem implements ItemInterface
 
         return $this;
     }
+
     /**
      * Get deliveryDate
      *
