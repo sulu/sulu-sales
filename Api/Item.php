@@ -2,24 +2,26 @@
 
 namespace Sulu\Bundle\Sales\CoreBundle\Api;
 
+use DateTime;
+use Hateoas\Configuration\Annotation\Relation;
 use JMS\Serializer\Annotation\VirtualProperty;
-use Sulu\Bundle\ContactBundle\Entity\Account;
+use JMS\Serializer\Annotation\SerializedName;
+use JMS\Serializer\Annotation\Groups;
+use Sulu\Bundle\ProducBundle\Product\ProductFactoryInterface;
+use Sulu\Bundle\ProductBundle\Api\ApiProductInterface;
+use Sulu\Component\Rest\ApiWrapper;
+use Sulu\Component\Security\Authentication\UserInterface;
 use Sulu\Bundle\ProductBundle\Api\Product;
+use Sulu\Bundle\ContactBundle\Entity\Account;
 use Sulu\Bundle\Sales\CoreBundle\Entity\ItemInterface as Entity;
 use Sulu\Bundle\Sales\CoreBundle\Entity\ItemAttributeEntity;
 use Sulu\Bundle\Sales\CoreBundle\Pricing\CalculableBulkPriceItemInterface;
 use Sulu\Bundle\Sales\CoreBundle\Pricing\CalculablePriceGroupItemInterface;
 use Sulu\Bundle\Sales\CoreBundle\Entity\OrderAddressInterface as OrderAddressEntity;
-use Sulu\Bundle\Sales\CoreBundle\Api\OrderAddress;
-use Sulu\Component\Rest\ApiWrapper;
-use Hateoas\Configuration\Annotation\Relation;
-use JMS\Serializer\Annotation\SerializedName;
-use JMS\Serializer\Annotation\Groups;
-use DateTime;
-use Sulu\Component\Security\Authentication\UserInterface;
 
 /**
  * The item class which will be exported to the API
+ *
  * @package Sulu\Bundle\Sales\CoreBundle\Api
  */
 class Item extends ApiWrapper implements
@@ -27,50 +29,65 @@ class Item extends ApiWrapper implements
     CalculableBulkPriceItemInterface,
     CalculablePriceGroupItemInterface
 {
-    public static $productEntity = 'Sulu\Bundle\ProductBundle\Api\Product';
-
     /**
      * indicates if prices have been changed
+     *
      * @var bool
      */
     protected $priceChanged = false;
 
     /**
      * price value before change
+     *
      * @var float
      */
     protected $priceChangeFrom;
 
     /**
      * price value after change (current price)
+     *
      * @var float
      */
     protected $priceChangeTo;
 
     /**
      * Temporary storage for product api entity
+     *
      * @var Product
      */
     protected $tempProduct;
 
+    /**
+     * @var ProductFactoryInterface
+     */
+    protected $productFactory;
 
     /**
      * @param Entity $item The item to wrap
      * @param string $locale The locale of this item
+     * @param ProductFactoryInterface $productFactory
+     * @param string $currency
      */
-    public function __construct(Entity $item, $locale, $currency = 'EUR')
-    {
+    public function __construct(
+        Entity $item,
+        $locale,
+        ProductFactoryInterface $productFactory,
+        $currency = 'EUR'
+    ) {
         $this->entity = $item;
         $this->locale = $locale;
         $this->currency = $currency;
+        $this->productFactory = $productFactory;
     }
 
     /**
      * Returns the id of the entity
-     * @return int
+     *
      * @VirtualProperty
      * @SerializedName("id")
      * @Groups({"cart"})
+     *
+     * @return int
      */
     public function getId()
     {
@@ -78,9 +95,10 @@ class Item extends ApiWrapper implements
     }
 
     /**
-     * @return string
      * @VirtualProperty
      * @SerializedName("name")
+     *
+     * @return string
      */
     public function getName()
     {
@@ -89,6 +107,7 @@ class Item extends ApiWrapper implements
 
     /**
      * @param $name
+     *
      * @return Item
      */
     public function setName($name)
@@ -99,9 +118,10 @@ class Item extends ApiWrapper implements
     }
 
     /**
-     * @return int
      * @VirtualProperty
      * @SerializedName("number")
+     *
+     * @return int
      */
     public function getNumber()
     {
@@ -110,6 +130,7 @@ class Item extends ApiWrapper implements
 
     /**
      * @param $number
+     *
      * @return Item
      */
     public function setNumber($number)
@@ -120,9 +141,9 @@ class Item extends ApiWrapper implements
     }
 
     /**
-     * @return int
      * @VirtualProperty
      * @SerializedName("created")
+     *
      * @return DateTime
      */
     public function getCreated()
@@ -132,6 +153,7 @@ class Item extends ApiWrapper implements
 
     /**
      * @param DateTime $created
+     *
      * @return Item
      */
     public function setCreated(DateTime $created)
@@ -142,9 +164,9 @@ class Item extends ApiWrapper implements
     }
 
     /**
-     * @return int
      * @VirtualProperty
      * @SerializedName("changed")
+     *
      * @return DateTime
      */
     public function getChanged()
@@ -154,6 +176,7 @@ class Item extends ApiWrapper implements
 
     /**
      * @param DateTime $changed
+     *
      * @return Item
      */
     public function setChanged(DateTime $changed)
@@ -165,7 +188,9 @@ class Item extends ApiWrapper implements
 
     /**
      * Set changer
+     *
      * @param UserInterface $changer
+     *
      * @return Item
      */
     public function setChanger(UserInterface $changer = null)
@@ -177,9 +202,11 @@ class Item extends ApiWrapper implements
 
     /**
      * Get changer
-     * @return UserInterface
+     *
      * @VirtualProperty
      * @SerializedName("changer")
+     *
+     * @return UserInterface
      */
     public function getChanger()
     {
@@ -193,7 +220,9 @@ class Item extends ApiWrapper implements
 
     /**
      * Set creator
+     *
      * @param UserInterface $creator
+     *
      * @return Item
      */
     public function setCreator(UserInterface $creator = null)
@@ -205,9 +234,11 @@ class Item extends ApiWrapper implements
 
     /**
      * Get creator
-     * @return UserInterface
+     *
      * @VirtualProperty
      * @SerializedName("creator")
+     *
+     * @return UserInterface
      */
     public function getCreator()
     {
@@ -221,6 +252,7 @@ class Item extends ApiWrapper implements
 
     /**
      * @param float
+     *
      * @return Item
      */
     public function setQuantity($quantity)
@@ -231,10 +263,11 @@ class Item extends ApiWrapper implements
     }
 
     /**
-     * @return float
      * @VirtualProperty
      * @SerializedName("quantity")
      * @Groups({"cart"})
+     *
+     * @return float
      */
     public function getQuantity()
     {
@@ -243,6 +276,7 @@ class Item extends ApiWrapper implements
 
     /**
      * @param string
+     *
      * @return Item
      */
     public function setQuantityUnit($quantityUnit)
@@ -253,9 +287,10 @@ class Item extends ApiWrapper implements
     }
 
     /**
-     * @return string
      * @VirtualProperty
      * @SerializedName("quantityUnit")
+     *
+     * @return string
      */
     public function getQuantityUnit()
     {
@@ -264,6 +299,7 @@ class Item extends ApiWrapper implements
 
     /**
      * @param bool
+     *
      * @return Item
      */
     public function setUseProductsPrice($useProductsPrice)
@@ -274,9 +310,10 @@ class Item extends ApiWrapper implements
     }
 
     /**
-     * @return bool
      * @VirtualProperty
      * @SerializedName("useProductsPrice")
+     *
+     * @return bool
      */
     public function getUseProductsPrice()
     {
@@ -285,6 +322,7 @@ class Item extends ApiWrapper implements
 
     /**
      * @param float
+     *
      * @return Item
      */
     public function setTax($tax)
@@ -295,9 +333,10 @@ class Item extends ApiWrapper implements
     }
 
     /**
-     * @return float
      * @VirtualProperty
      * @SerializedName("tax")
+     *
+     * @return float
      */
     public function getTax()
     {
@@ -306,6 +345,7 @@ class Item extends ApiWrapper implements
 
     /**
      * @param float
+     *
      * @return Item
      */
     public function setPrice($value)
@@ -316,10 +356,11 @@ class Item extends ApiWrapper implements
     }
 
     /**
-     * @return float
      * @VirtualProperty
      * @SerializedName("price")
      * @Groups({"cart"})
+     *
+     * @return float
      */
     public function getPrice()
     {
@@ -330,6 +371,7 @@ class Item extends ApiWrapper implements
      * @VirtualProperty
      * @SerializedName("priceFormatted")
      * @Groups({"cart"})
+     *
      * @return string
      */
     public function getPriceFormatted($locale = null)
@@ -343,6 +385,7 @@ class Item extends ApiWrapper implements
      * @VirtualProperty
      * @SerializedName("totalNetPriceFormatted")
      * @Groups({"cart"})
+     *
      * @return string
      */
     public function getTotalNetPriceFormatted($locale = null)
@@ -353,11 +396,13 @@ class Item extends ApiWrapper implements
     }
 
     /**
-     * get total net price of an item
+     * Get total net price of an item
      *
      * @VirtualProperty
      * @SerializedName("totalNetPrice")
      * @Groups({"cart"})
+     *
+     * @return float
      */
     public function getTotalNetPrice()
     {
@@ -365,20 +410,22 @@ class Item extends ApiWrapper implements
     }
 
     /**
-     * set total net price of an item
+     * Set total net price of an item
      *
      * @param $price
+     *
      * @return Item
      */
     public function setTotalNetPrice($price)
     {
         $this->entity->setTotalNetPrice($price);
-        
+
         return $this;
     }
 
     /**
      * @param float
+     *
      * @return Item
      */
     public function setDiscount($value)
@@ -389,9 +436,10 @@ class Item extends ApiWrapper implements
     }
 
     /**
-     * @return float
      * @VirtualProperty
      * @SerializedName("discount")
+     *
+     * @return float
      */
     public function getDiscount()
     {
@@ -400,6 +448,7 @@ class Item extends ApiWrapper implements
 
     /**
      * @param string
+     *
      * @return Item
      */
     public function setDescription($value)
@@ -410,9 +459,10 @@ class Item extends ApiWrapper implements
     }
 
     /**
-     * @return string
      * @VirtualProperty
      * @SerializedName("description")
+     *
+     * @return string
      */
     public function getDescription()
     {
@@ -421,6 +471,7 @@ class Item extends ApiWrapper implements
 
     /**
      * @param float
+     *
      * @return Item
      */
     public function setWeight($value)
@@ -431,9 +482,10 @@ class Item extends ApiWrapper implements
     }
 
     /**
-     * @return float
      * @VirtualProperty
      * @SerializedName("weight")
+     *
+     * @return float
      */
     public function getWeight()
     {
@@ -442,6 +494,7 @@ class Item extends ApiWrapper implements
 
     /**
      * @param float
+     *
      * @return Item
      */
     public function setWidth($value)
@@ -452,9 +505,10 @@ class Item extends ApiWrapper implements
     }
 
     /**
-     * @return float
      * @VirtualProperty
      * @SerializedName("width")
+     *
+     * @return float
      */
     public function getWidth()
     {
@@ -463,6 +517,7 @@ class Item extends ApiWrapper implements
 
     /**
      * @param float
+     *
      * @return Item
      */
     public function setHeight($value)
@@ -473,9 +528,10 @@ class Item extends ApiWrapper implements
     }
 
     /**
-     * @return float
      * @VirtualProperty
      * @SerializedName("height")
+     *
+     * @return float
      */
     public function getHeight()
     {
@@ -484,6 +540,7 @@ class Item extends ApiWrapper implements
 
     /**
      * @param float
+     *
      * @return Item
      */
     public function setLength($value)
@@ -494,9 +551,10 @@ class Item extends ApiWrapper implements
     }
 
     /**
-     * @return float
      * @VirtualProperty
      * @SerializedName("length")
+     *
+     * @return float
      */
     public function getLength()
     {
@@ -505,6 +563,7 @@ class Item extends ApiWrapper implements
 
     /**
      * @param int
+     *
      * @return Item
      */
     public function setBitmaskStatus($status)
@@ -515,9 +574,10 @@ class Item extends ApiWrapper implements
     }
 
     /**
-     * @return int
      * @VirtualProperty
      * @SerializedName("bitmaskStatus")
+     *
+     * @return int
      */
     public function getBitmaskStatus()
     {
@@ -526,6 +586,7 @@ class Item extends ApiWrapper implements
 
     /**
      * @param Account
+     *
      * @return Item
      */
     public function setSupplier($value)
@@ -545,6 +606,7 @@ class Item extends ApiWrapper implements
 
     /**
      * @param string
+     *
      * @return Item
      */
     public function setSupplierName($value)
@@ -555,9 +617,10 @@ class Item extends ApiWrapper implements
     }
 
     /**
-     * @return float
      * @VirtualProperty
      * @SerializedName("supplierName")
+     *
+     * @return float
      */
     public function getSupplierName()
     {
@@ -566,6 +629,7 @@ class Item extends ApiWrapper implements
 
     /**
      * @param ItemAttributeEntity $value
+     *
      * @return $this
      */
     public function addAttribute(ItemAttributeEntity $value)
@@ -576,9 +640,10 @@ class Item extends ApiWrapper implements
     }
 
     /**
-     * @return ItemAttribute
      * @VirtualProperty
      * @SerializedName("attributes")
+     *
+     * @return ItemAttribute
      */
     public function getAttributes()
     {
@@ -587,13 +652,14 @@ class Item extends ApiWrapper implements
 
     /**
      * @param $product
+     *
      * @return Item
      */
     public function setProduct($product = null)
     {
         $productEntity = $product;
         // if api-product - temporarily save
-        if ($product instanceof Product) {
+        if ($product instanceof ApiProductInterface) {
             $this->tempProduct = $product;
             $productEntity = $product->getEntity();
         }
@@ -603,10 +669,11 @@ class Item extends ApiWrapper implements
     }
 
     /**
-     * @return Product
      * @VirtualProperty
      * @SerializedName("product")
      * @Groups({"cart"})
+     *
+     * @return ApiProductInterface
      */
     public function getProduct()
     {
@@ -616,28 +683,34 @@ class Item extends ApiWrapper implements
 
         $product = $this->entity->getProduct();
         if ($product) {
-            return new static::$productEntity($product, $this->locale);
+            return $this->productFactory->createApiEntity($product, $this->locale);
         }
+
         return null;
     }
 
     /**
      * Set deliveryAddress
+     *
      * @param OrderAddressEntity $deliveryAddress
+     *
      * @return Item
      */
     public function setDeliveryAddress(OrderAddressEntity $deliveryAddress = null)
     {
         $this->entity->setDeliveryAddress($deliveryAddress);
+
         return $this;
     }
 
     /**
      * Get deliveryAddress
-     * @return OrderAddress $deliveryAddress
+     *
      * @VirtualProperty
      * @SerializedName("deliveryAddress")
      * @Groups({"cart"})
+     *
+     * @return OrderAddress $deliveryAddress
      */
     public function getDeliveryAddress()
     {
@@ -645,11 +718,13 @@ class Item extends ApiWrapper implements
         if ($address) {
             return new OrderAddress($address);
         }
+
         return null;
     }
 
     /**
      * @param $locale
+     *
      * @return Formatter
      */
     private function getFormatter($locale)
@@ -658,6 +733,7 @@ class Item extends ApiWrapper implements
         $formatter = new \NumberFormatter($sysLocale, \NumberFormatter::DECIMAL);
         $formatter->setAttribute(\NumberFormatter::MIN_FRACTION_DIGITS, 2);
         $formatter->setAttribute(\NumberFormatter::DECIMAL_ALWAYS_SHOWN, 1);
+
         return $formatter;
     }
 
@@ -670,6 +746,7 @@ class Item extends ApiWrapper implements
         if ($this->getProduct()) {
             return $this->getProduct()->getEntity();
         }
+
         return null;
     }
 
@@ -722,15 +799,18 @@ class Item extends ApiWrapper implements
                 'name' => $supplier->getName(),
             );
         }
+
         return null;
     }
 
     /**
      * Get price changes
-     * @return array|null
+     *
      * @VirtualProperty
      * @SerializedName("priceChange")
      * @Groups({"cart"})
+     *
+     * @return array|null
      */
     public function getPriceChange()
     {
@@ -745,6 +825,8 @@ class Item extends ApiWrapper implements
     }
 
     /**
+     * Set changed price (from, to) to an item
+     *
      * @param float $from
      * @param float $to
      */

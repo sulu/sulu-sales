@@ -10,24 +10,32 @@
 
 namespace Sulu\Bundle\Sales\CoreBundle\Item;
 
+use Sulu\Bundle\ProducBundle\Product\ProductFactoryInterface;
 use Sulu\Bundle\Sales\CoreBundle\Entity\ItemInterface;
 use Sulu\Bundle\Sales\CoreBundle\Entity\Item;
 use Sulu\Bundle\Sales\CoreBundle\Api\Item as ApiItem;
 
 class ItemFactory implements ItemFactoryInterface
 {
-    private $defaultCurrencyCode;
+    /**
+     * @var string
+     */
+    protected $defaultCurrencyCode;
 
     /**
-     * @param string $apiProductEntity
+     * @var ProductFactoryInterface
+     */
+    protected $productFactory;
+
+    /**
+     * @param ProductFactoryInterface $productFactory
+     * @param string $defaultCurrencyCode
      */
     public function __construct(
-        $apiProductEntity,
+        $productFactory,
         $defaultCurrencyCode
     ) {
-        // FIXME: guess this is not the way this should be done
-        ApiItem::$productEntity = $apiProductEntity;
-
+        $this->productFactory = $productFactory;
         $this->defaultCurrencyCode = $defaultCurrencyCode;
     }
 
@@ -47,7 +55,7 @@ class ItemFactory implements ItemFactoryInterface
         if (!$currency) {
             $currency = $this->defaultCurrencyCode;
         }
-        $apiItem = new ApiItem($item, $locale, $currency);
+        $apiItem = new ApiItem($item, $locale, $this->productFactory, $currency);
 
         return $apiItem;
     }
