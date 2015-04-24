@@ -10,15 +10,15 @@
 
 namespace Sulu\Bundle\Sales\OrderBundle\Api;
 
-use Sulu\Bundle\Sales\CoreBundle\Entity\OrderAddress as OrderAddressEntity;
-use DateTime;
 use Sulu\Bundle\ContactBundle\Entity\TermsOfPayment;
 use Sulu\Bundle\ContactBundle\Entity\TermsOfDelivery;
 use Sulu\Bundle\ContactBundle\Entity\Contact;
 use Sulu\Bundle\ContactBundle\Entity\Account;
-use Sulu\Bundle\Sales\CoreBundle\Entity\OrderAddressInterface;
 use Sulu\Component\Security\Authentication\UserInterface;
+use Sulu\Bundle\Sales\CoreBundle\Entity\OrderAddress as OrderAddressEntity;
+use Sulu\Bundle\Sales\CoreBundle\Entity\OrderAddressInterface;
 use Sulu\Bundle\Sales\CoreBundle\Entity\ItemInterface;
+use DateTime;
 
 interface ApiOrderInterface
 {
