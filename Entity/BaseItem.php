@@ -134,6 +134,16 @@ abstract class BaseItem implements ItemInterface
     private $totalNetPrice;
 
     /**
+     * @var string
+     */
+    private $costCentre;
+
+    /**
+     * @var \DateTime
+     */
+    private $deliveryDate;
+
+    /**
      * Set name
      *
      * @param string $name
@@ -621,5 +631,52 @@ abstract class BaseItem implements ItemInterface
     public function getTotalNetPrice()
     {
         return $this->totalNetPrice;
+    }
+
+    /**
+     * Set costCentre
+     *
+     * @param string $costCentre
+     *
+     * @return Item
+     */
+    public function setCostCentre($costCentre)
+    {
+        $this->costCentre = $costCentre;
+
+        return $this;
+    }
+
+    /**
+     * Get costCentre
+     *
+     * @return string
+     */
+    public function getCostCentre()
+    {
+        return $this->costCentre;
+    }
+
+    /**
+     * Set deliveryDate
+     *
+     * @param \DateTime $deliveryDate
+     *
+     * @return Item
+     */
+    public function setDeliveryDate($deliveryDate)
+    {
+        $this->deliveryDate = $deliveryDate;
+
+        return $this;
+    }
+    /**
+     * Get deliveryDate
+     *
+     * @return \DateTime
+     */
+    public function getDeliveryDate()
+    {
+        return $this->deliveryDate;
     }
 }
