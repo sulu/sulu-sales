@@ -112,7 +112,7 @@ class CartManager extends BaseSalesManager
      * @param OrderManager $orderManager
      * @param GroupedItemsPriceCalculatorInterface $priceCalculation
      * @param string $defaultCurrency
-     * @param object $accountManager
+     * @param AccountManager $accountManager
      * @param \Twig_Environment $twig
      * @param OrderPdfManager $pdfManager
      * @param \Swift_Mailer $mailer
@@ -132,8 +132,7 @@ class CartManager extends BaseSalesManager
         \Swift_Mailer $mailer,
         $mailerFrom,
         OrderFactoryInterface $orderFactory
-    )
-    {
+    ) {
         $this->em = $em;
         $this->session = $session;
         $this->orderRepository = $orderRepository;
@@ -154,6 +153,7 @@ class CartManager extends BaseSalesManager
      * @param null|string $currency
      * @param bool $persistEmptyCart Define if an empty cart should be persisted
      * @param bool $updatePrices Defines if prices should be updated
+     *
      * @return null|ApiOrder
      */
     public function getUserCart(
@@ -162,8 +162,7 @@ class CartManager extends BaseSalesManager
         $currency = null,
         $persistEmptyCart = false,
         $updatePrices = false
-    )
-    {
+    ) {
         // cart by session ID
         if (!$user) {
             // TODO: get correct locale
@@ -205,6 +204,7 @@ class CartManager extends BaseSalesManager
      * Updates changed prices
      *
      * @param $items
+     *
      * @return bool
      */
     public function updateCartPrices($items)
@@ -219,11 +219,12 @@ class CartManager extends BaseSalesManager
     }
 
     /**
-     * updates the cart
+     * Updates the cart
      *
      * @param array $data
      * @param $user
      * @param $locale
+     *
      * @return null|Order
      * @throws \Sulu\Bundle\Sales\OrderBundle\Order\Exception\OrderException
      * @throws \Sulu\Bundle\Sales\OrderBundle\Order\Exception\OrderNotFoundException
@@ -243,6 +244,7 @@ class CartManager extends BaseSalesManager
      * @param $user
      * @param $locale
      * @param bool $orderWasSubmitted
+     *
      * @return null|ApiOrder
      * @throws OrderException
      * @throws \Sulu\Component\Rest\Exception\EntityNotFoundException
@@ -275,7 +277,7 @@ class CartManager extends BaseSalesManager
     }
 
     /**
-     * finds cart by session-id
+     * Finds cart by session-id
      *
      * @return array
      */
@@ -296,7 +298,7 @@ class CartManager extends BaseSalesManager
     }
 
     /**
-     * finds cart by locale and user
+     * Finds cart by locale and user
      *
      * @param $locale
      * @param $user
@@ -413,6 +415,7 @@ class CartManager extends BaseSalesManager
      *
      * @param $user
      * @param $persist
+     *
      * @return Order
      * @throws \Sulu\Component\Rest\Exception\EntityNotFoundException
      */
@@ -488,6 +491,7 @@ class CartManager extends BaseSalesManager
      *
      * @param $user
      * @param $locale
+     *
      * @return array
      */
     public function getNumberItemsAndTotalPrice($user, $locale)
@@ -505,6 +509,7 @@ class CartManager extends BaseSalesManager
     /**
      * @param $recipient
      * @param $apiOrder
+     *
      * @return bool
      */
     public function sendConfirmationEmail($recipient, $apiOrder)
