@@ -20,12 +20,6 @@ use Sulu\Bundle\Sales\CoreBundle\Entity\OrderAddressInterface;
 use Sulu\Component\Security\Authentication\UserInterface;
 use Sulu\Bundle\Sales\CoreBundle\Entity\ItemInterface;
 
-/**
- * The order class which will be exported to the API
- *
- * @package Sulu\Bundle\Sales\OrderBundle\Api
- * @Relation("self", href="expr('/api/admin/orders/' ~ object.getId())")
- */
 interface ApiOrderInterface
 {
     /**
