@@ -1,4 +1,12 @@
 <?php
+/*
+ * This file is part of the Sulu CMS.
+ *
+ * (c) MASSIVE ART WebServices GmbH
+ *
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
+ */
 
 namespace Sulu\Bundle\Sales\OrderBundle\Api;
 
@@ -6,10 +14,8 @@ use Sulu\Bundle\ContactBundle\Entity\Account;
 use Sulu\Bundle\ContactBundle\Entity\Contact;
 use Sulu\Bundle\ContactBundle\Entity\TermsOfDelivery;
 use Sulu\Bundle\ContactBundle\Entity\TermsOfPayment;
-use Sulu\Bundle\Sales\CoreBundle\Api\Item;
 use Sulu\Bundle\Sales\CoreBundle\Core\SalesDocument;
 use Sulu\Bundle\Sales\CoreBundle\Entity\ItemInterface;
-use Sulu\Bundle\Sales\CoreBundle\Entity\OrderAddress as OrderAddressEntity;
 use Sulu\Bundle\Sales\CoreBundle\Api\OrderAddress;
 use Sulu\Bundle\Sales\CoreBundle\Entity\OrderAddressInterface;
 use Sulu\Bundle\Sales\CoreBundle\Item\ItemFactoryInterface;
@@ -30,8 +36,6 @@ use DateTime;
  */
 class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
 {
-    public static $itemEntity = 'Sulu\Bundle\Sales\CoreBundle\Item';
-
     /**
      * Define permissions for front-end
      *
