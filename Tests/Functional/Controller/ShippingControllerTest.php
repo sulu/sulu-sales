@@ -11,10 +11,8 @@
 namespace Sulu\Bundle\ProductBundle\Tests\Functional\Controller;
 
 use DateTime;
-
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Mapping\ClassMetadata;
-
 use Sulu\Bundle\ContactBundle\Entity\Account;
 use Sulu\Bundle\ContactBundle\Entity\Address;
 use Sulu\Bundle\ContactBundle\Entity\AddressType;
