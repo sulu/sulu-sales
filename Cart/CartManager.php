@@ -46,8 +46,8 @@ class CartManager extends BaseSalesManager
     protected static $orderAddressEntityName = 'SuluSalesCoreBundle:OrderAddress';
     protected static $orderStatusTranslationEntityName = 'SuluSalesOrderBundle:OrderStatusTranslation';
     protected static $itemEntityName = 'SuluSalesCoreBundle:Item';
-    protected static $termsOfDeliveryEntityName = 'SuluContactBundle:TermsOfDelivery';
-    protected static $termsOfPaymentEntityName = 'SuluContactBundle:TermsOfPayment';
+    protected static $termsOfDeliveryEntityName = 'SuluContactExtensionBundle:TermsOfDelivery';
+    protected static $termsOfPaymentEntityName = 'SuluContactExtensionBundle:TermsOfPayment';
     protected static $statusClass = 'Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatus';
 
     /**
@@ -451,14 +451,22 @@ class CartManager extends BaseSalesManager
         $invoiceAddress = $this->accountManager->getBillingAddress($addressSource, true);
         if ($invoiceAddress) {
             // convert to order-address
-            $invoiceOrderAddress = $this->orderManager->getOrderAddressByContactAddress($invoiceAddress, $contact, $account);
+            $invoiceOrderAddress = $this->orderManager->getOrderAddressByContactAddress(
+                $invoiceAddress,
+                $contact,
+                $account
+            );
             $cart->setInvoiceAddress($invoiceOrderAddress);
         }
         $deliveryOrderAddress = null;
         $deliveryAddress = $this->accountManager->getDeliveryAddress($addressSource, true);
         if ($deliveryAddress) {
             // convert to order-address
-            $deliveryOrderAddress = $this->orderManager->getOrderAddressByContactAddress($deliveryAddress, $contact, $account);
+            $deliveryOrderAddress = $this->orderManager->getOrderAddressByContactAddress(
+                $deliveryAddress,
+                $contact,
+                $account
+            );
             $cart->setDeliveryAddress($deliveryOrderAddress);
         }
 
