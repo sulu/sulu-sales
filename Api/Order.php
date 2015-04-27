@@ -1,4 +1,12 @@
 <?php
+/*
+ * This file is part of the Sulu CMS.
+ *
+ * (c) MASSIVE ART WebServices GmbH
+ *
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
+ */
 
 namespace Sulu\Bundle\Sales\OrderBundle\Api;
 
@@ -6,11 +14,11 @@ use Sulu\Bundle\ContactBundle\Entity\Account;
 use Sulu\Bundle\ContactBundle\Entity\Contact;
 use Sulu\Bundle\ContactExtensionBundle\Entity\TermsOfDelivery;
 use Sulu\Bundle\ContactBundle\Entity\TermsOfPayment;
-use Sulu\Bundle\Sales\CoreBundle\Api\Item;
 use Sulu\Bundle\Sales\CoreBundle\Core\SalesDocument;
 use Sulu\Bundle\Sales\CoreBundle\Entity\ItemInterface;
-use Sulu\Bundle\Sales\CoreBundle\Entity\OrderAddress as OrderAddressEntity;
 use Sulu\Bundle\Sales\CoreBundle\Api\OrderAddress;
+use Sulu\Bundle\Sales\CoreBundle\Entity\OrderAddressInterface;
+use Sulu\Bundle\Sales\CoreBundle\Item\ItemFactoryInterface;
 use Sulu\Bundle\Sales\OrderBundle\Entity\Order as OrderEntity;
 use Sulu\Component\Rest\ApiWrapper;
 use Hateoas\Configuration\Annotation\Relation;
@@ -26,7 +34,7 @@ use DateTime;
  * @package Sulu\Bundle\Sales\OrderBundle\Api
  * @Relation("self", href="expr('/api/admin/orders/' ~ object.getId())")
  */
-class Order extends ApiWrapper implements SalesDocument
+class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
 {
     /**
      * Define permissions for front-end
@@ -71,13 +79,20 @@ class Order extends ApiWrapper implements SalesDocument
     private $itemsChanged = false;
 
     /**
+     * @var ItemFactoryInterface
+     */
+    private $itemFactory;
+
+    /**
      * @param OrderEntity $order The order to wrap
      * @param string $locale The locale of this order
+     * @param ItemFactoryInterface $itemFactory
      */
-    public function __construct(OrderEntity $order, $locale)
+    public function __construct(OrderEntity $order, $locale, $itemFactory)
     {
         $this->entity = $order;
         $this->locale = $locale;
+        $this->itemFactory = $itemFactory;
     }
 
     /**
@@ -737,7 +752,7 @@ class Order extends ApiWrapper implements SalesDocument
             $this->itemsChanged = false;
             $this->cacheItems = array();
             foreach ($this->entity->getItems() as $item) {
-                $this->cacheItems[] = new Item($item, $this->locale, $this->getCurrencyCode());
+                $this->cacheItems[] = $this->itemFactory->createApiEntity($item, $this->locale, $this->getCurrencyCode());
             }
         }
 
@@ -841,11 +856,11 @@ class Order extends ApiWrapper implements SalesDocument
     /**
      * Set deliveryAddress
      *
-     * @param OrderAddressEntity $deliveryAddress
+     * @param OrderAddressInterface $deliveryAddress
      *
      * @return Order
      */
-    public function setDeliveryAddress(OrderAddressEntity $deliveryAddress = null)
+    public function setDeliveryAddress(OrderAddressInterface $deliveryAddress = null)
     {
         $this->entity->setDeliveryAddress($deliveryAddress);
 
@@ -859,7 +874,7 @@ class Order extends ApiWrapper implements SalesDocument
      * @SerializedName("deliveryAddress")
      * @Groups({"cart"})
      *
-     * @return OrderAddressEntity
+     * @return OrderAddressInterface
      */
     public function getDeliveryAddress()
     {
@@ -873,11 +888,11 @@ class Order extends ApiWrapper implements SalesDocument
     /**
      * Set invoiceAddress
      *
-     * @param OrderAddressEntity $invoiceAddress
+     * @param OrderAddressInterface $invoiceAddress
      *
      * @return Order
      */
-    public function setInvoiceAddress(OrderAddressEntity $invoiceAddress = null)
+    public function setInvoiceAddress(OrderAddressInterface $invoiceAddress = null)
     {
         $this->entity->setInvoiceAddress($invoiceAddress);
 
@@ -891,7 +906,7 @@ class Order extends ApiWrapper implements SalesDocument
      * @SerializedName("invoiceAddress")
      * @Groups({"cart"})
      *
-     * @return OrderAddressEntity
+     * @return OrderAddressInterface
      */
     public function getInvoiceAddress()
     {

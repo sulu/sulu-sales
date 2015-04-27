@@ -14,6 +14,7 @@ use Doctrine\ORM\EntityManager;
 use Sulu\Bundle\ContactBundle\Entity\Account;
 use Sulu\Bundle\ContactBundle\Entity\Address;
 use Sulu\Bundle\ContactBundle\Entity\Contact;
+use Sulu\Bundle\Sales\CoreBundle\Item\ItemFactoryInterface;
 use Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatusTranslation;
 use Sulu\Bundle\TestBundle\Testing\SuluTestCase;
 
@@ -43,7 +44,7 @@ class OrderTestBase extends SuluTestCase
 
     protected function setUpTestData()
     {
-        $this->data = new OrderDataSetup($this->em);
+        $this->data = new OrderDataSetup($this->em, $this->getItemFactory());
     }
 
     protected function createStatusTranslation(EntityManager $manager, $status, $translation, $locale) {
@@ -91,5 +92,13 @@ class OrderTestBase extends SuluTestCase
         if ($firstValue !== null) {
             $this->assertEquals($firstValue, $secondObject->$value);
         }
+    }
+
+    /**
+     * @return ItemFactoryInterface
+     */
+    protected function getItemFactory()
+    {
+        return $this->getContainer()->get('sulu_sales_core.item_factory');
     }
 }
