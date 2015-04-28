@@ -53,7 +53,6 @@ interface ItemAttributeInterface
     /**
      * Set item
      *
-     *
      * @param ItemInterface $item
      *
      * @return ItemAttribute
