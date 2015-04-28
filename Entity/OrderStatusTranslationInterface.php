@@ -8,6 +8,7 @@ interface OrderStatusTranslationInterface
      * Set name
      *
      * @param string $name
+     *
      * @return OrderStatusTranslation
      */
     public function setName($name);
@@ -15,7 +16,7 @@ interface OrderStatusTranslationInterface
     /**
      * Get name
      *
-     * @return string 
+     * @return string
      */
     public function getName();
 
@@ -23,6 +24,7 @@ interface OrderStatusTranslationInterface
      * Set locale
      *
      * @param string $locale
+     *
      * @return OrderStatusTranslation
      */
     public function setLocale($locale);
@@ -30,14 +32,14 @@ interface OrderStatusTranslationInterface
     /**
      * Get locale
      *
-     * @return string 
+     * @return string
      */
     public function getLocale();
 
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
     public function getId();
 
@@ -45,6 +47,7 @@ interface OrderStatusTranslationInterface
      * Set status
      *
      * @param OrderStatusInterface $status
+     *
      * @return OrderStatusTranslation
      */
     public function setStatus(OrderStatusInterface $status = null);

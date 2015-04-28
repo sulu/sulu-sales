@@ -6,6 +6,8 @@ use Sulu\Bundle\ContactBundle\Entity\Account;
 use Sulu\Bundle\ContactBundle\Entity\Contact;
 use Sulu\Bundle\ContactBundle\Entity\TermsOfDelivery;
 use Sulu\Bundle\ContactBundle\Entity\TermsOfPayment;
+use Sulu\Bundle\Sales\CoreBundle\Entity\ItemInterface;
+use Sulu\Bundle\Sales\CoreBundle\Entity\OrderAddressInterface;
 
 abstract class AbstractOrder extends BaseOrder
 {
@@ -38,6 +40,34 @@ abstract class AbstractOrder extends BaseOrder
      * @var Contact
      */
     protected $responsibleContact;
+
+    /**
+     * @var \Doctrine\Common\Collections\Collection
+     */
+    protected $items;
+
+    /**
+     * @var OrderStatusInterface
+     */
+    protected $status;
+
+    /**
+     * @var OrderAddressInterface
+     */
+    protected $deliveryAddress;
+
+    /**
+     * @var OrderAddressInterface
+     */
+    protected $invoiceAddress;
+
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->items = new \Doctrine\Common\Collections\ArrayCollection();
+    }
 
     /**
      * Set termsOfDeliveryContent
@@ -181,5 +211,85 @@ abstract class AbstractOrder extends BaseOrder
     public function getResponsibleContact()
     {
         return $this->responsibleContact;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function addItem(ItemInterface $items)
+    {
+        $this->items[] = $items;
+
+        return $this;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function removeItem(ItemInterface $items)
+    {
+        $this->items->removeElement($items);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getItems()
+    {
+        return $this->items;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setStatus(OrderStatusInterface $status)
+    {
+        $this->status = $status;
+
+        return $this;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getStatus()
+    {
+        return $this->status;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setDeliveryAddress(OrderAddressInterface $deliveryAddress = null)
+    {
+        $this->deliveryAddress = $deliveryAddress;
+
+        return $this;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getDeliveryAddress()
+    {
+        return $this->deliveryAddress;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setInvoiceAddress(OrderAddressInterface $invoiceAddress = null)
+    {
+        $this->invoiceAddress = $invoiceAddress;
+
+        return $this;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getInvoiceAddress()
+    {
+        return $this->invoiceAddress;
     }
 }
