@@ -57,8 +57,8 @@ class OrderManager
     protected static $orderAddressEntityName = 'SuluSalesCoreBundle:OrderAddress';
     protected static $orderStatusTranslationEntityName = 'SuluSalesOrderBundle:OrderStatusTranslation';
     protected static $itemEntityName = 'SuluSalesCoreBundle:Item';
-    protected static $termsOfDeliveryEntityName = 'SuluContactBundle:TermsOfDelivery';
-    protected static $termsOfPaymentEntityName = 'SuluContactBundle:TermsOfPayment';
+    protected static $termsOfDeliveryEntityName = 'SuluContactExtensionBundle:TermsOfDelivery';
+    protected static $termsOfPaymentEntityName = 'SuluContactExtensionBundle:TermsOfPayment';
 
     private $currentLocale;
 
@@ -141,8 +141,7 @@ class OrderManager
         GroupedItemsPriceCalculatorInterface $priceCalculator,
         ProductManagerInterface $productManager,
         OrderFactoryInterface $orderFactory
-    )
-    {
+    ) {
         $this->orderRepository = $orderRepository;
         $this->userRepository = $userRepository;
         $this->em = $em;
@@ -175,8 +174,7 @@ class OrderManager
         $id = null,
         $statusId = null,
         $flush = true
-    )
-    {
+    ) {
         $isNewOrder = !$id;
 
         if (!$isNewOrder) {
@@ -678,7 +676,7 @@ class OrderManager
             if (is_array($type) && isset($type['id'])) {
                 // if provided as array
                 $typeId = $type['id'];
-            } else if (is_numeric($type)) {
+            } elseif (is_numeric($type)) {
                 // if is numeric
                 $typeId = $type;
             } else {
@@ -1053,7 +1051,10 @@ class OrderManager
             // TODO: inject repository class
             $terms = $this->em->getRepository(static::$termsOfPaymentEntityName)->find($termsOfPaymentData['id']);
             if (!$terms) {
-                throw new OrderDependencyNotFoundException(static::$termsOfPaymentEntityName, $termsOfPaymentData['id']);
+                throw new OrderDependencyNotFoundException(
+                    static::$termsOfPaymentEntityName,
+                    $termsOfPaymentData['id']
+                );
             }
             $order->setTermsOfPayment($terms);
             $order->setTermsOfPaymentContent($terms->getTerms());

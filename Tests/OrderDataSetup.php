@@ -10,6 +10,9 @@
 namespace Sulu\Bundle\Sales\OrderBundle\Tests;
 
 use DateTime;
+
+use Symfony\Component\HttpKernel\Client;
+
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Sulu\Bundle\ContactBundle\Entity\Account;
@@ -20,8 +23,8 @@ use Sulu\Bundle\ContactBundle\Entity\ContactTitle;
 use Sulu\Bundle\ContactBundle\Entity\Country;
 use Sulu\Bundle\ContactBundle\Entity\Phone;
 use Sulu\Bundle\ContactBundle\Entity\PhoneType;
-use Sulu\Bundle\ContactBundle\Entity\TermsOfDelivery;
-use Sulu\Bundle\ContactBundle\Entity\TermsOfPayment;
+use Sulu\Bundle\ContactExtensionBundle\Entity\TermsOfDelivery;
+use Sulu\Bundle\ContactExtensionBundle\Entity\TermsOfPayment;
 use Sulu\Bundle\ProductBundle\Entity\Currency;
 use Sulu\Bundle\ProductBundle\Entity\Product;
 use Sulu\Bundle\ProductBundle\Entity\ProductPrice;
@@ -30,7 +33,6 @@ use Sulu\Bundle\ProductBundle\Entity\Status;
 use Sulu\Bundle\ProductBundle\Entity\StatusTranslation;
 use Sulu\Bundle\ProductBundle\Entity\Type;
 use Sulu\Bundle\ProductBundle\Entity\TypeTranslation;
-
 use Sulu\Bundle\ProductBundle\Entity\Unit;
 use Sulu\Bundle\ProductBundle\Entity\UnitTranslation;
 use Sulu\Bundle\Sales\CoreBundle\Entity\Item;
@@ -43,7 +45,6 @@ use Sulu\Bundle\Sales\OrderBundle\Entity\OrderType;
 use Sulu\Bundle\Sales\OrderBundle\Entity\OrderTypeTranslation;
 use Sulu\Bundle\SecurityBundle\Entity\User;
 use Sulu\Bundle\TestBundle\Testing\SuluTestCase;
-use Symfony\Component\HttpKernel\Client;
 
 class OrderDataSetup
 {
@@ -156,8 +157,7 @@ class OrderDataSetup
         EntityManager $entityManager,
         $itemFactory,
         $productEntity = 'Sulu\Bundle\ProductBundle\Entity\Product'
-    )
-    {
+    ) {
         $this->productEntity = $productEntity;
         $this->itemFactory = $itemFactory;
 
