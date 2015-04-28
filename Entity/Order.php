@@ -15,6 +15,11 @@ class Order extends AbstractOrder
     protected $type;
 
     /**
+     * @var integer
+     */
+    protected $bitmaskStatus;
+
+    /**
      * Set sessionId
      *
      * @param string $sessionId
@@ -60,5 +65,23 @@ class Order extends AbstractOrder
     public function getType()
     {
         return $this->type;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setBitmaskStatus($bitmaskStatus)
+    {
+        $this->bitmaskStatus = $bitmaskStatus;
+
+        return $this;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getBitmaskStatus()
+    {
+        return $this->bitmaskStatus;
     }
 }

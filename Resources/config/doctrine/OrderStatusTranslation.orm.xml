@@ -9,7 +9,7 @@
         <field name="name" type="string" column="name" length="255" nullable="false"/>
         <field name="locale" type="string" column="locale" length="10" nullable="false"/>
 
-        <many-to-one field="status" target-entity="Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatusInterface" inversed-by="translations">
+        <many-to-one field="status" target-entity="Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatus" inversed-by="translations">
             <join-columns>
                 <join-column name="idOrderStatus" referenced-column-name="id" on-delete="CASCADE" nullable="false"/>
             </join-columns>

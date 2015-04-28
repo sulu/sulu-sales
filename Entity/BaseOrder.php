@@ -11,8 +11,6 @@
 namespace Sulu\Bundle\Sales\OrderBundle\Entity;
 
 use Sulu\Bundle\ContactBundle\Entity\Contact;
-use Sulu\Bundle\Sales\CoreBundle\Entity\ItemInterface;
-use Sulu\Bundle\Sales\CoreBundle\Entity\OrderAddressInterface;
 use Sulu\Component\Security\Authentication\UserInterface;
 
 abstract class BaseOrder implements OrderInterface
@@ -20,120 +18,87 @@ abstract class BaseOrder implements OrderInterface
     /**
      * @var string
      */
-    private $number;
+    protected $number;
 
     /**
      * @var int
      */
-    private $orderNumber;
+    protected $orderNumber;
 
     /**
      * @var string
      */
-    private $currencyCode;
+    protected $currencyCode;
 
     /**
      * @var boolean
      */
-    private $taxfree;
+    protected $taxfree;
 
     /**
      * @var string
      */
-    private $costCentre;
+    protected $costCentre;
 
     /**
      * @var string
      */
-    private $commission;
+    protected $commission;
 
     /**
      * @var string
      */
-    private $customerName;
+    protected $customerName;
 
     /**
      * @var \DateTime
      */
-    private $created;
+    protected $created;
 
     /**
      * @var \DateTime
      */
-    private $changed;
+    protected $changed;
 
     /**
      * @var \DateTime
      */
-    private $desiredDeliveryDate;
+    protected $desiredDeliveryDate;
 
     /**
      * @var integer
      */
-    private $id;
-
-    /**
-     * @var OrderAddressInterface
-     */
-    private $deliveryAddress;
-
-    /**
-     * @var OrderAddressInterface
-     */
-    private $invoiceAddress;
-
-    /**
-     * @var OrderStatusInterface
-     */
-    private $status;
+    protected $id;
 
     /**
      * @var Contact
      */
-    private $customerContact;
-
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $items;
+    protected $customerContact;
 
     /**
      * @var UserInterface
      */
-    private $changer;
+    protected $changer;
 
     /**
      * @var UserInterface
      */
-    private $creator;
-
-    /**
-     * @var integer
-     */
-    private $bitmaskStatus;
+    protected $creator;
 
     /**
      * @var float
      */
-    private $totalNetPrice;
+    protected $totalNetPrice;
 
     /**
      * @var \DateTime
      */
-    private $orderDate;
+    protected $orderDate;
 
     /**
      * @var float
      */
-    private $deliveryCost;
-
-    /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        $this->items = new \Doctrine\Common\Collections\ArrayCollection();
-    }
+    protected $deliveryCost;
 
     /**
      * {@inheritDoc}
@@ -326,60 +291,6 @@ abstract class BaseOrder implements OrderInterface
     /**
      * {@inheritDoc}
      */
-    public function setDeliveryAddress(OrderAddressInterface $deliveryAddress = null)
-    {
-        $this->deliveryAddress = $deliveryAddress;
-
-        return $this;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getDeliveryAddress()
-    {
-        return $this->deliveryAddress;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function setInvoiceAddress(OrderAddressInterface $invoiceAddress = null)
-    {
-        $this->invoiceAddress = $invoiceAddress;
-
-        return $this;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getInvoiceAddress()
-    {
-        return $this->invoiceAddress;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function setStatus(OrderStatusInterface $status)
-    {
-        $this->status = $status;
-
-        return $this;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getStatus()
-    {
-        return $this->status;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     public function setCustomerContact(Contact $contact = null)
     {
         $this->customerContact = $contact;
@@ -393,32 +304,6 @@ abstract class BaseOrder implements OrderInterface
     public function getCustomerContact()
     {
         return $this->customerContact;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function addItem(ItemInterface $items)
-    {
-        $this->items[] = $items;
-
-        return $this;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function removeItem(ItemInterface $items)
-    {
-        $this->items->removeElement($items);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getItems()
-    {
-        return $this->items;
     }
 
     /**
@@ -455,24 +340,6 @@ abstract class BaseOrder implements OrderInterface
     public function getCreator()
     {
         return $this->creator;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function setBitmaskStatus($bitmaskStatus)
-    {
-        $this->bitmaskStatus = $bitmaskStatus;
-
-        return $this;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getBitmaskStatus()
-    {
-        return $this->bitmaskStatus;
     }
 
     /**

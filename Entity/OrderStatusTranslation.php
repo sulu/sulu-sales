@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * OrderStatusTranslation
  */
-class OrderStatusTranslation
+class OrderStatusTranslation implements OrderStatusTranslationInterface
 {
     /**
      * @var string
@@ -89,10 +89,10 @@ class OrderStatusTranslation
     /**
      * Set status
      *
-     * @param \Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatus $status
+     * @param OrderStatusInterface $status
      * @return OrderStatusTranslation
      */
-    public function setStatus(\Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatus $status = null)
+    public function setStatus(OrderStatusInterface $status = null)
     {
         $this->status = $status;
     

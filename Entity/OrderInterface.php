@@ -328,22 +328,6 @@ interface OrderInterface
     public function getCreator();
 
     /**
-     * Set bitmaskStatus
-     *
-     * @param integer $bitmaskStatus
-     *
-     * @return OrderInterface
-     */
-    public function setBitmaskStatus($bitmaskStatus);
-
-    /**
-     * Get bitmaskStatus
-     *
-     * @return integer
-     */
-    public function getBitmaskStatus();
-
-    /**
      * Set totalNetPrice
      *
      * @param float $totalNetPrice

@@ -8,6 +8,9 @@
         <field name="termsOfDeliveryContent" type="string" column="termsOfDeliveryContent" length="255" nullable="true"/>
         <field name="termsOfPaymentContent" type="string" column="termsOfPaymentContent" length="255" nullable="true"/>
 
+
+        <field name="bitmaskStatus" type="integer" column="bitmaskStatus" length="3" nullable="false"/>
+
         <many-to-one field="termsOfDelivery" target-entity="Sulu\Bundle\ContactExtensionBundle\Entity\TermsOfDelivery">
             <join-columns>
                 <join-column name="idTermsOfDelivery"/>
@@ -33,5 +36,32 @@
                 <join-column name="idContactsResponsible" referenced-column-name="id" on-delete="SET NULL"/>
             </join-columns>
         </many-to-one>
+
+        <many-to-one field="deliveryAddress" target-entity="Sulu\Bundle\Sales\CoreBundle\Entity\OrderAddress">
+            <join-columns>
+                <join-column name="idOrderAddressesDelivery"/>
+            </join-columns>
+        </many-to-one>
+        <many-to-one field="invoiceAddress" target-entity="Sulu\Bundle\Sales\CoreBundle\Entity\OrderAddress">
+            <join-columns>
+                <join-column name="idOrderAddressesInvoice"/>
+            </join-columns>
+        </many-to-one>
+        <many-to-one field="status" target-entity="Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatus"
+                     inversed-by="order">
+            <join-columns>
+                <join-column name="idOrderStatus" referenced-column-name="id" nullable="false"/>
+            </join-columns>
+        </many-to-one>
+        <many-to-many field="items" target-entity="Sulu\Bundle\Sales\CoreBundle\Entity\ItemInterface">
+            <join-table name="so_order_items">
+                <join-columns>
+                    <join-column name="idOrders" referenced-column-name="id"/>
+                </join-columns>
+                <inverse-join-columns>
+                    <join-column name="idItems" referenced-column-name="id"/>
+                </inverse-join-columns>
+            </join-table>
+        </many-to-many>
     </entity>
 </doctrine-mapping>
