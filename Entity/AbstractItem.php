@@ -67,27 +67,27 @@ class AbstractItem extends BaseItem implements ItemInterface
     }
 
     /**
-     * Add attributes
+     * Add attribute
      *
-     * @param ItemAttribute $attributes
+     * @param ItemAttributeInterface $attribute
      *
      * @return Item
      */
-    public function addAttribute(ItemAttribute $attributes)
+    public function addAttribute(ItemAttributeInterface $attribute)
     {
-        $this->attributes[] = $attributes;
+        $this->attributes[] = $attribute;
 
         return $this;
     }
 
     /**
-     * Remove attributes
+     * Remove attribute
      *
-     * @param ItemAttribute $attributes
+     * @param ItemAttributeInterface $attribute
      */
-    public function removeAttribute(ItemAttribute $attributes)
+    public function removeAttribute(ItemAttributeInterface $attribute)
     {
-        $this->attributes->removeElement($attributes);
+        $this->attributes->removeElement($attribute);
     }
 
     /**

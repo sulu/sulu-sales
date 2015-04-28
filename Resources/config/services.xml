@@ -41,7 +41,7 @@
         </service>
 
         <service id="sulu_sales_core.item_factory" class="%sulu_sales_core.item_factory.class%">
-            <argument>%sulu_product.product_api_entity%</argument>
+            <argument type="service" id="sulu_product.product_factory"></argument>
             <argument>%sulu_product.default_currency%</argument>
         </service>
 
