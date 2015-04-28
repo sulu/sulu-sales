@@ -2,7 +2,7 @@
 
 namespace Sulu\Bundle\Sales\OrderBundle\Controller;
 
-use Sulu\Bundle\ContactBundle\Entity\Account;
+use Sulu\Bundle\ContactExtensionBundle\Entity\Account;
 use Sulu\Bundle\ProductBundle\Api\Currency;
 use Sulu\Bundle\Sales\OrderBundle\Api\OrderStatus;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;

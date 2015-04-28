@@ -46,7 +46,8 @@
         "sulu/tag-bundle": "dev-develop",
         "sulu/website-bundle": "dev-develop",
         "sulu/category-bundle": "dev-develop",
-        "sulu/media-bundle": "dev-develop"
+        "sulu/media-bundle": "dev-develop",
+        "sulu/contact-extension-bundle": "dev-develop"
     },
     "require-dev": {
         "knplabs/knp-snappy-bundle": "dev-master",

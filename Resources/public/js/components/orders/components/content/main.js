@@ -14,7 +14,7 @@ define(function() {
     return {
         header: {
             tabs: {
-                url: '/admin/order/navigation/order'
+                url: '/admin/content-navigations?alias=order'
             },
             toolbar: {
                 template: []

@@ -30,6 +30,8 @@
         </service>
 
         <service id="sulu_sales_order.admin.content_navigation" class="%sulu_sales_order.admin.content_navigation.class%">
+            <tag name="sulu_admin.content_navigation" alias="order"/>
+            <tag name="sulu.context" context="admin"/>
         </service>
 
 
