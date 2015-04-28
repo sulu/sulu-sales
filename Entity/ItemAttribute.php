@@ -1,5 +1,12 @@
 <?php
-
+/*
+ * This file is part of the Sulu CMS.
+ *
+ * (c) MASSIVE ART WebServices GmbH
+ *
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
+ */
 namespace Sulu\Bundle\Sales\CoreBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
@@ -8,7 +15,7 @@ use JMS\Serializer\Annotation\Exclude;
 /**
  * ItemAttribute
  */
-class ItemAttribute
+class ItemAttribute implements ItemAttributeInterface
 {
     /**
      * @var string
@@ -26,29 +33,29 @@ class ItemAttribute
     private $id;
 
     /**
-     * @var \Sulu\Bundle\Sales\CoreBundle\Entity\Item
+     * @var ItemInterface
      * @Exclude
      */
     private $item;
-
 
     /**
      * Set attribute
      *
      * @param string $attribute
+     *
      * @return ItemAttribute
      */
     public function setAttribute($attribute)
     {
         $this->attribute = $attribute;
-    
+
         return $this;
     }
 
     /**
      * Get attribute
      *
-     * @return string 
+     * @return string
      */
     public function getAttribute()
     {
@@ -59,19 +66,20 @@ class ItemAttribute
      * Set value
      *
      * @param string $value
+     *
      * @return ItemAttribute
      */
     public function setValue($value)
     {
         $this->value = $value;
-    
+
         return $this;
     }
 
     /**
      * Get value
      *
-     * @return string 
+     * @return string
      */
     public function getValue()
     {
@@ -81,7 +89,7 @@ class ItemAttribute
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
     public function getId()
     {
@@ -91,20 +99,21 @@ class ItemAttribute
     /**
      * Set item
      *
-     * @param \Sulu\Bundle\Sales\CoreBundle\Entity\Item $item
+     * @param ItemInterface $item
+     *
      * @return ItemAttribute
      */
-    public function setItem(\Sulu\Bundle\Sales\CoreBundle\Entity\Item $item = null)
+    public function setItem(ItemInterface $item = null)
     {
         $this->item = $item;
-    
+
         return $this;
     }
 
     /**
      * Get item
      *
-     * @return \Sulu\Bundle\Sales\CoreBundle\Entity\Item 
+     * @return ItemInterface
      */
     public function getItem()
     {
