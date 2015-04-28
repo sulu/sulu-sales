@@ -12,8 +12,9 @@ define([
     'sulusalesorder/util/orderStatus',
     'sulusalescore/util/helper',
     'sulucontact/model/account',
-    'config'
-], function(Sidebar, OrderStatus, CoreHelper, Account, Config) {
+    'config',
+    'widget-groups'
+], function(Sidebar, OrderStatus, CoreHelper, Account, Config, WidgetGroups) {
 
     'use strict';
 
@@ -603,7 +604,9 @@ define([
             this.listenForChange();
 
             // initialize sidebar
-            Sidebar.initForDetail(this.sandbox, this.options.data);
+            if (!!this.options.data && !!this.options.data.id && WidgetGroups.exists('order-detail')) {
+                Sidebar.initForDetail(this.sandbox, this.options.data);
+            }
 
         },
 
