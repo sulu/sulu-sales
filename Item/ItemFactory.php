@@ -10,7 +10,7 @@
 
 namespace Sulu\Bundle\Sales\CoreBundle\Item;
 
-use Sulu\Bundle\ProducBundle\Product\ProductFactoryInterface;
+use Sulu\Bundle\ProductBundle\Product\ProductFactoryInterface;
 use Sulu\Bundle\Sales\CoreBundle\Entity\ItemInterface;
 use Sulu\Bundle\Sales\CoreBundle\Entity\Item;
 use Sulu\Bundle\Sales\CoreBundle\Api\Item as ApiItem;
