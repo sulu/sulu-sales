@@ -1,0 +1,198 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<html>
+    <head>
+        <base href="{{ app.request.schemeAndHttpHost }}" />
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <title></title>
+        <meta name="description" content="">
+        <link rel="stylesheet" href="{{ asset('bundles/sulusalescore/css/pdfstyles.css') }}"/>
+    </head>
+    <body>
+        <div class="wrapper">
+            <div class="header">
+                <div class="padding-right">
+                    <div class="grid grid--full">
+                        <div class="grid__item three-quarters header-slogan">
+                            COMPANY SLOGAN
+                        </div>
+                        <div class="grid__item one-quarter">
+                        </div>
+                        <div class="grid__item grid--full small m-bottom-10">
+                            {% block recipient_business_info %}{% endblock %}
+                        </div>
+                        <div class="grid__item three-quarters">
+                            {% block recipient %}{% endblock %}
+                        </div>
+                        <div class="grid__item one-quarter">
+                            {% block responsibleperson  %}{% endblock %}
+                        </div>
+
+                        <div class="grid__item three-quarters"></div>
+                        <div class="grid__item one-quarter header-today">
+                            My Town, {{ "now"|date('d.m.Y') }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="process-details ">
+                <div class="grid grid--full">
+                    <div class="grid__item one-whole">
+                        <h1>{% block pdf_title %}{% endblock %}</h1>
+                    </div>
+                    {% block invoice_address %}
+                        <div class="grid__item four-tenths"></div>
+                    {% endblock %}
+                    {% block orderdetails %}
+                        <div class="grid__item three-tenths"></div>
+                    {% endblock %}
+                    {% block shippingdetails %}
+                        <div class="grid__item three-tenths"></div>
+                    {% endblock %}
+                    <div class="grid__item one-third">
+                        <p class="paragraph">
+                            {% block shippingdetails_addressnote_title %}{% endblock %}
+                        </p>
+                    </div>
+                    <div class="grid__item two-thirds">
+                        <p class="paragraph">
+                            {% block shippingdetails_addressnote_content %}{% endblock %}
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            {% block productlist %}
+                <div class="product-list">
+                    <div class="grid grid--full">
+                        <div class="grid__item one-half">
+                            <div class="grid">
+                                <div class="grid__item one-whole">
+                                    {% block productlist_header_description %}
+                                        Beschreibung
+                                    {% endblock %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="grid__item one-half">
+                            <div class="grid">
+                                <div class="grid__item one-quarter text-align-right">
+                                    {% block productlist_header_productnumber %}
+                                        Artikelnummer
+                                    {% endblock %}
+                                </div>
+                                <div class="grid__item one-quarter text-align-right">
+                                    {% block productlist_header_amount %}
+                                        Menge
+                                    {% endblock %}
+                                </div>
+                                <div class="grid__item one-quarter text-align-right">
+                                    {% block productlist_header_singleprice %}
+                                        Einzelpreis
+                                    {% endblock %}
+                                </div>
+                                <div class="grid__item one-quarter text-align-right">
+                                    {% block productlist_header_total %}
+                                        Gesamtpreis
+                                    {% endblock %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="spacing-line"></div>
+                    <div class="grid grid--full">
+                        {% block productlist_items %}{% endblock %}
+                    </div>
+                    <div class="spacing-line"></div>
+                    <div class="grid grid--right">
+                        <div class="grid__item three-twelfths">
+                            <span class="bold subline">
+                                {% block productlist_footer_shippingcost_title %}
+                                    Versandkosten:
+                                {% endblock %}
+                            </span><br/>
+                            <span class="bold">
+                                {% block productlist_footer_total_title %}
+                                    Gesamt netto [EUR]:
+                                {% endblock %}
+                            </span>
+                        </div>
+                        <div class="grid__item two-twelfths text-align-right">
+                            <div class="bold subline">
+                                {% block productlist_footer_shippingcost_value %}
+                                    0,00
+                                {% endblock %}
+                            </div>
+                            <div class="bold">
+                                {% block productlist_footer_total_value %}
+                                    0,00
+                                {% endblock %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endblock %}
+
+        {% block order_conditions %}
+            <div class="wrapper">
+                <div class="conditions ">
+                    <div class="padding-right">
+                        <h2>Konditionen</h2>
+                        <div class="grid">
+                            <div class="grid__item one-half">
+                                <div class="grid">
+                                    <div class="grid__item one-quarter">
+                                        Anlieferung:
+                                    </div>
+                                    <div class="grid__item three-quarters">
+                                        Das ist ein Lieferhinweis
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="grid__item one-half">
+                                <div class="grid">
+                                    <div class="grid__item one-quarter">
+                                        Zahlung:
+                                    </div>
+                                    <div class="grid__item three-quarters">
+                                        Das ist ein Zahlungshinweis
+                                    </div>
+                                    <div class="grid__item one-quarter">
+                                        Bonus:
+                                    </div>
+                                    <div class="grid__item three-quarters">
+                                        Das ist ein Bonushinweis
+                                    </div>
+                                    <div class="grid__item one-quarter">
+                                        EKB:
+                                    </div>
+                                    <div class="grid__item three-quarters">
+                                        Das ist ein EKB hinweis
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="annotation">
+                            <span class="bold">Auf Lieferschein und Rechnung bitte Bestellnummer, Kommission und Kostenstelle anführen.</span>
+                            <p>
+                                Footer Text
+                            </p>
+                        </div>
+                        <p class="greetings">
+                            Mit freundlichen Grüßen
+                        </p>
+                        <p>
+                            Das Team
+                        </p>
+                        <span class="small">(elektronischer Versand daher nicht pers. unterfertigt)</span>
+                    </div>
+                </div>
+            </div>
+        {% endblock %}
+
+        {% block main_content %}{% endblock %}
+    </body>
+</html>
+

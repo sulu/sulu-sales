@@ -82,7 +82,7 @@ module.exports = function(grunt) {
             dev: {
                 options: {
                     sassDir: 'Resources/public/scss/',
-                    specify: ['Resources/public/scss/main.scss'],
+                    specify: ['Resources/public/scss/main.scss', 'Resources/public/scss/pdfstyles.scss'],
                     cssDir: 'Resources/public/css/',
                     relativeAssets: false
                 }
@@ -121,5 +121,4 @@ module.exports = function(grunt) {
         'copy:hooks',
         'exec:hookrights'
     ]);
-
 };

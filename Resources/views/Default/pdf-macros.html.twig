@@ -1,0 +1,33 @@
+{% macro item(index, item) %}
+    <div class="grid__item one-half">
+        <div class="grid">
+            <div class="grid__item one-tenth">
+                {{ index }}
+            </div>
+            <div class="grid__item nine-tenths">
+                <p>
+                    <span class="bold">{{ item.getName() }}</span><br/>
+                    {{ item.getDescription()|striptags[:150] }}
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="grid__item one-half">
+        <div class="grid text-align-right">
+            <div class="grid__item one-quarter text-align-right">
+                {{ item.getNumber() }}
+            </div>
+            <div class="grid__item one-quarter">
+                {{ item.getQuantity() }} {{ item.getQuantityUnit() }}
+            </div>
+            <div class="grid__item one-quarter text-align-right">
+                {{ item.getPriceFormatted() }}
+            </div>
+            <div class="grid__item one-quarter text-align-right">
+                <span class="bold">
+                    {{ item.getTotalNetPriceFormatted()|default('-') }}
+                </span>
+            </div>
+        </div>
+    </div>
+{% endmacro %}
