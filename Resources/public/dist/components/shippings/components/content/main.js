@@ -1,1 +1,1 @@
-define(function(){"use strict";return{header:{tabs:{url:"/admin/shipping/navigation/shipping"},toolbar:{template:[]}}}});
+define(function(){"use strict";return{header:{tabs:{url:"/admin/content-navigations?alias=shipping"},toolbar:{template:[]}}}});
