@@ -82,7 +82,10 @@ module.exports = function(grunt) {
             dev: {
                 options: {
                     sassDir: 'Resources/public/scss/',
-                    specify: ['Resources/public/scss/main.scss', 'Resources/public/scss/pdfstyles.scss'],
+                    specify: [
+                        'Resources/public/scss/main.scss',
+                        'Resources/public/scss/pdfstyles.scss'
+                    ],
                     cssDir: 'Resources/public/css/',
                     relativeAssets: false
                 }
