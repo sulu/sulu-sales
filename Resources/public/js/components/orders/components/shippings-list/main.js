@@ -10,8 +10,9 @@
 define([
     'app-config',
     'sulusalesorder/util/sidebar',
-    'sulusalesorder/util/orderStatus'
-], function(AppConfig, Sidebar, OrderStatus) {
+    'sulusalesorder/util/orderStatus',
+    'widget-groups'
+], function(AppConfig, Sidebar, OrderStatus, WidgetGroups) {
 
     'use strict';
 
@@ -86,8 +87,9 @@ define([
             this.render();
             bindCustomEvents.call(this);
 
-            Sidebar.initForDetail(this.sandbox, this.options.data);
-
+            if (!!this.options.data && !!this.options.data.id && WidgetGroups.exists('shipping-detail')) {
+                Sidebar.initForDetail(this.sandbox, this.options.data);
+            }
         },
 
         render: function() {

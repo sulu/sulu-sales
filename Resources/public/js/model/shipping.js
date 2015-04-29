@@ -14,7 +14,7 @@ define([
 ], function(RelationalModel, HasOne, Order) {
 
     'use strict';
-    
+
     return RelationalModel({
         urlRoot: '/admin/api/shippings',
         defaults: function() {

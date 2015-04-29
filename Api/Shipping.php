@@ -12,11 +12,14 @@ use Sulu\Bundle\Sales\CoreBundle\Entity\OrderAddress;
 use Sulu\Component\Rest\ApiWrapper;
 use Sulu\Component\Security\Authentication\UserInterface;
 use Sulu\Bundle\Sales\CoreBundle\Api\Item;
-use Sulu\Bundle\Sales\OrderBundle\Api\Order;
+use Sulu\Bundle\Sales\OrderBundle\Api\Order as ApiOrder;
+use Sulu\Bundle\Sales\OrderBundle\Entity\Order;
 use Sulu\Bundle\Sales\ShippingBundle\Entity\Shipping as ShippingEntity;
 use Sulu\Bundle\Sales\ShippingBundle\Entity\ShippingItem as ShippingItemEntity;
 use Sulu\Bundle\Sales\CoreBundle\Item\ItemFactory;
 use Sulu\Bundle\ProductBundle\Product\ProductFactory;
+use Sulu\Bundle\Sales\ShippingBundle\Entity\ShippingStatus;
+use Sulu\Bundle\Sales\ShippingBundle\Api\ShippingStatus as ApiShippingStatus;
 
 /**
  * The Shipping class which will be exported to the API
@@ -47,6 +50,7 @@ class Shipping extends ApiWrapper implements SalesDocument
      * Set number
      *
      * @param string $number
+     *
      * @return Shipping
      */
     public function setNumber($number)
@@ -57,9 +61,10 @@ class Shipping extends ApiWrapper implements SalesDocument
     }
 
     /**
-     * @return string
      * @VirtualProperty
      * @SerializedName("number")
+     *
+     * @return string
      */
     public function getNumber()
     {
@@ -70,6 +75,7 @@ class Shipping extends ApiWrapper implements SalesDocument
      * Set shippingNumber
      *
      * @param string $shippingNumber
+     *
      * @return Shipping
      */
     public function setShippingNumber($shippingNumber)
@@ -82,9 +88,10 @@ class Shipping extends ApiWrapper implements SalesDocument
     /**
      * Get shippingNumber
      *
-     * @return string
      * @VirtualProperty
      * @SerializedName("shippingNumber")
+     *
+     * @return string
      */
     public function getShippingNumber()
     {
@@ -95,6 +102,7 @@ class Shipping extends ApiWrapper implements SalesDocument
      * Set customerName
      *
      * @param string $customerName
+     *
      * @return Shipping
      */
     public function setCustomerName($customerName)
@@ -107,9 +115,10 @@ class Shipping extends ApiWrapper implements SalesDocument
     /**
      * Get customerName
      *
-     * @return string
      * @VirtualProperty
      * @SerializedName("customerName")
+     *
+     * @return string
      */
     public function getCustomerName()
     {
@@ -120,6 +129,7 @@ class Shipping extends ApiWrapper implements SalesDocument
      * Set termsOfDeliveryContent
      *
      * @param string $termsOfDeliveryContent
+     *
      * @return Shipping
      */
     public function setTermsOfDeliveryContent($termsOfDeliveryContent)
@@ -132,9 +142,10 @@ class Shipping extends ApiWrapper implements SalesDocument
     /**
      * Get termsOfDeliveryContent
      *
-     * @return string
      * @VirtualProperty
      * @SerializedName("termsOfDeliveryContent")
+     *
+     * @return string
      */
     public function getTermsOfDeliveryContent()
     {
@@ -145,6 +156,7 @@ class Shipping extends ApiWrapper implements SalesDocument
      * Set termsOfPaymentContent
      *
      * @param string $termsOfPaymentContent
+     *
      * @return Shipping
      */
     public function setTermsOfPaymentContent($termsOfPaymentContent)
@@ -157,9 +169,10 @@ class Shipping extends ApiWrapper implements SalesDocument
     /**
      * Get termsOfPaymentContent
      *
-     * @return string
      * @VirtualProperty
      * @SerializedName("termsOfPaymentContent")
+     *
+     * @return string
      */
     public function getTermsOfPaymentContent()
     {
@@ -170,6 +183,7 @@ class Shipping extends ApiWrapper implements SalesDocument
      * Set width
      *
      * @param float $width
+     *
      * @return Shipping
      */
     public function setWidth($width)
@@ -182,9 +196,10 @@ class Shipping extends ApiWrapper implements SalesDocument
     /**
      * Get width
      *
-     * @return float
      * @VirtualProperty
      * @SerializedName("width")
+     *
+     * @return float
      */
     public function getWidth()
     {
@@ -195,6 +210,7 @@ class Shipping extends ApiWrapper implements SalesDocument
      * Set height
      *
      * @param float $height
+     *
      * @return Shipping
      */
     public function setHeight($height)
@@ -207,9 +223,10 @@ class Shipping extends ApiWrapper implements SalesDocument
     /**
      * Get height
      *
-     * @return float
      * @VirtualProperty
      * @SerializedName("height")
+     *
+     * @return float
      */
     public function getHeight()
     {
@@ -220,8 +237,8 @@ class Shipping extends ApiWrapper implements SalesDocument
      * Set length
      *
      * @param float $length
-     * @return Shipping
      *
+     * @return Shipping
      */
     public function setLength($length)
     {
@@ -233,9 +250,10 @@ class Shipping extends ApiWrapper implements SalesDocument
     /**
      * Get length
      *
-     * @return float
      * @VirtualProperty
      * @SerializedName("length")
+     *
+     * @return float
      */
     public function getLength()
     {
@@ -246,6 +264,7 @@ class Shipping extends ApiWrapper implements SalesDocument
      * Set weight
      *
      * @param float $weight
+     *
      * @return Shipping
      */
     public function setWeight($weight)
@@ -258,9 +277,10 @@ class Shipping extends ApiWrapper implements SalesDocument
     /**
      * Get weight
      *
-     * @return float
      * @VirtualProperty
      * @SerializedName("weight")
+     *
+     * @return float
      */
     public function getWeight()
     {
@@ -271,6 +291,7 @@ class Shipping extends ApiWrapper implements SalesDocument
      * Set trackingId
      *
      * @param string $trackingId
+     *
      * @return Shipping
      */
     public function setTrackingId($trackingId)
@@ -283,9 +304,10 @@ class Shipping extends ApiWrapper implements SalesDocument
     /**
      * Get trackingId
      *
-     * @return string
      * @VirtualProperty
      * @SerializedName("trackingId")
+     *
+     * @return string
      */
     public function getTrackingId()
     {
@@ -296,6 +318,7 @@ class Shipping extends ApiWrapper implements SalesDocument
      * Set trackingUrl
      *
      * @param string $trackingUrl
+     *
      * @return Shipping
      */
     public function setTrackingUrl($trackingUrl)
@@ -308,9 +331,10 @@ class Shipping extends ApiWrapper implements SalesDocument
     /**
      * Get trackingUrl
      *
-     * @return string
      * @VirtualProperty
      * @SerializedName("trackingUrl")
+     *
+     * @return string
      */
     public function getTrackingUrl()
     {
@@ -321,6 +345,7 @@ class Shipping extends ApiWrapper implements SalesDocument
      * Set commission
      *
      * @param string $commission
+     *
      * @return Shipping
      */
     public function setCommission($commission)
@@ -333,9 +358,10 @@ class Shipping extends ApiWrapper implements SalesDocument
     /**
      * Get commission
      *
-     * @return string
      * @VirtualProperty
      * @SerializedName("commission")
+     *
+     * @return string
      */
     public function getCommission()
     {
@@ -346,6 +372,7 @@ class Shipping extends ApiWrapper implements SalesDocument
      * Set note
      *
      * @param string $note
+     *
      * @return Shipping
      */
     public function setNote($note)
@@ -358,9 +385,10 @@ class Shipping extends ApiWrapper implements SalesDocument
     /**
      * Get note
      *
-     * @return string
      * @VirtualProperty
      * @SerializedName("note")
+     *
+     * @return string
      */
     public function getNote()
     {
@@ -371,6 +399,7 @@ class Shipping extends ApiWrapper implements SalesDocument
      * Set created
      *
      * @param \DateTime $created
+     *
      * @return Shipping
      */
     public function setCreated($created)
@@ -383,9 +412,10 @@ class Shipping extends ApiWrapper implements SalesDocument
     /**
      * Get created
      *
-     * @return \DateTime
      * @VirtualProperty
      * @SerializedName("created")
+     *
+     * @return \DateTime
      */
     public function getCreated()
     {
@@ -396,6 +426,7 @@ class Shipping extends ApiWrapper implements SalesDocument
      * Set changed
      *
      * @param \DateTime $changed
+     *
      * @return Shipping
      */
     public function setChanged($changed)
@@ -408,9 +439,10 @@ class Shipping extends ApiWrapper implements SalesDocument
     /**
      * Get changed
      *
-     * @return \DateTime
      * @VirtualProperty
      * @SerializedName("changed")
+     *
+     * @return \DateTime
      */
     public function getChanged()
     {
@@ -421,6 +453,7 @@ class Shipping extends ApiWrapper implements SalesDocument
      * Set expectedDeliveryDate
      *
      * @param \DateTime $expectedDeliveryDate
+     *
      * @return Shipping
      */
     public function setExpectedDeliveryDate($expectedDeliveryDate)
@@ -433,9 +466,10 @@ class Shipping extends ApiWrapper implements SalesDocument
     /**
      * Get expectedDeliveryDate
      *
-     * @return \DateTime
      * @VirtualProperty
      * @SerializedName("expectedDeliveryDate")
+     *
+     * @return \DateTime
      */
     public function getExpectedDeliveryDate()
     {
@@ -445,9 +479,10 @@ class Shipping extends ApiWrapper implements SalesDocument
     /**
      * Get id
      *
-     * @return integer
      * @VirtualProperty
      * @SerializedName("id")
+     *
+     * @return integer
      */
     public function getId()
     {
@@ -458,6 +493,7 @@ class Shipping extends ApiWrapper implements SalesDocument
      * Set deliveryAddress
      *
      * @param OrderAddress $deliveryAddress
+     *
      * @return Shipping
      */
     public function setDeliveryAddress(OrderAddress $deliveryAddress = null)
@@ -470,9 +506,10 @@ class Shipping extends ApiWrapper implements SalesDocument
     /**
      * Get deliveryAddress
      *
-     * @return OrderAddress
      * @VirtualProperty
      * @SerializedName("deliveryAddress")
+     *
+     * @return OrderAddress
      */
     public function getDeliveryAddress()
     {
@@ -482,7 +519,8 @@ class Shipping extends ApiWrapper implements SalesDocument
     /**
      * Add shippingItems
      *
-     * @param \Sulu\Bundle\Sales\ShippingBundle\Entity\ShippingItem $shippingItems
+     * @param ShippingItemEntity $shippingItems
+     *
      * @return Shipping
      */
     public function addShippingItem(ShippingItemEntity $shippingItems)
@@ -495,7 +533,7 @@ class Shipping extends ApiWrapper implements SalesDocument
     /**
      * Remove shippingItems
      *
-     * @param \Sulu\Bundle\Sales\ShippingBundle\Entity\ShippingItem $shippingItems
+     * @param ShippingItemEntity $shippingItems
      */
     public function removeShippingItem(ShippingItemEntity $shippingItems)
     {
@@ -505,9 +543,10 @@ class Shipping extends ApiWrapper implements SalesDocument
     /**
      * Get shippingItems
      *
-     * @return Array
      * @VirtualProperty
      * @SerializedName("items")
+     *
+     * @return Array
      */
     public function getItems()
     {
@@ -524,10 +563,10 @@ class Shipping extends ApiWrapper implements SalesDocument
     /**
      * Set status
      *
-     * @param \Sulu\Bundle\Sales\ShippingBundle\Entity\ShippingStatus $status
+     * @param ShippingStatus $status
      * @return Shipping
      */
-    public function setStatus(\Sulu\Bundle\Sales\ShippingBundle\Entity\ShippingStatus $status)
+    public function setStatus(ShippingStatus $status)
     {
         $this->entity->setStatus($status);
 
@@ -537,9 +576,10 @@ class Shipping extends ApiWrapper implements SalesDocument
     /**
      * Get status
      *
-     * @return \Sulu\Bundle\Sales\ShippingBundle\Entity\ShippingStatus|null
      * @VirtualProperty
      * @SerializedName("status")
+     *
+     * @return ShippingStatus|null
      */
     public function getStatus()
     {
@@ -547,13 +587,14 @@ class Shipping extends ApiWrapper implements SalesDocument
             return null;
         }
 
-        return new ShippingStatus($this->entity->getStatus(), $this->locale);
+        return new ApiShippingStatus($this->entity->getStatus(), $this->locale);
     }
 
     /**
      * Set bitmaskStatus
      *
      * @param integer $bitmaskStatus
+     *
      * @return Shipping
      */
     public function setBitmaskStatus($bitmaskStatus)
@@ -568,6 +609,7 @@ class Shipping extends ApiWrapper implements SalesDocument
      *
      * @VirtualProperty
      * @SerializedName("bitmaskStatus")
+     *
      * @return integer
      */
     public function getBitmaskStatus()
@@ -578,10 +620,11 @@ class Shipping extends ApiWrapper implements SalesDocument
     /**
      * Set order
      *
-     * @param \Sulu\Bundle\Sales\OrderBundle\Entity\Order $order
+     * @param Order $order
+     *
      * @return Shipping
      */
-    public function setOrder(\Sulu\Bundle\Sales\OrderBundle\Entity\Order $order = null)
+    public function setOrder(Order $order = null)
     {
         $this->entity->setOrder($order);
 
@@ -591,15 +634,17 @@ class Shipping extends ApiWrapper implements SalesDocument
     /**
      * Get order
      *
-     * @return \Sulu\Bundle\Sales\OrderBundle\Entity\Order
      * @VirtualProperty
      * @SerializedName("order")
+     *
+     * @return ApiOrder
      */
     public function getOrder()
     {
         $productFactory = new ProductFactory();
         $itemFactory = new ItemFactory($productFactory, 'EUR');
-        return new Order($this->entity->getOrder(), $this->locale, $itemFactory);
+
+        return new ApiOrder($this->entity->getOrder(), $this->locale, $itemFactory);
     }
 
     /**
@@ -678,6 +723,7 @@ class Shipping extends ApiWrapper implements SalesDocument
 
     /**
      * Returns url for generating the documents pdf
+     *
      * @return string
      */
     public function getPdfBaseUrl()
