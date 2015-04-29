@@ -8,7 +8,7 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Sulu\Bundle\Sales\OrderBundle\Order;
+namespace Sulu\Bundle\Sales\OrderBundle\Entity\Order;
 
 use Sulu\Bundle\Sales\CoreBundle\Item\ItemFactoryInterface;
 use Sulu\Bundle\Sales\OrderBundle\Api\Order as ApiOrder;
