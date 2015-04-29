@@ -20,6 +20,8 @@
             <argument>%sulu_admin.name%</argument>
         </service>
         <service id="sulu_sales_shipping.admin.content_navigation" class="%sulu_sales_shipping.admin.content_navigation.class%">
+            <tag name="sulu_admin.content_navigation" alias="shipping"/>
+            <tag name="sulu.context" context="admin"/>
         </service>
         <service id="sulu_sales_shipping.shipping_repository" class="%sulu_sales_shipping.shipping_repository.class%"
                  factory-method="getRepository" factory-service="doctrine.orm.entity_manager">
@@ -27,7 +29,8 @@
         </service>
 
         <service id="sulu_sales_shipping.admin.order_content_navigation" class="%sulu_sales_shipping.admin.order_content_navigation.class%">
-            <tag name="sulu.sales_order.content_navigation"/>
+            <tag name="sulu_admin.content_navigation" alias="order"/>
+            <tag name="sulu.context" context="admin"/>
         </service>
 
         <service id="sulu_sales_shipping.shipping_order_dependency" class="%sulu_sales_shipping.shipping_order_dependency.class%">

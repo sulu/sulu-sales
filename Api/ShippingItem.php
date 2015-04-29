@@ -8,6 +8,7 @@ use Sulu\Component\Rest\ApiWrapper;
 use JMS\Serializer\Annotation\SerializedName;
 use Sulu\Bundle\Sales\ShippingBundle\Entity\ShippingItem as ShippingItemEntity;
 use JMS\Serializer\Annotation\Exclude;
+use Sulu\Bundle\ProductBundle\Product\ProductFactory;
 
 /**
  * Describes an item of a shipping
@@ -24,7 +25,8 @@ class ShippingItem extends ApiWrapper
      * @param ShippingItemEntity $entity
      * @param string $locale
      */
-    public function __construct(ShippingItemEntity $entity, $locale) {
+    public function __construct(ShippingItemEntity $entity, $locale)
+    {
         $this->entity = $entity;
         $this->locale = $locale;
     }
@@ -134,7 +136,8 @@ class ShippingItem extends ApiWrapper
      */
     public function getItem()
     {
-        return new Item($this->entity->getItem(), $this->locale);
+        $productFactory = new ProductFactory();
+        return new Item($this->entity->getItem(), $this->locale, $productFactory);
     }
 
     /**
@@ -154,7 +157,8 @@ class ShippingItem extends ApiWrapper
      * @VirtualProperty
      * @SerializedName("shippedItems")
      */
-    public function getShippedItems() {
+    public function getShippedItems()
+    {
         return $this->shippedItems;
     }
 }

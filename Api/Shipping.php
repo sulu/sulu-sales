@@ -15,6 +15,8 @@ use Sulu\Bundle\Sales\CoreBundle\Api\Item;
 use Sulu\Bundle\Sales\OrderBundle\Api\Order;
 use Sulu\Bundle\Sales\ShippingBundle\Entity\Shipping as ShippingEntity;
 use Sulu\Bundle\Sales\ShippingBundle\Entity\ShippingItem as ShippingItemEntity;
+use Sulu\Bundle\Sales\CoreBundle\Item\ItemFactory;
+use Sulu\Bundle\ProductBundle\Product\ProductFactory;
 
 /**
  * The Shipping class which will be exported to the API
@@ -595,7 +597,9 @@ class Shipping extends ApiWrapper implements SalesDocument
      */
     public function getOrder()
     {
-        return new Order($this->entity->getOrder(), $this->locale);
+        $productFactory = new ProductFactory();
+        $itemFactory = new ItemFactory($productFactory, 'EUR');
+        return new Order($this->entity->getOrder(), $this->locale, $itemFactory);
     }
 
     /**
@@ -680,5 +684,4 @@ class Shipping extends ApiWrapper implements SalesDocument
     {
         return self::$pdfBaseUrl;
     }
-
 }

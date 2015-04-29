@@ -1,28 +1,29 @@
 <?php
+/*
+ * This file is part of the Sulu CMS.
+ *
+ * (c) MASSIVE ART WebServices GmbH
+ *
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
+ */
+
 
 namespace Sulu\Bundle\Sales\ShippingBundle\Admin;
 
-use Sulu\Bundle\AdminBundle\Navigation\ContentNavigationInterface;
 use Sulu\Bundle\AdminBundle\Navigation\ContentNavigationItem;
+use Sulu\Bundle\AdminBundle\Navigation\ContentNavigationProviderInterface;
 
-class OrderContentNavigationExtension implements ContentNavigationInterface
+class OrderContentNavigationExtension implements ContentNavigationProviderInterface
 {
-    private $navigation = array();
-
-    public function __construct()
+    public function getNavigationItems(array $options = array())
     {
         $shippings = new ContentNavigationItem('salesshipping.shippings.title');
         $shippings->setAction('shippings');
         $shippings->setComponent('shippings@sulusalesshipping');
         $shippings->setComponentOptions(array('display'=>'orderList'));
         $shippings->setDisplay(array('edit'));
-        $shippings->setGroups(array('order'));
 
-        $this->navigation[] = $shippings;
-    }
-
-    public function getNavigationItems()
-    {
-        return $this->navigation;
+        return array($shippings);
     }
 }

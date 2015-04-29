@@ -9,8 +9,9 @@
 
 define([
     'sulusalesshipping/util/shippingStatus',
-    'sulusalesshipping/util/sidebar'
-], function(ShippingStatus, Sidebar) {
+    'sulusalesshipping/util/sidebar',
+    'widget-groups'
+], function(ShippingStatus, Sidebar, WidgetGroups) {
 
     'use strict';
 
@@ -382,8 +383,9 @@ define([
             this.listenForChange();
 
             // initialize sidebar
-            Sidebar.initForDetail(this.sandbox, this.options.data);
-
+            if (!!this.options.data && !!this.options.data.id && WidgetGroups.exists('shipping-detail')) {
+                Sidebar.initForDetail(this.sandbox, this.options.data);
+            }
         },
 
         render: function() {

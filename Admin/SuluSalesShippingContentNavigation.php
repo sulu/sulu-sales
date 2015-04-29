@@ -10,25 +10,19 @@
 
 namespace Sulu\Bundle\Sales\ShippingBundle\Admin;
 
-use Sulu\Bundle\AdminBundle\Navigation\ContentNavigation;
 use Sulu\Bundle\AdminBundle\Navigation\ContentNavigationItem;
+use Sulu\Bundle\AdminBundle\Navigation\ContentNavigationProviderInterface;
 
-class SuluSalesShippingContentNavigation extends ContentNavigation
+class SuluSalesShippingContentNavigation implements ContentNavigationProviderInterface
 {
 
-    public function __construct()
+    public function getNavigationItems(array $options = array())
     {
-        parent::__construct();
-
-        $this->setName('SalesShipping');
-
-        /* CONTACTS */
-        // details
         $overview = new ContentNavigationItem('public.details');
         $overview->setAction('overview');
-        $overview->setGroups(array('shipping'));
         $overview->setComponent('shippings@sulusalesshipping');
         $overview->setComponentOptions(array('display'=>'form'));
-        $this->addNavigationItem($overview);
+
+        return array($overview);
     }
 }

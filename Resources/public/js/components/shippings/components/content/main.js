@@ -14,7 +14,7 @@ define(function() {
     return {
         header: {
             tabs: {
-                url: '/admin/shipping/navigation/shipping'
+                url: '/admin/content-navigations?alias=shipping'
             },
             toolbar: {
                 template: []
