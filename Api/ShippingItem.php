@@ -3,11 +3,11 @@
 namespace Sulu\Bundle\Sales\ShippingBundle\Api;
 
 use JMS\Serializer\Annotation\VirtualProperty;
+use JMS\Serializer\Annotation\SerializedName;
+use JMS\Serializer\Annotation\Exclude;
 use Sulu\Bundle\Sales\CoreBundle\Api\Item;
 use Sulu\Component\Rest\ApiWrapper;
-use JMS\Serializer\Annotation\SerializedName;
 use Sulu\Bundle\Sales\ShippingBundle\Entity\ShippingItem as ShippingItemEntity;
-use JMS\Serializer\Annotation\Exclude;
 use Sulu\Bundle\ProductBundle\Product\ProductFactory;
 
 /**
