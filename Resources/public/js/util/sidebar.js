@@ -133,7 +133,6 @@ define([
                         orderId: data.order.id
                     }
                 });
-                
                 bindDomEvents.call(this);
                 bindCustomEventsForDetailsSidebar.call(this);
             } else {

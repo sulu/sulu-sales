@@ -3,11 +3,14 @@
 namespace Sulu\Bundle\Sales\ShippingBundle\Api;
 
 use JMS\Serializer\Annotation\VirtualProperty;
-use Sulu\Bundle\Sales\CoreBundle\Api\Item;
-use Sulu\Component\Rest\ApiWrapper;
 use JMS\Serializer\Annotation\SerializedName;
-use Sulu\Bundle\Sales\ShippingBundle\Entity\ShippingItem as ShippingItemEntity;
 use JMS\Serializer\Annotation\Exclude;
+use Sulu\Bundle\Sales\CoreBundle\Api\Item as ApiItem;
+use Sulu\Bundle\Sales\CoreBundle\Entity\Item;
+use Sulu\Component\Rest\ApiWrapper;
+use Sulu\Bundle\Sales\ShippingBundle\Entity\ShippingItem as ShippingItemEntity;
+use Sulu\Bundle\ProductBundle\Product\ProductFactory;
+use Sulu\Bundle\Sales\ShippingBundle\Api\Shipping as ApiShipping;
 
 /**
  * Describes an item of a shipping
@@ -24,16 +27,19 @@ class ShippingItem extends ApiWrapper
      * @param ShippingItemEntity $entity
      * @param string $locale
      */
-    public function __construct(ShippingItemEntity $entity, $locale) {
+    public function __construct(ShippingItemEntity $entity, $locale)
+    {
         $this->entity = $entity;
         $this->locale = $locale;
     }
 
     /**
      * Returns the id
-     * @return int
+     *
      * @VirtualProperty
      * @SerializedName("id")
+     *
+     * @return int
      */
     public function getId()
     {
@@ -44,6 +50,7 @@ class ShippingItem extends ApiWrapper
      * Set quantity
      *
      * @param float $quantity
+     *
      * @return ShippingItem
      */
     public function setQuantity($quantity)
@@ -56,9 +63,10 @@ class ShippingItem extends ApiWrapper
     /**
      * Get quantity
      *
-     * @return float
      * @VirtualProperty
      * @SerializedName("quantity")
+     *
+     * @return float
      */
     public function getQuantity()
     {
@@ -69,6 +77,7 @@ class ShippingItem extends ApiWrapper
      * Set note
      *
      * @param string $note
+     *
      * @return ShippingItem
      */
     public function setNote($note)
@@ -81,9 +90,10 @@ class ShippingItem extends ApiWrapper
     /**
      * Get note
      *
-     * @return string
      * @VirtualProperty
      * @SerializedName("note")
+     *
+     * @return string
      */
     public function getNote()
     {
@@ -93,10 +103,11 @@ class ShippingItem extends ApiWrapper
     /**
      * Set shipping
      *
-     * @param \Sulu\Bundle\Sales\ShippingBundle\Entity\Shipping $shipping
+     * @param Shipping $shipping
+     *
      * @return ShippingItem
      */
-    public function setShipping(\Sulu\Bundle\Sales\ShippingBundle\Entity\Shipping $shipping)
+    public function setShipping(Shipping $shipping)
     {
         $this->entity->setShipping($shipping);
 
@@ -105,20 +116,22 @@ class ShippingItem extends ApiWrapper
 
     /**
      * Get Shipping
-     * @return \Sulu\Bundle\Sales\ShippingBundle\Entity\Shipping
+     *
+     * @return ApiShipping
      */
     public function getShipping()
     {
-        return new Shipping($this->entity->getShipping(), $this->locale);
+        return new ApiShipping($this->entity->getShipping(), $this->locale);
     }
 
     /**
      * Set item
      *
-     * @param \Sulu\Bundle\Sales\CoreBundle\Entity\Item $item
      * @return ShippingItem
+     *
+     * @param Item $item
      */
-    public function setItem(\Sulu\Bundle\Sales\CoreBundle\Entity\Item $item)
+    public function setItem(Item $item)
     {
         $this->entity->setItem($item);
 
@@ -128,18 +141,24 @@ class ShippingItem extends ApiWrapper
     /**
      * Get item
      *
-     * @return \Sulu\Bundle\Sales\CoreBundle\Entity\Item
      * @VirtualProperty
      * @SerializedName("item")
+     *
+     * @return Item
      */
     public function getItem()
     {
-        return new Item($this->entity->getItem(), $this->locale);
+        $productFactory = new ProductFactory();
+
+        return new ApiItem($this->entity->getItem(), $this->locale, $productFactory);
     }
 
     /**
-     * @param $numShippedItems
-     * @return $this
+     * Set number if ShippedItems
+     *
+     * @param int $numShippedItems
+     *
+     * @return Shipping
      */
     public function setShippedItems($numShippedItems)
     {
@@ -149,12 +168,15 @@ class ShippingItem extends ApiWrapper
     }
 
     /**
-     * returns nuber of shipped items
-     * @return int
+     * Returns nuber of shipped items
+     *
      * @VirtualProperty
      * @SerializedName("shippedItems")
+     *
+     * @return int
      */
-    public function getShippedItems() {
+    public function getShippedItems()
+    {
         return $this->shippedItems;
     }
 }
