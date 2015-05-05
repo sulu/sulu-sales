@@ -2,7 +2,7 @@
 
 namespace Sulu\Bundle\Sales\OrderBundle\Entity;
 
-use Sulu\Bundle\ContactBundle\Entity\Account;
+use Sulu\Bundle\ContactBundle\Entity\AccountInterface;
 use Sulu\Bundle\ContactBundle\Entity\Contact;
 use Sulu\Bundle\Sales\CoreBundle\Entity\ItemInterface;
 use Sulu\Bundle\Sales\CoreBundle\Entity\OrderAddressInterface;
@@ -172,7 +172,7 @@ abstract class AbstractOrder extends BaseOrder
      *
      * @return Order
      */
-    public function setCustomerAccount(Account $account = null)
+    public function setCustomerAccount(AccountInterface $account = null)
     {
         $this->customerAccount = $account;
 
