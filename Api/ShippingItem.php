@@ -124,7 +124,7 @@ class ShippingItem extends ApiWrapper
      */
     public function getShipping()
     {
-        return new ApiShipping($this->entity->getShipping(), $this->locale);
+        return new ApiShipping($this->entity->getShipping(), $this->locale, $this->itemFactory);
     }
 
     /**
