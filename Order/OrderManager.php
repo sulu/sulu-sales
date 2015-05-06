@@ -14,6 +14,7 @@ use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\NoResultException;
 use Sulu\Bundle\ContactBundle\Entity\Account;
+use Sulu\Bundle\ContactBundle\Entity\AccountRepository;
 use Sulu\Bundle\ContactBundle\Entity\Address;
 use Sulu\Bundle\ContactBundle\Entity\Contact;
 use Sulu\Bundle\ProductBundle\Product\ProductManagerInterface;
@@ -50,7 +51,6 @@ class OrderManager
     protected static $orderEntityName = 'SuluSalesOrderBundle:Order';
     protected static $contactEntityName = 'SuluContactBundle:Contact';
     protected static $addressEntityName = 'SuluContactBundle:Address';
-    protected static $accountEntityName = 'SuluContactBundle:Account';
     protected static $orderStatusEntityName = 'SuluSalesOrderBundle:OrderStatus';
     protected static $orderTypeEntityName = 'SuluSalesOrderBundle:OrderType';
     protected static $orderTypeTranslationEntityName = 'SuluSalesOrderBundle:OrderTypeTranslation';
@@ -118,10 +118,17 @@ class OrderManager
      */
     private $orderFactory;
 
+
+    /**
+     * @var AccountRepository
+     */
+    private $accountRepository;
+
     /**
      * @param ObjectManager $em
      * @param OrderRepository $orderRepository
      * @param UserRepositoryInterface $userRepository
+     * @param AccountRepository $accountRepository
      * @param ItemManager $itemManager
      * @param EntityRepository $orderStatusRepository
      * @param EntityRepository $orderTypeRepository
@@ -134,6 +141,7 @@ class OrderManager
         ObjectManager $em,
         OrderRepository $orderRepository,
         UserRepositoryInterface $userRepository,
+        AccountRepository $accountRepository,
         ItemManager $itemManager,
         EntityRepository $orderStatusRepository,
         EntityRepository $orderTypeRepository,
@@ -144,6 +152,7 @@ class OrderManager
     ) {
         $this->orderRepository = $orderRepository;
         $this->userRepository = $userRepository;
+        $this->accountRepository = $accountRepository;
         $this->em = $em;
         $this->itemManager = $itemManager;
         $this->orderStatusRepository = $orderStatusRepository;
@@ -1084,10 +1093,9 @@ class OrderManager
             if (!array_key_exists('id', $accountData)) {
                 throw new MissingOrderAttributeException('account.id');
             }
-            // TODO: inject repository class
-            $account = $this->em->getRepository(static::$accountEntityName)->find($accountData['id']);
+            $account = $this->accountRepository->find($accountData['id']);
             if (!$account) {
-                throw new OrderDependencyNotFoundException(static::$accountEntityName, $accountData['id']);
+                throw new OrderDependencyNotFoundException('Account', $accountData['id']);
             }
             $order->setCustomerAccount($account);
 

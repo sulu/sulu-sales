@@ -61,6 +61,7 @@
             <argument type="service" id="doctrine.orm.entity_manager" />
             <argument type="service" id="sulu_sales_order.order_repository" />
             <argument type="service" id="sulu_security.user_repository" />
+            <argument type="service" id="sulu_contact.account_repository" />
             <argument type="service" id="sulu_sales_core.item_manager" />
             <argument type="service" id="sulu_sales_order.order_status_repository" />
             <argument type="service" id="sulu_sales_order.order_type_repository" />
@@ -94,8 +95,7 @@
         <!--LISTENERS-->
 
         <service id="sulu_sales_order.order_updater" class="%sulu_sales_order.order_updater.class%">
-            <argument type="service" id="doctrine.orm.entity_manager" />
-            <argument type="service" id="sulu_sales_order.order_manager" />
+            <argument type="service" id="service_container" />
         </service>
 
         <service id="sulu_sales_order.order_listener" class="%sulu_sales_order.order_listener.class%">

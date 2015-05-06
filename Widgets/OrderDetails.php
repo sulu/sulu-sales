@@ -11,12 +11,8 @@
 namespace Sulu\Bundle\Sales\OrderBundle\Widgets;
 
 use Doctrine\ORM\EntityManager;
-use Sulu\Bundle\AdminBundle\Widgets\WidgetException;
 use Sulu\Bundle\AdminBundle\Widgets\WidgetInterface;
-use Sulu\Bundle\ContactBundle\Entity\Contact;
-use Sulu\Bundle\ContactBundle\Entity\Address;
 use Sulu\Bundle\AdminBundle\Widgets\WidgetParameterException;
-use Sulu\Bundle\AdminBundle\Widgets\WidgetEntityNotFoundException;
 
 /**
  * Orderdetails widget
@@ -25,17 +21,26 @@ use Sulu\Bundle\AdminBundle\Widgets\WidgetEntityNotFoundException;
  */
 class OrderDetails implements WidgetInterface
 {
+    /**
+     * @var EntityManager
+     */
     protected $em;
 
+    /**
+     * @var string
+     */
     protected $widgetName = 'OrderDetails';
 
+    /**
+     * @param EntityManager $em
+     */
     function __construct(EntityManager $em)
     {
         $this->em = $em;
     }
 
     /**
-     * return name of widget
+     * Return name of widget
      *
      * @return string
      */
@@ -45,7 +50,7 @@ class OrderDetails implements WidgetInterface
     }
 
     /**
-     * returns template name of widget
+     * Returns template name of widget
      *
      * @return string
      */
@@ -55,11 +60,12 @@ class OrderDetails implements WidgetInterface
     }
 
     /**
-     * returns data to render template
+     * Returns data to render template
      *
      * @param array $options
+     *
      * @throws \Sulu\Bundle\AdminBundle\Widgets\WidgetParameterException
-     * @throws \Sulu\Bundle\AdminBundle\Widgets\WidgetEntityNotFoundException
+     *
      * @return array
      */
     public function getData($options)
@@ -71,6 +77,7 @@ class OrderDetails implements WidgetInterface
             // TODO return also total price of offer when implemented
             $data = [];
             $data['status'] = $options['status'];
+
             return $data;
         } else {
             throw new WidgetParameterException(
