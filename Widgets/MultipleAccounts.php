@@ -14,9 +14,10 @@ use Sulu\Bundle\AdminBundle\Widgets\WidgetInterface;
 use Sulu\Bundle\AdminBundle\Widgets\WidgetParameterException;
 use Sulu\Bundle\AdminBundle\Widgets\WidgetEntityNotFoundException;
 use Doctrine\ORM\EntityManager;
-use Sulu\Bundle\ContactBundle\Entity\Account;
+use Sulu\Bundle\ContactBundle\Entity\AccountInterface;
+use Sulu\Bundle\ContactBundle\Entity\AccountRepository;
 use Sulu\Bundle\ContactBundle\Entity\Address;
-use Sulu\Bundle\ContactBundle\Entity\Contact;
+
 /**
  * SimpleAccount widget
  *
@@ -24,18 +25,33 @@ use Sulu\Bundle\ContactBundle\Entity\Contact;
  */
 class MultipleAccounts implements WidgetInterface
 {
+    /**
+     * @var EntityManager
+     */
     protected $em;
 
+    /**
+     * @var string
+     */
     protected $widgetName = 'MultipleAccounts';
-    protected $accountEntityName = 'SuluContactBundle:Account';
 
-    function __construct(EntityManager $em)
+    /**
+     * @var AccountRepository
+     */
+    protected $accountRepository;
+
+    /**
+     * @param EntityManager $em
+     * @param AccountRepository $accountRepository
+     */
+    function __construct(EntityManager $em, AccountRepository $accountRepository)
     {
         $this->em = $em;
+        $this->accountRepository = $accountRepository;
     }
 
     /**
-     * return name of widget
+     * Return name of widget
      *
      * @return string
      */
@@ -45,7 +61,7 @@ class MultipleAccounts implements WidgetInterface
     }
 
     /**
-     * returns template name of widget
+     * Returns template name of widget
      *
      * @return string
      */
@@ -55,11 +71,13 @@ class MultipleAccounts implements WidgetInterface
     }
 
     /**
-     * returns data to render template
+     * Returns data to render template
      *
      * @param array $options
+     *
      * @throws WidgetEntityNotFoundException
      * @throws WidgetParameterException
+     *
      * @return array
      */
     public function getData($options)
@@ -72,10 +90,10 @@ class MultipleAccounts implements WidgetInterface
 
             $accountIds = explode(',', $options['accountIds']);
             foreach ($accountIds as $id) {
-                $account = $this->em->getRepository($this->accountEntityName)->find($id);
+                $account = $this->accountRepository->find($id);
                 if (!$account) {
                     throw new WidgetEntityNotFoundException(
-                        'Entity ' . $this->accountEntityName . ' with id ' . $id . ' not found!',
+                        'Entity \'Account\' with id ' . $id . ' not found!',
                         $this->widgetName,
                         $id
                     );
@@ -96,10 +114,11 @@ class MultipleAccounts implements WidgetInterface
     /**
      * Parses the account data
      *
-     * @param Account $account
+     * @param AccountInterface $account
+     *
      * @return array
      */
-    protected function parseAccount(Account $account)
+    protected function parseAccount(AccountInterface $account)
     {
         if ($account) {
             $data = [];

@@ -12,7 +12,6 @@ use Sulu\Bundle\ProductBundle\Api\ApiProductInterface;
 use Sulu\Component\Rest\ApiWrapper;
 use Sulu\Component\Security\Authentication\UserInterface;
 use Sulu\Bundle\ProductBundle\Api\Product;
-use Sulu\Bundle\ContactBundle\Entity\Account;
 use Sulu\Bundle\Sales\CoreBundle\Entity\ItemInterface as Entity;
 use Sulu\Bundle\Sales\CoreBundle\Entity\ItemAttributeEntity;
 use Sulu\Bundle\Sales\CoreBundle\Pricing\CalculableBulkPriceItemInterface;
@@ -585,7 +584,7 @@ class Item extends ApiWrapper implements
     }
 
     /**
-     * @param Account
+     * @param AccountInterface
      *
      * @return Item
      */
@@ -597,7 +596,7 @@ class Item extends ApiWrapper implements
     }
 
     /**
-     * @return Account
+     * @return AccountInterface
      */
     public function getSupplier()
     {

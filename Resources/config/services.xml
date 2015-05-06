@@ -67,11 +67,13 @@
         <service id="sulu_sales_core.widget.multiple_accounts" class="%sulu_sales_core.widgets.multiple_accounts.class%">
             <tag name="sulu.widget" alias="sulu-sales-core-multiple-accounts"/>
             <argument type="service" id="doctrine.orm.entity_manager"/>
+            <argument type="service" id="sulu_contact.account_repository"/>
         </service>
 
         <service id="sulu_sales_core.widget.simple_account" class="%sulu_sales_core.widgets.simple_account.class%">
             <tag name="sulu.widget" alias="sulu-sales-core-simple-account"/>
             <argument type="service" id="doctrine.orm.entity_manager"/>
+            <argument type="service" id="sulu_contact.account_repository"/>
         </service>
 
         <service id="sulu_sales_core.widget.simple_contact" class="%sulu_sales_core.widgets.simple_contact.class%">

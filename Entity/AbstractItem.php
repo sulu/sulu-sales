@@ -10,7 +10,7 @@
 
 namespace Sulu\Bundle\Sales\CoreBundle\Entity;
 
-use Sulu\Bundle\ContactBundle\Entity\Account;
+use Sulu\Bundle\ContactBundle\Entity\AccountInterface;
 
 class AbstractItem extends BaseItem implements ItemInterface
 {
@@ -30,7 +30,7 @@ class AbstractItem extends BaseItem implements ItemInterface
     protected $deliveryAddress;
 
     /**
-     * @var \Sulu\Bundle\ContactBundle\Entity\Account
+     * @var AccountInterface
      */
     protected $supplier;
 
@@ -103,11 +103,11 @@ class AbstractItem extends BaseItem implements ItemInterface
     /**
      * Set supplier
      *
-     * @param Account $supplier
+     * @param AccountInterface $supplier
      *
      * @return Item
      */
-    public function setSupplier(Account $supplier = null)
+    public function setSupplier(AccountInterface $supplier = null)
     {
         $this->supplier = $supplier;
 
@@ -117,7 +117,7 @@ class AbstractItem extends BaseItem implements ItemInterface
     /**
      * Get supplier
      *
-     * @return Account
+     * @return AccountInterface
      */
     public function getSupplier()
     {

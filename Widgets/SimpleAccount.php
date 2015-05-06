@@ -14,9 +14,9 @@ use Sulu\Bundle\AdminBundle\Widgets\WidgetInterface;
 use Sulu\Bundle\AdminBundle\Widgets\WidgetParameterException;
 use Sulu\Bundle\AdminBundle\Widgets\WidgetEntityNotFoundException;
 use Doctrine\ORM\EntityManager;
-use Sulu\Bundle\ContactBundle\Entity\Account;
-use Sulu\Bundle\ContactBundle\Entity\Address;
-use Sulu\Bundle\ContactBundle\Entity\Contact;
+use Sulu\Bundle\ContactBundle\Entity\AccountInterface;
+use Sulu\Bundle\ContactBundle\Entity\AccountRepository;
+
 /**
  * SimpleAccount widget
  *
@@ -24,18 +24,33 @@ use Sulu\Bundle\ContactBundle\Entity\Contact;
  */
 class SimpleAccount implements WidgetInterface
 {
+    /**
+     * @var EntityManager
+     */
     protected $em;
 
+    /**
+     * @var string
+     */
     protected $widgetName = 'SimpleAccount';
-    protected $accountEntityName = 'SuluContactBundle:Account';
 
-    function __construct(EntityManager $em)
+    /**
+     * @var AccountRepository
+     */
+    protected $accountRepository;
+
+    /**
+     * @param EntityManager $em
+     * @param AccountRepository $accountRepository
+     */
+    function __construct(EntityManager $em, AccountRepository $accountRepository)
     {
         $this->em = $em;
+        $this->accountRepository = $accountRepository;
     }
 
     /**
-     * return name of widget
+     * Return name of widget
      *
      * @return string
      */
@@ -45,7 +60,7 @@ class SimpleAccount implements WidgetInterface
     }
 
     /**
-     * returns template name of widget
+     * Returns template name of widget
      *
      * @return string
      */
@@ -55,11 +70,13 @@ class SimpleAccount implements WidgetInterface
     }
 
     /**
-     * returns data to render template
+     * Returns data to render template
      *
      * @param array $options
+     *
      * @throws WidgetEntityNotFoundException
      * @throws WidgetParameterException
+     *
      * @return array
      */
     public function getData($options)
@@ -69,15 +86,16 @@ class SimpleAccount implements WidgetInterface
             !empty($options['account'])
         ) {
             $id = $options['account'];
-            $account = $this->em->getRepository($this->accountEntityName)->find($id);
+            $account = $this->accountRepository->find($id);
 
             if (!$account) {
                 throw new WidgetEntityNotFoundException(
-                    'Entity ' . $this->accountEntityName . ' with id ' . $id . ' not found!',
+                    'Entity \'Account\' with id ' . $id . ' not found!',
                     $this->widgetName,
                     $id
                 );
             }
+
             return $this->parseAccount($account);
         } else {
             throw new WidgetParameterException(
@@ -91,10 +109,11 @@ class SimpleAccount implements WidgetInterface
     /**
      * Parses the account data
      *
-     * @param Account $account
+     * @param AccountInterface $account
+     *
      * @return array
      */
-    protected function parseAccount(Account $account)
+    protected function parseAccount(AccountInterface $account)
     {
         if ($account) {
             $data = [];
@@ -104,7 +123,6 @@ class SimpleAccount implements WidgetInterface
             $data['email'] = $account->getMainEmail();
             $data['url'] = $account->getMainUrl();
 
-            /* @var Address $accountAddress */
             $accountAddress = $account->getMainAddress();
 
             if ($accountAddress) {
@@ -112,8 +130,7 @@ class SimpleAccount implements WidgetInterface
                 $data['address']['number'] = $accountAddress->getNumber();
                 $data['address']['zip'] = $accountAddress->getZip();
                 $data['address']['city'] = $accountAddress->getCity();
-                $data['address']['country'] = $accountAddress->getCountry(
-                )->getName();
+                $data['address']['country'] = $accountAddress->getCountry()->getName();
             }
 
             return $data;
