@@ -9,6 +9,7 @@ use JMS\Serializer\Annotation\SerializedName;
 use JMS\Serializer\Annotation\Exclude;
 use Sulu\Bundle\Sales\CoreBundle\Core\SalesDocument;
 use Sulu\Bundle\Sales\CoreBundle\Entity\OrderAddress;
+use Sulu\Bundle\Sales\CoreBundle\Item\ItemFactoryInterface;
 use Sulu\Component\Rest\ApiWrapper;
 use Sulu\Component\Security\Authentication\UserInterface;
 use Sulu\Bundle\Sales\CoreBundle\Api\Item;
@@ -37,13 +38,20 @@ class Shipping extends ApiWrapper implements SalesDocument
     private $shippingItems;
 
     /**
+     * @var ItemFactoryInterface
+     */
+    private $itemFactory;
+
+    /**
      * @param ShippingEntity $shipping The shipping to wrap
      * @param string $locale The locale of this shipping
+     * @param ItemFactoryInterface $itemFactory
      */
-    public function __construct(ShippingEntity $shipping, $locale)
+    public function __construct(ShippingEntity $shipping, $locale, ItemFactoryInterface $itemFactory)
     {
         $this->entity = $shipping;
         $this->locale = $locale;
+        $this->itemFactory = $itemFactory;
     }
 
     /**
@@ -553,7 +561,7 @@ class Shipping extends ApiWrapper implements SalesDocument
         if (!$this->shippingItems) {
             $this->shippingItems = array();
             foreach ($this->entity->getShippingItems() as $shippingItem) {
-                $this->shippingItems[] = new ShippingItem($shippingItem, $this->locale);
+                $this->shippingItems[] = new ShippingItem($shippingItem, $this->locale, $this->itemFactory);
             }
         }
 

@@ -13,8 +13,10 @@
         <parameter key="sulu_sales_shipping.shipping_order_dependency.class">Sulu\Bundle\Sales\ShippingBundle\Dependencies\ShippingOrderDependencyClass</parameter>
         <parameter key="sulu_sales_shipping.widgets.shipping_details.class">Sulu\Bundle\Sales\ShippingBundle\Widgets\ShippingDetails</parameter>
         <parameter key="sulu_sales_shipping.widgets.shipping_flow_of_documents.class">Sulu\Bundle\Sales\ShippingBundle\Widgets\FlowOfDocuments</parameter>
+        <parameter key="sulu_sales_shipping.shipping_factory.class">Sulu\Bundle\Sales\ShippingBundle\Shipping\ShippingFactory</parameter>
     </parameters>
     <services>
+        <!--ADMIN-->
         <service id="sulu_sales_shipping.admin" class="%sulu_sales_shipping.admin.class%">
             <tag name="sulu.admin" />
             <argument>%sulu_admin.name%</argument>
@@ -23,37 +25,45 @@
             <tag name="sulu_admin.content_navigation" alias="shipping"/>
             <tag name="sulu.context" context="admin"/>
         </service>
-        <service id="sulu_sales_shipping.shipping_repository" class="%sulu_sales_shipping.shipping_repository.class%"
-                 factory-method="getRepository" factory-service="doctrine.orm.entity_manager">
-            <argument>SuluSalesShippingBundle:Shipping</argument>
-        </service>
-
         <service id="sulu_sales_shipping.admin.order_content_navigation" class="%sulu_sales_shipping.admin.order_content_navigation.class%">
             <tag name="sulu_admin.content_navigation" alias="order"/>
             <tag name="sulu.context" context="admin"/>
         </service>
 
+        <!--FACTORIES-->
+        <service id="sulu_sales_shipping.shipping_factory" class="%sulu_sales_shipping.shipping_factory.class%">
+            <argument type="service" id="sulu_sales_core.item_factory" />
+        </service>
+
+        <!--REPOSITORIES-->
+        <service id="sulu_sales_shipping.shipping_repository" class="%sulu_sales_shipping.shipping_repository.class%"
+                 factory-method="getRepository" factory-service="doctrine.orm.entity_manager">
+            <argument>SuluSalesShippingBundle:Shipping</argument>
+        </service>
+
+        <!--MANAGERS-->
         <service id="sulu_sales_shipping.shipping_order_dependency" class="%sulu_sales_shipping.shipping_order_dependency.class%">
             <tag name="sulu.sales_order.order_dependency"/>
             <argument type="service" id="sulu_sales_shipping.shipping_manager" />
             <argument>%sulu_sales_core.routes%</argument>
         </service>
-
         <service id="sulu_sales_shipping.shipping_manager" class="%sulu_sales_shipping.shipping_manager.class%">
             <argument type="service" id="doctrine.orm.entity_manager" />
             <argument type="service" id="sulu_security.user_repository" />
             <argument type="service" id="sulu_sales_core.item_manager" />
             <argument type="service" id="sulu_core.rest_helper" strict="false"/>
-            <argument>%sulu_sales_core.item_entity%</argument>
+            <argument type="service" id="sulu_sales_shipping.shipping_factory" />
         </service>
+
+        <!--EVENT LISTENER-->
         <service id="sulu_sales_shipping.shipping_listener" class="%sulu_sales_shipping.shipping_listener.class%">
             <tag name="doctrine.event_listener" event="postPersist" method="postPersist"/>
         </service>
 
+        <!--WIDGETS-->
         <service id="sulu_sales_shipping.widget.shipping_details" class="%sulu_sales_shipping.widgets.shipping_details.class%">
             <tag name="sulu.widget" alias="sulu-sales-shipping-shipping-details"/>
         </service>
-
         <service id="sulu_sales_shipping.widget.shipping_flow_of_documents" class="%sulu_sales_shipping.widgets.shipping_flow_of_documents.class%">
             <tag name="sulu.widget" alias="sulu-sales-shipping-shipping-flow-of-documents"/>
             <argument>%sulu_sales_core.routes%</argument>

@@ -27,7 +27,6 @@ use Sulu\Bundle\Sales\ShippingBundle\Shipping\Exception\MissingShippingAttribute
 use Sulu\Bundle\Sales\ShippingBundle\Shipping\Exception\ShippingDependencyNotFoundException;
 use Sulu\Bundle\Sales\ShippingBundle\Shipping\Exception\ShippingException;
 use Sulu\Bundle\Sales\ShippingBundle\Shipping\Exception\ShippingNotFoundException;
-use Sulu\Bundle\Sales\ShippingBundle\Entity\Shipping as ShippingEntity;
 use Sulu\Bundle\Sales\ShippingBundle\Entity\ShippingItem as ShippingItemEntity;
 use Sulu\Bundle\Sales\ShippingBundle\Entity\ShippingStatus as ShippingStatusEntity;
 use Sulu\Bundle\Sales\ShippingBundle\Api\Shipping;
@@ -88,14 +87,14 @@ class ShippingManager
         UserRepositoryInterface $userRepository,
         ItemManager $itemManager,
         RestHelperInterface $restHelper,
-        $itemEntity
+        ShippingFactoryInterface $shippingFactory
     )
     {
         $this->em = $em;
         $this->userRepository = $userRepository;
         $this->itemManager = $itemManager;
         $this->restHelper = $restHelper;
-        $this->itemEntity = $itemEntity;
+        $this->shippingFactory = $shippingFactory;
     }
 
     /**
@@ -127,7 +126,7 @@ class ShippingManager
                 throw new ShippingNotFoundException($id);
             }
         } else {
-            $shipping = new Shipping(new ShippingEntity(), $locale);
+            $shipping = $this->shippingFactory->createApiEntity($this->shippingFactory->createEntity(), $locale);
         }
 
         // check for data
@@ -311,8 +310,6 @@ class ShippingManager
      */
     private function convertItemStatus(Shipping $shipping, $shippingStatusId)
     {
-        $itemEntity = $this->itemEntity;
-
         foreach ($shipping->getItems() as $shippingItem) {
             // get item
             $item = $shippingItem->getItem();
@@ -322,14 +319,14 @@ class ShippingManager
                 // created
                 case ShippingStatusEntity::STATUS_CREATED:
                     // TODO: REMOVE PREVIOUS STATE
-                    $this->itemManager->addStatus($item, $itemEntity::STATUS_CREATED);
+                    $this->itemManager->addStatus($item, Item::STATUS_CREATED);
                     break;
                 // delivery note
                 case ShippingStatusEntity::STATUS_DELIVERY_NOTE:
                     if ($this->isPartiallyItem($shippingItem, true)) {
-                        $itemStatus = $itemEntity::STATUS_SHIPPING_NOTE_PARTIALLY;
+                        $itemStatus = Item::STATUS_SHIPPING_NOTE_PARTIALLY;
                     } else {
-                        $itemStatus = $itemEntity::STATUS_SHIPPING_NOTE;
+                        $itemStatus = Item::STATUS_SHIPPING_NOTE;
 
                     }
                     $this->itemManager->addStatus($item, $itemStatus);
@@ -337,16 +334,16 @@ class ShippingManager
                 // shipped
                 case ShippingStatusEntity::STATUS_SHIPPED:
                     if ($this->isPartiallyItem($shippingItem, false)) {
-                        $itemStatus = $itemEntity::STATUS_SHIPPED_PARTIALLY;
+                        $itemStatus = Item::STATUS_SHIPPED_PARTIALLY;
                     } else {
-                        $itemStatus = $itemEntity::STATUS_SHIPPED;
+                        $itemStatus = Item::STATUS_SHIPPED;
 
                     }
                     $this->itemManager->addStatus($item, $itemStatus);
                     break;
                 case ShippingStatusEntity::STATUS_CANCELED:
                     // TODO: check  if still fully shipped
-                    $this->itemManager->removeStatus($item, $itemEntity::STATUS_SHIPPED);
+                    $this->itemManager->removeStatus($item, Item::STATUS_SHIPPED);
                     // TODO: check if partially shipped
                     break;
             }
@@ -419,7 +416,7 @@ class ShippingManager
         $shipping = $this->getShippingRepository()->findByIdAndLocale($id, $locale);
 
         if ($shipping) {
-            $apiShippings = new Shipping($shipping, $locale);
+            $apiShippings = $this->shippingFactory->createApiEntity($shipping, $locale);
 
             // set currently shipped items (sum of all shippings for that item)
             $shippingCounts = $this->getSumOfShippedItemsByOrderId($shipping->getOrder()->getId());
@@ -463,7 +460,7 @@ class ShippingManager
         $result = array();
         $items = $this->getShippingRepository()->findByOrderId($orderId, $locale);
         foreach ($items as $item) {
-            $result[] = new Shipping($item, $locale);
+            $result[] = $this->shippingFactory->createApiEntity($item, $locale);
         }
         return $result;
     }
@@ -507,7 +504,7 @@ class ShippingManager
         array_walk(
             $shipping,
             function (&$shipping) use ($locale){
-                $shipping = new Shipping($shipping, $locale);
+                $shipping = $this->shippingFactory->createApiEntity($shipping, $locale);
             }
         );
 
