@@ -39,8 +39,8 @@ class OrderFactory implements OrderFactoryInterface
     /**
      * {@inheritdoc}
      */
-    public function createApiEntity(OrderInterface $item, $locale)
+    public function createApiEntity(OrderInterface $order, $locale)
     {
-        return new ApiOrder($item, $locale, $this->itemFactory);
+        return new ApiOrder($order, $locale, $this->itemFactory);
     }
 }

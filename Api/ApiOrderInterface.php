@@ -11,8 +11,8 @@
 namespace Sulu\Bundle\Sales\OrderBundle\Api;
 
 use DateTime;
+use Sulu\Bundle\ContactBundle\Entity\AccountInterface;
 use Sulu\Component\Security\Authentication\UserInterface;
-use Sulu\Bundle\ContactBundle\Entity\Account;
 use Sulu\Bundle\ContactBundle\Entity\Contact;
 use Sulu\Bundle\ContactBundle\Entity\TermsOfPayment;
 use Sulu\Bundle\ContactBundle\Entity\TermsOfDelivery;
@@ -302,16 +302,16 @@ interface ApiOrderInterface
     /**
      * Set account
      *
-     * @param Account $account
+     * @param AccountInterface $account
      *
      * @return Order
      */
-    public function setCustomerAccount(Account $account = null);
+    public function setCustomerAccount(AccountInterface $account = null);
 
     /**
      * Get account
      *
-     * @return Account
+     * @return AccountInterface
      */
     public function getCustomerAccount();
 

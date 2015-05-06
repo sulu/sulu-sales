@@ -64,7 +64,6 @@ class OrderListener implements EventSubscriberInterface
                 $entityManager->flush();
             }
         }
-
         $this->getOrderUpdater()->scheduleForUpdate($this->getItemId($args));
     }
 

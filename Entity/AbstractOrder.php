@@ -32,7 +32,7 @@ abstract class AbstractOrder extends BaseOrder
     protected $termsOfPayment;
 
     /**
-     * @var Account
+     * @var AccountInterface
      */
     protected $customerAccount;
 
@@ -168,7 +168,7 @@ abstract class AbstractOrder extends BaseOrder
     /**
      * Set account
      *
-     * @param Account $account
+     * @param AccountInterface $account
      *
      * @return Order
      */
@@ -182,7 +182,7 @@ abstract class AbstractOrder extends BaseOrder
     /**
      * Get account
      *
-     * @return Account
+     * @return AccountInterface
      */
     public function getCustomerAccount()
     {
