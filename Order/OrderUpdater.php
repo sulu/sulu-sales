@@ -12,6 +12,7 @@ namespace Sulu\Bundle\Sales\OrderBundle\Order;
 
 use Doctrine\Common\Persistence\ObjectManager;
 use Sulu\Bundle\Sales\OrderBundle\Order\OrderManger;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class OrderUpdater
 {
@@ -21,22 +22,35 @@ class OrderUpdater
     private $scheduledIds;
 
     /**
-     * @var OrderManager
+     * @var ContainerInterface
      */
-    private $orderManager;
+    private $container;
 
     /**
-     * @var ObjectManager
+     * @param ContainerInterface $container
      */
-    private $em;
-
     public function __construct(
-        ObjectManager $em,
-        OrderManager $orderManager
+        ContainerInterface $container
     ) {
-        $this->em = $em;
-        $this->orderManager = $orderManager;
+        $this->container = $container;
         $this->scheduledIds = [];
+    }
+
+    /**
+     * @return EntityManager
+     */
+    private function getEntityManager()
+    {
+        return $this->container->get('doctrine.orm.entity_manager');
+    }
+
+    /**
+     * @return
+     * ger
+     */
+    private function getOrderManager()
+    {
+        return $this->container->get('sulu_sales_order.order_manager');
     }
 
     /**
@@ -60,7 +74,7 @@ class OrderUpdater
     {
         $orders = [];
         foreach ($this->scheduledIds as $id) {
-            $order = $this->orderManager->findOrderEntityForItemWithId($id);
+            $order = $this->getOrderManager()->findOrderEntityForItemWithId($id);
             if (!in_array($order->getId(), $orders)) {
                 $orders[] = $order->getId();
                 $order->updateTotalNetPrice();
@@ -68,6 +82,6 @@ class OrderUpdater
         }
         unset($this->scheduledIds);
         $this->scheduledIds = [];
-        $this->em->flush();
+        $this->getEntityManager()->flush();
     }
 }

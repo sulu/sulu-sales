@@ -15,9 +15,9 @@ use Hateoas\Configuration\Annotation\Relation;
 use JMS\Serializer\Annotation\VirtualProperty;
 use JMS\Serializer\Annotation\SerializedName;
 use JMS\Serializer\Annotation\Groups;
+use Sulu\Bundle\ContactBundle\Entity\AccountInterface;
 use Sulu\Component\Rest\ApiWrapper;
 use Sulu\Component\Security\Authentication\UserInterface;
-use Sulu\Bundle\ContactBundle\Entity\Account;
 use Sulu\Bundle\ContactBundle\Entity\Contact;
 use Sulu\Bundle\ContactExtensionBundle\Entity\TermsOfDelivery;
 use Sulu\Bundle\ContactBundle\Entity\TermsOfPayment;
@@ -605,11 +605,11 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     /**
      * Set account
      *
-     * @param Account $account
+     * @param AccountInterface $account
      *
      * @return Order
      */
-    public function setCustomerAccount(Account $account = null)
+    public function setCustomerAccount(AccountInterface $account = null)
     {
         $this->entity->setCustomerAccount($account);
 
@@ -622,7 +622,7 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
      * @VirtualProperty
      * @SerializedName("customerAccount")
      *
-     * @return Account
+     * @return AccountInterface
      */
     public function getCustomerAccount()
     {
