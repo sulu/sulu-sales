@@ -16,6 +16,7 @@ use JMS\Serializer\Annotation\VirtualProperty;
 use JMS\Serializer\Annotation\SerializedName;
 use JMS\Serializer\Annotation\Groups;
 use Sulu\Bundle\ContactBundle\Entity\AccountInterface;
+use Sulu\Bundle\Sales\OrderBundle\Entity\OrderInterface;
 use Sulu\Component\Rest\ApiWrapper;
 use Sulu\Component\Security\Authentication\UserInterface;
 use Sulu\Bundle\ContactBundle\Entity\Contact;
@@ -26,7 +27,6 @@ use Sulu\Bundle\Sales\CoreBundle\Core\SalesDocument;
 use Sulu\Bundle\Sales\CoreBundle\Entity\ItemInterface;
 use Sulu\Bundle\Sales\CoreBundle\Entity\OrderAddressInterface;
 use Sulu\Bundle\Sales\CoreBundle\Item\ItemFactoryInterface;
-use Sulu\Bundle\Sales\OrderBundle\Entity\Order as OrderEntity;
 
 /**
  * The order class which will be exported to the API
@@ -84,11 +84,11 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     private $itemFactory;
 
     /**
-     * @param OrderEntity $order The order to wrap
+     * @param OrderInterface $order The order to wrap
      * @param string $locale The locale of this order
      * @param ItemFactoryInterface $itemFactory
      */
-    public function __construct(OrderEntity $order, $locale, $itemFactory)
+    public function __construct(OrderInterface $order, $locale, $itemFactory)
     {
         $this->entity = $order;
         $this->locale = $locale;
@@ -1118,7 +1118,7 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
      *
      * @param $hasChangedPrices
      *
-     * @return $this
+     * @return Order
      */
     public function setHasChangedPrices($hasChangedPrices)
     {

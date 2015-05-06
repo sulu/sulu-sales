@@ -10,7 +10,6 @@
 
 namespace Sulu\Bundle\Sales\OrderBundle\Order;
 
-use Doctrine\Common\Persistence\ObjectManager;
 use Sulu\Bundle\Sales\OrderBundle\Order\OrderManger;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -45,8 +44,7 @@ class OrderUpdater
     }
 
     /**
-     * @return
-     * ger
+     * @return OrderManager
      */
     private function getOrderManager()
     {
