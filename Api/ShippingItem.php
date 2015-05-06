@@ -7,6 +7,7 @@ use JMS\Serializer\Annotation\SerializedName;
 use JMS\Serializer\Annotation\Exclude;
 use Sulu\Bundle\Sales\CoreBundle\Api\Item as ApiItem;
 use Sulu\Bundle\Sales\CoreBundle\Entity\Item;
+use Sulu\Bundle\Sales\CoreBundle\Item\ItemFactoryInterface;
 use Sulu\Component\Rest\ApiWrapper;
 use Sulu\Bundle\Sales\ShippingBundle\Entity\ShippingItem as ShippingItemEntity;
 use Sulu\Bundle\ProductBundle\Product\ProductFactory;
@@ -26,11 +27,13 @@ class ShippingItem extends ApiWrapper
     /**
      * @param ShippingItemEntity $entity
      * @param string $locale
+     * @param ItemFactoryInterface $itemFactory
      */
-    public function __construct(ShippingItemEntity $entity, $locale)
+    public function __construct(ShippingItemEntity $entity, $locale, ItemFactoryInterface $itemFactory)
     {
         $this->entity = $entity;
         $this->locale = $locale;
+        $this->itemFactory = $itemFactory;
     }
 
     /**
@@ -121,7 +124,7 @@ class ShippingItem extends ApiWrapper
      */
     public function getShipping()
     {
-        return new ApiShipping($this->entity->getShipping(), $this->locale);
+        return new ApiShipping($this->entity->getShipping(), $this->locale, $this->itemFactory);
     }
 
     /**
@@ -148,9 +151,7 @@ class ShippingItem extends ApiWrapper
      */
     public function getItem()
     {
-        $productFactory = new ProductFactory();
-
-        return new ApiItem($this->entity->getItem(), $this->locale, $productFactory);
+        return $this->itemFactory->createApiEntity($this->entity->getItem(), $this->locale);
     }
 
     /**

@@ -58,7 +58,9 @@
         "symfony/monolog-bundle": "2.4.*",
         "sulu/test-bundle": "dev-develop",
         "symfony-cmf/testing": "~1.2",
-        "liip/theme-bundle": "1.1.*"
+        "liip/theme-bundle": "1.1.*",
+        "massive/pdf-bundle": "@dev",
+        "knplabs/knp-snappy-bundle": "dev-master"
     },
     "autoload": {
         "psr-0": {

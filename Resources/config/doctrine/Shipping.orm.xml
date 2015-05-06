@@ -25,7 +25,6 @@
         <field name="note" type="text" column="note" nullable="true"/>
 
         <field name="bitmaskStatus" type="integer" column="bitmaskStatus" nullable="false"/>
-        <!-- TODO: Create Carriers -->
 
         <field name="created" type="datetime" column="created"></field>
         <field name="changed" type="datetime" column="changed"></field>
