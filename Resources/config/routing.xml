@@ -3,10 +3,6 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://symfony.com/schema/routing http://symfony.com/schema/routing/routing-1.0.xsd">
 
-    <route id="order_navigation" path="/navigation/order">
-        <default key="_controller">SuluSalesOrderBundle:Navigation:order</default>
-    </route>
-
     <route id="order_list" path="/template/order/list.html">
         <default key="_controller">SuluSalesOrderBundle:Template:orderList</default>
     </route>

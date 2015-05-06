@@ -21,7 +21,6 @@
     </parameters>
     <services>
         <!--ADMIN-->
-
         <service id="sulu_sales_order.admin" class="%sulu_sales_order.admin.class%">
             <tag name="sulu.admin" />
             <tag name="sulu.context" context="admin"/>
