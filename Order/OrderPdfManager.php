@@ -56,12 +56,12 @@ class OrderPdfManager
         );
 
         $header = $this->pdfManager->renderTemplate(
-            'PoolAlpinBaseBundle:Default:pdf-base-header.html.twig',
+            'SuluSalesCoreBundle:Default:pdf-base-header.html.twig',
             array()
         );
 
         $footer = $this->pdfManager->renderTemplate(
-            'PoolAlpinBaseBundle:Default:pdf-base-footer.html.twig',
+            'SuluSalesCoreBundle:Default:pdf-base-footer.html.twig',
             array()
         );
 

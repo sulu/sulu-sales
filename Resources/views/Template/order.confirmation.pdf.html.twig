@@ -1,5 +1,5 @@
-{% extends "PoolAlpinBaseBundle:Default:pdf-base.html.twig" %}
-{% import "PoolAlpinBaseBundle:Default:pdf-macros.html.twig" as macros %}
+{% extends "SuluSalesCoreBundle:Default:pdf-base.html.twig" %}
+{% import "SuluSalesCoreBundle:Default:pdf-macros.html.twig" as macros %}
 
 {% block recipient_business_info %}
     {% if order.getCustomerAccount() and order.getCustomerAccount().getUid() %}
