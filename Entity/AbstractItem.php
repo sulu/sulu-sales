@@ -25,7 +25,7 @@ class AbstractItem extends BaseItem implements ItemInterface
     protected $attributes;
 
     /**
-     * @var OrderAddress
+     * @var OrderAddressInterface
      */
     protected $deliveryAddress;
 
@@ -127,11 +127,11 @@ class AbstractItem extends BaseItem implements ItemInterface
     /**
      * Set deliveryAddress
      *
-     * @param OrderAddress $deliveryAddress
+     * @param OrderAddressInterface $deliveryAddress
      *
      * @return Item
      */
-    public function setDeliveryAddress(OrderAddress $deliveryAddress = null)
+    public function setDeliveryAddress(OrderAddressInterface $deliveryAddress = null)
     {
         $this->deliveryAddress = $deliveryAddress;
 
@@ -141,7 +141,7 @@ class AbstractItem extends BaseItem implements ItemInterface
     /**
      * Get deliveryAddress
      *
-     * @return OrderAddress $deliveryAddress
+     * @return OrderAddressInterface $deliveryAddress
      */
     public function getDeliveryAddress()
     {
