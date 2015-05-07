@@ -7,17 +7,17 @@ use JMS\Serializer\Annotation\VirtualProperty;
 use Hateoas\Configuration\Annotation\Relation;
 use JMS\Serializer\Annotation\SerializedName;
 use JMS\Serializer\Annotation\Exclude;
+use Sulu\Component\Rest\ApiWrapper;
+use Sulu\Component\Security\Authentication\UserInterface;
+use Sulu\Bundle\ProductBundle\Product\ProductFactory;
 use Sulu\Bundle\Sales\CoreBundle\Core\SalesDocument;
 use Sulu\Bundle\Sales\CoreBundle\Entity\OrderAddress;
 use Sulu\Bundle\Sales\CoreBundle\Item\ItemFactoryInterface;
-use Sulu\Component\Rest\ApiWrapper;
-use Sulu\Component\Security\Authentication\UserInterface;
+use Sulu\Bundle\Sales\CoreBundle\Item\ItemFactory;
 use Sulu\Bundle\Sales\OrderBundle\Api\Order as ApiOrder;
 use Sulu\Bundle\Sales\OrderBundle\Entity\Order;
 use Sulu\Bundle\Sales\ShippingBundle\Entity\Shipping as ShippingEntity;
 use Sulu\Bundle\Sales\ShippingBundle\Entity\ShippingItem as ShippingItemEntity;
-use Sulu\Bundle\Sales\CoreBundle\Item\ItemFactory;
-use Sulu\Bundle\ProductBundle\Product\ProductFactory;
 use Sulu\Bundle\Sales\ShippingBundle\Entity\ShippingStatus;
 use Sulu\Bundle\Sales\ShippingBundle\Api\ShippingStatus as ApiShippingStatus;
 
@@ -674,8 +674,7 @@ class Shipping extends ApiWrapper implements SalesDocument
      */
     public function getChanger()
     {
-        // TODO
-//        return $this->entity->changer;
+        return $this->entity->getChanger();
     }
 
     /**
@@ -698,8 +697,7 @@ class Shipping extends ApiWrapper implements SalesDocument
      */
     public function getCreator()
     {
-        // TODO
-//        return $this->entity->creator;
+        return $this->entity->getCreator();
     }
 
     /**
