@@ -5,9 +5,7 @@ namespace Sulu\Bundle\Sales\OrderBundle\Controller;
 use Sulu\Bundle\ContactExtensionBundle\Entity\Account;
 use Sulu\Bundle\ProductBundle\Api\Currency;
 use Sulu\Bundle\Sales\OrderBundle\Api\OrderStatus;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sulu\Component\Rest\RestController;
-use Hateoas\Representation\CollectionRepresentation;
 
 class TemplateController extends RestController
 {

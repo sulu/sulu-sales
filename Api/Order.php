@@ -15,13 +15,15 @@ use Hateoas\Configuration\Annotation\Relation;
 use JMS\Serializer\Annotation\VirtualProperty;
 use JMS\Serializer\Annotation\SerializedName;
 use JMS\Serializer\Annotation\Groups;
+use JMS\Serializer\Annotation\Exclude;
+use JMS\Serializer\Annotation\MaxDepth;
 use Sulu\Bundle\ContactBundle\Entity\AccountInterface;
 use Sulu\Bundle\Sales\OrderBundle\Entity\OrderInterface;
 use Sulu\Component\Rest\ApiWrapper;
 use Sulu\Component\Security\Authentication\UserInterface;
 use Sulu\Bundle\ContactBundle\Entity\Contact;
 use Sulu\Bundle\ContactExtensionBundle\Entity\TermsOfDelivery;
-use Sulu\Bundle\ContactBundle\Entity\TermsOfPayment;
+use Sulu\Bundle\ContactExtensionBundle\Entity\TermsOfPayment;
 use Sulu\Bundle\Sales\CoreBundle\Api\OrderAddress;
 use Sulu\Bundle\Sales\CoreBundle\Core\SalesDocument;
 use Sulu\Bundle\Sales\CoreBundle\Entity\ItemInterface;
@@ -53,6 +55,8 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     /**
      * Groups items by suppliers
      *
+     * @Exclude
+     *
      * @var array
      */
     private $groupedItems = array();
@@ -67,6 +71,8 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     /**
      * Cache for items
      *
+     * @Exclude
+     *
      * @var array
      */
     private $cacheItems;
@@ -79,6 +85,8 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     private $itemsChanged = false;
 
     /**
+     * @Exclude
+     *
      * @var ItemFactoryInterface
      */
     private $itemFactory;
