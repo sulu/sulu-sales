@@ -7,6 +7,7 @@ use Hateoas\Configuration\Annotation\Relation;
 use JMS\Serializer\Annotation\VirtualProperty;
 use JMS\Serializer\Annotation\SerializedName;
 use JMS\Serializer\Annotation\Groups;
+use JMS\Serializer\Annotation\Exclude;
 use Sulu\Bundle\ProductBundle\Product\ProductFactoryInterface;
 use Sulu\Bundle\ProductBundle\Api\ApiProductInterface;
 use Sulu\Component\Rest\ApiWrapper;
@@ -52,11 +53,15 @@ class Item extends ApiWrapper implements
     /**
      * Temporary storage for product api entity
      *
+     * @Exclude
+     *
      * @var Product
      */
     protected $tempProduct;
 
     /**
+     * @Exclude
+     *
      * @var ProductFactoryInterface
      */
     protected $productFactory;
