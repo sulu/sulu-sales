@@ -164,11 +164,16 @@ class ItemManager
 
         // set item data
         $item->setQuantity($this->getProperty($data, 'quantity', null));
+        $item->setUseProductsPrice($this->getProperty($data, 'useProductsPrice', true));
 
+        // terms of delivery
         $product = null;
         if ($isNewItem) {
-            // get product and set Product's data to item
-            $product = $this->setItemByProductData($data, $item, $locale);
+            $productData = $this->getProperty($data, 'product');
+            if ($productData) {
+                // get product and set Product's data to item
+                $product = $this->setItemByProductData($productData, $item, $locale);
+            }
         }
 
         // if product is not set, set data manually
@@ -427,7 +432,7 @@ class ItemManager
      *
      * @return mixed
      */
-    private function getProperty(array $data, $key, $default = null)
+    protected function getProperty(array $data, $key, $default = null)
     {
         return array_key_exists($key, $data) ? $data[$key] : $default;
     }
@@ -464,63 +469,57 @@ class ItemManager
      * @param ApiItemInterface $item
      * @param string $locale
      *
-     * @return null|ProductInterface
      * @throws MissingItemAttributeException
      * @throws ProductException
      * @throws ProductNotFoundException
+     *
+     * @return ProductInterface
      */
-    private function setItemByProductData($data, ApiItemInterface $item, $locale)
+    protected function setItemByProductData($productData, ApiItemInterface $item, $locale)
     {
-        // terms of delivery
-        $productData = $this->getProperty($data, 'product');
-        if ($productData) {
-            $productId = $this->getProductId($productData);
+        $productId = $this->getProductId($productData);
 
-            /** @var Product $product */
-            $product = $this->productRepository->find($productId);
-            if (!$product) {
-                throw new ProductNotFoundException(self::$productEntityName, $productId);
-            }
-            $item->setProduct($product);
-            $translation = $product->getTranslation($locale);
+        /** @var Product $product */
+        $product = $this->productRepository->find($productId);
+        if (!$product) {
+            throw new ProductNotFoundException(self::$productEntityName, $productId);
+        }
+        $item->setProduct($product);
+        $translation = $product->getTranslation($locale);
 
-            // when the product is not available in the current language choose the first translation you find
-            // FIXME: should be changed when products have a language fallback
-            // https://github.com/massiveart/POOL-ALPIN/issues/611
-            if (is_null($translation)) {
-                if (count($product->getTranslations()) > 0) {
-                    $translation = $product->getTranslations()[0];
-                } else {
-                    throw new ProductException('Product ' . $product->getId() . ' has no translations!');
-                }
-            }
-
-            $item->setName($translation->getName());
-            $item->setDescription($translation->getLongDescription());
-            $item->setUseProductsPrice($this->getProperty($data, 'useProductsPrice', true));
-            $item->setNumber($product->getNumber());
-
-            // get products supplier
-            if ($product->getSupplier()) {
-                $item->setSupplier($product->getSupplier());
-                $item->setSupplierName($product->getSupplier()->getName());
+        // when the product is not available in the current language choose the first translation you find
+        // FIXME: should be changed when products have a language fallback
+        // https://github.com/massiveart/POOL-ALPIN/issues/611
+        if (is_null($translation)) {
+            if (count($product->getTranslations()) > 0) {
+                $translation = $product->getTranslations()[0];
             } else {
-                $item->setSupplier(null);
-                $item->setSupplierName('');
+                throw new ProductException('Product ' . $product->getId() . ' has no translations!');
             }
-
-            // set order unit
-            if ($product->getOrderUnit()) {
-                $item->setQuantityUnit($product->getOrderUnit()->getTranslation($locale)->getName());
-            }
-
-            // TODO: get tax from product
-            $item->setTax(0);
-
-            return $product;
         }
 
-        return null;
+        $item->setName($translation->getName());
+        $item->setDescription($translation->getLongDescription());
+        $item->setNumber($product->getNumber());
+
+        // get products supplier
+        if ($product->getSupplier()) {
+            $item->setSupplier($product->getSupplier());
+            $item->setSupplierName($product->getSupplier()->getName());
+        } else {
+            $item->setSupplier(null);
+            $item->setSupplierName('');
+        }
+
+        // set order unit
+        if ($product->getOrderUnit()) {
+            $item->setQuantityUnit($product->getOrderUnit()->getTranslation($locale)->getName());
+        }
+
+        // TODO: get tax from product
+        $item->setTax(0);
+
+        return $product;
     }
 
     /**

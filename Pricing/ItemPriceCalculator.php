@@ -51,6 +51,11 @@ class ItemPriceCalculator
         if ($useProductsPrice) {
             $product = $item->getCalcProduct();
             $price = $this->priceManager->getBulkPriceForCurrency($product, $item->getCalcQuantity(), $currency);
+
+            // no price set - return 0
+            if ($price === null) {
+                return 0;
+            }
             $price = $price->getPrice();
         } else {
             $price = $item->getPrice();
