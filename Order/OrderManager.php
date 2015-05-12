@@ -337,7 +337,7 @@ class OrderManager
 
         // perform price calucaltion
         $prices = $supplierItems = null;
-        $totalPrice = $this->priceCalculator->calculate($items, $prices, $supplierItems, true);
+        $totalPrice = $this->priceCalculator->calculate($items, $prices, $supplierItems);
 
         if ($supplierItems) {
             $supplierItems = array_values($supplierItems);
