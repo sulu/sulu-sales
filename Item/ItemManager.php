@@ -516,7 +516,7 @@ class ItemManager
             $item->setQuantityUnit($product->getOrderUnit()->getTranslation($locale)->getName());
         }
 
-        // TODO: get tax from product
+        // TODO: get tax from product https://github.com/massiveart/POOL-ALPIN/issues/1224
         $item->setTax(0);
 
         return $product;
