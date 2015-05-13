@@ -244,12 +244,14 @@ class CartManager extends BaseSalesManager
      * @param $user
      * @param $locale
      * @param bool $orderWasSubmitted
+     * @param $originalCart The original cart that was submitted
      *
-     * @return null|ApiOrder
      * @throws OrderException
      * @throws \Sulu\Component\Rest\Exception\EntityNotFoundException
+     *
+     * @return null|ApiOrder
      */
-    public function submit($user, $locale, &$orderWasSubmitted = true)
+    public function submit($user, $locale, &$orderWasSubmitted = true, &$originalCart = null)
     {
         $orderWasSubmitted = true;
 
@@ -272,6 +274,8 @@ class CartManager extends BaseSalesManager
 
         // flush on success
         $this->em->flush();
+
+        $originalCart = $cart;
 
         return $this->getUserCart($user, $locale);
     }
