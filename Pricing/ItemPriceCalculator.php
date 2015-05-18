@@ -16,7 +16,7 @@ use Sulu\Bundle\Sales\CoreBundle\Pricing\Exceptions\PriceCalculationException;
 /**
  * Calculate Price of an Order
  */
-class ItemPriceCalculator 
+class ItemPriceCalculator
 {
     protected $priceManager;
     protected $defaultLocale;
@@ -50,18 +50,24 @@ class ItemPriceCalculator
         // get bulk price
         if ($useProductsPrice) {
             $product = $item->getCalcProduct();
-            $price = $this->priceManager->getBulkPriceForCurrency($product, $item->getCalcQuantity(), $currency);
-            $price = $price->getPrice();
+
+            $specialPrice = $this->priceManager->getSpecialPriceForCurrency($product, $currency);
+            if (!empty($specialPrice)) {
+                $priceValue = $specialPrice->getPrice();
+            } else {
+                $price = $this->priceManager->getBulkPriceForCurrency($product, $item->getCalcQuantity(), $currency);
+                $priceValue = $price->getPrice();
+            }
         } else {
-            $price = $item->getPrice();
+            $priceValue = $item->getPrice();
         }
-        $this->validateNotNull('price', $price);
+        $this->validateNotNull('price', $priceValue);
 
-        if ($item->getPrice() && $item->getPrice() !== $price) {
-            $item->setPriceChange($item->getPrice(), $price);
+        if ($item->getPrice() && $item->getPrice() !== $priceValue) {
+            $item->setPriceChange($item->getPrice(), $priceValue);
         }
 
-        $itemPrice = $price * $item->getCalcQuantity();
+        $itemPrice = $priceValue * $item->getCalcQuantity();
 
         // calculate items discount
         $discount = ($itemPrice / 100) * $item->getCalcDiscount();
@@ -132,7 +138,7 @@ class ItemPriceCalculator
     public function getItemPrice($item, $currency, $useProductPrice = true)
     {
         $currency = $this->getCurrency($currency);
-        
+
         if ($useProductPrice) {
             $product = $item->getCalcProduct();
             $price = $this->priceManager->getBulkPriceForCurrency($product, $item->getCalcQuantity(), $currency);
@@ -140,7 +146,7 @@ class ItemPriceCalculator
         } else {
             $price = $item->getPrice();
         }
-        
+
         return $price;
     }
 
