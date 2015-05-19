@@ -50,13 +50,17 @@ class ItemPriceCalculator
         // get bulk price
         if ($useProductsPrice) {
             $product = $item->getCalcProduct();
-
             $specialPrice = $this->priceManager->getSpecialPriceForCurrency($product, $currency);
             if (!empty($specialPrice)) {
                 $priceValue = $specialPrice->getPrice();
             } else {
                 $price = $this->priceManager->getBulkPriceForCurrency($product, $item->getCalcQuantity(), $currency);
                 $priceValue = $price->getPrice();
+            }
+
+            // no price set - return 0
+            if ($priceValue === null) {
+                return 0;
             }
         } else {
             $priceValue = $item->getPrice();
