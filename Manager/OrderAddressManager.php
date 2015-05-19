@@ -172,7 +172,10 @@ class OrderAddressManager
         $orderAddress->setPostboxPostcode($this->getProperty($addressData, 'postboxPostcode', ''));
         $orderAddress->setPostboxNumber($this->getProperty($addressData, 'postboxNumber', ''));
 
-        $orderAddress->setContactAddress($this->getProperty($addressData, 'address', ''));
+        $address = $this->getProperty($addressData, 'address', '');
+        if ($address) {
+            $orderAddress->setContactAddress($address);
+        }
     }
 
     /**

@@ -10,6 +10,7 @@
 
 namespace Sulu\Bundle\Sales\CoreBundle\Item;
 
+use DateTime;
 use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\ORM\EntityRepository;
 use Sulu\Bundle\ProductBundle\Entity\Product;
@@ -28,7 +29,7 @@ use Sulu\Bundle\Sales\CoreBundle\Manager\OrderAddressManager;
 use Sulu\Bundle\Sales\CoreBundle\Pricing\ItemPriceCalculator;
 use Sulu\Component\Persistence\RelationTrait;
 use Sulu\Component\Security\Authentication\UserRepositoryInterface;
-use DateTime;
+
 
 class ItemManager
 {
@@ -183,11 +184,14 @@ class ItemManager
             }
             $item->setName($this->getProperty($data, 'name', $item->getName()));
             // TODO: set supplier based on if its a string  or object (fetch account and set it to setSupplier)
-            $item->setSupplierName($this->getProperty($data, 'supplierName', $item->getSupplierName()));
             $item->setTax($this->getProperty($data, 'tax', $item->getTax()));
             $item->setNumber($this->getProperty($data, 'number', $item->getNumber()));
             $item->setDescription($this->getProperty($data, 'description', $item->getDescription()));
             $item->setQuantityUnit($this->getProperty($data, 'quantityUnit', $item->getQuantityUnit()));
+        }
+
+        if (method_exists($item, 'getSupplierName')) {
+            $item->setSupplierName($this->getProperty($data, 'supplierName', $item->getSupplierName()));
         }
 
         // update prices
@@ -465,7 +469,7 @@ class ItemManager
     /**
      * Sets item based on given product data
      *
-     * @param array $data
+     * @param array $productData
      * @param ApiItemInterface $item
      * @param string $locale
      *
@@ -498,18 +502,11 @@ class ItemManager
             }
         }
 
+        $this->setItemSupplier($item, $product);
+
         $item->setName($translation->getName());
         $item->setDescription($translation->getLongDescription());
         $item->setNumber($product->getNumber());
-
-        // get products supplier
-        if ($product->getSupplier()) {
-            $item->setSupplier($product->getSupplier());
-            $item->setSupplierName($product->getSupplier()->getName());
-        } else {
-            $item->setSupplier(null);
-            $item->setSupplierName('');
-        }
 
         // set order unit
         if ($product->getOrderUnit()) {
@@ -520,6 +517,24 @@ class ItemManager
         $item->setTax(0);
 
         return $product;
+    }
+
+    /**
+     * Set supplier of an item
+     *
+     * @param $item
+     * @param $product
+     */
+    protected function setItemSupplier($item, $product)
+    {
+        // get products supplier
+        if ($product->getSupplier()) {
+            $item->setSupplier($product->getSupplier());
+            $item->setSupplierName($product->getSupplier()->getName());
+        } else {
+            $item->setSupplier(null);
+            $item->setSupplierName('');
+        }
     }
 
     /**
