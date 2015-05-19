@@ -55,13 +55,13 @@ class ItemPriceCalculator
                 $priceValue = $specialPrice->getPrice();
             } else {
                 $price = $this->priceManager->getBulkPriceForCurrency($product, $item->getCalcQuantity(), $currency);
+                // no price set - return 0
+                if ($price === null) {
+                    return 0;
+                }
                 $priceValue = $price->getPrice();
             }
 
-            // no price set - return 0
-            if ($priceValue === null) {
-                return 0;
-            }
         } else {
             $priceValue = $item->getPrice();
         }
@@ -143,15 +143,26 @@ class ItemPriceCalculator
     {
         $currency = $this->getCurrency($currency);
 
+        // get bulk price
         if ($useProductPrice) {
             $product = $item->getCalcProduct();
-            $price = $this->priceManager->getBulkPriceForCurrency($product, $item->getCalcQuantity(), $currency);
-            $price = $price->getPrice();
+            $specialPrice = $this->priceManager->getSpecialPriceForCurrency($product, $currency);
+            if (!empty($specialPrice)) {
+                $priceValue = $specialPrice->getPrice();
+            } else {
+                $price = $this->priceManager->getBulkPriceForCurrency($product, $item->getCalcQuantity(), $currency);
+                // no price set - return 0
+                if ($price === null) {
+                    return 0;
+                }
+                $priceValue = $price->getPrice();
+            }
+
         } else {
-            $price = $item->getPrice();
+            $priceValue = $item->getPrice();
         }
 
-        return $price;
+        return $priceValue;
     }
 
     /**
