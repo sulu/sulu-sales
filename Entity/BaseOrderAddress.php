@@ -641,4 +641,73 @@ abstract class BaseOrderAddress implements OrderAddressInterface
     {
         return $this->note;
     }
+
+    /**
+     * Copies address data from one order-address-interface to another
+     *
+     * @param OrderAddressInterface $from
+     * @param OrderAddressInterface $to
+     */
+    public function copyValuesFromInterface(OrderAddressInterface $from, OrderAddressInterface $to)
+    {
+        // account
+        $to->setAccountName($from->getAccountName());
+        $to->setUid($from->getUid());
+        // contact
+        $to->setTitle($from->getTitle());
+        $to->setSalutation($from->getSalutation());
+        $to->setFirstName($from->getFirstName());
+        $to->setLastName($from->getLastName());
+        $to->setEmail($from->getEmail());
+        $to->setPhone($from->getPhone());
+        $to->setPhoneMobile($from->getPhoneMobile());
+        // address
+        $to->setStreet($from->getStreet());
+        $to->setNumber($from->getNumber());
+        $to->setAddition($from->getAddition());
+        $to->setZip($from->getZip());
+        $to->setCity($from->getCity());
+        $to->setState($from->getState());
+        $to->setCountry($from->getCountry());
+        $to->setContactAddress($from->getContactAddress());
+        $to->setNote($from->getNote());
+        // postbox
+        $to->setPostboxCity($from->getPostboxCity());
+        $to->setPostboxNumber($from->getPostboxNumber());
+        $to->setPostboxPostcode($from->getPostboxPostcode());
+    }
+
+    /**
+     * Converts a BaseOrderAddress
+     */
+    public function toArray()
+    {
+        return array(
+            // account
+            'accountName' => $this->getAccountName(),
+            'uid' => $this->getUid(),
+            // contact
+            'title' => $this->getTitle(),
+            'salutation' => $this->getSalutation(),
+            'firstName' => $this->getFirstName(),
+            'lastName' => $this->getLastName(),
+            'email' => $this->getEmail(),
+            'phone' => $this->getPhone(),
+            'phoneMobile' => $this->getPhoneMobile(),
+            // address
+            'street' => $this->getStreet(),
+            'number' => $this->getNumber(),
+            'addition' => $this->getAddition(),
+            'zip' => $this->getZip(),
+            'city' => $this->getCity(),
+            'state' => $this->getState(),
+            'country' => $this->getCountry(),
+            'note' => $this->getNote(),
+            'contactAddress' => $this->getContactAddress(),
+            // postbox
+            'postboxCity' => $this->getPostboxCity(),
+            'postboxNumber' => $this->getPostboxNumber(),
+            'postboxPostcode' => $this->getPostboxPostcode(),
+        );
+    }
 }

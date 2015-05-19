@@ -37,10 +37,13 @@ class OrderAddressManager
     }
 
     /**
+     * Sets an order address based on given data
+     *
      * @param OrderAddress $orderAddress
      * @param $addressData
      * @param Contact $contact
      * @param Account|null $account
+     *
      * @throws OrderDependencyNotFoundException
      */
     public function setOrderAddress($orderAddress, $addressData, $contact = null, $account = null)
@@ -75,12 +78,16 @@ class OrderAddressManager
     }
 
     /**
+     *
+     *
      * @param int $addressId
      * @param null|Contact $contact
      * @param null|Account $account
      * @param null|OrderAddress $orderAddress
-     * @return OrderAddress
+     *
      * @throws EntityNotFoundException
+     *
+     * @return OrderAddress
      */
     public function getOrderAddressByContactAddressId(
         $addressId,
@@ -103,6 +110,7 @@ class OrderAddressManager
      * @param null|Contact $contact
      * @param null|Account $account
      * @param null|OrderAddress $orderAddress
+     *
      * @return OrderAddress
      */
     public function getOrderAddressByContactAddress(
@@ -151,9 +159,10 @@ class OrderAddressManager
     }
 
     /**
-     * copies address data to order address
+     * Copies address data to order address
+     *
      * @param OrderAddress $orderAddress
-     * @param $addressData
+     * @param array $addressData
      */
     private function setAddressDataForOrder(&$orderAddress, $addressData)
     {
