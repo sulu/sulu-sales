@@ -31,6 +31,52 @@ class ItemPriceCalculator
     }
 
     /**
+     * Returns the valid product price for item
+     *
+     * @param object $item
+     * @param object $currency
+     *
+     * @return int
+     */
+    private function getValidProductPriceForItem($item, $currency)
+    {
+        $product = $item->getCalcProduct();
+        $specialPriceValue = null;
+        $bulkPriceValue = null;
+
+        //get special price
+        $specialPrice = $this->priceManager->getSpecialPriceForCurrency($product, $currency);
+        if ($specialPrice) {
+            $specialPriceValue = $specialPrice->getPrice();
+        }
+
+        //get bulk price
+        $bulkPrice = $this->priceManager->getBulkPriceForCurrency($product, $item->getCalcQuantity(), $currency);
+        if ($bulkPrice) {
+            $bulkPriceValue = $bulkPrice->getPrice();
+        }
+
+        //take the smallest
+        if(!empty($specialPriceValue) && !empty($bulkPriceValue)) {
+            $priceValue = $specialPriceValue;
+            if ($specialPriceValue > $bulkPriceValue) {
+                $priceValue = $bulkPriceValue;
+            }
+        } else if (!empty($specialPriceValue)) {
+            $priceValue = $specialPriceValue;
+        } else {
+            $priceValue = $bulkPriceValue;
+        }
+
+        // no price set - return 0
+        if (empty($priceValue)) {
+            return 0;
+        }
+
+        return $priceValue;
+    }
+
+    /**
      * Calculates the overall total price of an item
      *
      * @param CalculableBulkPriceItemInterface $item
@@ -49,41 +95,7 @@ class ItemPriceCalculator
 
         // get bulk price
         if ($useProductsPrice) {
-            $product = $item->getCalcProduct();
-
-            //get special price
-            $specialPrice = $this->priceManager->getSpecialPriceForCurrency($product, $currency);
-            if (is_object($specialPrice)) {
-                $specialPriceValue = $specialPrice->getPrice();
-            } else {
-                $specialPriceValue = null;
-            }
-
-            //get bulk price
-            $bulkPrice = $this->priceManager->getBulkPriceForCurrency($product, $item->getCalcQuantity(), $currency);
-            if (is_object($bulkPrice)) {
-                $bulkPriceValue = $bulkPrice->getPrice();
-            } else {
-                $bulkPriceValue = null;
-            }
-
-            //take the smallest
-            if(!empty($specialPriceValue) && !empty($bulkPriceValue)) {
-                if ($specialPriceValue > $bulkPriceValue) {
-                    $priceValue = $bulkPriceValue;
-                } else {
-                    $priceValue = $specialPriceValue;
-                }
-            } else if (!empty($specialPriceValue) && empty($bulkPriceValue)) {
-                $priceValue = $specialPriceValue;
-            } else if (empty($specialPriceValue) && !empty($bulkPriceValue)) {
-                $priceValue = $bulkPriceValue;
-            }
-
-            // no price set - return 0
-            if (empty($priceValue)) {
-                return 0;
-            }
+            $priceValue = $this->getValidProductPriceForItem($item, $currency);
         } else {
             $priceValue = $item->getPrice();
         }
@@ -166,41 +178,7 @@ class ItemPriceCalculator
         $currency = $this->getCurrency($currency);
 
         if ($useProductPrice) {
-            $product = $item->getCalcProduct();
-
-            //get special price
-            $specialPrice = $this->priceManager->getSpecialPriceForCurrency($product, $currency);
-            if (is_object($specialPrice)) {
-                $specialPriceValue = $specialPrice->getPrice();
-            } else {
-                $specialPriceValue = null;
-            }
-
-            //get bulk price
-            $bulkPrice = $this->priceManager->getBulkPriceForCurrency($product, $item->getCalcQuantity(), $currency);
-            if (is_object($bulkPrice)) {
-                $bulkPriceValue = $bulkPrice->getPrice();
-            } else {
-                $bulkPriceValue = null;
-            }
-
-            //take the smallest
-            if(!empty($specialPriceValue) && !empty($bulkPriceValue)) {
-                if ($specialPriceValue > $bulkPriceValue) {
-                    $priceValue = $bulkPriceValue;
-                } else {
-                    $priceValue = $specialPriceValue;
-                }
-            } else if (!empty($specialPriceValue) && empty($bulkPriceValue)) {
-                $priceValue = $specialPriceValue;
-            } else if (empty($specialPriceValue) && !empty($bulkPriceValue)) {
-                $priceValue = $bulkPriceValue;
-            }
-
-            // no price set - return 0
-            if (empty($priceValue)) {
-                return 0;
-            }
+            $priceValue = $this->getValidProductPriceForItem($item, $currency);
          } else {
             $priceValue = $item->getPrice();
         }
