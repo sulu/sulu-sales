@@ -34,7 +34,7 @@ class ItemPriceCalculator
      * Returns the valid product price for item
      *
      * @param object $item
-     * @param object $currency
+     * @param string $currency
      *
      * @return int
      */
