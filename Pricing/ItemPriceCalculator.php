@@ -50,18 +50,40 @@ class ItemPriceCalculator
         // get bulk price
         if ($useProductsPrice) {
             $product = $item->getCalcProduct();
+
+            //get special price
             $specialPrice = $this->priceManager->getSpecialPriceForCurrency($product, $currency);
-            if (!empty($specialPrice)) {
-                $priceValue = $specialPrice->getPrice();
+            if (is_object($specialPrice)) {
+                $specialPriceValue = $specialPrice->getPrice();
             } else {
-                $price = $this->priceManager->getBulkPriceForCurrency($product, $item->getCalcQuantity(), $currency);
-                // no price set - return 0
-                if ($price === null) {
-                    return 0;
-                }
-                $priceValue = $price->getPrice();
+                $specialPriceValue = null;
             }
 
+            //get bulk price
+            $bulkPrice = $this->priceManager->getBulkPriceForCurrency($product, $item->getCalcQuantity(), $currency);
+            if (is_object($bulkPrice)) {
+                $bulkPriceValue = $bulkPrice->getPrice();
+            } else {
+                $bulkPriceValue = null;
+            }
+
+            //take the smallest
+            if(!empty($specialPriceValue) && !empty($bulkPriceValue)) {
+                if ($specialPriceValue > $bulkPriceValue) {
+                    $priceValue = $bulkPriceValue;
+                } else {
+                    $priceValue = $specialPriceValue;
+                }
+            } else if (!empty($specialPriceValue) && empty($bulkPriceValue)) {
+                $priceValue = $specialPriceValue;
+            } else if (empty($specialPriceValue) && !empty($bulkPriceValue)) {
+                $priceValue = $bulkPriceValue;
+            }
+
+            // no price set - return 0
+            if (empty($priceValue)) {
+                return 0;
+            }
         } else {
             $priceValue = $item->getPrice();
         }
@@ -143,22 +165,43 @@ class ItemPriceCalculator
     {
         $currency = $this->getCurrency($currency);
 
-        // get bulk price
         if ($useProductPrice) {
             $product = $item->getCalcProduct();
+
+            //get special price
             $specialPrice = $this->priceManager->getSpecialPriceForCurrency($product, $currency);
-            if (!empty($specialPrice)) {
-                $priceValue = $specialPrice->getPrice();
+            if (is_object($specialPrice)) {
+                $specialPriceValue = $specialPrice->getPrice();
             } else {
-                $price = $this->priceManager->getBulkPriceForCurrency($product, $item->getCalcQuantity(), $currency);
-                // no price set - return 0
-                if ($price === null) {
-                    return 0;
-                }
-                $priceValue = $price->getPrice();
+                $specialPriceValue = null;
             }
 
-        } else {
+            //get bulk price
+            $bulkPrice = $this->priceManager->getBulkPriceForCurrency($product, $item->getCalcQuantity(), $currency);
+            if (is_object($bulkPrice)) {
+                $bulkPriceValue = $bulkPrice->getPrice();
+            } else {
+                $bulkPriceValue = null;
+            }
+
+            //take the smallest
+            if(!empty($specialPriceValue) && !empty($bulkPriceValue)) {
+                if ($specialPriceValue > $bulkPriceValue) {
+                    $priceValue = $bulkPriceValue;
+                } else {
+                    $priceValue = $specialPriceValue;
+                }
+            } else if (!empty($specialPriceValue) && empty($bulkPriceValue)) {
+                $priceValue = $specialPriceValue;
+            } else if (empty($specialPriceValue) && !empty($bulkPriceValue)) {
+                $priceValue = $bulkPriceValue;
+            }
+
+            // no price set - return 0
+            if (empty($priceValue)) {
+                return 0;
+            }
+         } else {
             $priceValue = $item->getPrice();
         }
 
