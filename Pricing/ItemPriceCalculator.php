@@ -62,7 +62,7 @@ class ItemPriceCalculator
             if ($specialPriceValue > $bulkPriceValue) {
                 $priceValue = $bulkPriceValue;
             }
-        } else if (!empty($specialPriceValue)) {
+        } elseif (!empty($specialPriceValue)) {
             $priceValue = $specialPriceValue;
         } else {
             $priceValue = $bulkPriceValue;
@@ -93,7 +93,6 @@ class ItemPriceCalculator
         // validate item
         $this->validateItem($item);
 
-        // get bulk price
         if ($useProductsPrice) {
             $priceValue = $this->getValidProductPriceForItem($item, $currency);
         } else {
