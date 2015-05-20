@@ -16,7 +16,7 @@ use Sulu\Bundle\Sales\CoreBundle\Pricing\Exceptions\PriceCalculationException;
 /**
  * Calculate Price of an Order
  */
-class ItemPriceCalculator 
+class ItemPriceCalculator
 {
     protected $priceManager;
     protected $defaultLocale;
@@ -28,6 +28,52 @@ class ItemPriceCalculator
     {
         $this->priceManager = $priceManager;
         $this->defaultLocale = $defaultLocale;
+    }
+
+    /**
+     * Returns the valid product price for item
+     *
+     * @param object $item
+     * @param string $currency
+     *
+     * @return int
+     */
+    private function getValidProductPriceForItem($item, $currency)
+    {
+        $product = $item->getCalcProduct();
+        $specialPriceValue = null;
+        $bulkPriceValue = null;
+
+        //get special price
+        $specialPrice = $this->priceManager->getSpecialPriceForCurrency($product, $currency);
+        if ($specialPrice) {
+            $specialPriceValue = $specialPrice->getPrice();
+        }
+
+        //get bulk price
+        $bulkPrice = $this->priceManager->getBulkPriceForCurrency($product, $item->getCalcQuantity(), $currency);
+        if ($bulkPrice) {
+            $bulkPriceValue = $bulkPrice->getPrice();
+        }
+
+        //take the smallest
+        if(!empty($specialPriceValue) && !empty($bulkPriceValue)) {
+            $priceValue = $specialPriceValue;
+            if ($specialPriceValue > $bulkPriceValue) {
+                $priceValue = $bulkPriceValue;
+            }
+        } elseif (!empty($specialPriceValue)) {
+            $priceValue = $specialPriceValue;
+        } else {
+            $priceValue = $bulkPriceValue;
+        }
+
+        // no price set - return 0
+        if (empty($priceValue)) {
+            return 0;
+        }
+
+        return $priceValue;
     }
 
     /**
@@ -47,26 +93,18 @@ class ItemPriceCalculator
         // validate item
         $this->validateItem($item);
 
-        // get bulk price
         if ($useProductsPrice) {
-            $product = $item->getCalcProduct();
-            $price = $this->priceManager->getBulkPriceForCurrency($product, $item->getCalcQuantity(), $currency);
-
-            // no price set - return 0
-            if ($price === null) {
-                return 0;
-            }
-            $price = $price->getPrice();
+            $priceValue = $this->getValidProductPriceForItem($item, $currency);
         } else {
-            $price = $item->getPrice();
+            $priceValue = $item->getPrice();
         }
-        $this->validateNotNull('price', $price);
+        $this->validateNotNull('price', $priceValue);
 
-        if ($item->getPrice() && $item->getPrice() !== $price) {
-            $item->setPriceChange($item->getPrice(), $price);
+        if ($item->getPrice() && $item->getPrice() !== $priceValue) {
+            $item->setPriceChange($item->getPrice(), $priceValue);
         }
 
-        $itemPrice = $price * $item->getCalcQuantity();
+        $itemPrice = $priceValue * $item->getCalcQuantity();
 
         // calculate items discount
         $discount = ($itemPrice / 100) * $item->getCalcDiscount();
@@ -137,16 +175,14 @@ class ItemPriceCalculator
     public function getItemPrice($item, $currency, $useProductPrice = true)
     {
         $currency = $this->getCurrency($currency);
-        
+
         if ($useProductPrice) {
-            $product = $item->getCalcProduct();
-            $price = $this->priceManager->getBulkPriceForCurrency($product, $item->getCalcQuantity(), $currency);
-            $price = $price->getPrice();
-        } else {
-            $price = $item->getPrice();
+            $priceValue = $this->getValidProductPriceForItem($item, $currency);
+         } else {
+            $priceValue = $item->getPrice();
         }
-        
-        return $price;
+
+        return $priceValue;
     }
 
     /**
