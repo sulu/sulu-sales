@@ -19,14 +19,12 @@ class OrderControllerTest extends OrderTestBase
 {
     public function testGetById()
     {
-        $client = $this->createAuthenticatedClient();
+        $this->client->request('GET', '/api/orders/' . $this->data->order->getId());
+        $response = json_decode($this->client->getResponse()->getContent());
 
-        $client->request('GET', '/api/orders/' . $this->data->order->getId());
-        $response = json_decode($client->getResponse()->getContent());
-
-        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
         $this->assertEquals('1234', $response->number);
-        $this->assertEquals('EUR', $response->currency);
+        $this->assertEquals('EUR', $response->currencyCode);
         $this->assertEquals('abcd1234', $response->sessionId);
         $this->assertEquals('cost-centre', $response->costCentre);
         $this->assertEquals((new DateTime('2015-01-01'))->getTimestamp(), (new DateTime($response->desiredDeliveryDate))->getTimestamp());
@@ -38,7 +36,7 @@ class OrderControllerTest extends OrderTestBase
         $this->assertEquals('Created', $response->status->status);
         $this->assertEquals($this->data->orderStatus->getId(), $response->status->id);
         // contact
-        $this->assertEquals($this->data->contact->getId(), $response->contact->id);
+        $this->assertEquals($this->data->contact->getId(), $response->customerContact->id);
         // order Address delivery
         $this->assertEquals($this->data->orderAddressDelivery->getId(), $response->deliveryAddress->id);
         $this->assertEquals('John', $response->deliveryAddress->firstName);
@@ -115,10 +113,10 @@ class OrderControllerTest extends OrderTestBase
             '/api/orders/' . $this->data->order->getId(),
             array(
                 'orderNumber' => 'EvilNumber',
-                'contact' => array(
+                'customerContact' => array(
                     'id' =>  $this->data->contact->getId()
                 ),
-                'account' => array(
+                'customerAccount' => array(
                     'id' =>  $this->data->account->getId()
                 ),
                 'invoiceAddress' => array(
@@ -173,10 +171,10 @@ class OrderControllerTest extends OrderTestBase
         $data = array(
             'orderNumber' => 'NUMBER:0815',
             'supplierName' => $this->data->account->getName(),
-            'account' => array(
+            'customerAccount' => array(
                 'id' => $this->data->account->getId()
             ),
-            'contact' => array(
+            'customerContact' => array(
                 'id' => $this->data->contact->getId()
             ),
             'invoiceAddress' => array(
@@ -226,13 +224,13 @@ class OrderControllerTest extends OrderTestBase
         $data = array(
             'orderNumber' => 'NUMBER:0815',
             'supplierName' => $this->data->account->getName(),
-            'account' => array(
+            'customerAccount' => array(
                 'id' => $this->data->account->getId()
             ),
             'orderType' => array(
               'id' => $this->data->orderTypeManual->getId()
             ),
-            'contact' => array(
+            'customerContact' => array(
                 'id' => $this->data->contact->getId()
             ),
             'invoiceAddress' => array(

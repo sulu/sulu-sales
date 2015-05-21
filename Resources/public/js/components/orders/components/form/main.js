@@ -20,6 +20,12 @@ define([
 
     var form = '#order-form',
 
+        // TODO: default-currency needs to be passed from backend
+        // https://github.com/sulu-io/SuluSalesOrderBundle/issues/72
+        defaults = {
+            currencyCode : 'EUR'
+        },
+
         constants = {
             accountContactsUrl: '/admin/api/accounts/<%= id %>/contacts?flat=true',
             accountAddressesUrl: '/admin/api/accounts/<%= id %>/addresses',
@@ -584,6 +590,8 @@ define([
 
             // set if form is editable
             this.isEditable = this.orderStatusId <= OrderStatus.IN_CART;
+
+            this.options.data = this.sandbox.util.extend({}, defaults, this.options.data);
 
             // current id
             var id = this.options.data.id ? this.options.data.id : 'new';

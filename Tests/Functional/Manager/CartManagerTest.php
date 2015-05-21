@@ -36,7 +36,7 @@ class CartManagerTest extends OrderTestBase
         $cart = $this->getCartManager()->getUserCart($this->data->user);
 
         // $cart is an ApiOrder, so get entity first
-        $this->assertEquals($cart->getEntity(), $this->data->order);
+        $this->assertEquals($cart->getEntity()->getId(), $this->data->order->getId());
     }
 
     public function testGetCartBySessionId()

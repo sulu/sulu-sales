@@ -12,6 +12,7 @@ namespace Sulu\Bundle\Sales\OrderBundle\Tests;
 
 use Doctrine\ORM\EntityManager;
 use Sulu\Bundle\ContactBundle\Entity\Account;
+use Sulu\Bundle\ContactBundle\Entity\AccountInterface;
 use Sulu\Bundle\ContactBundle\Entity\Address;
 use Sulu\Bundle\ContactBundle\Entity\Contact;
 use Sulu\Bundle\Sales\CoreBundle\Item\ItemFactoryInterface;
@@ -39,6 +40,7 @@ class OrderTestBase extends SuluTestCase
         $this->em = $this->db('ORM')->getOm();
         $this->purgeDatabase();
         $this->setUpTestData();
+        $this->client = $this->createAuthenticatedClient();
         $this->em->flush();
     }
 
@@ -59,7 +61,7 @@ class OrderTestBase extends SuluTestCase
     /**
      * compares an order-address response with its origin entities
      */
-    protected function checkOrderAddress($orderAddress, Address $address, Contact $contact, Account $account = null) {
+    protected function checkOrderAddress($orderAddress, Address $address, Contact $contact, AccountInterface $account = null) {
         // contact
         $this->assertEquals($contact->getFirstName(), $orderAddress->firstName);
         $this->assertEquals($contact->getLastName(), $orderAddress->lastName);
