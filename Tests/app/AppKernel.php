@@ -10,11 +10,13 @@ class AppKernel extends SuluTestKernel
     {
         $bundles = parent::registerBundles();
         $extraBundles = array(
-            new \Sulu\Bundle\Sales\OrderBundle\SuluSalesOrderBundle(),
-            new \Sulu\Bundle\Sales\CoreBundle\SuluSalesCoreBundle(),
-            new \Sulu\Bundle\ProductBundle\SuluProductBundle(),
+            new Sulu\Bundle\Sales\OrderBundle\SuluSalesOrderBundle(),
+            new Sulu\Bundle\Sales\CoreBundle\SuluSalesCoreBundle(),
+            new Sulu\Bundle\ProductBundle\SuluProductBundle(),
+            new Sulu\Bundle\ContactExtensionBundle\SuluContactExtensionBundle(),
+
             // test mails
-            new \Symfony\Bundle\SwiftmailerBundle\SwiftmailerBundle(),
+            new Symfony\Bundle\SwiftmailerBundle\SwiftmailerBundle(),
             // test pdf
             new Knp\Bundle\SnappyBundle\KnpSnappyBundle(),
             new Massive\Bundle\PdfBundle\MassivePdfBundle(),
