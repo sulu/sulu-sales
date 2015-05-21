@@ -29,19 +29,22 @@ use Sulu\Bundle\ProductBundle\Entity\Status;
 use Sulu\Bundle\ProductBundle\Entity\StatusTranslation;
 use Sulu\Bundle\ProductBundle\Entity\Type;
 use Sulu\Bundle\ProductBundle\Entity\TypeTranslation;
-use Sulu\Bundle\Sales\CoreBundle\Entity\Item;
-use Sulu\Bundle\Sales\OrderBundle\Entity\Order;
 use Sulu\Bundle\Sales\CoreBundle\Entity\OrderAddress;
-use Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatus;
-use Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatusTranslation;
+use Sulu\Bundle\Sales\OrderBundle\Tests\OrderDataSetup;
+use Sulu\Bundle\Sales\ShippingBundle\DataFixtures\ORM\LoadShippingStatus;
 use Sulu\Bundle\Sales\ShippingBundle\Entity\Shipping;
 use Sulu\Bundle\Sales\ShippingBundle\Entity\ShippingItem;
 use Sulu\Bundle\Sales\ShippingBundle\Entity\ShippingStatus;
-use Sulu\Bundle\Sales\ShippingBundle\Entity\ShippingStatusTranslation;
 use Sulu\Bundle\TestBundle\Testing\SuluTestCase;
 
 class ShippingControllerTest extends SuluTestCase
 {
+
+    /**
+     * @var object
+     */
+    protected $data;
+
     /**
      * @var array
      */
@@ -58,71 +61,6 @@ class ShippingControllerTest extends SuluTestCase
     protected $statusCreated;
 
     /**
-     * @var ShippingStatus
-     */
-    protected $statusDeliverNote;
-
-    /**
-     * @var ShippingStatus
-     */
-    protected $statusShipped;
-
-    /**
-     * @var ShippingStatus
-     */
-    protected $statusCancled;
-
-    /**
-     * @var string
-     */
-    private $locale = 'en';
-
-    /**
-     * @var Account
-     */
-    private $account;
-
-    /**
-     * @var Address
-     */
-    private $address;
-
-    /**
-     * @var Address
-     */
-    private $address2;
-
-    /**
-     * @var Contact
-     */
-    private $contact;
-
-    /**
-     * @var Contact
-     */
-    private $contact2;
-
-    /**
-     * @var Order
-     */
-    private $order;
-
-    /**
-     * @var OrderAddress
-     */
-    private $orderAddressDelivery;
-
-    /**
-     * @var OrderAddress
-     */
-    private $orderAddressInvoice;
-
-    /**
-     * @var OrderStatus
-     */
-    private $orderStatus;
-
-    /**
      * @var TermsOfDelivery
      */
     private $termsOfDelivery;
@@ -131,31 +69,6 @@ class ShippingControllerTest extends SuluTestCase
      * @var TermsOfPayment
      */
     private $termsOfPayment;
-
-    /**
-     * @var OrderStatusTranslation
-     */
-    private $orderStatusTranslation;
-
-    /**
-     * @var Item
-     */
-    private $item;
-
-    /**
-     * @var Product
-     */
-    private $product;
-
-    /**
-     * @var ProductTranslation
-     */
-    private $productTranslation;
-
-    /**
-     * @var Phone
-     */
-    private $phone;
 
     /**
      * @var Shipping
@@ -189,226 +102,30 @@ class ShippingControllerTest extends SuluTestCase
         $this->setUpTestData();
         $this->em->flush();
     }
+    /**
+     * @return ItemFactoryInterface
+     */
+    protected function getItemFactory()
+    {
+        return $this->getContainer()->get('sulu_sales_core.item_factory');
+    }
 
     private function setUpTestData()
     {
-        // account
-        $this->account = new Account();
-        $this->account->setName('Company');
-        $this->account->setCreated(new DateTime());
-        $this->account->setChanged(new DateTime());
-        $this->account->setType(Account::TYPE_BASIC);
-        $this->account->setUid('uid-123');
-        $this->account->setDisabled(0);
+        // initialize order data
+        $this->data = new OrderDataSetup($this->em, $this->getItemFactory());
 
-        // country
-        $country = new Country();
-        $country->setName('Country');
-        $country->setCode('co');
-        // address type
-        $addressType = new AddressType();
-        $addressType->setName('Business');
-        // address
-        $this->address = new Address();
-        $this->address->setStreet('Sample-Street');
-        $this->address->setNumber('12');
-        $this->address->setAddition('Entrance 2');
-        $this->address->setCity('Sample-City');
-        $this->address->setState('State');
-        $this->address->setZip('12345');
-        $this->address->setCountry($country);
-        $this->address->setPostboxNumber('postboxNumber');
-        $this->address->setPostboxPostcode('postboxPostcode');
-        $this->address->setPostboxCity('postboxCity');
-        $this->address->setAddressType($addressType);
-        // address
-        $this->address2 = new Address();
-        $this->address2->setStreet('Street');
-        $this->address2->setNumber('2');
-        $this->address2->setCity('Utopia');
-        $this->address2->setZip('1');
-        $this->address2->setCountry($country);
-        $this->address2->setAddressType($addressType);
+        // load order-statuses
+        $statusFixtures = new LoadShippingStatus();
+        $shippingStatuses = $statusFixtures->load($this->em);
+        $this->statusCreated = $shippingStatuses[ShippingStatus::STATUS_CREATED];
 
-        // phone
-        $phoneType = new PhoneType();
-        $phoneType->setName('Business');
-        $this->phone = new Phone();
-        $this->phone->setPhone('+43 123 / 456 789');
-        $this->phone->setPhoneType($phoneType);
-
-        // title
-        $title = new ContactTitle();
-        $title->setTitle('Dr');
-        // contact
-        $this->contact = new Contact();
-        $this->contact->setFirstName('John');
-        $this->contact->setLastName('Doe');
-        $this->contact->setTitle($title);
-        $this->contact->setCreated(new DateTime());
-        $this->contact->setChanged(new DateTime());
-        // contact
-        $this->contact2 = new Contact();
-        $this->contact2->setFirstName('Johanna');
-        $this->contact2->setLastName('Dole');
-        $this->contact2->setCreated(new DateTime());
-        $this->contact2->setChanged(new DateTime());
-
-        // order status
-        $this->orderStatus = new OrderStatus();
-        $this->orderStatus->setId(1);
-        $this->orderStatusTranslation = new OrderStatusTranslation();
-        $this->orderStatusTranslation->setName('Created');
-        $this->orderStatusTranslation->setLocale($this->locale);
-        $this->orderStatusTranslation->setStatus($this->orderStatus);
-
-        // order address
-        $this->orderAddressDelivery = new OrderAddress();
-        $this->orderAddressDelivery->setFirstName($this->contact->getFirstName());
-        $this->orderAddressDelivery->setLastName($this->contact->getLastName());
-        $this->orderAddressDelivery->setTitle($this->contact->getTitle()->getTitle());
-        $this->orderAddressDelivery->setStreet($this->address->getStreet());
-        $this->orderAddressDelivery->setNumber($this->address->getNumber());
-        $this->orderAddressDelivery->setAddition($this->address->getAddition());
-        $this->orderAddressDelivery->setCity($this->address->getCity());
-        $this->orderAddressDelivery->setZip($this->address->getZip());
-        $this->orderAddressDelivery->setState($this->address->getState());
-        $this->orderAddressDelivery->setCountry($this->address->getCountry()->getName());
-        $this->orderAddressDelivery->setPostboxNumber($this->address->getPostboxNumber());
-        $this->orderAddressDelivery->setPostboxPostcode($this->address->getPostboxPostcode());
-        $this->orderAddressDelivery->setPostboxCity($this->address->getPostboxCity());
-        $this->orderAddressDelivery->setAccountName($this->account->getName());
-        $this->orderAddressDelivery->setUid($this->account->getUid());
-        $this->orderAddressDelivery->setPhone($this->phone->getPhone());
-        $this->orderAddressDelivery->setPhoneMobile('+43 123 / 456');
-
-        // clone address for invoice
-        $this->orderAddressInvoice = clone $this->orderAddressDelivery;
-        $this->orderAddressInvoice = clone $this->orderAddressDelivery;
-
-        $this->termsOfDelivery = new TermsOfDelivery();
-        $this->termsOfDelivery->setTerms('10kg minimum');
-        $this->termsOfPayment = new TermsOfPayment();
-        $this->termsOfPayment->setTerms('10% off');
-
-        // order
-        $this->order = new Order();
-        $this->order->setNumber('1234');
-        $this->order->setCommission('commission');
-        $this->order->setCostCentre('cost-centre');
-        $this->order->setCustomerName($this->contact->getFullName());
-        $this->order->setCurrency('EUR');
-        $this->order->setTermsOfDelivery($this->termsOfDelivery);
-        $this->order->setTermsOfDeliveryContent($this->termsOfDelivery->getTerms());
-        $this->order->setTermsOfPayment($this->termsOfPayment);
-        $this->order->setTermsOfPaymentContent($this->termsOfPayment->getTerms());
-        $this->order->setCreated(new DateTime());
-        $this->order->setChanged(new DateTime());
-        $this->order->setDesiredDeliveryDate(new DateTime('2015-01-01'));
-        $this->order->setSessionId('abcd1234');
-        $this->order->setTaxfree(true);
-        $this->order->setBitmaskStatus($this->orderStatus->getId());
-        $this->order->setContact($this->contact);
-        $this->order->setAccount($this->account);
-        $this->order->setStatus($this->orderStatus);
-        $this->order->setDeliveryAddress($this->orderAddressDelivery);
-        $this->order->setInvoiceAddress($this->orderAddressInvoice);
-
-        $order2 = clone $this->order;
-        $order2->setNumber('12345');
-        $order2->setDeliveryAddress(null);
-        $order2->setInvoiceAddress(null);
-
-        // product type
-        $productType = new Type();
-        $productTypeTranslation = new TypeTranslation();
-        $productTypeTranslation->setLocale($this->locale);
-        $productTypeTranslation->setName('EnglishProductType-1');
-        $productTypeTranslation->setType($productType);
-        // product status
-        $productStatus = new Status();
-        $productStatusTranslation = new StatusTranslation();
-        $productStatusTranslation->setLocale($this->locale);
-        $productStatusTranslation->setName('EnglishProductStatus-1');
-        $productStatusTranslation->setStatus($productStatus);
-        // product
-        $this->product = new Product();
-        $this->product->setNumber('ProductNumber-1');
-        $this->product->setManufacturer('EnglishManufacturer-1');
-        $this->product->setType($productType);
-        $this->product->setStatus($productStatus);
-        $this->product->setCreated(new DateTime());
-        $this->product->setChanged(new DateTime());
-        // product translation
-        $this->productTranslation = new ProductTranslation();
-        $this->productTranslation->setProduct($this->product);
-        $this->productTranslation->setLocale($this->locale);
-        $this->productTranslation->setName('EnglishProductTranslationName-1');
-        $this->productTranslation->setShortDescription('EnglishProductShortDescription-1');
-        $this->productTranslation->setLongDescription('EnglishProductLongDescription-1');
-        $this->product->addTranslation($this->productTranslation);
-
-        // Item
-        $this->item = new Item();
-        $this->item->setName('Product1');
-        $this->item->setNumber('123');
-        $this->item->setQuantity(2);
-        $this->item->setQuantityUnit('Pcs');
-        $this->item->setUseProductsPrice(true);
-        $this->item->setTax(20);
-        $this->item->setPrice(125.99);
-        $this->item->setDiscount(10);
-        $this->item->setDescription('This is a description');
-        $this->item->setWeight(15.8);
-        $this->item->setWidth(5);
-        $this->item->setHeight(6);
-        $this->item->setLength(7);
-        $this->item->setSupplierName('Supplier');
-        $this->item->setCreated(new DateTime());
-        $this->item->setChanged(new DateTime());
-        $this->item->setProduct($this->product);
-
-        $this->order->addItem($this->item);
-
-        // shipping
-        $metadata = $this->em->getClassMetaData(get_class(new ShippingStatus()));
-        $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_NONE);
-
-        // created
-        $this->statusCreated = new ShippingStatus();
-        $this->statusCreated->setId(ShippingStatus::STATUS_CREATED);
-        $this->createStatusTranslation($this->statusCreated, 'Created', 'en');
-        $this->createStatusTranslation($this->statusCreated, 'Erfasst', 'de');
-
-        // delivery note
-        $this->statusDeliverNote = new ShippingStatus();
-        $this->statusDeliverNote->setId(ShippingStatus::STATUS_DELIVERY_NOTE);
-        $this->createStatusTranslation($this->statusDeliverNote, 'Delivery note created', 'en');
-        $this->createStatusTranslation($this->statusDeliverNote, 'Lieferschein erstellt', 'de');
-
-        // shipped
-        $this->statusShipped = new ShippingStatus();
-        $this->statusShipped->setId(ShippingStatus::STATUS_SHIPPED);
-        $this->createStatusTranslation($this->statusShipped, 'Shipped', 'en');
-        $this->createStatusTranslation($this->statusShipped, 'Versandt', 'de');
-
-        // canceled
-        $this->statusCancled = new ShippingStatus();
-        $this->statusCancled->setId(ShippingStatus::STATUS_CANCELED);
-        $this->createStatusTranslation($this->statusCancled, 'Canceled', 'en');
-        $this->createStatusTranslation($this->statusCancled, 'Storniert', 'de');
-
-        $this->em->persist($this->statusCancled);
-        $this->em->persist($this->statusShipped);
-        $this->em->persist($this->statusDeliverNote);
-        $this->em->persist($this->statusCreated);
-
-        $this->shippingAddress = clone $this->orderAddressDelivery;
+        $this->shippingAddress = clone $this->data->orderAddressDelivery;
         $this->shipping = new Shipping();
         $this->shipping->setNumber('00001');
         $this->shipping->setShippingNumber('432');
         $this->shipping->setStatus($this->statusCreated);
-        $this->shipping->setOrder($this->order);
+        $this->shipping->setOrder($this->data->order);
         $this->shipping->setChanged(new DateTime());
         $this->shipping->setCreated(new DateTime());
         $this->shipping->setCommission('shipping-commission');
@@ -419,8 +136,8 @@ class ShippingControllerTest extends SuluTestCase
         $this->shipping->setLength(103);
         $this->shipping->setWeight(10);
         $this->shipping->setNote('simple shipping note');
-        $this->shipping->setTermsOfDeliveryContent($this->termsOfDelivery->getTerms());
-        $this->shipping->setTermsOfPaymentContent($this->termsOfPayment->getTerms());
+        $this->shipping->setTermsOfDeliveryContent($this->data->termsOfDelivery->getTerms());
+        $this->shipping->setTermsOfPaymentContent($this->data->termsOfPayment->getTerms());
         $this->shipping->setTrackingId('abcd1234');
         $this->shipping->setTrackingUrl('http://www.tracking.url?token=abcd1234');
         $this->shipping->setBitmaskStatus($this->statusCreated->getId());
@@ -434,53 +151,17 @@ class ShippingControllerTest extends SuluTestCase
 
         $this->shippingItem = new ShippingItem();
         $this->shippingItem->setShipping($this->shipping);
-        $this->shippingItem->setItem($this->item);
+        $this->shippingItem->setItem($this->data->item);
         $this->shippingItem->setQuantity(1);
         $this->shippingItem->setNote('shipping-item-note');
         $this->shipping->addShippingItem($this->shippingItem);
 
         // persist
-        $this->em->persist($this->account);
-        $this->em->persist($title);
-        $this->em->persist($country);
-        $this->em->persist($this->termsOfPayment);
-        $this->em->persist($this->termsOfDelivery);
-        $this->em->persist($country);
-        $this->em->persist($addressType);
-        $this->em->persist($this->address);
-        $this->em->persist($this->address2);
-        $this->em->persist($phoneType);
-        $this->em->persist($this->phone);
-        $this->em->persist($this->contact);
-        $this->em->persist($this->contact2);
-        $this->em->persist($this->order);
-        $this->em->persist($order2);
-        $this->em->persist($this->orderStatus);
-        $this->em->persist($this->orderAddressDelivery);
-        $this->em->persist($this->orderAddressInvoice);
-        $this->em->persist($this->orderStatusTranslation);
-        $this->em->persist($this->item);
-        $this->em->persist($this->product);
-        $this->em->persist($this->productTranslation);
-        $this->em->persist($productType);
-        $this->em->persist($productTypeTranslation);
-        $this->em->persist($productStatus);
-        $this->em->persist($productStatusTranslation);
         $this->em->persist($this->shipping);
         $this->em->persist($this->shipping2);
         $this->em->persist($this->shippingItem);
         $this->em->persist($this->shippingAddress);
         $this->em->persist($this->shippingAddress2);
-    }
-
-    private function createStatusTranslation($status, $translation, $locale)
-    {
-        $statusTranslation = new ShippingStatusTranslation();
-        $statusTranslation->setName($translation);
-        $statusTranslation->setLocale($locale);
-        $statusTranslation->setStatus($status);
-        $this->em->persist($statusTranslation);
-        return $statusTranslation;
     }
 
     public function testGetById()
@@ -510,7 +191,7 @@ class ShippingControllerTest extends SuluTestCase
         $this->assertEquals($this->shipping->getStatus()->getId(), $response->status->id);
 
         // order
-        $this->assertEquals($this->order->getId(), $response->order->id);
+        $this->assertEquals($this->data->order->getId(), $response->order->id);
 
         // shipping item
         $this->assertEquals(1, count($response->items));
@@ -540,8 +221,8 @@ class ShippingControllerTest extends SuluTestCase
         $this->assertEquals('+43 123 / 456', $response->deliveryAddress->phoneMobile);
 
         // terms
-        $this->assertEquals($this->termsOfDelivery->getTerms(), $response->termsOfDeliveryContent);
-        $this->assertEquals($this->termsOfPayment->getTerms(), $response->termsOfPaymentContent);
+        $this->assertEquals($this->data->termsOfDelivery->getTerms(), $response->termsOfDeliveryContent);
+        $this->assertEquals($this->data->termsOfPayment->getTerms(), $response->termsOfPaymentContent);
 
     }
 
@@ -584,7 +265,7 @@ class ShippingControllerTest extends SuluTestCase
         $data = array(
             'shippingNumber' => 'sh01',
             'order' => array(
-                'id' => $this->order->getId()
+                'id' => $this->data->order->getId()
             ),
             'deliveryAddress' => array(
                 'firstName' => 'Jane',
@@ -616,7 +297,7 @@ class ShippingControllerTest extends SuluTestCase
         $response = json_decode($client->getResponse()->getContent());
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $this->assertEquals('sh01', $response->shippingNumber);
-        $this->assertEquals($this->order->getId(), $response->order->id);
+        $this->assertEquals($this->data->order->getId(), $response->order->id);
 
         $this->compareDataWithAddress($data['deliveryAddress'], $response->deliveryAddress);
     }
@@ -656,10 +337,10 @@ class ShippingControllerTest extends SuluTestCase
                 'postboxPostcode' => 'postboxPostcode'
             ),
             'order' => array(
-                'id' => $this->order->getId()
+                'id' => $this->data->order->getId()
             ),
-            'termsOfDeliveryContent' => $this->termsOfDelivery->getTerms(),
-            'termsOfPaymentContent' => $this->termsOfPayment->getTerms(),
+            'termsOfDeliveryContent' => $this->data->termsOfDelivery->getTerms(),
+            'termsOfPaymentContent' => $this->data->termsOfPayment->getTerms(),
             'items' => array()
         );
 
