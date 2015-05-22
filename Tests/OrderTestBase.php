@@ -49,15 +49,6 @@ class OrderTestBase extends SuluTestCase
         $this->data = new OrderDataSetup($this->em, $this->getItemFactory());
     }
 
-    protected function createStatusTranslation(EntityManager $manager, $status, $translation, $locale) {
-        $statusTranslation = new OrderStatusTranslation();
-        $statusTranslation->setName($translation);
-        $statusTranslation->setLocale($locale);
-        $statusTranslation->setStatus($status);
-        $manager->persist($statusTranslation);
-        return $statusTranslation;
-    }
-
     /**
      * compares an order-address response with its origin entities
      */
