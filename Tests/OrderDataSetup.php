@@ -405,10 +405,11 @@ class OrderDataSetup
         $this->item->setWidth(5);
         $this->item->setHeight(6);
         $this->item->setLength(7);
-        $this->item->setSupplierName('Supplier');
         $this->item->setCreated(new DateTime());
         $this->item->setChanged(new DateTime());
         $this->item->setProduct($this->product);
+        $this->item->setSupplier($this->account);
+        $this->item->setSupplierName($this->account->getName());
 
         $orderTypeTranslationManual = new OrderTypeTranslation();
         $orderTypeTranslationManual->setLocale('en');
