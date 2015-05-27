@@ -26,10 +26,10 @@ class Configuration implements ConfigurationInterface
             ->arrayNode('pdf_templates')
             ->addDefaultsIfNotSet()
                 ->children()
-                ->scalarNode('base')->defaultValue('SuluSalesCoreBundle:Default:pdf-base.html.twig')->end()
-                ->scalarNode('header')->defaultValue('SuluSalesCoreBundle:Default:pdf-base-header.html.twig')->end()
-                ->scalarNode('footer')->defaultValue('SuluSalesCoreBundle:Default:pdf-base-footer.html.twig')->end()
-                ->scalarNode('macros')->defaultValue('SuluSalesCoreBundle:Default:pdf-macros.html.twig')->end()
+                ->scalarNode('base')->defaultValue('SuluSalesCoreBundle:Pdf:pdf-base.html.twig')->end()
+                ->scalarNode('header')->defaultValue('SuluSalesCoreBundle:Pdf:pdf-base-header.html.twig')->end()
+                ->scalarNode('footer')->defaultValue('SuluSalesCoreBundle:Pdf:pdf-base-footer.html.twig')->end()
+                ->scalarNode('macros')->defaultValue('SuluSalesCoreBundle:Pdf:pdf-macros.html.twig')->end()
             ->end()
         ->end();
 
