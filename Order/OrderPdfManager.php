@@ -89,7 +89,7 @@ class OrderPdfManager
             'orderApiEntity' => $apiOrder,
             'itemApiEntities' => $apiOrder->getItems(),
             'templateBasePath' => $this->templateBasePath,
-            'templateMacrosPath' => $this->templateBasePath,
+            'templateMacrosPath' => $this->templateMacrosPath,
         );
 
         $header = $this->pdfManager->renderTemplate(
