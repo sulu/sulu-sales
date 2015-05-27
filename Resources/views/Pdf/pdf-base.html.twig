@@ -14,7 +14,7 @@
                 <div class="padding-right">
                     <div class="grid grid--full">
                         <div class="grid__item three-quarters header-slogan">
-                            COMPANY SLOGAN
+                            {% block company_slogan %}{% endblock %}
                         </div>
                         <div class="grid__item one-quarter">
                         </div>
@@ -159,32 +159,17 @@
                                     <div class="grid__item three-quarters">
                                         Das ist ein Zahlungshinweis
                                     </div>
-                                    <div class="grid__item one-quarter">
-                                        Bonus:
-                                    </div>
-                                    <div class="grid__item three-quarters">
-                                        Das ist ein Bonushinweis
-                                    </div>
-                                    <div class="grid__item one-quarter">
-                                        EKB:
-                                    </div>
-                                    <div class="grid__item three-quarters">
-                                        Das ist ein EKB hinweis
-                                    </div>
                                 </div>
                             </div>
                         </div>
                         <div class="annotation">
                             <span class="bold">Auf Lieferschein und Rechnung bitte Bestellnummer, Kommission und Kostenstelle anführen.</span>
-                            <p>
-                                Footer Text
-                            </p>
                         </div>
                         <p class="greetings">
                             Mit freundlichen Grüßen
                         </p>
                         <p>
-                            Das Team
+                            {% block sender %}{% endblock %}
                         </p>
                         <span class="small">(elektronischer Versand daher nicht pers. unterfertigt)</span>
                     </div>
