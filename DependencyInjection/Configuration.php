@@ -7,15 +7,11 @@
  * This source file is subject to the MIT license that is bundled
  * with this source code in the file LICENSE.
  */
-
 namespace Sulu\Bundle\Sales\OrderBundle\DependencyInjection;
 
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 
-/**
- * This is the class that validates and merges configuration from your app/config files
- */
 class Configuration implements ConfigurationInterface
 {
     /**
@@ -24,11 +20,18 @@ class Configuration implements ConfigurationInterface
     public function getConfigTreeBuilder()
     {
         $treeBuilder = new TreeBuilder();
-        $rootNode = $treeBuilder->root('sulu_sales_order');
 
-        // Here you should define the parameters that are allowed to
-        // configure your bundle. See the documentation linked above for
-        // more information on that topic.
+        $treeBuilder->root('sulu_sales_order')
+            ->children()
+            ->arrayNode('pdf_templates')
+            ->addDefaultsIfNotSet()
+                ->children()
+                ->scalarNode('base')->defaultValue('SuluSalesCoreBundle:Pdf:pdf-base.html.twig')->end()
+                ->scalarNode('header')->defaultValue('SuluSalesCoreBundle:Pdf:pdf-base-header.html.twig')->end()
+                ->scalarNode('footer')->defaultValue('SuluSalesCoreBundle:Pdf:pdf-base-footer.html.twig')->end()
+                ->scalarNode('macros')->defaultValue('SuluSalesCoreBundle:Pdf:pdf-macros.html.twig')->end()
+            ->end()
+        ->end();
 
         return $treeBuilder;
     }
