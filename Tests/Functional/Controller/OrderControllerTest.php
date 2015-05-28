@@ -62,7 +62,7 @@ class OrderControllerTest extends OrderTestBase
 
         // TODO: extend item tests
         // items
-        $this->assertEquals(1, count($response->items));
+        $this->assertEquals(2, count($response->items));
         $item = $response->items[0];
         $this->assertEquals($this->data->item->getId(), $item->id);
         // item product
