@@ -11,12 +11,10 @@
 namespace Sulu\Bundle\Sales\OrderBundle\Tests;
 
 use Doctrine\ORM\EntityManager;
-use Sulu\Bundle\ContactBundle\Entity\Account;
 use Sulu\Bundle\ContactBundle\Entity\AccountInterface;
 use Sulu\Bundle\ContactBundle\Entity\Address;
 use Sulu\Bundle\ContactBundle\Entity\Contact;
 use Sulu\Bundle\Sales\CoreBundle\Item\ItemFactoryInterface;
-use Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatusTranslation;
 use Sulu\Bundle\TestBundle\Testing\SuluTestCase;
 
 class OrderTestBase extends SuluTestCase

@@ -64,6 +64,11 @@ class OrderDataSetup
      * @var Account
      */
     public $account;
+
+    /**
+     * @var Account
+     */
+    public $account2;
     /**
      * @var Address
      */
@@ -108,6 +113,10 @@ class OrderDataSetup
      * @var Item
      */
     public $item;
+    /**
+     * @var Item
+     */
+    public $item2;
     /**
      * @var Product
      */
@@ -195,6 +204,9 @@ class OrderDataSetup
         $this->account->setType(Account::TYPE_BASIC);
         $this->account->setUid('uid-123');
         $this->account->setDisabled(0);
+        $this->account->setMainEmail('test@test.com');
+
+        $this->account2 = clone($this->account);
 
         // country
         $country = new Country();
@@ -323,6 +335,7 @@ class OrderDataSetup
         $order2->setDeliveryAddress(null);
         $order2->setInvoiceAddress(null);
 
+
         // product order unit
         $orderUnit = new Unit();
         $orderUnit->setId(1);
@@ -411,6 +424,9 @@ class OrderDataSetup
         $this->item->setSupplier($this->account);
         $this->item->setSupplierName($this->account->getName());
 
+        $this->item2 = clone($this->item);
+        $this->item2->setSupplier($this->account2);
+
         $orderTypeTranslationManual = new OrderTypeTranslation();
         $orderTypeTranslationManual->setLocale('en');
         $orderTypeTranslationManual->setName('order type translation manual');
@@ -448,6 +464,7 @@ class OrderDataSetup
         $orderTypeTranslationAnon->setType($this->orderTypeAnon);
 
         $this->order->addItem($this->item);
+        $this->order->addItem($this->item2);
         $this->order->setType($this->orderTypeManual);
         $order2->setType($this->orderTypeManual);
 
@@ -461,6 +478,7 @@ class OrderDataSetup
         $this->em->persist($orderTypeTranslationShop);
         $this->em->persist($orderTypeTranslationAnon);
         $this->em->persist($this->account);
+        $this->em->persist($this->account2);
         $this->em->persist($title);
         $this->em->persist($country);
         $this->em->persist($this->termsOfPayment);
@@ -478,6 +496,7 @@ class OrderDataSetup
         $this->em->persist($this->orderAddressDelivery);
         $this->em->persist($this->orderAddressInvoice);
         $this->em->persist($this->item);
+        $this->em->persist($this->item2);
         $this->em->persist($this->product);
         $this->em->persist($this->product2);
         $this->em->persist($this->productTranslation);
