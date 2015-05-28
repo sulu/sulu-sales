@@ -147,7 +147,7 @@
                                         Anlieferung:
                                     </div>
                                     <div class="grid__item three-quarters">
-                                        Das ist ein Lieferhinweis
+                                        {% block delivery_terms %}{% endblock %}
                                     </div>
                                 </div>
                             </div>
@@ -157,7 +157,7 @@
                                         Zahlung:
                                     </div>
                                     <div class="grid__item three-quarters">
-                                        Das ist ein Zahlungshinweis
+                                        {% block payment_terms %}{% endblock %}
                                     </div>
                                 </div>
                             </div>
