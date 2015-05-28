@@ -18,7 +18,7 @@
         "oro/doctrine-extensions": "1.0.*",
         "symfony-cmf/routing-bundle": "1.2.*",
 
-        "massive/pdf-bundle": "@dev",
+        "massive/pdf-bundle": "dev-develop",
 
         "sulu/sulu": "dev-develop",
         "sulu/product-bundle": "dev-develop",

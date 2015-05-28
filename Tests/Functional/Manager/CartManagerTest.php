@@ -56,11 +56,12 @@ class CartManagerTest extends OrderTestBase
     {
         $result = $this->getCartManager()->getNumberItemsAndTotalPrice($this->data->user, $this->data->locale);
 
-        $this->assertEquals($result['totalItems'], 1);
+        $this->assertEquals($result['totalItems'], 2);
 
         // calculate price 26.1
-        $expectedPrice = $this->data->item->getQuantity() * $this->data->productPrice->getPrice();
-        $expectedPrice -= ($expectedPrice / 100) * $this->data->item->getDiscount();
+        $expectedPrice = 0;
+        $expectedPrice += $this->calcTotalPriceForItem($this->data->item, $this->data->productPrice);
+        $expectedPrice += $this->calcTotalPriceForItem($this->data->item2, $this->data->productPrice);
 
         $this->assertEquals($result['totalPrice'], $expectedPrice);
     }
@@ -71,5 +72,21 @@ class CartManagerTest extends OrderTestBase
     protected function getCartManager()
     {
         return $this->getContainer()->get('sulu_sales_order.cart_manager');
+    }
+
+    /**
+     * Simple helper function for calculating item-price
+     *
+     * @param $item
+     * @param $productPrice
+     *
+     * @return float
+     */
+    private function calcTotalPriceForItem($item, $productPriceEntity)
+    {
+        $expectedPrice = $item->getQuantity() * $productPriceEntity->getPrice();
+        $expectedPrice -= ($expectedPrice / 100) * $item->getDiscount();
+
+        return $expectedPrice;
     }
 }
