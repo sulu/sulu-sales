@@ -12,3 +12,5 @@ doctrine:
             Sulu\Bundle\ContactBundle\Entity\AccountInterface: Sulu\Bundle\ContactExtensionBundle\Entity\Account
 parameters:
     mailer_from: test@test.com
+    shop_email_from: %mailer_from%
+    shop_email_confirmation_to: %mailer_from%

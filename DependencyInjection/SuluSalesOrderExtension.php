@@ -29,6 +29,8 @@ class SuluSalesOrderExtension extends Extension
         $loader->load('services.xml');
 
         $this->setParameters($container, 'sulu_sales_order.pdf_templates', $config['pdf_templates']);
+        $container->setParameter('sulu_sales_order.shop_email_from', $config['shop_email_from']);
+        $container->setParameter('sulu_sales_order.shop_email_confirmation_to', $config['shop_email_confirmation_to']);
     }
 
     /**

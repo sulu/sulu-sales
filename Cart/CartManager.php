@@ -12,8 +12,10 @@ namespace Sulu\Bundle\Sales\OrderBundle\Cart;
 
 use Doctrine\Common\Persistence\ObjectManager;
 
+use Sulu\Bundle\ContactBundle\Entity\Contact;
 use Sulu\Bundle\Sales\CoreBundle\Manager\BaseSalesManager;
 use Sulu\Bundle\Sales\CoreBundle\Pricing\GroupedItemsPriceCalculatorInterface;
+use Sulu\Bundle\Sales\OrderBundle\Api\ApiOrderInterface;
 use Sulu\Bundle\Sales\OrderBundle\Api\Order as ApiOrder;
 use Sulu\Bundle\Sales\OrderBundle\Entity\Order;
 use Sulu\Bundle\Sales\OrderBundle\Entity\OrderRepository;
@@ -98,7 +100,12 @@ class CartManager extends BaseSalesManager
     /**
      * @var string
      */
-    protected $mailerFrom;
+    protected $emailFrom;
+
+    /**
+     * @var string
+     */
+    protected $emailConfirmationTo;
 
     /**
      * @var OrderFactoryInterface
@@ -116,8 +123,9 @@ class CartManager extends BaseSalesManager
      * @param \Twig_Environment $twig
      * @param OrderPdfManager $pdfManager
      * @param \Swift_Mailer $mailer
-     * @param string $mailerFrom
      * @param OrderFactoryInterface $orderFactory
+     * @param string $emailFrom
+     * @param string $emailConfirmationTo
      */
     public function __construct(
         ObjectManager $em,
@@ -130,8 +138,9 @@ class CartManager extends BaseSalesManager
         \Twig_Environment $twig,
         OrderPdfManager $pdfManager,
         \Swift_Mailer $mailer,
-        $mailerFrom,
-        OrderFactoryInterface $orderFactory
+        OrderFactoryInterface $orderFactory,
+        $emailFrom,
+        $emailConfirmationTo
     ) {
         $this->em = $em;
         $this->session = $session;
@@ -143,8 +152,9 @@ class CartManager extends BaseSalesManager
         $this->twig = $twig;
         $this->pdfManager = $pdfManager;
         $this->mailer = $mailer;
-        $this->mailerFrom = $mailerFrom;
         $this->orderFactory = $orderFactory;
+        $this->emailFrom= $emailFrom;
+        $this->emailConfirmationTo = $emailConfirmationTo;
     }
 
     /**
@@ -268,8 +278,33 @@ class CartManager extends BaseSalesManager
             // change status of order to confirmed
             $this->orderManager->convertStatus($cart, OrderStatus::STATUS_CONFIRMED);
 
-            // send confirmation email
-            $this->sendConfirmationEmail($user->getContact()->getMainEmail(), $cart);
+            $customer = $user->getContact();
+
+            // send confirmation email to customer
+            $this->sendConfirmationEmail(
+                $customer->getMainEmail(),
+                $customer,
+                $cart,
+                'SuluSalesOrderBundle:Emails:customer.order.confirmation.twig'
+            );
+
+            // get responsible person of contacts account
+            if ($customer->getMainAccount() &&
+                $customer->getMainAccount()->getResponsiblePerson() &&
+                $customer->getMainAccount()->getResponsiblePerson()->getMainEmail()
+            ) {
+                $shopOwnerEmail = $customer->getMainAccount()->getResponsiblePerson()->getMainEmail();
+            } else {
+                $shopOwnerEmail = $this->emailConfirmationTo;
+            }
+
+            // send confirmation email to shop owner
+            $this->sendConfirmationEmail(
+                $shopOwnerEmail,
+                $user->getContact(),
+                $cart,
+                'SuluSalesOrderBundle:Emails:shopowner.order.confirmation.twig'
+            );
         }
 
         // flush on success
@@ -519,19 +554,26 @@ class CartManager extends BaseSalesManager
     }
 
     /**
-     * @param $recipient
-     * @param $apiOrder
+     * @param string $recipient The email-address of the customer
+     * @param Contact $customerContact
+     * @param ApiOrderInterface $apiOrder
+     * @param string $templatePath Template to render
      *
      * @return bool
      */
-    public function sendConfirmationEmail($recipient, $apiOrder)
+    public function sendConfirmationEmail($recipient, Contact $customerContact, $apiOrder, $templatePath)
     {
+        if (empty($recipient)) {
+            return false;
+        }
+
         $tmplData = array(
             'order' => $apiOrder,
-            'contact' => $apiOrder->getEntity()->getCustomerContact()
+            'contact' => $customerContact
         );
 
-        $template = $this->twig->loadTemplate('SuluSalesOrderBundle:Emails:order.confirmation.twig');
+
+        $template = $this->twig->loadTemplate($templatePath);
         $subject = $template->renderBlock('subject', $tmplData);
 
         $emailBodyText = $template->renderBlock('body_text', $tmplData);

@@ -82,8 +82,9 @@
             <argument type="service" id="twig" />
             <argument type="service" id="sulu_sales_order.order_pdf_manager" />
             <argument type="service" id="mailer" />
-            <argument>%mailer_from%</argument>
             <argument type="service" id="sulu_sales_order.order_factory" />
+            <argument>%shop_email_from%</argument>
+            <argument>%shop_email_confirmation_to%</argument>
         </service>
 
         <service id="sulu_sales_order.order_pdf_manager" class="%sulu_sales_order.order_pdf_manager.class%">
@@ -111,7 +112,6 @@
             <tag name="doctrine.event_listener" event="postDelete" method="postDelete"/>
             <tag name="doctrine.event_listener" event="preUpdate" method="preUpdate"/>
         </service>
-
 
         <!--WIDGETS-->
 

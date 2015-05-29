@@ -3,7 +3,7 @@
     <file source-language="en" datatype="plaintext" original="file.ext">
         <body>
             <trans-unit id="1">
-                <source>subject</source>
+                <source>customer.subject</source>
                 <target>Order %number% from %date%</target>
             </trans-unit>
             <trans-unit id="2">
@@ -11,8 +11,16 @@
                 <target>Dear</target>
             </trans-unit>
             <trans-unit id="3">
-                <source>Thank you for your order</source>
+                <source>customer.content</source>
                 <target>Thank you for your order in our webshop. You can find more details in the attachment.</target>
+            </trans-unit>
+            <trans-unit id="4">
+                <source>owner.subject</source>
+                <target>Order %number% from %date%</target>
+            </trans-unit>
+            <trans-unit id="5">
+                <source>owner.content</source>
+                <target>An order has been made. You can find more details in the attachment.</target>
             </trans-unit>
         </body>
     </file>

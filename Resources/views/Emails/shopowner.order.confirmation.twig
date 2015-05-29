@@ -1,0 +1,41 @@
+{% trans_default_domain "order_confirmation_email" %}
+
+{% block subject %}
+    {% trans with {
+        '%number%': order.number,
+        '%date%': order.orderDate|localizeddate('medium', 'none')|default('')
+    } %}owner.subject{% endtrans %}
+{% endblock %}
+
+{% block body_html %}
+    {% import _self as macros %}
+    <html>
+    <head>
+        <style type="text/css">
+            body {
+                font-family: Helvetica, Arial;
+            }
+        </style>
+    </head>
+    <body>
+        <p>
+            <strong>{{ macros.getSalutation(contact) }},</strong>
+        </p>
+        <p>
+            {% trans %}owner.content{% endtrans %}
+        </p>
+    </body>
+    </html>
+{% endblock %}
+
+{% block body_text %}
+{% import _self as macros %}
+
+{% spaceless %}
+{{ macros.getSalutation(contact) }},
+{% trans %}owner.content{% endtrans %}
+{% endspaceless %}
+
+{% endblock %}
+
+{% macro getSalutation(contact) %}{{ contact.getSalutation()|default('default.salutation'|trans) ~ ' ' ~ contact.getFullName() }}{% endmacro %}
