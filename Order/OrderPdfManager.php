@@ -132,11 +132,19 @@ class OrderPdfManager
     {
         $order = $apiOrder->getEntity();
 
+        $customerNumber = null;
+        if ($order->getCustomerAccount()) {
+            $customerNumber = $order->getCustomerAccount()->getNumber();
+        } else {
+            $customerNumber = $order->getCustomerContact()->getNumber();
+        }
+
         $data = array(
             'recipient' => $order->getDeliveryAddress(),
             'responsibleContact' => $order->getResponsibleContact(),
             'deliveryAddress' => $order->getInvoiceAddress(),
             'order' => $order,
+            'customerNumber' => $customerNumber,
             'orderApiEntity' => $apiOrder,
             'itemApiEntities' => $apiOrder->getItems(),
             'templateBasePath' => $this->templateBasePath,
