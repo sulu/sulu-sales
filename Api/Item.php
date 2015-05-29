@@ -10,11 +10,11 @@ use JMS\Serializer\Annotation\Groups;
 use JMS\Serializer\Annotation\Exclude;
 use Sulu\Bundle\ProductBundle\Product\ProductFactoryInterface;
 use Sulu\Bundle\ProductBundle\Api\ApiProductInterface;
+use Sulu\Bundle\Sales\CoreBundle\Entity\ItemAttributeInterface;
 use Sulu\Component\Rest\ApiWrapper;
 use Sulu\Component\Security\Authentication\UserInterface;
 use Sulu\Bundle\ProductBundle\Api\Product;
 use Sulu\Bundle\Sales\CoreBundle\Entity\ItemInterface as Entity;
-use Sulu\Bundle\Sales\CoreBundle\Entity\ItemAttributeEntity;
 use Sulu\Bundle\Sales\CoreBundle\Pricing\CalculableBulkPriceItemInterface;
 use Sulu\Bundle\Sales\CoreBundle\Pricing\CalculablePriceGroupItemInterface;
 use Sulu\Bundle\Sales\CoreBundle\Entity\OrderAddressInterface as OrderAddressEntity;
@@ -632,11 +632,11 @@ class Item extends ApiWrapper implements
     }
 
     /**
-     * @param ItemAttributeEntity $value
+     * @param ItemAttributeInterface $value
      *
      * @return $this
      */
-    public function addAttribute(ItemAttributeEntity $value)
+    public function addAttribute(ItemAttributeInterface $value)
     {
         $this->entity->addAttribute($value);
 
