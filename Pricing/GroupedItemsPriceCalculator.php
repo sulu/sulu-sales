@@ -40,7 +40,7 @@ class GroupedItemsPriceCalculator implements GroupedItemsPriceCalculatorInterfac
         /** @var PriceCalcilationInterface $item */
         foreach ($items as $item) {
 
-            $itemPrice = $this->itemPriceCalculator->calculate($item, $currency);
+            $itemPrice = $this->itemPriceCalculator->calculate($item, $currency, $item->getUseProductsPrice());
 
             // add total-item-price to group
             $this->addPriceToPriceGroup($itemPrice, $item, $groupPrices, $groupedItems);
