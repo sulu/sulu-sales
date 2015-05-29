@@ -30,6 +30,9 @@ class Configuration implements ConfigurationInterface
                 ->scalarNode('header')->defaultValue('SuluSalesCoreBundle:Pdf:pdf-base-header.html.twig')->end()
                 ->scalarNode('footer')->defaultValue('SuluSalesCoreBundle:Pdf:pdf-base-footer.html.twig')->end()
                 ->scalarNode('macros')->defaultValue('SuluSalesCoreBundle:Pdf:pdf-macros.html.twig')->end()
+                ->scalarNode('confirmation')
+                    ->defaultValue('SuluSalesOrderBundle:Pdf:order.confirmation.html.twig')
+                ->end()
             ->end()
         ->end();
 

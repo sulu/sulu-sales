@@ -42,7 +42,7 @@
         </p>
         <p>
             Kundennummer:<br>
-            {{ order.getAccountNumber() |default('-') }}
+            {{ customerNumber |default('-') }}
         </p>
         {% if order.getOrderDate() %}
         <p>
@@ -71,8 +71,7 @@
 {% endblock %}
 
 {% block shippingdetails_addressnote_content %}
-    {{ recipient.getAccountName() }}<br/>
-    {{ recipient.getFirstName() }} {{ recipient.getLastName() }} - {{ recipient.getStreet() }} {{ recipient.getNumber() }} | {{ recipient.getZip() }} {{ recipient.getCity() }} {{ recipient.getCountry() |upper }}
+    {{ macros.parseOrderAddress(recipient) }}
 {% endblock %}
 
 {% block productlist_items %}

@@ -9,6 +9,7 @@
  */
 namespace Sulu\Bundle\Sales\OrderBundle\Order;
 
+use Doctrine\Common\Persistence\ObjectManager;
 use Massive\Bundle\PdfBundle\Pdf\PdfManager;
 use Sulu\Bundle\Sales\OrderBundle\Api\ApiOrderInterface;
 
@@ -40,23 +41,39 @@ class OrderPdfManager
     protected $templateMacrosPath;
 
     /**
+     * @var string
+     */
+    protected $templateConfirmationPath;
+
+    /**
+     * @var ObjectManager
+     */
+    protected $entityManager;
+
+    /**
+     * @param ObjectManager $entityManager
      * @param PdfManager $pdfManager
+     * @param string $templateConfirmationPath
      * @param string $templateBasePath
      * @param string $templateHeaderPath
      * @param string $templateFooterPath
      * @param string $templateMacrosPath
      */
     public function __construct(
+        ObjectManager $entityManager,
         PdfManager $pdfManager,
+        $templateConfirmationPath,
         $templateBasePath,
         $templateHeaderPath,
         $templateFooterPath,
         $templateMacrosPath
     ) {
+        $this->entityManager = $entityManager;
         $this->pdfManager = $pdfManager;
+        $this->templateConfirmationPath = $templateConfirmationPath;
+        $this->templateBasePath = $templateBasePath;
         $this->templateHeaderPath = $templateHeaderPath;
         $this->templateFooterPath = $templateFooterPath;
-        $this->templateBasePath = $templateBasePath;
         $this->templateMacrosPath = $templateMacrosPath;
     }
 
@@ -79,18 +96,7 @@ class OrderPdfManager
      */
     public function createOrderConfirmation(ApiOrderInterface $apiOrder)
     {
-        $order = $apiOrder->getEntity();
-
-        $data = array(
-            'recipient' => $order->getDeliveryAddress(),
-            'responsibleContact' => $order->getResponsibleContact(),
-            'deliveryAddress' => $order->getInvoiceAddress(),
-            'order' => $order,
-            'orderApiEntity' => $apiOrder,
-            'itemApiEntities' => $apiOrder->getItems(),
-            'templateBasePath' => $this->templateBasePath,
-            'templateMacrosPath' => $this->templateMacrosPath,
-        );
+        $data = $this->getContentForPdf($apiOrder);
 
         $header = $this->pdfManager->renderTemplate(
             $this->templateHeaderPath,
@@ -103,7 +109,7 @@ class OrderPdfManager
         );
 
         $pdf = $this->pdfManager->convertToPdf(
-            'SuluSalesOrderBundle:Template:order.confirmation.pdf.html.twig',
+            $this->templateConfirmationPath,
             $data,
             false,
             array(
@@ -113,5 +119,38 @@ class OrderPdfManager
         );
 
         return $pdf;
+    }
+
+    /**
+     * Function that sets data array for pdf rendering
+     *
+     * @param ApiOrderInterface $apiOrder
+     *
+     * @return array
+     */
+    protected function getContentForPdf(ApiOrderInterface $apiOrder)
+    {
+        $order = $apiOrder->getEntity();
+
+        $customerNumber = null;
+        if ($order->getCustomerAccount()) {
+            $customerNumber = $order->getCustomerAccount()->getNumber();
+        } else {
+            $customerNumber = $order->getCustomerContact()->getNumber();
+        }
+
+        $data = array(
+            'recipient' => $order->getDeliveryAddress(),
+            'responsibleContact' => $order->getResponsibleContact(),
+            'deliveryAddress' => $order->getInvoiceAddress(),
+            'order' => $order,
+            'customerNumber' => $customerNumber,
+            'orderApiEntity' => $apiOrder,
+            'itemApiEntities' => $apiOrder->getItems(),
+            'templateBasePath' => $this->templateBasePath,
+            'templateMacrosPath' => $this->templateMacrosPath,
+        );
+
+        return $data;
     }
 }
