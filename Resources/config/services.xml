@@ -83,8 +83,8 @@
             <argument type="service" id="sulu_sales_order.order_pdf_manager" />
             <argument type="service" id="mailer" />
             <argument type="service" id="sulu_sales_order.order_factory" />
-            <argument>%shop_email_from%</argument>
-            <argument>%shop_email_confirmation_to%</argument>
+            <argument>%sulu_sales_order.shop_email_from%</argument>
+            <argument>%sulu_sales_order.shop_email_confirmation_to%</argument>
         </service>
 
         <service id="sulu_sales_order.order_pdf_manager" class="%sulu_sales_order.order_pdf_manager.class%">

@@ -592,7 +592,7 @@ class CartManager extends BaseSalesManager
             /** @var \Swift_Message $message */
             $message = \Swift_Message::newInstance()
                 ->setSubject($subject)
-                ->setFrom($this->mailerFrom)
+                ->setFrom($this->emailFrom)
                 ->setTo($recipient)
                 ->setBody($emailBodyText, 'text/plain')
                 ->addPart($emailBodyHtml, 'text/html')

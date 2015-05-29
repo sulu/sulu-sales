@@ -10,6 +10,7 @@
 
 namespace Sulu\Bundle\Sales\OrderBundle\DependencyInjection;
 
+use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader;
@@ -29,8 +30,17 @@ class SuluSalesOrderExtension extends Extension
         $loader->load('services.xml');
 
         $this->setParameters($container, 'sulu_sales_order.pdf_templates', $config['pdf_templates']);
-        $container->setParameter('sulu_sales_order.shop_email_from', $config['shop_email_from']);
-        $container->setParameter('sulu_sales_order.shop_email_confirmation_to', $config['shop_email_confirmation_to']);
+
+        $shopEmailFrom = null;
+        if (isset($config['shop_email_from'])) {
+            $shopEmailFrom = $config['shop_email_from'];
+        }
+        $shopEmailConfirmationTo = null;
+        if (isset($config['shop_email_confirmation_to'])) {
+            $shopEmailConfirmationTo = $config['shop_email_confirmation_to'];
+        }
+        $container->setParameter('sulu_sales_order.shop_email_from', $shopEmailFrom);
+        $container->setParameter('sulu_sales_order.shop_email_confirmation_to', $shopEmailConfirmationTo);
     }
 
     /**
