@@ -31,3 +31,10 @@
         </div>
     </div>
 {% endmacro %}
+
+{% macro parseOrderAddress(orderAddress) %}
+    {% if orderAddress.getAccountName() %}
+        {{ orderAddress.getAccountName() }}<br/>
+    {% endif %}
+    {{ orderAddress.getFirstName() }} {{ orderAddress.getLastName() }} - {{ orderAddress.getStreet() }} {{ orderAddress.getNumber() }} | {{ orderAddress.getZip() }} {{ orderAddress.getCity() }} {{ orderAddress.getCountry() |upper }}
+{% endmacro %}
