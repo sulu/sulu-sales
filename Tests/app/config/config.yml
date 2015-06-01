@@ -10,5 +10,11 @@ doctrine:
             Sulu\Bundle\Sales\CoreBundle\Entity\ItemInterface: Sulu\Bundle\Sales\CoreBundle\Entity\Item
             Sulu\Bundle\Sales\OrderBundle\Entity\OrderInterface: Sulu\Bundle\Sales\OrderBundle\Entity\Order
             Sulu\Bundle\ContactBundle\Entity\AccountInterface: Sulu\Bundle\ContactExtensionBundle\Entity\Account
+
+sulu_sales_order:
+    shop_email_from: %mailer_from%
+    shop_email_confirmation_to: %mailer_from%
+
 parameters:
     mailer_from: test@test.com
+

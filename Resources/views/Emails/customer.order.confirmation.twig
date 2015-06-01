@@ -22,7 +22,7 @@
             <strong>{{ macros.getSalutation(contact) }},</strong>
         </p>
         <p>
-            {% trans %}Thank you for your order{% endtrans %}
+            {% trans %}customer.content{% endtrans %}
         </p>
     </body>
     </html>
@@ -33,7 +33,7 @@
 
 {% spaceless %}
 {{ macros.getSalutation(contact) }},
-{% trans %}Thank you for your order{% endtrans %}
+{% trans %}customer.content{% endtrans %}
 {% endspaceless %}
 
 {% endblock %}
