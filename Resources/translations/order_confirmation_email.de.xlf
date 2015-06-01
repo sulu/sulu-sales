@@ -20,7 +20,15 @@
             </trans-unit>
             <trans-unit id="5">
                 <source>owner.content</source>
-                <target>Eine neue Bestellung ist soeben eingegangen. Weitere Details zur Bestellung findest du im Anhang.</target>
+                <target>Eine neue Bestellung ist soeben eingelangt. Weitere Details zur Bestellung findest du im Anhang.</target>
+            </trans-unit>
+            <trans-unit id="6">
+                <source>default.owner</source>
+                <target>Shop-Besitzer</target>
+            </trans-unit>
+            <trans-unit id="7">
+                <source>default.customer</source>
+                <target>Kunde</target>
             </trans-unit>
         </body>
     </file>
