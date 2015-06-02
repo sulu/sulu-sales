@@ -87,3 +87,15 @@
 {% block productlist_footer_total_value %}
     {{ orderApiEntity.getTotalNetPriceFormatted() |default('-') }}
 {% endblock %}
+
+{% block payment_terms %}
+    {% if order.getTermsOfPayment() %}
+        {{ order.getTermsOfPayment().getTerms() }}
+    {% endif %}
+{% endblock %}
+
+{% block delivery_terms %}
+    {% if order.getTermsOfDelivery() %}
+        {{ order.getTermsOfDelivery().getTerms() }}
+    {% endif %}
+{% endblock %}

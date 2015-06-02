@@ -20,7 +20,15 @@
             </trans-unit>
             <trans-unit id="5">
                 <source>owner.content</source>
-                <target>An order has been made. You can find more details in the attachment.</target>
+                <target>You just received a new order. More details can be found in the attached order-confirmation.</target>
+            </trans-unit>
+            <trans-unit id="6">
+                <source>default.owner</source>
+                <target>shopowner</target>
+            </trans-unit>
+            <trans-unit id="7">
+                <source>default.customer</source>
+                <target>customer</target>
             </trans-unit>
         </body>
     </file>

@@ -4,7 +4,7 @@
     {% trans with {
         '%number%': order.number,
         '%date%': order.orderDate|localizeddate('medium', 'none')|default('')
-    } %}subject{% endtrans %}
+    } %}customer.subject{% endtrans %}
 {% endblock %}
 
 {% block body_html %}
@@ -38,4 +38,4 @@
 
 {% endblock %}
 
-{% macro getSalutation(contact) %}{{ contact.getSalutation()|default('default.salutation'|trans) ~ ' ' ~ contact.getFullName() }}{% endmacro %}
+{% macro getSalutation(contact) %}{{ contact.getSalutation()|default('default.salutation'|trans) ~ ' ' ~ contact.getFullName()|default('default.customer'|trans) }}{% endmacro %}

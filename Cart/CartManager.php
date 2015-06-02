@@ -83,7 +83,7 @@ class CartManager extends BaseSalesManager
     private $defaultCurrency;
 
     /**
-     * @var
+     * @var AccountManager
      */
     private $accountManager;
 
@@ -283,9 +283,9 @@ class CartManager extends BaseSalesManager
             // send confirmation email to customer
             $this->sendConfirmationEmail(
                 $customer->getMainEmail(),
-                $customer,
                 $cart,
-                'SuluSalesOrderBundle:Emails:customer.order.confirmation.twig'
+                'SuluSalesOrderBundle:Emails:customer.order.confirmation.twig',
+                $customer
             );
 
             // get responsible person of contacts account
@@ -301,7 +301,6 @@ class CartManager extends BaseSalesManager
             // send confirmation email to shop owner
             $this->sendConfirmationEmail(
                 $shopOwnerEmail,
-                $user->getContact(),
                 $cart,
                 'SuluSalesOrderBundle:Emails:shopowner.order.confirmation.twig'
             );
@@ -555,13 +554,13 @@ class CartManager extends BaseSalesManager
 
     /**
      * @param string $recipient The email-address of the customer
-     * @param Contact $customerContact
      * @param ApiOrderInterface $apiOrder
      * @param string $templatePath Template to render
+     * @param Contact|null $customerContact
      *
      * @return bool
      */
-    public function sendConfirmationEmail($recipient, Contact $customerContact, $apiOrder, $templatePath)
+    public function sendConfirmationEmail($recipient, $apiOrder, $templatePath, Contact $customerContact = null)
     {
         if (empty($recipient)) {
             return false;

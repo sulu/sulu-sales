@@ -68,22 +68,6 @@ interface ApiOrderInterface
     public function setChanged(DateTime $changed);
 
     /**
-     * Set sessionId
-     *
-     * @param string $sessionId
-     *
-     * @return Order
-     */
-    public function setSessionId($sessionId);
-
-    /**
-     * Get sessionId
-     *
-     * @return string
-     */
-    public function getSessionId();
-
-    /**
      * Set status
      *
      * @param OrderStatus
@@ -93,43 +77,11 @@ interface ApiOrderInterface
     public function setStatus($status);
 
     /**
-     * Set bitmaskStatus
-     *
-     * @param integer $bitmaskStatus
-     *
-     * @return Order
-     */
-    public function setBitmaskStatus($bitmaskStatus);
-
-    /**
-     * Get bitmaskStatus
-     *
-     * @return integer
-     */
-    public function getBitmaskStatus();
-
-    /**
      * Get order status
      *
      * @return OrderStatus
      */
     public function getStatus();
-
-    /**
-     * Set type
-     *
-     * @param OrderType
-     *
-     * @return Order
-     */
-    public function setType($type);
-
-    /**
-     * Get order tpye
-     *
-     * @return OrderType
-     */
-    public function getType();
 
     /**
      * Set currency-code
@@ -373,22 +325,6 @@ interface ApiOrderInterface
     public function getItems();
 
     /**
-     * Get items ordered by suppliers
-     *
-     * @return array
-     */
-    public function getSupplierItems();
-
-    /**
-     * Set supplier items
-     *
-     * @param $supplierItems
-     *
-     * @return $this
-     */
-    public function setSupplierItems($supplierItems);
-
-    /**
      * Get item entity by id
      *
      * @param $id
@@ -506,11 +442,4 @@ interface ApiOrderInterface
      * @return DateTime
      */
     public function getOrderDate();
-
-    /**
-     * Returns url for generating the documents pdf
-     *
-     * @return string
-     */
-    public function getPdfBaseUrl();
 }
