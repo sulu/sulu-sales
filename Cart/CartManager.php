@@ -275,6 +275,9 @@ class CartManager extends BaseSalesManager
                 throw new OrderException('Empty Cart');
             }
 
+            // set order-date to current date
+            $cart->setOrderDate(new \DateTime());
+
             // change status of order to confirmed
             $this->orderManager->convertStatus($cart, OrderStatus::STATUS_CONFIRMED);
 
@@ -464,6 +467,7 @@ class CartManager extends BaseSalesManager
         $cart->setChanger($user);
         $cart->setCreated(new \DateTime());
         $cart->setChanged(new \DateTime());
+        $cart->setOrderDate(new \DateTime());
 
         // set currency - if not defined use default
         $currency = $currency ?: $this->defaultCurrency;
