@@ -731,10 +731,9 @@ class Item extends ApiWrapper implements
      *
      * @return Formatter
      */
-    private function getFormatter($locale)
+    private function getFormatter($locale = 'de-AT')
     {
-        $sysLocale = $locale ? $locale : 'de-AT';
-        $formatter = new \NumberFormatter($sysLocale, \NumberFormatter::DECIMAL);
+        $formatter = new \NumberFormatter($locale, \NumberFormatter::DECIMAL);
         $formatter->setAttribute(\NumberFormatter::MIN_FRACTION_DIGITS, 2);
         $formatter->setAttribute(\NumberFormatter::DECIMAL_ALWAYS_SHOWN, 1);
 
