@@ -26,6 +26,7 @@ use Sulu\Bundle\Sales\OrderBundle\Order\OrderFactoryInterface;
 use Sulu\Bundle\Sales\OrderBundle\Order\OrderManager;
 use Sulu\Bundle\Sales\OrderBundle\Order\OrderPdfManager;
 use Sulu\Component\Persistence\RelationTrait;
+use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 class CartManager extends BaseSalesManager
@@ -161,7 +162,7 @@ class CartManager extends BaseSalesManager
         $this->pdfManager = $pdfManager;
         $this->mailer = $mailer;
         $this->orderFactory = $orderFactory;
-        $this->emailFrom= $emailFrom;
+        $this->emailFrom = $emailFrom;
         $this->emailConfirmationTo = $emailConfirmationTo;
         $this->orderAddressManager = $orderAddressManager;
     }
@@ -292,7 +293,7 @@ class CartManager extends BaseSalesManager
             $this->orderManager->convertStatus($cart, OrderStatus::STATUS_CONFIRMED);
 
             // order-addresses have to be set to the current contact-addresses
-            $this->reApplyOrderAddresses($cart);
+            $this->reApplyOrderAddresses($cart, $user);
 
             $customer = $user->getContact();
 
@@ -335,8 +336,10 @@ class CartManager extends BaseSalesManager
      *
      * @param ApiOrderInterface $cart
      */
-    private function reApplyOrderAddresses($cart)
+    private function reApplyOrderAddresses($cart, $user)
     {
+        $this->setNewAddresses($cart, $user);
+
         // apply addresses
         if ($cart->getDeliveryAddress()->getContactAddress()) {
             $this->orderAddressManager->getAndSetOrderAddressByContactAddress(
@@ -357,6 +360,47 @@ class CartManager extends BaseSalesManager
                     null,
                     $item->getDeliveryAddress()
                 );
+            }
+        }
+    }
+
+    /**
+     * Checks if addresses have been set and sets new ones
+     *
+     * @param ApiOrderInterface $cart
+     */
+    protected function setNewAddresses($cart)
+    {
+        if ($cart instanceof ApiOrderInterface) {
+            $cart = $cart->getEntity();
+        }
+        if (!$cart->getDeliveryAddress() || !$cart->getInvoiceAddress()) {
+            $addresses = $cart->getCustomerAccount()->getAccountAddresses();
+            if ($addresses->isEmpty()) {
+                throw new Exception('customer has no addresses');
+            }
+            $mainAddress = $cart->getCustomerAccount()->getMainAddress();
+            if (!$mainAddress) {
+                throw new Exception('customer has no main-address');
+            }
+
+            if (!$cart->getDeliveryAddress()) {
+                $newAddress = $this->orderAddressManager->getAndSetOrderAddressByContactAddress(
+                    $mainAddress,
+                    $cart->getCustomerContact(),
+                    $cart->getCustomerAccount()
+                );
+                $cart->setDeliveryAddress($newAddress);
+                $this->em->persist($newAddress);
+            }
+            if (!$cart->getInvoiceAddress()) {
+                $newAddress = $this->orderAddressManager->getAndSetOrderAddressByContactAddress(
+                    $mainAddress,
+                    $cart->getCustomerContact(),
+                    $cart->getCustomerAccount()
+                );
+                $cart->setInvoiceAddress($newAddress);
+                $this->em->persist($newAddress);
             }
         }
     }
@@ -625,7 +669,6 @@ class CartManager extends BaseSalesManager
             'order' => $apiOrder,
             'contact' => $customerContact
         );
-
 
         $template = $this->twig->loadTemplate($templatePath);
         $subject = $template->renderBlock('subject', $tmplData);
