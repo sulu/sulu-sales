@@ -22,6 +22,7 @@ use Sulu\Bundle\Sales\CoreBundle\Api\ApiItemInterface;
 use Sulu\Bundle\Sales\CoreBundle\Entity\ItemAttribute;
 use Sulu\Bundle\Sales\CoreBundle\Entity\ItemInterface;
 use Sulu\Bundle\Sales\CoreBundle\Entity\ItemRepository;
+use Sulu\Bundle\Sales\CoreBundle\Item\Exception\ItemDependencyNotFoundException;
 use Sulu\Bundle\Sales\CoreBundle\Item\Exception\ItemException;
 use Sulu\Bundle\Sales\CoreBundle\Item\Exception\ItemNotFoundException;
 use Sulu\Bundle\Sales\CoreBundle\Item\Exception\MissingItemAttributeException;
@@ -199,43 +200,9 @@ class ItemManager
 
         $item->setDiscount($this->getProperty($data, 'discount', $item->getDiscount()));
 
-        // set delivery-address
+        // set delivery-address for item
         if (isset($data['deliveryAddress'])) {
-            if (is_array($data['deliveryAddress'])) {
-                // if no delivery address is set, create new one
-                if ($isNewItem || $item->getDeliveryAddress() === null) {
-                    // create delivery address
-                    $deliveryAddress = new $this->orderAddressEntity();
-                    // persist entities
-                    $this->em->persist($deliveryAddress);
-                    // assign to order
-                    $item->setDeliveryAddress($deliveryAddress);
-                }
-
-                $this->orderAddressManager->setOrderAddress(
-                    $item->getDeliveryAddress(),
-                    $data['deliveryAddress'],
-                    $contact,
-                    $account
-                );
-            } else {
-                $deliveryAddress = $item->getEntity()->getDeliveryAddress();
-
-                $orderAddress = $this->orderAddressManager->getOrderAddressByContactAddressId(
-                    $data['deliveryAddress'],
-                    $contact,
-                    $account,
-                    $deliveryAddress
-                );
-
-                // set delivery address
-                $item->setDeliveryAddress($orderAddress);
-
-                // if new delivery address persist
-                if (!$deliveryAddress) {
-                    $this->em->persist($orderAddress);
-                }
-            }
+            $this->setItemDeliveryAddress($data['deliveryAddress'], $item, $contact, $account);
         }
 
         // create new item
@@ -383,6 +350,58 @@ class ItemManager
         );
 
         return $items;
+    }
+
+    /**
+     * Sets delivery address for an item
+     *
+     * @param array|int $addressData
+     * @param ApiItemInterface $item
+     * @param Contact $contact
+     * @param AccountInterface $account
+     *
+     * @throws ItemDependencyNotFoundException
+     * @throws ItemException
+     */
+    protected function setItemDeliveryAddress($addressData, ApiItemInterface $item, Contact $contact, AccountInterface $account)
+    {
+        if ($item->getId() !== null || $item->getDeliveryAddress() === null) {
+            // create delivery address
+            $deliveryAddress = new $this->orderAddressEntity();
+            // persist entities
+            $this->em->persist($deliveryAddress);
+            // assign to order
+            $item->setDeliveryAddress($deliveryAddress);
+        }
+
+        if (is_array($addressData)) {
+                // set order-address
+                $this->orderAddressManager->setOrderAddress(
+                    $item->getDeliveryAddress(),
+                    $addressData,
+                    $contact,
+                    $account
+                );
+        } elseif (is_int($addressData)) {
+            $contactAddressId = $addressData;
+            // create order-address and assign contact-address data
+            $deliveryAddress = $item->getEntity()->getDeliveryAddress();
+
+            $orderAddress = $this->orderAddressManager->getOrderAddressByContactAddressId(
+                $contactAddressId,
+                $contact,
+                $account,
+                $deliveryAddress
+            );
+
+            // set delivery address
+            $item->setDeliveryAddress($orderAddress);
+
+            // if new delivery address persist
+            if (!$deliveryAddress) {
+                $this->em->persist($orderAddress);
+            }
+        }
     }
 
     /**

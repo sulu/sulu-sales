@@ -703,7 +703,9 @@ abstract class BaseOrderAddress implements OrderAddressInterface
             'state' => $this->getState(),
             'country' => $this->getCountry(),
             'note' => $this->getNote(),
-            'contactAddress' => $this->getContactAddress(),
+            'contactAddress' => $this->getContactAddress() ? array(
+                'id' => $this->getContactAddress()->getId()
+            ) : null,
             // postbox
             'postboxCity' => $this->getPostboxCity(),
             'postboxNumber' => $this->getPostboxNumber(),
