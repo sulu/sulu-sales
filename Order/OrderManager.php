@@ -10,9 +10,11 @@
 
 namespace Sulu\Bundle\Sales\OrderBundle\Order;
 
+use DateTime;
 use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\NoResultException;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Sulu\Bundle\ContactBundle\Entity\Account;
 use Sulu\Bundle\ContactBundle\Entity\AccountRepository;
 use Sulu\Bundle\ContactBundle\Entity\Address;
@@ -40,9 +42,7 @@ use Sulu\Component\Rest\ListBuilder\Doctrine\FieldDescriptor\DoctrineFieldDescri
 use Sulu\Bundle\Sales\OrderBundle\Api\Order;
 use Sulu\Component\Rest\ListBuilder\Doctrine\FieldDescriptor\DoctrineJoinDescriptor;
 use Sulu\Component\Security\Authentication\UserRepositoryInterface;
-use DateTime;
 use Sulu\Component\Persistence\RelationTrait;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 class OrderManager
 {
@@ -123,6 +123,7 @@ class OrderManager
      * @var AccountRepository
      */
     private $accountRepository;
+
 
     /**
      * @param ObjectManager $em
@@ -924,47 +925,6 @@ class OrderManager
         // TODO: add phone
 
         $this->setAddressDataForOrder($orderAddress, $addressData);
-    }
-
-    /**
-     * @param Address $address
-     * @param $contact
-     * @param $account
-     * @return OrderAddress
-     */
-    public function getOrderAddressByContactAddress(Address $address, $contact, $account)
-    {
-        $orderAddress = new OrderAddress();
-        $orderAddress->setStreet($address->getStreet());
-        $orderAddress->setNumber($address->getNumber());
-        $orderAddress->setAddition($address->getAddition());
-        $orderAddress->setCity($address->getCity());
-        $orderAddress->setZip($address->getZip());
-        $orderAddress->setState($address->getState());
-        $orderAddress->setCountry($address->getCountry()->getName());
-
-        $orderAddress->setPostboxCity($address->getPostboxCity());
-        $orderAddress->setPostboxPostcode($address->getPostboxPostcode());
-        $orderAddress->setPostboxNumber($address->getPostboxNumber());
-
-        // add account data
-        if ($account) {
-            $orderAddress->setAccountName($account->getName());
-            $orderAddress->setUid($account->getUid());
-        }
-
-        if ($contact) {
-            if ($contact->getTitle()) {
-                $orderAddress->setTitle($contact->getTitle()->getTitle());
-            }
-            $orderAddress->setSalutation($contact->getSalutation());
-            $orderAddress->setFirstName($contact->getFirstName());
-            $orderAddress->setLastName($contact->getLastName());
-            $orderAddress->setEmail($contact->getMainEmail());
-            $orderAddress->setPhone($contact->getMainPhone());
-        }
-
-        return $orderAddress;
     }
 
     /**
