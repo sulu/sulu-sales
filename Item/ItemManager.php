@@ -363,7 +363,7 @@ class ItemManager
      * @throws ItemDependencyNotFoundException
      * @throws ItemException
      */
-    protected function setItemDeliveryAddress($addressData, ApiItemInterface $item, $contact, $account)
+    protected function setItemDeliveryAddress($addressData, ApiItemInterface $item, Contact $contact, AccountInterface $account)
     {
         if ($item->getId() !== null || $item->getDeliveryAddress() === null) {
             // create delivery address
@@ -375,20 +375,6 @@ class ItemManager
         }
 
         if (is_array($addressData)) {
-//            if (!empty($addressData['id'])) {
-//                // get delivery address by id
-//                $orderAddress = $this->orderAddressManager->findById($addressData['id']);
-//                if (!$orderAddress) {
-//                    throw new ItemDependencyNotFoundException('OrderAddress', $addressData['id']);
-//                }
-//                // set delivery address to item
-//                $item->setDeliveryAddress($orderAddress);
-//             // set item to a pre-existing order-address
-//
-//            } else {
-                // if no delivery address is set, create new one
-
-
                 // set order-address
                 $this->orderAddressManager->setOrderAddress(
                     $item->getDeliveryAddress(),
@@ -396,7 +382,6 @@ class ItemManager
                     $contact,
                     $account
                 );
-//            }
         } elseif (is_int($addressData)) {
             $contactAddressId = $addressData;
             // create order-address and assign contact-address data

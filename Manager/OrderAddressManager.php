@@ -220,7 +220,7 @@ class OrderAddressManager
      *
      * @return array
      */
-    public function getContactData($addressData, $contact)
+    public function getContactData($addressData, Contact $contact)
     {
         $result = array();
         // if account is set, take account's name
