@@ -14,6 +14,7 @@ use Doctrine\Common\Persistence\ObjectManager;
 
 use Sulu\Bundle\ContactBundle\Entity\Contact;
 use Sulu\Bundle\Sales\CoreBundle\Manager\BaseSalesManager;
+use Sulu\Bundle\Sales\CoreBundle\Manager\OrderAddressManager;
 use Sulu\Bundle\Sales\CoreBundle\Pricing\GroupedItemsPriceCalculatorInterface;
 use Sulu\Bundle\Sales\OrderBundle\Api\ApiOrderInterface;
 use Sulu\Bundle\Sales\OrderBundle\Api\Order as ApiOrder;
@@ -113,6 +114,12 @@ class CartManager extends BaseSalesManager
     protected $orderFactory;
 
     /**
+     * @var OrderAddressManager
+     */
+    private $orderAddressManager;
+
+
+    /**
      * @param ObjectManager $em
      * @param SessionInterface $session
      * @param OrderRepository $orderRepository
@@ -140,7 +147,8 @@ class CartManager extends BaseSalesManager
         \Swift_Mailer $mailer,
         OrderFactoryInterface $orderFactory,
         $emailFrom,
-        $emailConfirmationTo
+        $emailConfirmationTo,
+        OrderAddressManager $orderAddressManager
     ) {
         $this->em = $em;
         $this->session = $session;
@@ -155,6 +163,7 @@ class CartManager extends BaseSalesManager
         $this->orderFactory = $orderFactory;
         $this->emailFrom= $emailFrom;
         $this->emailConfirmationTo = $emailConfirmationTo;
+        $this->orderAddressManager = $orderAddressManager;
     }
 
     /**
@@ -281,6 +290,9 @@ class CartManager extends BaseSalesManager
             // change status of order to confirmed
             $this->orderManager->convertStatus($cart, OrderStatus::STATUS_CONFIRMED);
 
+            // order-addresses have to be set to the current contact-addresses
+            $this->reApplyOrderAddresses($cart);
+
             $customer = $user->getContact();
 
             // send confirmation email to customer
@@ -315,6 +327,37 @@ class CartManager extends BaseSalesManager
         $originalCart = $cart;
 
         return $this->getUserCart($user, $locale);
+    }
+
+    /**
+     * Reapplies order-addresses on submit
+     *
+     * @param ApiOrderInterface $cart
+     */
+    private function reApplyOrderAddresses($cart)
+    {
+        // apply addresses
+        if ($cart->getDeliveryAddress()->getContactAddress()) {
+            $this->orderAddressManager->getAndSetOrderAddressByContactAddress(
+                $cart->getDeliveryAddress()->getContactAddress(),
+                null,
+                null,
+                $cart->getDeliveryAddress()
+            );
+        }
+
+        foreach ($cart->getItems() as $item) {
+            if ($item->getDeliveryAddress() &&
+                $item->getDeliveryAddress()->getContactAddress()
+            ) {
+                $this->orderAddressManager->getAndSetOrderAddressByContactAddress(
+                    $item->getDeliveryAddress()->getContactAddress(),
+                    null,
+                    null,
+                    $item->getDeliveryAddress()
+                );
+            }
+        }
     }
 
     /**
@@ -384,7 +427,7 @@ class CartManager extends BaseSalesManager
     }
 
     /**
-     * adds a product to cart
+     * Adds a product to cart
      *
      * @param $data
      * @param null $user
@@ -399,6 +442,7 @@ class CartManager extends BaseSalesManager
         $cart = $this->getUserCart($user, $locale, null, true);
         // define user-id
         $userId = $user ? $user->getId() : null;
+
         $this->orderManager->addItem($data, $locale, $userId, $cart);
 
         $this->orderManager->updateApiEntity($cart, $locale);
@@ -407,10 +451,12 @@ class CartManager extends BaseSalesManager
     }
 
     /**
-     * @param $itemId
-     * @param $data
-     * @param null $user
-     * @param null $locale
+     * Update item data
+     *
+     * @param int $itemId
+     * @param array $data
+     * @param null|UserInterface $user
+     * @param null|string $locale
      *
      * @return null|Order
      * @throws ItemNotFoundException
@@ -430,7 +476,7 @@ class CartManager extends BaseSalesManager
     }
 
     /**
-     * patches an item in cart
+     * Patches an item in cart
      *
      * @param null $user
      * @param null $locale
@@ -493,7 +539,7 @@ class CartManager extends BaseSalesManager
         $invoiceAddress = $this->accountManager->getBillingAddress($addressSource, true);
         if ($invoiceAddress) {
             // convert to order-address
-            $invoiceOrderAddress = $this->orderManager->getOrderAddressByContactAddress(
+            $invoiceOrderAddress = $this->orderAddressManager->getAndSetOrderAddressByContactAddress(
                 $invoiceAddress,
                 $contact,
                 $account
@@ -504,7 +550,7 @@ class CartManager extends BaseSalesManager
         $deliveryAddress = $this->accountManager->getDeliveryAddress($addressSource, true);
         if ($deliveryAddress) {
             // convert to order-address
-            $deliveryOrderAddress = $this->orderManager->getOrderAddressByContactAddress(
+            $deliveryOrderAddress = $this->orderAddressManager->getAndSetOrderAddressByContactAddress(
                 $deliveryAddress,
                 $contact,
                 $account
@@ -536,7 +582,7 @@ class CartManager extends BaseSalesManager
     }
 
     /**
-     * returns array containing number of items and total-price
+     * Returns array containing number of items and total-price
      * array('totalItems', 'totalPrice')
      *
      * @param $user
@@ -557,6 +603,8 @@ class CartManager extends BaseSalesManager
     }
 
     /**
+     *
+     *
      * @param string $recipient The email-address of the customer
      * @param ApiOrderInterface $apiOrder
      * @param string $templatePath Template to render
