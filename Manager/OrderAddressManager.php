@@ -12,6 +12,8 @@ namespace Sulu\Bundle\Sales\CoreBundle\Manager;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Sulu\Bundle\ContactBundle\Entity\Address;
+use Sulu\Bundle\Sales\CoreBundle\Entity\OrderAddressInterface;
+use Sulu\Bundle\Sales\CoreBundle\Entity\OrderAddressRepository;
 use Sulu\Bundle\Sales\CoreBundle\Exceptions\MissingAttributeException;
 use Sulu\Component\Rest\Exception\EntityNotFoundException;
 
@@ -27,20 +29,37 @@ class OrderAddressManager
     protected $em;
 
     /**
+     * @var OrderAddressRepository
+     */
+    protected $orderAddressRepository;
+
+    /**
      * @param EntityManagerInterface $em
      */
     public function __construct(
-        EntityManagerInterface $em
+        EntityManagerInterface $em,
+        OrderAddressRepository $orderAddressRepository
     )
     {
         $this->em = $em;
+        $this->orderAddressRepository = $orderAddressRepository;
+    }
+
+    /**
+     * @param int $id
+     *
+     * @return null|OrderAddressInterface
+     */
+    public function findById($id)
+    {
+        return $this->orderAddressRepository->find($id);
     }
 
     /**
      * Sets an order address based on given data
      *
-     * @param OrderAddress $orderAddress
-     * @param $addressData
+     * @param OrderAddressInterface $orderAddress
+     * @param array $addressData
      * @param Contact $contact
      * @param Account|null $account
      *
@@ -78,16 +97,17 @@ class OrderAddressManager
     }
 
     /**
-     *
+     * Sets an order-address by data provided by contact-address.
+     * If order-address does not exist a new one is created.
      *
      * @param int $addressId
      * @param null|Contact $contact
      * @param null|Account $account
-     * @param null|OrderAddress $orderAddress
+     * @param null|OrderAddressInterface $orderAddress
      *
      * @throws EntityNotFoundException
      *
-     * @return OrderAddress
+     * @return OrderAddressInterface
      */
     public function getOrderAddressByContactAddressId(
         $addressId,
@@ -102,18 +122,21 @@ class OrderAddressManager
             throw new EntityNotFoundException(static::$addressEntityName, $addressId);
         }
 
-        return $this->getOrderAddressByContactAddress($address, $contact, $account, $orderAddress);
+        return $this->getAndSetOrderAddressByContactAddress($address, $contact, $account, $orderAddress);
     }
 
     /**
+     * Sets an order-address by data provided by contact-address.
+     * If order-address does not exist a new one is created.
+     *
      * @param Address $address
      * @param null|Contact $contact
      * @param null|Account $account
-     * @param null|OrderAddress $orderAddress
+     * @param null|OrderAddressInterface $orderAddress
      *
-     * @return OrderAddress
+     * @return OrderAddressInterface
      */
-    public function getOrderAddressByContactAddress(
+    public function getAndSetOrderAddressByContactAddress(
         Address $address,
         $contact = null,
         $account = null,
@@ -161,7 +184,7 @@ class OrderAddressManager
     /**
      * Copies address data to order address
      *
-     * @param OrderAddress $orderAddress
+     * @param OrderAddressInterface $orderAddress
      * @param array $addressData
      */
     private function setAddressDataForOrder(&$orderAddress, $addressData)
@@ -188,12 +211,14 @@ class OrderAddressManager
     }
 
     /**
-     * returns contact data as an array. either by provided address or contact
+     * Returns contact data as an array. either by provided address or contact
      *
-     * @param $addressData
-     * @param $contact
-     * @return array
+     * @param array $addressData
+     * @param Contact $contact
+     *
      * @throws MissingAttributeException
+     *
+     * @return array
      */
     public function getContactData($addressData, $contact)
     {
