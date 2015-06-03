@@ -118,7 +118,6 @@ class CartManager extends BaseSalesManager
      */
     private $orderAddressManager;
 
-
     /**
      * @param ObjectManager $em
      * @param SessionInterface $session
@@ -133,6 +132,7 @@ class CartManager extends BaseSalesManager
      * @param OrderFactoryInterface $orderFactory
      * @param string $emailFrom
      * @param string $emailConfirmationTo
+     * @param OrderAddressManager $orderAddressManager
      */
     public function __construct(
         ObjectManager $em,
@@ -244,9 +244,10 @@ class CartManager extends BaseSalesManager
      * @param $user
      * @param $locale
      *
-     * @return null|Order
      * @throws \Sulu\Bundle\Sales\OrderBundle\Order\Exception\OrderException
      * @throws \Sulu\Bundle\Sales\OrderBundle\Order\Exception\OrderNotFoundException
+     *
+     * @return null|Order
      */
     public function updateCart($data, $user, $locale)
     {
@@ -458,8 +459,9 @@ class CartManager extends BaseSalesManager
      * @param null|UserInterface $user
      * @param null|string $locale
      *
-     * @return null|Order
      * @throws ItemNotFoundException
+     *
+     * @return null|Order
      */
     public function updateItem($itemId, $data, $user = null, $locale = null)
     {
@@ -503,8 +505,9 @@ class CartManager extends BaseSalesManager
      * @param $user
      * @param $persist
      *
-     * @return Order
      * @throws \Sulu\Component\Rest\Exception\EntityNotFoundException
+     *
+     * @return Order
      */
     protected function createEmptyCart($user, $persist, $currency = null)
     {
