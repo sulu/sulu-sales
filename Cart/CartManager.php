@@ -11,7 +11,8 @@
 namespace Sulu\Bundle\Sales\OrderBundle\Cart;
 
 use Doctrine\Common\Persistence\ObjectManager;
-
+use Symfony\Component\Config\Definition\Exception\Exception;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Sulu\Bundle\ContactBundle\Entity\Contact;
 use Sulu\Bundle\Sales\CoreBundle\Manager\BaseSalesManager;
 use Sulu\Bundle\Sales\CoreBundle\Manager\OrderAddressManager;
@@ -26,8 +27,6 @@ use Sulu\Bundle\Sales\OrderBundle\Order\OrderFactoryInterface;
 use Sulu\Bundle\Sales\OrderBundle\Order\OrderManager;
 use Sulu\Bundle\Sales\OrderBundle\Order\OrderPdfManager;
 use Sulu\Component\Persistence\RelationTrait;
-use Symfony\Component\Config\Definition\Exception\Exception;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 class CartManager extends BaseSalesManager
 {
