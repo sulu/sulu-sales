@@ -8,7 +8,7 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Sulu\Bundle\Sales\CoreBundle\Item\Exceptions;
+namespace Sulu\Bundle\Sales\CoreBundle\Item\Exception;
 
 class MissingItemAttributeException extends ItemException
 {
