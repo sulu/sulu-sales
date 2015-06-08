@@ -69,6 +69,7 @@
             <argument type="service" id="sulu_sales_core.grouped_price_calculator" />
             <argument type="service" id="sulu_product.product_manager" />
             <argument type="service" id="sulu_sales_order.order_factory" />
+            <argument type="service" id="sulu_sales_core.order_address_manager" />
         </service>
 
         <service id="sulu_sales_order.cart_manager" class="%sulu_sales_order.cart_manager.class%">

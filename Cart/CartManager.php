@@ -39,20 +39,6 @@ class CartManager extends BaseSalesManager
      */
     const EXPIRY_MONTHS = 2;
 
-    protected static $orderEntityName = 'SuluSalesOrderBundle:Order';
-    protected static $contactEntityName = 'SuluContactBundle:Contact';
-    protected static $addressEntityName = 'SuluContactBundle:Address';
-    protected static $accountEntityName = 'SuluContactBundle:Account';
-    protected static $orderStatusEntityName = 'SuluSalesOrderBundle:OrderStatus';
-    protected static $orderTypeEntityName = 'SuluSalesOrderBundle:OrderType';
-    protected static $orderTypeTranslationEntityName = 'SuluSalesOrderBundle:OrderTypeTranslation';
-    protected static $orderAddressEntityName = 'SuluSalesCoreBundle:OrderAddress';
-    protected static $orderStatusTranslationEntityName = 'SuluSalesOrderBundle:OrderStatusTranslation';
-    protected static $itemEntityName = 'SuluSalesCoreBundle:Item';
-    protected static $termsOfDeliveryEntityName = 'SuluContactExtensionBundle:TermsOfDelivery';
-    protected static $termsOfPaymentEntityName = 'SuluContactExtensionBundle:TermsOfPayment';
-    protected static $statusClass = 'Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatus';
-
     /**
      * @var ObjectManager
      */
@@ -193,7 +179,7 @@ class CartManager extends BaseSalesManager
             // default locale from user
             $locale = $locale ?: $user->getLocale();
             // get carts
-            $cartArray = $this->findCartByUser($locale, $user);
+            $cartArray = $this->findCartByUser($user, $locale);
         }
 
         // cleanup cart array: remove duplicates and expired carts
@@ -241,8 +227,8 @@ class CartManager extends BaseSalesManager
      * Updates the cart
      *
      * @param array $data
-     * @param $user
-     * @param $locale
+     * @param UserInterface $user
+     * @param string $locale
      *
      * @throws \Sulu\Bundle\Sales\OrderBundle\Order\Exception\OrderException
      * @throws \Sulu\Bundle\Sales\OrderBundle\Order\Exception\OrderNotFoundException
@@ -261,10 +247,10 @@ class CartManager extends BaseSalesManager
     /**
      * Submits an order
      *
-     * @param $user
-     * @param $locale
+     * @param UserInterface $user
+     * @param string $locale
      * @param bool $orderWasSubmitted
-     * @param $originalCart The original cart that was submitted
+     * @param OrderInterface $originalCart The original cart that was submitted
      *
      * @throws OrderException
      * @throws \Sulu\Component\Rest\Exception\EntityNotFoundException
@@ -337,9 +323,20 @@ class CartManager extends BaseSalesManager
      */
     private function reApplyOrderAddresses($cart, $user)
     {
-        $this->setNewAddresses($cart, $user);
+        // validate addresses
+        $this->validateOrCreateAddresses($cart, $user);
 
-        // apply addresses
+        // reapply invoice address of cart
+        if ($cart->getInvoiceAddress()->getContactAddress()) {
+            $this->orderAddressManager->getAndSetOrderAddressByContactAddress(
+                $cart->getInvoiceAddress()->getContactAddress(),
+                null,
+                null,
+                $cart->getInvoiceAddress()
+            );
+        }
+
+        // reapply delivery address of cart
         if ($cart->getDeliveryAddress()->getContactAddress()) {
             $this->orderAddressManager->getAndSetOrderAddressByContactAddress(
                 $cart->getDeliveryAddress()->getContactAddress(),
@@ -349,6 +346,7 @@ class CartManager extends BaseSalesManager
             );
         }
 
+        // reapply delivery-addresses of every item
         foreach ($cart->getItems() as $item) {
             if ($item->getDeliveryAddress() &&
                 $item->getDeliveryAddress()->getContactAddress()
@@ -368,7 +366,7 @@ class CartManager extends BaseSalesManager
      *
      * @param ApiOrderInterface $cart
      */
-    protected function setNewAddresses($cart)
+    protected function validateOrCreateAddresses($cart)
     {
         if ($cart instanceof ApiOrderInterface) {
             $cart = $cart->getEntity();
@@ -428,12 +426,12 @@ class CartManager extends BaseSalesManager
     /**
      * Finds cart by locale and user
      *
-     * @param $locale
-     * @param $user
+     * @param string $locale
+     * @param UserInterface $user
      *
      * @return array|null
      */
-    private function findCartByUser($locale, $user)
+    private function findCartByUser($user, $locale)
     {
         $cartArray = $this->orderRepository->findByStatusIdAndUser(
             $locale,
@@ -521,10 +519,11 @@ class CartManager extends BaseSalesManager
     }
 
     /**
-     * Patches an item in cart
+     * Removes an item from cart
      *
-     * @param null $user
-     * @param null $locale
+     * @param int $itemId
+     * @param null|UserInterface $user
+     * @param null|string $locale
      *
      * @return null|Order
      */
@@ -547,12 +546,12 @@ class CartManager extends BaseSalesManager
      *
      * @param $user
      * @param $persist
-     *
-     * @throws \Sulu\Component\Rest\Exception\EntityNotFoundException
+     * @param null|string $currencyCode
      *
      * @return Order
+     * @throws \Sulu\Component\Rest\Exception\EntityNotFoundException
      */
-    protected function createEmptyCart($user, $persist, $currency = null)
+    protected function createEmptyCart($user, $persist, $currencyCode = null)
     {
         $cart = new Order();
         $cart->setCreator($user);
@@ -562,8 +561,8 @@ class CartManager extends BaseSalesManager
         $cart->setOrderDate(new \DateTime());
 
         // set currency - if not defined use default
-        $currency = $currency ?: $this->defaultCurrency;
-        $cart->setCurrencyCode($currency);
+        $currencyCode = $currencyCode ?: $this->defaultCurrency;
+        $cart->setCurrencyCode($currencyCode);
 
         // get address from contact and account
         $contact = $user->getContact();
