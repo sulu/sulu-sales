@@ -1156,7 +1156,7 @@ class OrderManager
      * @param int $userId
      *
      * @throws Exception\OrderException
-     * 
+     *
      * @return bool
      */
     private function processItems($data, Order $order, $locale, $userId = null)
