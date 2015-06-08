@@ -635,7 +635,7 @@ class OrderManager
     /**
      * returns a specific field descriptor by key
      *
-     * @param $key
+     * @param string $key
      *
      * @return DoctrineFieldDescriptor
      */
