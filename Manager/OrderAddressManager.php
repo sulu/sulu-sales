@@ -212,7 +212,7 @@ class OrderAddressManager
             $address = $this->getProperty($addressData, 'contactAddress');
         }
         if ($address) {
-            $this->getOrderAddressByContactAddressId($address, null, null, $orderAddress);
+            $this->getAndSetOrderAddressByContactAddressId($address, null, null, $orderAddress);
         }
     }
 
