@@ -110,7 +110,7 @@ class OrderAddressManager
      *
      * @return OrderAddressInterface
      */
-    public function getOrderAddressByContactAddressId(
+    public function getAndSetOrderAddressByContactAddressId(
         $addressId,
         $contact = null,
         $account = null,
