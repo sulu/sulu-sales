@@ -11,11 +11,12 @@
 namespace Sulu\Bundle\Sales\CoreBundle\Manager;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Sulu\Component\Rest\Exception\EntityNotFoundException;
 use Sulu\Bundle\ContactBundle\Entity\Address;
+use Sulu\Bundle\ContactBundle\Entity\Contact;
 use Sulu\Bundle\Sales\CoreBundle\Entity\OrderAddressInterface;
 use Sulu\Bundle\Sales\CoreBundle\Entity\OrderAddressRepository;
 use Sulu\Bundle\Sales\CoreBundle\Exceptions\MissingAttributeException;
-use Sulu\Component\Rest\Exception\EntityNotFoundException;
 
 class OrderAddressManager
 {
@@ -204,9 +205,14 @@ class OrderAddressManager
         $orderAddress->setPostboxPostcode($this->getProperty($addressData, 'postboxPostcode', ''));
         $orderAddress->setPostboxNumber($this->getProperty($addressData, 'postboxNumber', ''));
 
-        $address = $this->getProperty($addressData, 'address', '');
+        $address = null;
+        if ($this->getProperty($addressData, 'address')) {
+            $address = $this->getProperty($addressData, 'address');
+        } elseif ($this->getProperty($addressData, 'contactAddress')) {
+            $address = $this->getProperty($addressData, 'contactAddress');
+        }
         if ($address) {
-            $orderAddress->setContactAddress($address);
+            $this->getOrderAddressByContactAddressId($address, null, null, $orderAddress);
         }
     }
 
@@ -220,7 +226,7 @@ class OrderAddressManager
      *
      * @return array
      */
-    public function getContactData($addressData, Contact $contact)
+    public function getContactData($addressData, Contact $contact = null)
     {
         $result = array();
         // if account is set, take account's name
@@ -243,7 +249,6 @@ class OrderAddressManager
                 $result['title'] = $contact->getTitle()->getTitle();
             }
         } else {
-
             throw new MissingAttributeException('firstName, lastName or contact');
         }
 
