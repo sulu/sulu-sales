@@ -407,10 +407,10 @@ class OrderManager
     }
 
     /**
-     * Returns contact data as an array. either by provided address or contact
+     * Returns contact data as an array. Either by provided address or contact
      *
-     * @param $addressData
-     * @param $contact
+     * @param array $addressData
+     * @param Contact $contact
      *
      * @throws MissingOrderAttributeException
      *
@@ -450,7 +450,7 @@ class OrderManager
     /**
      * Deletes an order
      *
-     * @param $id
+     * @param int $id
      *
      * @throws Exception\OrderNotFoundException
      */
@@ -647,8 +647,8 @@ class OrderManager
     /**
      * Finds an order by id and locale
      *
-     * @param $id
-     * @param $locale
+     * @param int $id
+     * @param string $locale
      *
      * @return null|Order
      */
@@ -868,8 +868,8 @@ class OrderManager
     /**
      * Check if necessary data is set
      *
-     * @param $data
-     * @param $isNew
+     * @param array $data
+     * @param bool $isNew
      */
     private function checkRequiredData($data, $isNew)
     {

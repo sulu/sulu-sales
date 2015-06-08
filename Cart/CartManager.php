@@ -172,23 +172,23 @@ class CartManager extends BaseSalesManager
         if (!$user) {
             // TODO: get correct locale
             $locale = 'de';
-            $cartArray = $this->findCartBySessionId();
+            $cartsArray = $this->findCartBySessionId();
         } else {
             // TODO: check if cart for this sessionId exists and assign it to user
 
             // default locale from user
             $locale = $locale ?: $user->getLocale();
             // get carts
-            $cartArray = $this->findCartByUser($user, $locale);
+            $cartsArray = $this->findCartsByUser($user, $locale);
         }
 
         // cleanup cart array: remove duplicates and expired carts
-        $this->cleanupCartArray($cartArray);
+        $this->cleanupCartsArray($cartArray);
 
         // check if cart exists
-        if ($cartArray && count($cartArray) > 0) {
+        if ($cartsArray && count($cartsArray) > 0) {
             // multiple carts found, do a cleanup
-            $cart = $cartArray[0];
+            $cart = $cartsArray[0];
         } else {
             // user has no cart - return empty one
             $cart = $this->createEmptyCart($user, $persistEmptyCart);
@@ -410,7 +410,7 @@ class CartManager extends BaseSalesManager
     private function findCartBySessionId()
     {
         $sessionId = $this->session->getId();
-        $cartArray = $this->orderRepository->findBy(
+        $cartsArray = $this->orderRepository->findBy(
             array(
                 'sessionId' => $sessionId,
                 'status' => OrderStatus::STATUS_IN_CART
@@ -420,7 +420,7 @@ class CartManager extends BaseSalesManager
             )
         );
 
-        return $cartArray;
+        return $cartsArray;
     }
 
     /**
@@ -431,27 +431,27 @@ class CartManager extends BaseSalesManager
      *
      * @return array|null
      */
-    private function findCartByUser($user, $locale)
+    private function findCartsByUser($user, $locale)
     {
-        $cartArray = $this->orderRepository->findByStatusIdAndUser(
+        $cartsArray = $this->orderRepository->findByStatusIdAndUser(
             $locale,
             OrderStatus::STATUS_IN_CART,
             $user
         );
 
-        return $cartArray;
+        return $cartsArray;
     }
 
     /**
      * removes all elements from database but the first
      *
-     * @param $cartArray
+     * @param $cartsArray
      */
-    private function cleanupCartArray(&$cartArray)
+    private function cleanupCartsArray(&$cartsArray)
     {
-        if ($cartArray && count($cartArray) > 0) {
-            // handle cartArray count is > 1
-            foreach ($cartArray as $index => $cart) {
+        if ($cartsArray && count($cartsArray) > 0) {
+            // handle cartsArray count is > 1
+            foreach ($cartsArray as $index => $cart) {
                 // delete expired carts
                 if ($cart->getChanged()->getTimestamp() < strtotime(static::EXPIRY_MONTHS . ' months ago')) {
                     $this->em->remove($cart);
