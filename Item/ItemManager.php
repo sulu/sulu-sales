@@ -390,7 +390,7 @@ class ItemManager
             // create order-address and assign contact-address data
             $deliveryAddress = $item->getEntity()->getDeliveryAddress();
 
-            $orderAddress = $this->orderAddressManager->getOrderAddressByContactAddressId(
+            $orderAddress = $this->orderAddressManager->getAndSetOrderAddressByContactAddressId(
                 $contactAddressId,
                 $contact,
                 $account,
