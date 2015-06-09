@@ -694,7 +694,7 @@ class OrderManager
      *
      * @return null|\Sulu\Bundle\Sales\CoreBundle\Api\Item
      */
-    public function updateItem($item, $itemData, $locale, $userId)
+    public function updateItem(ItemInterface $item, $itemData, $locale, $userId)
     {
         return $this->itemManager->save($itemData, $locale, $userId, $item);
     }
@@ -702,6 +702,7 @@ class OrderManager
     /**
      * @param ItemInterface $item
      * @param OrderInterface $order
+     * @param bool $deleteEntity
      */
     public function removeItem(ItemInterface $item, OrderInterface $order, $deleteEntity = true)
     {
@@ -718,7 +719,9 @@ class OrderManager
      *
      * @param int $itemId
      * @param OrderInterface $order
+     * @param bool $hasMultiple Returns if multiple orders exist for the item
      *
+     * @throws EntityNotFoundException
      * @throws ItemNotFoundException
      * @throws OrderException
      *
@@ -829,9 +832,9 @@ class OrderManager
     /**
      * Sets a date if it's set in data
      *
-     * @param $data
-     * @param $key
-     * @param $currentDate
+     * @param array $data
+     * @param string $key
+     * @param DateTime $currentDate
      * @param callable $setCallback
      */
     private function setDate($data, $key, $currentDate, callable $setCallback)
@@ -847,8 +850,8 @@ class OrderManager
     /**
      * Sets OrderType on an order
      *
-     * @param $data
-     * @param $order
+     * @param array $data
+     * @param Order $order
      *
      * @throws EntityNotFoundException
      * @throws OrderException
@@ -883,6 +886,8 @@ class OrderManager
 
     /**
      * Initializes field descriptors
+     *
+     * @param string $locale
      */
     private function initializeFieldDescriptors($locale)
     {
@@ -1068,11 +1073,12 @@ class OrderManager
     }
 
     /**
-     * @param $data
+     * @param array $data
      * @param Order $order
+     * @param bool $patch
      *
-     * @throws Exception\MissingOrderAttributeException
-     * @throws Exception\OrderDependencyNotFoundException
+     * @throws MissingOrderAttributeException
+     * @throws OrderDependencyNotFoundException
      *
      * @return null|object
      */
@@ -1111,9 +1117,10 @@ class OrderManager
     /**
      * @param array $data
      * @param Order $order
+     * @param bool $patch
      *
-     * @throws Exception\MissingOrderAttributeException
-     * @throws Exception\OrderDependencyNotFoundException
+     * @throws MissingOrderAttributeException
+     * @throws OrderDependencyNotFoundException
      *
      * @return null|object
      */
