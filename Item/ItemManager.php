@@ -366,7 +366,7 @@ class ItemManager
      * @throws ItemDependencyNotFoundException
      * @throws ItemException
      */
-    protected function setItemDeliveryAddress($addressData, ApiItemInterface $item, Contact $contact, AccountInterface $account)
+    protected function setItemDeliveryAddress($addressData, ApiItemInterface $item, Contact $contact = null, AccountInterface $account = null)
     {
         if ($item->getId() !== null || $item->getDeliveryAddress() === null) {
             // create delivery address
