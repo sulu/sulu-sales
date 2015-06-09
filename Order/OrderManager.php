@@ -243,7 +243,7 @@ class OrderManager
         $this->setTermsOfDelivery($data, $order, $patch);
         $this->setTermsOfPayment($data, $order, $patch);
 
-        $account = $this->setAccount($data, $order, $patch);
+        $account = $this->setCustomerAccount($data, $order, $patch);
 
         // set session - id
         $sessionId = $this->session->getId();
@@ -1157,6 +1157,8 @@ class OrderManager
     }
 
     /**
+     * Sets the customer account of an order
+     *
      * @param array $data
      * @param Order $order
      * @param bool $patch
@@ -1165,7 +1167,7 @@ class OrderManager
      * @throws MissingOrderAttributeException
      * @throws OrderDependencyNotFoundException
      */
-    private function setAccount($data, Order $order, $patch = false)
+    private function setCustomerAccount($data, Order $order, $patch = false)
     {
         $accountData = $this->getProperty($data, 'customerAccount');
         if ($accountData) {
