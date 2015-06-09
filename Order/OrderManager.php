@@ -240,10 +240,10 @@ class OrderManager
             array($order, 'setOrderDate')
         );
 
-        $this->setTermsOfDelivery($data, $order);
-        $this->setTermsOfPayment($data, $order);
+        $this->setTermsOfDelivery($data, $order, $patch);
+        $this->setTermsOfPayment($data, $order, $patch);
 
-        $account = $this->setAccount($data, $order);
+        $account = $this->setAccount($data, $order, $patch);
 
         // set session - id
         $sessionId = $this->session->getId();
