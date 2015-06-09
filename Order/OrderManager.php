@@ -190,7 +190,8 @@ class OrderManager
         $userId = null,
         $id = null,
         $statusId = null,
-        $flush = true
+        $flush = true,
+        $patch = true
     ) {
         $isNewOrder = !$id;
 
@@ -207,11 +208,21 @@ class OrderManager
 
         $user = $userId ? $this->userRepository->findUserById($userId) : null;
 
-        $order->setOrderNumber($this->getProperty($data, 'orderNumber', $order->getOrderNumber()));
-        $order->setCurrencyCode($this->getProperty($data, 'currencyCode', $order->getCurrencyCode()));
-        $order->setCostCentre($this->getProperty($data, 'costCentre', $order->getCostCentre()));
-        $order->setCommission($this->getProperty($data, 'commission', $order->getCommission()));
-        $order->setTaxfree($this->getProperty($data, 'taxfree', $order->getTaxfree()));
+        $order->setOrderNumber(
+            $this->getPropertyBasedOnPatch($data, 'orderNumber', $order->getOrderNumber(), $patch)
+        );
+        $order->setCurrencyCode(
+            $this->getPropertyBasedOnPatch($data, 'currencyCode', $order->getCurrencyCode(), $patch)
+        );
+        $order->setCostCentre(
+            $this->getPropertyBasedOnPatch($data, 'costCentre', $order->getCostCentre(), $patch)
+        );
+        $order->setCommission(
+            $this->getPropertyBasedOnPatch($data, 'commission', $order->getCommission(), $patch)
+        );
+        $order->setTaxfree(
+            $this->getPropertyBasedOnPatch($data, 'taxfree', $order->getTaxfree(), $patch)
+        );
 
         // set type of order (if set)
         $this->setOrderType($data, $order);
@@ -371,38 +382,6 @@ class OrderManager
 
         // set total price
         $apiOrder->setTotalNetPrice($totalPrice);
-    }
-
-    /**
-     * Creates correct media-api for supplier-items array
-     *
-     * @param array $items
-     * @param string $locale
-     */
-    protected function createMediaForSupplierItems($items, $locale)
-    {
-        foreach ($items as $item) {
-            if (isset($item['items']) && count($item['items'] > 0)) {
-                $this->createMediaForItems($item['items'], $locale);
-            }
-        }
-    }
-
-    /**
-     * Creates correct media-api for items array
-     *
-     * @param array $items
-     * @param string $locale
-     */
-    protected function createMediaForItems($items, $locale)
-    {
-        foreach ($items as $item) {
-            $product = $item->getProduct();
-            if ($product) {
-                $this->productManager->createProductMedia($product, $locale);
-                $item->setProduct($product);
-            }
-        }
     }
 
     /**
@@ -693,6 +672,161 @@ class OrderManager
     }
 
     /**
+     * @param array $itemData
+     * @param string $locale
+     * @param int $userId
+     * @param Order $order
+     *
+     * @return mixed
+     */
+    public function addItem($itemData, $locale, $userId, $order)
+    {
+        $item = $this->itemManager->save($itemData, $locale, $userId);
+
+        return $order->addItem($item->getEntity());
+    }
+
+    /**
+     * @param ItemInterface $item
+     * @param array $itemData
+     * @param string $locale
+     * @param int $userId
+     *
+     * @return null|\Sulu\Bundle\Sales\CoreBundle\Api\Item
+     */
+    public function updateItem($item, $itemData, $locale, $userId)
+    {
+        return $this->itemManager->save($itemData, $locale, $userId, $item);
+    }
+
+    /**
+     * @param ItemInterface $item
+     * @param OrderInterface $order
+     */
+    public function removeItem(ItemInterface $item, OrderInterface $order, $deleteEntity = true)
+    {
+        // remove from order
+        $order->removeItem($item);
+        if ($deleteEntity) {
+            // delete item
+            $this->em->remove($item);
+        }
+    }
+
+    /**
+     * Get order item by id and checks if item belongs to the order
+     *
+     * @param int $itemId
+     * @param OrderInterface $order
+     *
+     * @throws ItemNotFoundException
+     * @throws OrderException
+     *
+     * @return null|\Sulu\Bundle\Sales\CoreBundle\Api\Item
+     */
+    public function getOrderItemById($itemId, OrderInterface $order, &$hasMultiple = false)
+    {
+        $item = $this->itemManager->findEntityById($itemId);
+        if (!$item) {
+            throw new ItemNotFoundException($itemId);
+        }
+
+        $match = false;
+        $orders = $this->findOrderEntityForItemWithId($itemId, true);
+        if ($orders) {
+            if (count($orders > 1)) {
+                $hasMultiple = true;
+            }
+            foreach ($orders as $itemOrders) {
+                if ($order === $itemOrders) {
+                    $match = true;
+                }
+            }
+        }
+        if (!$match) {
+            throw new OrderException('User not owner of order');
+        }
+
+        return $item;
+    }
+
+    /**
+     * Creates correct media-api for supplier-items array
+     *
+     * @param array $items
+     * @param string $locale
+     */
+    protected function createMediaForSupplierItems($items, $locale)
+    {
+        foreach ($items as $item) {
+            if (isset($item['items']) && count($item['items'] > 0)) {
+                $this->createMediaForItems($item['items'], $locale);
+            }
+        }
+    }
+
+    /**
+     * Creates correct media-api for items array
+     *
+     * @param array $items
+     * @param string $locale
+     */
+    protected function createMediaForItems($items, $locale)
+    {
+        foreach ($items as $item) {
+            $product = $item->getProduct();
+            if ($product) {
+                $this->productManager->createProductMedia($product, $locale);
+                $item->setProduct($product);
+            }
+        }
+    }
+
+    /**
+     * Returns the entry from the data with the given key, or the given default value, if the key does not exist
+     *
+     * @param array $data
+     * @param string $key
+     * @param string $default
+     *
+     * @return mixed
+     */
+    protected function getProperty(array $data, $key, $default = null)
+    {
+        return array_key_exists($key, $data) ? $data[$key] : $default;
+    }
+
+    /**
+     * Gets Property of data array. If PUT set to null
+     *
+     * @param array $data
+     * @param string $key
+     * @param mixed $default
+     * @param bool $patch
+     *
+     * @return mixed
+     */
+    protected function getPropertyBasedOnPatch($data, $key, $default, $patch)
+    {
+        if (!$patch) {
+            $default = null;
+        }
+        return $this->getProperty($data, $key, $default);
+    }
+
+    /**
+     * Check if necessary data is set
+     *
+     * @param array $data
+     * @param bool $isNew
+     */
+    private function checkRequiredData($data, $isNew)
+    {
+        $this->checkDataSet($data, 'deliveryAddress', $isNew);
+        $this->checkDataSet($data, 'invoiceAddress', $isNew);
+    }
+
+    /**
      * Sets a date if it's set in data
      *
      * @param $data
@@ -864,17 +998,6 @@ class OrderManager
         );
     }
 
-    /**
-     * Check if necessary data is set
-     *
-     * @param array $data
-     * @param bool $isNew
-     */
-    private function checkRequiredData($data, $isNew)
-    {
-        $this->checkDataSet($data, 'deliveryAddress', $isNew);
-        $this->checkDataSet($data, 'invoiceAddress', $isNew);
-    }
 
     /**
      * Checks data for attributes
@@ -917,7 +1040,7 @@ class OrderManager
      * Searches for contact in specified data and calls callback function
      *
      * @param array $data
-     * @param string $dataKey
+     * @param string $key
      * @param callable $addCallback
      *
      * @throws Exception\MissingOrderAttributeException
@@ -925,12 +1048,15 @@ class OrderManager
      *
      * @return Contact|null
      */
-    private function addContactRelation(array $data, $dataKey, $addCallback)
+    private function addContactRelation(array $data, $key, $addCallback)
     {
         $contact = null;
-        if (array_key_exists($dataKey, $data) && is_array($data[$dataKey]) && array_key_exists('id', $data[$dataKey])) {
+        if (array_key_exists($key, $data) &&
+            is_array($data[$key]) &&
+            array_key_exists('id', $data[$key])
+        ) {
             /** @var Contact $contact */
-            $contactId = $data[$dataKey]['id'];
+            $contactId = $data[$key]['id'];
             $contact = $this->em->getRepository(static::$contactEntityName)->find($contactId);
             if (!$contact) {
                 throw new OrderDependencyNotFoundException(static::$contactEntityName, $contactId);
@@ -942,20 +1068,6 @@ class OrderManager
     }
 
     /**
-     * Returns the entry from the data with the given key, or the given default value, if the key does not exist
-     *
-     * @param array $data
-     * @param string $key
-     * @param string $default
-     *
-     * @return mixed
-     */
-    private function getProperty(array $data, $key, $default = null)
-    {
-        return array_key_exists($key, $data) ? $data[$key] : $default;
-    }
-
-    /**
      * @param $data
      * @param Order $order
      *
@@ -964,7 +1076,7 @@ class OrderManager
      *
      * @return null|object
      */
-    private function setTermsOfDelivery($data, Order $order)
+    private function setTermsOfDelivery($data, Order $order, $patch = false)
     {
         $terms = null;
         // terms of delivery
@@ -984,7 +1096,7 @@ class OrderManager
             }
             $order->setTermsOfDelivery($terms);
             $order->setTermsOfDeliveryContent($terms->getTerms());
-        } else {
+        } elseif (!$patch) {
             $order->setTermsOfDelivery(null);
             $order->setTermsOfDeliveryContent(null);
         }
@@ -1005,7 +1117,7 @@ class OrderManager
      *
      * @return null|object
      */
-    private function setTermsOfPayment($data, Order $order)
+    private function setTermsOfPayment($data, Order $order, $patch = false)
     {
         $terms = null;
         // terms of delivery
@@ -1025,7 +1137,7 @@ class OrderManager
             }
             $order->setTermsOfPayment($terms);
             $order->setTermsOfPaymentContent($terms->getTerms());
-        } else {
+        } elseif (!$patch) {
             $order->setTermsOfPayment(null);
             $order->setTermsOfPaymentContent(null);
         }
@@ -1040,13 +1152,13 @@ class OrderManager
     /**
      * @param array $data
      * @param Order $order
-     *
-     * @throws Exception\MissingOrderAttributeException
-     * @throws Exception\OrderDependencyNotFoundException
+     * @param bool $patch
      *
      * @return null|object
+     * @throws MissingOrderAttributeException
+     * @throws OrderDependencyNotFoundException
      */
-    private function setAccount($data, Order $order)
+    private function setAccount($data, Order $order, $patch = false)
     {
         $accountData = $this->getProperty($data, 'customerAccount');
         if ($accountData) {
@@ -1060,90 +1172,11 @@ class OrderManager
             $order->setCustomerAccount($account);
 
             return $account;
-        } else {
+        } elseif (!$patch) {
             $order->setCustomerAccount(null);
         }
 
         return null;
-    }
-
-    /**
-     * @param array $itemData
-     * @param string $locale
-     * @param int $userId
-     * @param Order $order
-     *
-     * @return mixed
-     */
-    public function addItem($itemData, $locale, $userId, $order)
-    {
-        $item = $this->itemManager->save($itemData, $locale, $userId);
-
-        return $order->addItem($item->getEntity());
-    }
-
-    /**
-     * @param ItemInterface $item
-     * @param array $itemData
-     * @param string $locale
-     * @param int $userId
-     *
-     * @return null|\Sulu\Bundle\Sales\CoreBundle\Api\Item
-     */
-    public function updateItem($item, $itemData, $locale, $userId)
-    {
-        return $this->itemManager->save($itemData, $locale, $userId, $item);
-    }
-
-    /**
-     * @param ItemInterface $item
-     * @param OrderInterface $order
-     */
-    public function removeItem(ItemInterface $item, OrderInterface $order, $deleteEntity = true)
-    {
-        // remove from order
-        $order->removeItem($item);
-        if ($deleteEntity) {
-            // delete item
-            $this->em->remove($item);
-        }
-    }
-
-    /**
-     * Get order item by id and checks if item belongs to the order
-     *
-     * @param int $itemId
-     * @param OrderInterface $order
-     *
-     * @throws ItemNotFoundException
-     * @throws OrderException
-     *
-     * @return null|\Sulu\Bundle\Sales\CoreBundle\Api\Item
-     */
-    public function getOrderItemById($itemId, OrderInterface $order, &$hasMultiple = false)
-    {
-        $item = $this->itemManager->findEntityById($itemId);
-        if (!$item) {
-            throw new ItemNotFoundException($itemId);
-        }
-
-        $match = false;
-        $orders = $this->findOrderEntityForItemWithId($itemId, true);
-        if ($orders) {
-            if (count($orders > 1)) {
-                $hasMultiple = true;
-            }
-            foreach ($orders as $itemOrders) {
-                if ($order === $itemOrders) {
-                    $match = true;
-                }
-            }
-        }
-        if (!$match) {
-            throw new OrderException('User not owner of order');
-        }
-
-        return $item;
     }
 
     /**
