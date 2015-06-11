@@ -305,32 +305,9 @@ class OrderDataSetup
         $this->termsOfPayment->setTerms('10% off');
 
         // order
-        $this->order = new Order();
-        $this->order->setNumber('1234');
-        $this->order->setCommission('commission');
-        $this->order->setCostCentre('cost-centre');
-        $this->order->setCustomerName($this->contact->getFullName());
-        $this->order->setCurrencyCode('EUR');
-        $this->order->setTermsOfDelivery($this->termsOfDelivery);
-        $this->order->setTermsOfDeliveryContent($this->termsOfDelivery->getTerms());
-        $this->order->setTermsOfPayment($this->termsOfPayment);
-        $this->order->setTermsOfPaymentContent($this->termsOfPayment->getTerms());
-        $this->order->setCreated(new DateTime());
-        $this->order->setChanged(new DateTime());
-        $this->order->setCreator();
-        $this->order->setDesiredDeliveryDate(new DateTime('2015-01-01'));
-        $this->order->setSessionId('abcd1234');
-        $this->order->setTaxfree(true);
-        $this->order->setCustomerContact($this->contact);
-        $this->order->setCustomerAccount($this->account);
-        $this->order->setStatus($this->orderStatus);
-        $this->order->setBitmaskStatus($this->orderStatus->getId());
-        $this->order->setDeliveryAddress($this->orderAddressDelivery);
-        $this->order->setInvoiceAddress($this->orderAddressInvoice);
-        $this->order->setCreator($this->user);
-        $this->order->setChanger($this->user);
+        $this->order = $this->createNewTestOrder();
 
-        $order2 = clone $this->order;
+        $order2 = $this->createNewTestOrder();
         $order2->setNumber('12345');
         $order2->setDeliveryAddress(null);
         $order2->setInvoiceAddress(null);
@@ -354,6 +331,9 @@ class OrderDataSetup
         $productTypeTranslation->setType($productType);
         // product status
         $productStatus = new Status();
+        $productStatus->setId(Status::ACTIVE);
+        $metadata = $this->em->getClassMetaData(get_class(new Status()));
+        $metadata->setIdGeneratorType(\Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_NONE);
         $productStatusTranslation = new StatusTranslation();
         $productStatusTranslation->setLocale($this->locale);
         $productStatusTranslation->setName('EnglishProductStatus-1');
@@ -404,27 +384,9 @@ class OrderDataSetup
         $this->product2->addPrice($price2);
 
         // Item
-        $this->item = $this->itemFactory->createEntity();
-        $this->item->setName('Product1');
-        $this->item->setNumber('123');
-        $this->item->setQuantity(2);
-        $this->item->setQuantityUnit('Pcs');
-        $this->item->setUseProductsPrice(true);
-        $this->item->setTax(20);
-        $this->item->setPrice($this->productPrice->getPrice());
-        $this->item->setDiscount(10);
-        $this->item->setDescription('This is a description');
-        $this->item->setWeight(15.8);
-        $this->item->setWidth(5);
-        $this->item->setHeight(6);
-        $this->item->setLength(7);
-        $this->item->setCreated(new DateTime());
-        $this->item->setChanged(new DateTime());
-        $this->item->setProduct($this->product);
-        $this->item->setSupplier($this->account);
-        $this->item->setSupplierName($this->account->getName());
+        $this->item = $this->createNewTestItem();
 
-        $this->item2 = clone($this->item);
+        $this->item2 = $this->createNewTestItem();
         $this->item2->setSupplier($this->account2);
 
         $orderTypeTranslationManual = new OrderTypeTranslation();
@@ -466,7 +428,15 @@ class OrderDataSetup
         $this->order->addItem($this->item);
         $this->order->addItem($this->item2);
         $this->order->setType($this->orderTypeManual);
+
         $order2->setType($this->orderTypeManual);
+        $item = $this->createNewTestItem();
+        $item2 = $this->createNewTestItem();
+        $order2->addItem($item);
+        $order2->addItem($item2);
+
+        $this->em->persist($item);
+        $this->em->persist($item2);
 
         $this->em->persist($this->currency);
         $this->em->persist($this->productPrice);
@@ -506,5 +476,69 @@ class OrderDataSetup
         $this->em->persist($productStatusTranslation);
 
         $this->em->flush();
+    }
+
+    /**
+     * Creates new item for test purpose
+     *
+     * @return \Sulu\Bundle\Sales\CoreBundle\Entity\ItemInterface
+     */
+    private function createNewTestItem()
+    {
+        $item = $this->itemFactory->createEntity();
+        $item->setName('Product1');
+        $item->setNumber('123');
+        $item->setQuantity(2);
+        $item->setQuantityUnit('Pcs');
+        $item->setUseProductsPrice(true);
+        $item->setTax(20);
+        $item->setPrice($this->productPrice->getPrice());
+        $item->setDiscount(10);
+        $item->setDescription('This is a description');
+        $item->setWeight(15.8);
+        $item->setWidth(5);
+        $item->setHeight(6);
+        $item->setLength(7);
+        $item->setCreated(new DateTime());
+        $item->setChanged(new DateTime());
+        $item->setProduct($this->product);
+        $item->setSupplier($this->account);
+        $item->setSupplierName($this->account->getName());
+
+        return $item;
+    }
+
+    /**
+     * @return Order
+     */
+    private function createNewTestOrder()
+    {
+        // order
+        $order = new Order();
+        $order->setNumber('1234');
+        $order->setCommission('commission');
+        $order->setCostCentre('cost-centre');
+        $order->setCustomerName($this->contact->getFullName());
+        $order->setCurrencyCode('EUR');
+        $order->setTermsOfDelivery($this->termsOfDelivery);
+        $order->setTermsOfDeliveryContent($this->termsOfDelivery->getTerms());
+        $order->setTermsOfPayment($this->termsOfPayment);
+        $order->setTermsOfPaymentContent($this->termsOfPayment->getTerms());
+        $order->setCreated(new \DateTime());
+        $order->setChanged(new \DateTime());
+        $order->setCreator();
+        $order->setDesiredDeliveryDate(new \DateTime('2015-01-01'));
+        $order->setSessionId('abcd1234');
+        $order->setTaxfree(true);
+        $order->setCustomerContact($this->contact);
+        $order->setCustomerAccount($this->account);
+        $order->setStatus($this->orderStatus);
+        $order->setBitmaskStatus($this->orderStatus->getId());
+        $order->setDeliveryAddress($this->orderAddressDelivery);
+        $order->setInvoiceAddress($this->orderAddressInvoice);
+        $order->setCreator($this->user);
+        $order->setChanger($this->user);
+
+        return $order;
     }
 }
