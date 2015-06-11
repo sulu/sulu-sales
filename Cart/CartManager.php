@@ -18,6 +18,7 @@ use Sulu\Bundle\Sales\CoreBundle\Manager\BaseSalesManager;
 use Sulu\Bundle\Sales\CoreBundle\Manager\OrderAddressManager;
 use Sulu\Bundle\Sales\CoreBundle\Pricing\GroupedItemsPriceCalculatorInterface;
 use Sulu\Bundle\Sales\OrderBundle\Api\ApiOrderInterface;
+use Sulu\Bundle\Sales\OrderBundle\Entity\OrderInterface;
 use Sulu\Bundle\Sales\OrderBundle\Api\Order as ApiOrder;
 use Sulu\Bundle\Sales\OrderBundle\Entity\Order;
 use Sulu\Bundle\Sales\OrderBundle\Entity\OrderRepository;
@@ -194,6 +195,9 @@ class CartManager extends BaseSalesManager
             $cart = $this->createEmptyCart($user, $persistEmptyCart);
         }
 
+        // check if all products are still available
+        $this->checkProductsAvailability($cart);
+
         $apiOrder = $this->orderFactory->createApiEntity($cart, $locale);
 
         $this->orderManager->updateApiEntity($apiOrder, $locale);
@@ -314,6 +318,33 @@ class CartManager extends BaseSalesManager
         $originalCart = $cart;
 
         return $this->getUserCart($user, $locale);
+    }
+
+    /**
+     * Removes items from cart that have no valid shop products
+     * applied
+     *
+     * @param OrderInterface $cart
+     */
+    private function checkProductsAvailability(OrderInterface $cart)
+    {
+        $hasValidProducts = true;
+        if (!$cart->getItems()->isEmpty()) {
+            /** @var \Sulu\Bundle\Sales\CoreBundle\Entity\ItemInterface $item */
+            foreach ($cart->getItems() as $item) {
+                if (!$item->getProduct() ||
+                    !$item->getProduct()->isValidShopProduct()
+                ) {
+                    $hasValidProducts = false;
+                    $cart->removeItem($item);
+                    $this->em->remove($item);
+                }
+            }
+        }
+        // persist new cart
+        if (!$hasValidProducts) {
+            $this->em->flush();
+        }
     }
 
     /**
