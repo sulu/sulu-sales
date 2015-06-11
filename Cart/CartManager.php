@@ -328,21 +328,24 @@ class CartManager extends BaseSalesManager
      */
     private function checkProductsAvailability(OrderInterface $cart)
     {
-        $hasValidProducts = true;
-        if (!$cart->getItems()->isEmpty()) {
-            /** @var \Sulu\Bundle\Sales\CoreBundle\Entity\ItemInterface $item */
-            foreach ($cart->getItems() as $item) {
-                if (!$item->getProduct() ||
-                    !$item->getProduct()->isValidShopProduct()
-                ) {
-                    $hasValidProducts = false;
-                    $cart->removeItem($item);
-                    $this->em->remove($item);
-                }
+        // no check needed
+        if ($cart->getItems()->isEmpty()) {
+            return;
+        }
+
+        $hasInvalidProducts = false;
+        /** @var \Sulu\Bundle\Sales\CoreBundle\Entity\ItemInterface $item */
+        foreach ($cart->getItems() as $item) {
+            if (!$item->getProduct() ||
+                !$item->getProduct()->isValidShopProduct()
+            ) {
+                $hasInvalidProducts = true;
+                $cart->removeItem($item);
+                $this->em->remove($item);
             }
         }
         // persist new cart
-        if (!$hasValidProducts) {
+        if ($hasInvalidProducts) {
             $this->em->flush();
         }
     }
