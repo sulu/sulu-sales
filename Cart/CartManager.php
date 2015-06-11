@@ -333,19 +333,19 @@ class CartManager extends BaseSalesManager
             return;
         }
 
-        $hasInvalidProducts = false;
+        $containsInvalidProducts = false;
         /** @var \Sulu\Bundle\Sales\CoreBundle\Entity\ItemInterface $item */
         foreach ($cart->getItems() as $item) {
             if (!$item->getProduct() ||
                 !$item->getProduct()->isValidShopProduct()
             ) {
-                $hasInvalidProducts = true;
+                $containsInvalidProducts = true;
                 $cart->removeItem($item);
                 $this->em->remove($item);
             }
         }
         // persist new cart
-        if ($hasInvalidProducts) {
+        if ($containsInvalidProducts) {
             $this->em->flush();
         }
     }
