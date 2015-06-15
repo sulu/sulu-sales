@@ -4,6 +4,7 @@ namespace Sulu\Bundle\Sales\OrderBundle\Entity;
 
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\NoResultException;
+use Sulu\Component\Security\Authentication\UserInterface;
 
 /**
  * OrderRepository
@@ -117,21 +118,36 @@ class OrderRepository extends EntityRepository
     /**
      * Finds orders by statusId and user
      *
-     * @param $statusId
-     * @param $user
+     * @param string $locale
+     * @param int $statusId
+     * @param UserInterface $user
      *
      * @return array|null
      */
-    public function findByStatusIdAndUser($locale, $statusId, $user)
+    public function findByStatusIdAndUser($locale, $statusId, UserInterface $user)
+    {
+        return $this->findByStatusIdAndUser($locale, array($statusId), $user);
+    }
+
+    /**
+     * Finds orders by statusIds and user
+     *
+     * @param string $locale
+     * @param array $statusIds
+     * @param UserInterface $user
+     *
+     * @return array|null
+     */
+    public function findByStatusIdsAndUser($locale, $statusIds, UserInterface $user)
     {
         try {
             $qb = $this->getOrderQuery($locale)
                 ->andWhere('o.creator = :user')
                 ->setParameter('user', $user)
-                ->andWhere('status.id = :statusId')
-                ->setParameter('statusId', $statusId)
+                ->andWhere('status.id IN (:statusId)')
+                ->setParameter('statusId', $statusIds)
                 ->orderBy('o.created', 'DESC');
-            
+
             return $qb->getQuery()->getResult();
         } catch (NoResultException $exc) {
             return null;
