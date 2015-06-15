@@ -116,6 +116,34 @@ class OrderRepository extends EntityRepository
     }
 
     /**
+     * Finds all orders of a user made this month
+     *
+     * @param string $locale
+     * @param UserInterface $user
+     *
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     *
+     * @return null|Order[]
+     */
+    public function findUserOrdersForCurrentMonth($locale, UserInterface $user)
+    {
+        try {
+            $qb = $this->getOrderQuery($locale)
+                ->andWhere('status.id >= :statusId')
+                ->andWhere('o.changed >= :currentMonth')
+                ->andWhere('o.creator = :user')
+                ->setParameter('statusId', OrderStatus::STATUS_CONFIRMED)
+                ->setParameter('currentMonth', date('Y-m-01 0:00:00'))
+                ->setParameter('user', $user)
+                ->orderBy('o.created', 'ASC');
+
+            return $qb->getQuery()->getResult();
+        } catch (NoResultException $exc) {
+            return null;
+        }
+    }
+
+    /**
      * Finds orders by statusId and user
      *
      * @param string $locale

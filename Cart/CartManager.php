@@ -297,7 +297,7 @@ class CartManager extends BaseSalesManager
 
             // TODO: check if user hasn't exceeded order limit
             // TODO: move this functionality to
-            $this->userCartSubmissionLimitExceeded($user, $cart);
+            $this->userCartSubmissionLimitExceeded($user, $cart, $locale);
 
 
             // change status of order to confirmed
@@ -345,7 +345,7 @@ class CartManager extends BaseSalesManager
     /**
      * Checks if a cart value does not exceed ceiling for user
      */
-    protected function userCartSubmissionLimitExceeded(UserInterface $user, ApiOrderInterface $cart)
+    protected function userCartSubmissionLimitExceeded(UserInterface $user, ApiOrderInterface $cart, $locale)
     {
         return false;
     }
