@@ -148,12 +148,12 @@ class OrderRepository extends EntityRepository
      * Find all orders of an account with a specific status
      *
      * @param string $locale
-     * @param OrderStatusInterface $status
+     * @param int $status
      * @param AccountInterface $account
      *
      * @return array|null
      */
-    public function findOrdersByStatusAndAccount($locale, OrderStatusInterface $status, AccountInterface $account)
+    public function findOrdersByStatusAndAccount($locale, $status, AccountInterface $account)
     {
         try {
             $qb = $this->getOrderQuery($locale)
@@ -164,7 +164,7 @@ class OrderRepository extends EntityRepository
                 ->andWhere('status.id = :statusId')
                 ->andWhere('account = :account')
                 ->setParameter('account', $account)
-                ->setParameter('status', $status);
+                ->setParameter('statusId', $status);
 
             return $qb->getQuery()->getResult();
         } catch (NoResultException $exc) {
