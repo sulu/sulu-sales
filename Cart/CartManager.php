@@ -284,6 +284,7 @@ class CartManager extends BaseSalesManager
         $orderWasSubmitted = true;
 
         $cart = $this->getUserCart($user, $locale, null, false, true);
+        $originalCart = $cart;
         if (count($cart->getCartErrorCodes()) > 0) {
             $orderWasSubmitted = false;
 
@@ -291,8 +292,6 @@ class CartManager extends BaseSalesManager
         } else {
             $orderWasSubmitted = $this->submitCartDirectly($cart, $locale, $user);
         }
-
-        $originalCart = $cart;
 
         return $this->getUserCart($user, $locale);
     }
