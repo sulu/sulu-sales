@@ -20,6 +20,7 @@ use JMS\Serializer\Annotation\MaxDepth;
 use Sulu\Bundle\ContactBundle\Entity\AccountInterface;
 use Sulu\Bundle\Sales\OrderBundle\Entity\OrderInterface;
 use Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatus;
+use Sulu\Bundle\Sales\OrderBundle\Api\OrderStatus as ApiOrderStatus;
 use Sulu\Component\Rest\ApiWrapper;
 use Sulu\Component\Security\Authentication\UserInterface;
 use Sulu\Bundle\ContactBundle\Entity\Contact;
@@ -268,12 +269,12 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
      * @VirtualProperty
      * @SerializedName("status")
      *
-     * @return OrderStatus
+     * @return ApiOrderStatus|null
      */
     public function getStatus()
     {
         if ($this->entity && $this->entity->getStatus()) {
-            return new OrderStatus($this->entity->getStatus(), $this->locale);
+            return new ApiOrderStatus($this->entity->getStatus(), $this->locale);
         } else {
             return null;
         }
