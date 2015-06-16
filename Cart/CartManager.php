@@ -290,7 +290,7 @@ class CartManager extends BaseSalesManager
 
             return $cart;
         } else {
-            $orderWasSubmitted = $this->submitCartDirectly($cart, $locale, $user);
+            $orderWasSubmitted = $this->submitCartDirectly($cart, $user, $locale);
         }
 
         return $this->getUserCart($user, $locale);
