@@ -11,6 +11,8 @@
 namespace Sulu\Bundle\Sales\OrderBundle\Cart;
 
 use Doctrine\Common\Persistence\ObjectManager;
+use Sulu\Bundle\Sales\OrderBundle\Cart\Exception\CartSubmissionException;
+use Sulu\Component\Security\Authentication\UserInterface;
 use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Sulu\Bundle\ContactBundle\Entity\Contact;
@@ -33,6 +35,12 @@ class CartManager extends BaseSalesManager
 {
     use RelationTrait;
 
+    const CART_STATUS_OK = 1;
+    const CART_STATUS_ERROR = 2;
+    const CART_STATUS_PRICE_CHANGED = 3;
+    const CART_STATUS_PRODUCT_REMOVED = 4;
+    const CART_STATUS_ORDER_LIMIT_EXCEEDED = 5;
+
     /**
      * TODO: replace by config
      *
@@ -43,7 +51,7 @@ class CartManager extends BaseSalesManager
     /**
      * @var ObjectManager
      */
-    private $em;
+    protected $em;
 
     /**
      * @var SessionInterface
@@ -53,32 +61,32 @@ class CartManager extends BaseSalesManager
     /**
      * @var OrderManager
      */
-    private $orderManager;
+    protected $orderManager;
 
     /**
      * @var OrderRepository
      */
-    private $orderRepository;
+    protected $orderRepository;
 
     /**
      * @var GroupedItemsPriceCalculatorInterface
      */
-    private $priceCalculation;
+    protected $priceCalculation;
 
     /**
      * @var string
      */
-    private $defaultCurrency;
+    protected $defaultCurrency;
 
     /**
      * @var AccountManager
      */
-    private $accountManager;
+    protected $accountManager;
 
     /**
      * @var OrderPdfManager
      */
-    private $pdfManager;
+    protected $pdfManager;
 
     /**
      * @var \Swift_Mailer
@@ -103,7 +111,7 @@ class CartManager extends BaseSalesManager
     /**
      * @var OrderAddressManager
      */
-    private $orderAddressManager;
+    protected $orderAddressManager;
 
     /**
      * @param ObjectManager $em
@@ -196,11 +204,21 @@ class CartManager extends BaseSalesManager
         }
 
         // check if all products are still available
-        $this->checkProductsAvailability($cart);
+        $cartNoRemovedProducts = $this->checkProductsAvailability($cart);
 
+        // create api entity
         $apiOrder = $this->orderFactory->createApiEntity($cart, $locale);
 
+        if (!$cartNoRemovedProducts) {
+            $apiOrder->addCartErrorCode(self::CART_STATUS_PRODUCT_REMOVED);
+        }
+
         $this->orderManager->updateApiEntity($apiOrder, $locale);
+
+        // check if prices have changed
+        if ($apiOrder->hasChangedPrices()) {
+            $apiOrder->addCartErrorCode(self::CART_STATUS_PRICE_CHANGED);
+        }
 
         if ($updatePrices) {
             $this->updateCartPrices($apiOrder->getItems());
@@ -265,55 +283,59 @@ class CartManager extends BaseSalesManager
     {
         $orderWasSubmitted = true;
 
-        $cart = $this->getUserCart($user, $locale, null, false, true);
-        if ($cart->hasChangedPrices()) {
-            $orderWasSubmitted = false;
+        try {
 
-            return $cart;
-        } else {
-            if (count($cart->getItems()) < 1) {
-                throw new OrderException('Empty Cart');
-            }
+            $cart = $this->getUserCart($user, $locale, null, false, true);
+            if (count($cart->getCartErrorCodes()) > 0) {
+                $orderWasSubmitted = false;
 
-            // set order-date to current date
-            $cart->setOrderDate(new \DateTime());
-
-            // change status of order to confirmed
-            $this->orderManager->convertStatus($cart, OrderStatus::STATUS_CONFIRMED);
-
-            // order-addresses have to be set to the current contact-addresses
-            $this->reApplyOrderAddresses($cart, $user);
-
-            $customer = $user->getContact();
-
-            // send confirmation email to customer
-            $this->sendConfirmationEmail(
-                $customer->getMainEmail(),
-                $cart,
-                'SuluSalesOrderBundle:Emails:customer.order.confirmation.twig',
-                $customer
-            );
-
-            // get responsible person of contacts account
-            if ($customer->getMainAccount() &&
-                $customer->getMainAccount()->getResponsiblePerson() &&
-                $customer->getMainAccount()->getResponsiblePerson()->getMainEmail()
-            ) {
-                $shopOwnerEmail = $customer->getMainAccount()->getResponsiblePerson()->getMainEmail();
+                return $cart;
             } else {
-                $shopOwnerEmail = $this->emailConfirmationTo;
+                $this->checkIfCartIsValid($user, $cart, $locale);
+
+                // set order-date to current date
+                $cart->setOrderDate(new \DateTime());
+
+                // change status of order to confirmed
+                $this->orderManager->convertStatus($cart, OrderStatus::STATUS_CONFIRMED);
+
+                // order-addresses have to be set to the current contact-addresses
+                $this->reApplyOrderAddresses($cart, $user);
+
+                $customer = $user->getContact();
+
+                // send confirmation email to customer
+                $this->sendConfirmationEmail(
+                    $customer->getMainEmail(),
+                    $cart,
+                    'SuluSalesOrderBundle:Emails:customer.order.confirmation.twig',
+                    $customer
+                );
+
+                // get responsible person of contacts account
+                if ($customer->getMainAccount() &&
+                    $customer->getMainAccount()->getResponsiblePerson() &&
+                    $customer->getMainAccount()->getResponsiblePerson()->getMainEmail()
+                ) {
+                    $shopOwnerEmail = $customer->getMainAccount()->getResponsiblePerson()->getMainEmail();
+                } else {
+                    $shopOwnerEmail = $this->emailConfirmationTo;
+                }
+
+                // send confirmation email to shop owner
+                $this->sendConfirmationEmail(
+                    $shopOwnerEmail,
+                    $cart,
+                    'SuluSalesOrderBundle:Emails:shopowner.order.confirmation.twig'
+                );
             }
 
-            // send confirmation email to shop owner
-            $this->sendConfirmationEmail(
-                $shopOwnerEmail,
-                $cart,
-                'SuluSalesOrderBundle:Emails:shopowner.order.confirmation.twig'
-            );
-        }
+            // flush on success
+            $this->em->flush();
 
-        // flush on success
-        $this->em->flush();
+        } catch(CartSubmissionException $cse) {
+            $orderWasSubmitted = false;
+        }
 
         $originalCart = $cart;
 
@@ -321,16 +343,34 @@ class CartManager extends BaseSalesManager
     }
 
     /**
+     * Checks if cart is valid
+     *
+     * @param UserInterface $user
+     * @param ApiOrderInterface $cart
+     * @param string $locale
+     *
+     * @throws OrderException
+     */
+    protected function checkIfCartIsValid(UserInterface $user, ApiOrderInterface $cart, $locale)
+    {
+        if (count($cart->getItems()) < 1) {
+            throw new OrderException('Empty Cart');
+        }
+    }
+
+    /**
      * Removes items from cart that have no valid shop products
-     * applied
+     * applied; and returns if all products are still available
      *
      * @param OrderInterface $cart
+     *
+     * @return bool If all products are available
      */
     private function checkProductsAvailability(OrderInterface $cart)
     {
         // no check needed
         if ($cart->getItems()->isEmpty()) {
-            return;
+            return true;
         }
 
         $containsInvalidProducts = false;
@@ -348,6 +388,8 @@ class CartManager extends BaseSalesManager
         if ($containsInvalidProducts) {
             $this->em->flush();
         }
+
+        return !$containsInvalidProducts;
     }
 
     /**
@@ -467,9 +509,9 @@ class CartManager extends BaseSalesManager
      */
     private function findCartsByUser($user, $locale)
     {
-        $cartsArray = $this->orderRepository->findByStatusIdAndUser(
+        $cartsArray = $this->orderRepository->findByStatusIdsAndUser(
             $locale,
-            OrderStatus::STATUS_IN_CART,
+            array(OrderStatus::STATUS_IN_CART, OrderStatus::STATUS_CART_PENDING),
             $user
         );
 
@@ -488,7 +530,7 @@ class CartManager extends BaseSalesManager
             foreach ($cartsArray as $index => $cart) {
                 // delete expired carts
                 if ($cart->getChanged()->getTimestamp() < strtotime(static::EXPIRY_MONTHS . ' months ago')) {
-                    $this->em->remove($cart);
+//                    $this->em->remove($cart);
                     continue;
                 }
 
@@ -497,7 +539,7 @@ class CartManager extends BaseSalesManager
                     continue;
                 }
                 // remove duplicated carts
-                $this->em->remove($cart);
+//                $this->em->remove($cart);
             }
         }
     }

@@ -68,6 +68,13 @@ class LoadOrderStatus extends AbstractFixture implements OrderedFixtureInterface
         $this->createStatusTranslation($manager, $status, 'Abgeschlossen', 'de');
         $manager->persist($status);
 
+        // canceled
+        $status = new OrderStatus();
+        $status->setId(OrderStatus::STATUS_CART_PENDING);
+        $this->createStatusTranslation($manager, $status, 'Cart order pending', 'en');
+        $this->createStatusTranslation($manager, $status, 'Warenkorb in Bearbeitung', 'de');
+        $manager->persist($status);
+
         $manager->flush();
     }
 

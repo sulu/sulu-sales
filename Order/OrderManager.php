@@ -468,7 +468,7 @@ class OrderManager
     /**
      * Converts the status of an order
      *
-     * @param Order $order
+     * @param ApiOrderInterface|OrderInterface $order
      * @param int $statusId
      * @param bool $flush
      * @param bool $persist

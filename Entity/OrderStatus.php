@@ -16,6 +16,8 @@ class OrderStatus implements OrderStatusInterface
 
     const STATUS_COMPLETED = 32;
 
+    const STATUS_CART_PENDING = 64;
+
     /**
      * @var integer
      */

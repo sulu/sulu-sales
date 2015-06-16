@@ -19,6 +19,8 @@ use JMS\Serializer\Annotation\Exclude;
 use JMS\Serializer\Annotation\MaxDepth;
 use Sulu\Bundle\ContactBundle\Entity\AccountInterface;
 use Sulu\Bundle\Sales\OrderBundle\Entity\OrderInterface;
+use Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatus;
+use Sulu\Bundle\Sales\OrderBundle\Api\OrderStatus as ApiOrderStatus;
 use Sulu\Component\Rest\ApiWrapper;
 use Sulu\Component\Security\Authentication\UserInterface;
 use Sulu\Bundle\ContactBundle\Entity\Contact;
@@ -83,6 +85,13 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
      * @var bool
      */
     private $itemsChanged = false;
+
+    /**
+     * Defines the status code of the cart
+     *
+     * @var null|array
+     */
+    private $cartStatusCodes = null;
 
     /**
      * @Exclude
@@ -260,12 +269,12 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
      * @VirtualProperty
      * @SerializedName("status")
      *
-     * @return OrderStatus
+     * @return ApiOrderStatus|null
      */
     public function getStatus()
     {
         if ($this->entity && $this->entity->getStatus()) {
-            return new OrderStatus($this->entity->getStatus(), $this->locale);
+            return new ApiOrderStatus($this->entity->getStatus(), $this->locale);
         } else {
             return null;
         }
@@ -1133,5 +1142,47 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
         $this->hasChangedPrices = $hasChangedPrices;
 
         return $this;
+    }
+
+    /**
+     * Get status codes of cart
+     *
+     * @VirtualProperty
+     * @SerializedName("cartErrorCodes")
+     * @Groups({"cart"})
+     *
+     * @return array
+     */
+    public function getCartErrorCodes()
+    {
+        return $this->cartStatusCodes;
+    }
+
+    /**
+     * Adds a status code to cart
+     *
+     * @param int
+     *
+     * @return Order
+     */
+    public function addCartErrorCode($statusCode)
+    {
+        $this->cartStatusCodes[] = $statusCode;
+
+        return $this;
+    }
+
+    /**
+     * Returns if cart is in cart_pending state
+     *
+     * @VirtualProperty
+     * @SerializedName("isPending")
+     * @Groups({"cart"})
+     *
+     * @return bool
+     */
+    public function isPending()
+    {
+        return $this->getStatus()->getId() === OrderStatus::STATUS_CART_PENDING;
     }
 }
