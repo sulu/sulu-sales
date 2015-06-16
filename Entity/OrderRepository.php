@@ -4,6 +4,7 @@ namespace Sulu\Bundle\Sales\OrderBundle\Entity;
 
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\NoResultException;
+use Sulu\Bundle\ContactBundle\Entity\AccountInterface;
 use Sulu\Component\Security\Authentication\UserInterface;
 
 /**
@@ -136,6 +137,34 @@ class OrderRepository extends EntityRepository
                 ->setParameter('currentMonth', date('Y-m-01 0:00:00'))
                 ->setParameter('user', $user)
                 ->orderBy('o.created', 'ASC');
+
+            return $qb->getQuery()->getResult();
+        } catch (NoResultException $exc) {
+            return null;
+        }
+    }
+
+    /**
+     * Find all orders of an account with a specific status
+     *
+     * @param string $locale
+     * @param int $status
+     * @param AccountInterface $account
+     *
+     * @return array|null
+     */
+    public function findOrdersByStatusAndAccount($locale, $status, AccountInterface $account)
+    {
+        try {
+            $qb = $this->getOrderQuery($locale)
+                ->leftJoin('o.creator', 'creator')
+                ->leftJoin('creator.contact', 'contact')
+                ->leftJoin('contact.accountContacts', 'accountContact', 'WITH', 'accountContact.main = true')
+                ->leftJoin('accountContact.account', 'account')
+                ->andWhere('status.id = :statusId')
+                ->andWhere('account = :account')
+                ->setParameter('account', $account)
+                ->setParameter('statusId', $status);
 
             return $qb->getQuery()->getResult();
         } catch (NoResultException $exc) {
