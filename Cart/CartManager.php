@@ -11,6 +11,7 @@
 namespace Sulu\Bundle\Sales\OrderBundle\Cart;
 
 use Doctrine\Common\Persistence\ObjectManager;
+use Sulu\Bundle\Sales\OrderBundle\Cart\Exception\CartSubmissionException;
 use Sulu\Component\Security\Authentication\UserInterface;
 use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
@@ -282,60 +283,59 @@ class CartManager extends BaseSalesManager
     {
         $orderWasSubmitted = true;
 
-        $cart = $this->getUserCart($user, $locale, null, false, true);
-        if (count($cart->getCartErrorCodes()) > 0) {
-            $orderWasSubmitted = false;
+        try {
 
-            return $cart;
-        } else {
-            if (count($cart->getItems()) < 1) {
-                throw new OrderException('Empty Cart');
-            }
+            $cart = $this->getUserCart($user, $locale, null, false, true);
+            if (count($cart->getCartErrorCodes()) > 0) {
+                $orderWasSubmitted = false;
 
-            // set order-date to current date
-            $cart->setOrderDate(new \DateTime());
-
-            // TODO: check if user hasn't exceeded order limit
-            // TODO: move this functionality to
-            $this->userCartSubmissionLimitExceeded($user, $cart, $locale);
-
-
-            // change status of order to confirmed
-            $this->orderManager->convertStatus($cart, OrderStatus::STATUS_CONFIRMED);
-
-            // order-addresses have to be set to the current contact-addresses
-            $this->reApplyOrderAddresses($cart, $user);
-
-            $customer = $user->getContact();
-
-            // send confirmation email to customer
-            $this->sendConfirmationEmail(
-                $customer->getMainEmail(),
-                $cart,
-                'SuluSalesOrderBundle:Emails:customer.order.confirmation.twig',
-                $customer
-            );
-
-            // get responsible person of contacts account
-            if ($customer->getMainAccount() &&
-                $customer->getMainAccount()->getResponsiblePerson() &&
-                $customer->getMainAccount()->getResponsiblePerson()->getMainEmail()
-            ) {
-                $shopOwnerEmail = $customer->getMainAccount()->getResponsiblePerson()->getMainEmail();
+                return $cart;
             } else {
-                $shopOwnerEmail = $this->emailConfirmationTo;
+                $this->checkIfCartIsValid($user, $cart, $locale);
+
+                // set order-date to current date
+                $cart->setOrderDate(new \DateTime());
+
+                // change status of order to confirmed
+                $this->orderManager->convertStatus($cart, OrderStatus::STATUS_CONFIRMED);
+
+                // order-addresses have to be set to the current contact-addresses
+                $this->reApplyOrderAddresses($cart, $user);
+
+                $customer = $user->getContact();
+
+                // send confirmation email to customer
+                $this->sendConfirmationEmail(
+                    $customer->getMainEmail(),
+                    $cart,
+                    'SuluSalesOrderBundle:Emails:customer.order.confirmation.twig',
+                    $customer
+                );
+
+                // get responsible person of contacts account
+                if ($customer->getMainAccount() &&
+                    $customer->getMainAccount()->getResponsiblePerson() &&
+                    $customer->getMainAccount()->getResponsiblePerson()->getMainEmail()
+                ) {
+                    $shopOwnerEmail = $customer->getMainAccount()->getResponsiblePerson()->getMainEmail();
+                } else {
+                    $shopOwnerEmail = $this->emailConfirmationTo;
+                }
+
+                // send confirmation email to shop owner
+                $this->sendConfirmationEmail(
+                    $shopOwnerEmail,
+                    $cart,
+                    'SuluSalesOrderBundle:Emails:shopowner.order.confirmation.twig'
+                );
             }
 
-            // send confirmation email to shop owner
-            $this->sendConfirmationEmail(
-                $shopOwnerEmail,
-                $cart,
-                'SuluSalesOrderBundle:Emails:shopowner.order.confirmation.twig'
-            );
-        }
+            // flush on success
+            $this->em->flush();
 
-        // flush on success
-        $this->em->flush();
+        } catch(CartSubmissionException $cse) {
+            $orderWasSubmitted = false;
+        }
 
         $originalCart = $cart;
 
@@ -343,11 +343,19 @@ class CartManager extends BaseSalesManager
     }
 
     /**
-     * Checks if a cart value does not exceed ceiling for user
+     * Checks if cart is valid
+     *
+     * @param UserInterface $user
+     * @param ApiOrderInterface $cart
+     * @param string $locale
+     *
+     * @throws OrderException
      */
-    protected function userCartSubmissionLimitExceeded(UserInterface $user, ApiOrderInterface $cart, $locale)
+    protected function checkIfCartIsValid(UserInterface $user, ApiOrderInterface $cart, $locale)
     {
-        return false;
+        if (count($cart->getItems()) < 1) {
+            throw new OrderException('Empty Cart');
+        }
     }
 
     /**
