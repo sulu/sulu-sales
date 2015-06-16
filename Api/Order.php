@@ -1144,7 +1144,7 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     }
 
     /**
-     * Set status code of cart
+     * Get status codes of cart
      *
      * @VirtualProperty
      * @SerializedName("cartErrorCodes")
@@ -1172,7 +1172,7 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     }
 
     /**
-     * If cart is in cart_pending state
+     * Returns if cart is in cart_pending state
      *
      * @VirtualProperty
      * @SerializedName("isPending")
