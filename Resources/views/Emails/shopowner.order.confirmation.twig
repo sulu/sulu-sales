@@ -22,7 +22,7 @@
             <strong>{{ macros.getSalutation(contact) }},</strong>
         </p>
         <p>
-            {% trans %}owner.content{% endtrans %}
+            {{ macros.translateContent(contact, order) }}
         </p>
     </body>
     </html>
@@ -33,9 +33,26 @@
 
 {% spaceless %}
 {{ macros.getSalutation(contact) }},
-{% trans %}owner.content{% endtrans %}
+{{ macros.translateContent(contact, order) }}
 {% endspaceless %}
 
 {% endblock %}
 
 {% macro getSalutation(contact) %}{{ contact.getSalutation()|default('default.salutation'|trans) ~ ' ' ~ contact.getFullName()|default('default.owner'|trans) }}{% endmacro %}
+{% macro getGender(contact) %}
+    {% if contact and contact.getFormOfAddress() %}
+        {% if contact.getFormOfAddress() == 0 %}
+            {{ 'contact.contacts.formOfAddress.male'|trans }}
+        {% else %}
+            {{ 'contact.contacts.formOfAddress.female'|trans }}
+        {% endif %}
+    {% endif %}
+{% endmacro %}
+{% macro translateContent(contact, order) %}
+    {% import _self as macros %}
+    {% trans with {
+    '%gender%': macros.getGender(contact),
+    '%customerName%': contact.getFullName(),
+    '%customerAccount%': order.getCustomerAccount().name
+    } %}owner.content{% endtrans %}
+{% endmacro %}

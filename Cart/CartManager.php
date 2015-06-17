@@ -348,7 +348,8 @@ class CartManager extends BaseSalesManager
             $this->sendConfirmationEmail(
                 $shopOwnerEmail,
                 $cart,
-                'SuluSalesOrderBundle:Emails:shopowner.order.confirmation.twig'
+                'SuluSalesOrderBundle:Emails:shopowner.order.confirmation.twig',
+                $customer
             );
 
             // flush on success

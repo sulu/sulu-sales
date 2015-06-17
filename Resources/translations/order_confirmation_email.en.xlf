@@ -20,7 +20,7 @@
             </trans-unit>
             <trans-unit id="5">
                 <source>owner.content</source>
-                <target>You just received a new order. More details can be found in the attached order-confirmation.</target>
+                <target>%gender% %customerName% / %customerAccount% just made an order. More details can be found in the attached order confirmation.</target>
             </trans-unit>
             <trans-unit id="6">
                 <source>default.owner</source>
