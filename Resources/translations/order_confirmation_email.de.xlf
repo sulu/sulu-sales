@@ -20,7 +20,7 @@
             </trans-unit>
             <trans-unit id="5">
                 <source>owner.content</source>
-                <target>Eine neue Bestellung ist soeben eingelangt. Weitere Details zur Bestellung findest du im Anhang.</target>
+                <target>%gender% %customerName% / %customerAccount% hat soeben eine Bestellung aufgegeben. Alle Informationen können der Bestellbestätigung entnommen werden.</target>
             </trans-unit>
             <trans-unit id="6">
                 <source>default.owner</source>
