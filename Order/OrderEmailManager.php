@@ -85,6 +85,8 @@ class OrderEmailManager
     }
 
     /**
+     * Sends a confirmation email to the shop-owner
+     *
      * @param string $recipient
      * @param ApiOrderInterface $apiOrder
      * @param Contact $customerContact
@@ -95,6 +97,8 @@ class OrderEmailManager
     }
 
     /**
+     * Sends a confirmation email to the customer
+     *
      * @param string $recipient
      * @param ApiOrderInterface $apiOrder
      * @param Contact $customerContact
