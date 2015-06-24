@@ -18,6 +18,7 @@
         <parameter key="sulu_sales_order.cart_manager.class">Sulu\Bundle\Sales\OrderBundle\Cart\CartManager</parameter>
         <parameter key="sulu_sales_order.order_pdf_manager.class">Sulu\Bundle\Sales\OrderBundle\Order\OrderPdfManager</parameter>
         <parameter key="sulu_sales_order.order_factory.class">Sulu\Bundle\Sales\OrderBundle\Order\OrderFactory</parameter>
+        <parameter key="sulu_sales_order.order_email_manager.class">Sulu\Bundle\Sales\OrderBundle\Order\OrderEmailManager</parameter>
     </parameters>
     <services>
         <!--ADMIN-->
@@ -80,13 +81,21 @@
             <argument type="service" id="sulu_sales_core.grouped_price_calculator" />
             <argument>%sulu_product.default_currency%</argument>
             <argument type="service" id="sulu_contact.account_manager" />
-            <argument type="service" id="twig" />
-            <argument type="service" id="sulu_sales_order.order_pdf_manager" />
-            <argument type="service" id="mailer" />
             <argument type="service" id="sulu_sales_order.order_factory" />
+            <argument type="service" id="sulu_sales_core.order_address_manager" />
+            <argument type="service" id="sulu_sales_order.order_email_manager" />
+        </service>
+
+        <service id="sulu_sales_order.order_email_manager" class="%sulu_sales_order.order_email_manager.class%">
+            <argument type="service" id="twig" />
+            <argument type="service" id="mailer" />
+            <argument type="service" id="sulu_sales_order.order_pdf_manager" />
             <argument>%sulu_sales_order.shop_email_from%</argument>
             <argument>%sulu_sales_order.shop_email_confirmation_to%</argument>
-            <argument type="service" id="sulu_sales_core.order_address_manager" />
+            <argument>%sulu_sales_order.email_templates.customer_confirmation%</argument>
+            <argument>%sulu_sales_order.email_templates.shopowner_confirmation%</argument>
+            <argument>%sulu_sales_order.email_templates.footer_html%</argument>
+            <argument>%sulu_sales_order.email_templates.footer_txt%</argument>
         </service>
 
         <service id="sulu_sales_order.order_pdf_manager" class="%sulu_sales_order.order_pdf_manager.class%">

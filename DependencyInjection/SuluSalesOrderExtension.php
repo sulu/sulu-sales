@@ -29,7 +29,10 @@ class SuluSalesOrderExtension extends Extension
         $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.xml');
 
+        // set pdf templates
         $this->setParameters($container, 'sulu_sales_order.pdf_templates', $config['pdf_templates']);
+        // set email templates
+        $this->setParameters($container, 'sulu_sales_order.email_templates', $config['email_templates']);
 
         $shopEmailFrom = null;
         if (isset($config['shop_email_from'])) {

@@ -12,6 +12,7 @@ namespace Sulu\Bundle\Sales\OrderBundle\Cart;
 
 use Doctrine\Common\Persistence\ObjectManager;
 use Sulu\Bundle\Sales\OrderBundle\Cart\Exception\CartSubmissionException;
+use Sulu\Bundle\Sales\OrderBundle\Order\OrderEmailManager;
 use Sulu\Component\Security\Authentication\UserInterface;
 use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
@@ -84,26 +85,6 @@ class CartManager extends BaseSalesManager
     protected $accountManager;
 
     /**
-     * @var OrderPdfManager
-     */
-    protected $pdfManager;
-
-    /**
-     * @var \Swift_Mailer
-     */
-    protected $mailer;
-
-    /**
-     * @var string
-     */
-    protected $emailFrom;
-
-    /**
-     * @var string
-     */
-    protected $emailConfirmationTo;
-
-    /**
      * @var OrderFactoryInterface
      */
     protected $orderFactory;
@@ -114,6 +95,11 @@ class CartManager extends BaseSalesManager
     protected $orderAddressManager;
 
     /**
+     * @var OrderEmailManager
+     */
+    protected $orderEmailManager;
+
+    /**
      * @param ObjectManager $em
      * @param SessionInterface $session
      * @param OrderRepository $orderRepository
@@ -121,13 +107,9 @@ class CartManager extends BaseSalesManager
      * @param GroupedItemsPriceCalculatorInterface $priceCalculation
      * @param string $defaultCurrency
      * @param AccountManager $accountManager
-     * @param \Twig_Environment $twig
-     * @param OrderPdfManager $pdfManager
-     * @param \Swift_Mailer $mailer
      * @param OrderFactoryInterface $orderFactory
-     * @param string $emailFrom
-     * @param string $emailConfirmationTo
      * @param OrderAddressManager $orderAddressManager
+     * @param OrderEmailManager $orderEmailManager
      */
     public function __construct(
         ObjectManager $em,
@@ -137,13 +119,9 @@ class CartManager extends BaseSalesManager
         GroupedItemsPriceCalculatorInterface $priceCalculation,
         $defaultCurrency,
         $accountManager,
-        \Twig_Environment $twig,
-        OrderPdfManager $pdfManager,
-        \Swift_Mailer $mailer,
         OrderFactoryInterface $orderFactory,
-        $emailFrom,
-        $emailConfirmationTo,
-        OrderAddressManager $orderAddressManager
+        OrderAddressManager $orderAddressManager,
+        OrderEmailManager $orderEmailManager
     ) {
         $this->em = $em;
         $this->session = $session;
@@ -152,17 +130,13 @@ class CartManager extends BaseSalesManager
         $this->priceCalculation = $priceCalculation;
         $this->defaultCurrency = $defaultCurrency;
         $this->accountManager = $accountManager;
-        $this->twig = $twig;
-        $this->pdfManager = $pdfManager;
-        $this->mailer = $mailer;
         $this->orderFactory = $orderFactory;
-        $this->emailFrom = $emailFrom;
-        $this->emailConfirmationTo = $emailConfirmationTo;
         $this->orderAddressManager = $orderAddressManager;
+        $this->orderEmailManager = $orderEmailManager;
     }
 
     /**
-     * @param $user
+     * @param UserInterface $user
      * @param null|string $locale
      * @param null|string $currency
      * @param bool $persistEmptyCart Define if an empty cart should be persisted
@@ -213,7 +187,7 @@ class CartManager extends BaseSalesManager
             $apiOrder->addCartErrorCode(self::CART_STATUS_PRODUCT_REMOVED);
         }
 
-        $this->orderManager->updateApiEntity($apiOrder, $locale);
+        $this->orderManager->updateApiEntity($apiOrder, $locale, $user);
 
         // check if prices have changed
         if ($apiOrder->hasChangedPrices()) {
@@ -327,10 +301,9 @@ class CartManager extends BaseSalesManager
             $customer = $user->getContact();
 
             // send confirmation email to customer
-            $this->sendConfirmationEmail(
+            $this->orderEmailManager->sendCustomerConfirmation(
                 $customer->getMainEmail(),
                 $cart,
-                'SuluSalesOrderBundle:Emails:customer.order.confirmation.twig',
                 $customer
             );
 
@@ -345,10 +318,9 @@ class CartManager extends BaseSalesManager
             }
 
             // send confirmation email to shop owner
-            $this->sendConfirmationEmail(
+            $this->orderEmailManager->sendShopOwnerConfirmation(
                 $shopOwnerEmail,
                 $cart,
-                'SuluSalesOrderBundle:Emails:shopowner.order.confirmation.twig',
                 $customer
             );
 
@@ -740,57 +712,5 @@ class CartManager extends BaseSalesManager
             'totalPriceFormatted' => $cart->getTotalNetPriceFormatted(),
             'currency' => $cart->getCurrencyCode()
         );
-    }
-
-    /**
-     *
-     *
-     * @param string $recipient The email-address of the customer
-     * @param ApiOrderInterface $apiOrder
-     * @param string $templatePath Template to render
-     * @param Contact|null $customerContact
-     *
-     * @return bool
-     */
-    public function sendConfirmationEmail($recipient, $apiOrder, $templatePath, Contact $customerContact = null)
-    {
-        if (empty($recipient)) {
-            return false;
-        }
-
-        $tmplData = array(
-            'order' => $apiOrder,
-            'contact' => $customerContact
-        );
-
-        $template = $this->twig->loadTemplate($templatePath);
-        $subject = $template->renderBlock('subject', $tmplData);
-
-        $emailBodyText = $template->renderBlock('body_text', $tmplData);
-        $emailBodyHtml = $template->renderBlock('body_html', $tmplData);
-
-        $pdf = $this->pdfManager->createOrderConfirmation($apiOrder);
-        $pdfFileName = $this->pdfManager->getPdfName($apiOrder);
-
-        if ($recipient) {
-            // now send mail
-            $attachment = \Swift_Attachment::newInstance()
-                ->setFilename($pdfFileName)
-                ->setContentType('application/pdf')
-                ->setBody($pdf);
-
-            /** @var \Swift_Message $message */
-            $message = \Swift_Message::newInstance()
-                ->setSubject($subject)
-                ->setFrom($this->emailFrom)
-                ->setTo($recipient)
-                ->setBody($emailBodyText, 'text/plain')
-                ->addPart($emailBodyHtml, 'text/html')
-                ->attach($attachment);
-
-            return $this->mailer->send($message);
-        }
-
-        return false;
     }
 }

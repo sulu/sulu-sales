@@ -352,7 +352,7 @@ class OrderManager
      *
      * @param Order $apiOrder
      */
-    public function updateApiEntity(Order $apiOrder, $locale)
+    public function updateApiEntity(Order $apiOrder, $locale, $user)
     {
         $items = $apiOrder->getItems();
 
@@ -780,7 +780,6 @@ class OrderManager
             $product = $item->getProduct();
             if ($product) {
                 $this->productManager->createProductMedia($product, $locale);
-                $item->setProduct($product);
             }
         }
     }
