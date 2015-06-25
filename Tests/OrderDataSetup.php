@@ -538,6 +538,7 @@ class OrderDataSetup
         $order->setInvoiceAddress($this->orderAddressInvoice);
         $order->setCreator($this->user);
         $order->setChanger($this->user);
+        $order->setResponsibleContact($this->contact2);
 
         return $order;
     }
