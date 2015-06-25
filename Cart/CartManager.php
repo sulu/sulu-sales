@@ -11,26 +11,24 @@
 namespace Sulu\Bundle\Sales\OrderBundle\Cart;
 
 use Doctrine\Common\Persistence\ObjectManager;
-use Sulu\Bundle\Sales\OrderBundle\Cart\Exception\CartSubmissionException;
-use Sulu\Bundle\Sales\OrderBundle\Order\OrderEmailManager;
-use Sulu\Component\Security\Authentication\UserInterface;
 use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
-use Sulu\Bundle\ContactBundle\Entity\Contact;
+use Sulu\Component\Security\Authentication\UserInterface;
+use Sulu\Component\Persistence\RelationTrait;
+use Sulu\Bundle\Sales\CoreBundle\Pricing\GroupedItemsPriceCalculatorInterface;
 use Sulu\Bundle\Sales\CoreBundle\Manager\BaseSalesManager;
 use Sulu\Bundle\Sales\CoreBundle\Manager\OrderAddressManager;
-use Sulu\Bundle\Sales\CoreBundle\Pricing\GroupedItemsPriceCalculatorInterface;
+use Sulu\Bundle\Sales\OrderBundle\Cart\Exception\CartSubmissionException;
 use Sulu\Bundle\Sales\OrderBundle\Api\ApiOrderInterface;
-use Sulu\Bundle\Sales\OrderBundle\Entity\OrderInterface;
 use Sulu\Bundle\Sales\OrderBundle\Api\Order as ApiOrder;
+use Sulu\Bundle\Sales\OrderBundle\Entity\OrderInterface;
 use Sulu\Bundle\Sales\OrderBundle\Entity\Order;
 use Sulu\Bundle\Sales\OrderBundle\Entity\OrderRepository;
 use Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatus;
+use Sulu\Bundle\Sales\OrderBundle\Order\OrderEmailManager;
 use Sulu\Bundle\Sales\OrderBundle\Order\Exception\OrderException;
 use Sulu\Bundle\Sales\OrderBundle\Order\OrderFactoryInterface;
 use Sulu\Bundle\Sales\OrderBundle\Order\OrderManager;
-use Sulu\Bundle\Sales\OrderBundle\Order\OrderPdfManager;
-use Sulu\Component\Persistence\RelationTrait;
 
 class CartManager extends BaseSalesManager
 {
@@ -187,7 +185,7 @@ class CartManager extends BaseSalesManager
             $apiOrder->addCartErrorCode(self::CART_STATUS_PRODUCT_REMOVED);
         }
 
-        $this->orderManager->updateApiEntity($apiOrder, $locale, $user);
+        $this->orderManager->updateApiEntity($apiOrder, $locale);
 
         // check if prices have changed
         if ($apiOrder->hasChangedPrices()) {
@@ -307,14 +305,14 @@ class CartManager extends BaseSalesManager
                 $customer
             );
 
+            $shopOwnerEmail = null;
+
             // get responsible person of contacts account
             if ($customer->getMainAccount() &&
                 $customer->getMainAccount()->getResponsiblePerson() &&
                 $customer->getMainAccount()->getResponsiblePerson()->getMainEmail()
             ) {
                 $shopOwnerEmail = $customer->getMainAccount()->getResponsiblePerson()->getMainEmail();
-            } else {
-                $shopOwnerEmail = $this->emailConfirmationTo;
             }
 
             // send confirmation email to shop owner

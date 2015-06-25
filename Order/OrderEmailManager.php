@@ -88,12 +88,19 @@ class OrderEmailManager
     /**
      * Sends a confirmation email to the shop-owner
      *
-     * @param string $recipient
+     * @param null|string $recipient
      * @param ApiOrderInterface $apiOrder
      * @param ContactInterface $customerContact
      */
-    public function sendShopOwnerConfirmation($recipient, ApiOrderInterface $apiOrder, ContactInterface $customerContact = null)
-    {
+    public function sendShopOwnerConfirmation(
+        $recipient,
+        ApiOrderInterface $apiOrder,
+        ContactInterface $customerContact = null
+    ) {
+        if (empty($recipient)) {
+            // fallback address for shop-owner order confirmations
+            $recipient = $this->emailConfirmationTo;
+        }
         $this->sendConfirmationEmail($recipient, $apiOrder, $this->templateShopOwnerConfirmationPath, $customerContact);
     }
 
@@ -102,10 +109,13 @@ class OrderEmailManager
      *
      * @param string $recipient
      * @param ApiOrderInterface $apiOrder
-     * @param Contact $customerContact
+     * @param ContactInterface $customerContact
      */
-    public function sendCustomerConfirmation($recipient, ApiOrderInterface $apiOrder, Contact $customerContact = null)
-    {
+    public function sendCustomerConfirmation(
+        $recipient,
+        ApiOrderInterface $apiOrder,
+        ContactInterface $customerContact = null
+    ) {
         $this->sendConfirmationEmail($recipient, $apiOrder, $this->templateCustomerConfirmationPath, $customerContact);
     }
 
@@ -113,7 +123,7 @@ class OrderEmailManager
      * @param string $recipient The email-address of the customer
      * @param ApiOrderInterface $apiOrder
      * @param string $templatePath Template to render
-     * @param Contact|null $customerContact
+     * @param ContactInterface|null $customerContact
      *
      * @return bool
      */
@@ -121,7 +131,7 @@ class OrderEmailManager
         $recipient,
         ApiOrderInterface $apiOrder,
         $templatePath,
-        Contact $customerContact = null
+        ContactInterface $customerContact = null
     ) {
         if (empty($recipient)) {
             return false;
