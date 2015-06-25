@@ -10,6 +10,7 @@
 namespace Sulu\Bundle\Sales\OrderBundle\Order;
 
 use Sulu\Bundle\Sales\OrderBundle\Api\ApiOrderInterface;
+use Sulu\Component\Contact\Model\ContactInterface;
 
 class OrderEmailManager
 {
@@ -89,9 +90,9 @@ class OrderEmailManager
      *
      * @param string $recipient
      * @param ApiOrderInterface $apiOrder
-     * @param Contact $customerContact
+     * @param ContactInterface $customerContact
      */
-    public function sendShopOwnerConfirmation($recipient, ApiOrderInterface $apiOrder, Contact $customerContact = null)
+    public function sendShopOwnerConfirmation($recipient, ApiOrderInterface $apiOrder, ContactInterface $customerContact = null)
     {
         $this->sendConfirmationEmail($recipient, $apiOrder, $this->templateShopOwnerConfirmationPath, $customerContact);
     }
