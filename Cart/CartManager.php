@@ -235,7 +235,7 @@ class CartManager extends BaseSalesManager
     {
         $cart = $this->getUserCart($user, $locale);
         $userId = $user ? $user->getId() : null;
-        $this->orderManager->save($data, $locale, $userId, $cart->getId(), null, null, false);
+        $this->orderManager->save($data, $locale, $userId, $cart->getId(), null, null, true);
 
         return $cart;
     }
