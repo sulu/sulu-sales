@@ -128,6 +128,7 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     /**
      * @VirtualProperty
      * @SerializedName("number")
+     * @Groups({"cart"})
      *
      * @return int
      */
