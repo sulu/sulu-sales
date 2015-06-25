@@ -30,14 +30,14 @@
     "require-dev": {
         "jackalope/jackalope-doctrine-dbal": "~1.2.0",
         "jackalope/jackalope-jackrabbit": "~1.2.0",
-        "massive/search-bundle": "~1.0@dev",
         "phpunit/phpunit": "~4.0.0",
         "sensio/framework-extra-bundle":  "~3.0",
         "symfony/symfony": "2.6.*",
         "symfony/monolog-bundle": "2.4.*",
         "symfony-cmf/testing": "~1.2",
         "knplabs/knp-snappy-bundle": "dev-master",
-        "sulu/test-bundle": "dev-develop"
+        "sulu/test-bundle": "dev-develop",
+        "massive/search-bundle": "0.6.*"
     },
     "autoload": {
         "psr-0": {
