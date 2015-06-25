@@ -1221,6 +1221,7 @@ class OrderManager
                 };
 
                 $update = function ($item, $matchedEntry) use ($locale, $userId, $order) {
+                    $item = $item->getEntity();
                     $itemEntity = $this->updateItem($item, $matchedEntry, $locale, $userId);
 
                     return $itemEntity ? true : false;
