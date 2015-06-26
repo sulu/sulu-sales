@@ -780,8 +780,9 @@ class OrderManager
             $product = $item->getProduct();
             if ($product) {
                 $this->productManager->createProductMedia($product, $locale);
-                $item->setProduct($product);
             }
+            // Set api product for returning media-urls
+            $item->setProduct($product);
         }
     }
 
