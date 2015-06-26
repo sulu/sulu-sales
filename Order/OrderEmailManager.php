@@ -54,7 +54,7 @@ class OrderEmailManager
      * @param \Swift_Mailer $mailer
      * @param OrderPdfManager $pdfManager
      * @param string $emailFrom
-     * @param string $emailConfirmationTo
+     * @param string $confirmationRecipientEmailAddress
      * @param string $templateCustomerConfirmationPath
      * @param string $templateShopOwnerConfirmationPath
      * @param string $templateFooterHtmlPath
@@ -65,7 +65,7 @@ class OrderEmailManager
         \Swift_Mailer $mailer,
         OrderPdfManager $pdfManager,
         $emailFrom,
-        $emailConfirmationTo,
+        $confirmationRecipientEmailAddress,
         $templateCustomerConfirmationPath,
         $templateShopOwnerConfirmationPath,
         $templateFooterHtmlPath,
@@ -77,7 +77,7 @@ class OrderEmailManager
         $this->pdfManager = $pdfManager;
         // email addresses
         $this->emailFrom = $emailFrom;
-        $this->emailConfirmationTo = $emailConfirmationTo;
+        $this->confirmationRecipientEmailAddress = $confirmationRecipientEmailAddress;
         // templates
         $this->templateCustomerConfirmationPath = $templateCustomerConfirmationPath;
         $this->templateShopOwnerConfirmationPath = $templateShopOwnerConfirmationPath;
@@ -91,6 +91,8 @@ class OrderEmailManager
      * @param null|string $recipient
      * @param ApiOrderInterface $apiOrder
      * @param ContactInterface $customerContact
+     *
+     * @return bool
      */
     public function sendShopOwnerConfirmation(
         $recipient,
@@ -99,9 +101,10 @@ class OrderEmailManager
     ) {
         if (empty($recipient)) {
             // fallback address for shop-owner order confirmations
-            $recipient = $this->emailConfirmationTo;
+            $recipient = $this->confirmationRecipientEmailAddress;
         }
-        $this->sendConfirmationEmail($recipient, $apiOrder, $this->templateShopOwnerConfirmationPath, $customerContact);
+
+        return $this->sendConfirmationEmail($recipient, $apiOrder, $this->templateShopOwnerConfirmationPath, $customerContact);
     }
 
     /**
@@ -110,13 +113,15 @@ class OrderEmailManager
      * @param string $recipient
      * @param ApiOrderInterface $apiOrder
      * @param ContactInterface $customerContact
+     *
+     * @return bool
      */
     public function sendCustomerConfirmation(
         $recipient,
         ApiOrderInterface $apiOrder,
         ContactInterface $customerContact = null
     ) {
-        $this->sendConfirmationEmail($recipient, $apiOrder, $this->templateCustomerConfirmationPath, $customerContact);
+        return $this->sendConfirmationEmail($recipient, $apiOrder, $this->templateCustomerConfirmationPath, $customerContact);
     }
 
     /**
@@ -134,6 +139,8 @@ class OrderEmailManager
         ContactInterface $customerContact = null
     ) {
         if (empty($recipient)) {
+            $this->writeLog('No recipient specified.');
+
             return false;
         }
 
@@ -153,25 +160,43 @@ class OrderEmailManager
         $pdf = $this->pdfManager->createOrderConfirmation($apiOrder);
         $pdfFileName = $this->pdfManager->getPdfName($apiOrder);
 
-        if ($recipient) {
-            // now send mail
-            $attachment = \Swift_Attachment::newInstance()
-                ->setFilename($pdfFileName)
-                ->setContentType('application/pdf')
-                ->setBody($pdf);
+        // now send mail
+        $attachment = \Swift_Attachment::newInstance()
+            ->setFilename($pdfFileName)
+            ->setContentType('application/pdf')
+            ->setBody($pdf);
 
-            /** @var \Swift_Message $message */
-            $message = \Swift_Message::newInstance()
-                ->setSubject($subject)
-                ->setFrom($this->emailFrom)
-                ->setTo($recipient)
-                ->setBody($emailBodyText, 'text/plain')
-                ->addPart($emailBodyHtml, 'text/html')
-                ->attach($attachment);
+        /** @var \Swift_Message $message */
+        $message = \Swift_Message::newInstance()
+            ->setSubject($subject)
+            ->setFrom($this->emailFrom)
+            ->setTo($recipient)
+            ->setBody($emailBodyText, 'text/plain')
+            ->addPart($emailBodyHtml, 'text/html')
+            ->attach($attachment);
 
-            return $this->mailer->send($message);
+        $failedRecipients = array();
+        $this->mailer->send($message, $failedRecipients);
+
+        if (count($failedRecipients) > 0) {
+            $this->writeLog('Could not send mail to the following recipients: ' . join(', ', $failedRecipients));
+
+            return false;
         }
 
-        return false;
+        return true;
+    }
+
+    /**
+     * Writes a new line to mail error log
+     *
+     * @param string $message
+     */
+    private function writeLog($message)
+    {
+        $fileName = 'app/logs/mail/error.log';
+
+        $log = sprintf("[%s]: %s\n", date_format(new \DateTime(), 'Y-m-d H:i:s'), $message);
+        file_put_contents($fileName, $log, FILE_APPEND);
     }
 }
