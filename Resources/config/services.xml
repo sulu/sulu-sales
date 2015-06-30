@@ -106,6 +106,7 @@
             <argument>%sulu_sales_order.pdf_templates.header%</argument>
             <argument>%sulu_sales_order.pdf_templates.footer%</argument>
             <argument>%sulu_sales_order.pdf_templates.macros%</argument>
+            <argument>%website_locale%</argument>
         </service>
 
         <service id="sulu_sales_order.order_dependency_manager"
