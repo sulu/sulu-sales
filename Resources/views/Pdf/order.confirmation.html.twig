@@ -37,7 +37,11 @@
 {% endblock %}
 
 {% block pdf_title %}
-    Bestellung {{ order.number }}
+    {% if order.type and order.type.id > 1 %}
+        Shop-Bestellung {{ order.number }}
+    {% else %}
+        Bestellung {{ order.number }}
+    {% endif %}
 {% endblock %}
 
 {% block invoice_address %}
@@ -147,6 +151,6 @@
     {% if customerContact %}
         {{ customerContact.fullName }}
     {% else %}
-        {{ recipient.name }}
+        {{ recipient.accountName }}
     {% endif %}
 {% endblock %}
