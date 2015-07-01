@@ -42,11 +42,9 @@ use Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatus;
 use Sulu\Bundle\Sales\OrderBundle\Entity\OrderType;
 use Sulu\Bundle\Sales\OrderBundle\Entity\OrderTypeTranslation;
 use Sulu\Bundle\SecurityBundle\Entity\User;
-use Sulu\Bundle\TestBundle\Testing\SuluTestCase;
 
 class OrderDataSetup
 {
-
     public $locale = 'en';
 
     protected static $orderStatusEntityName = 'SuluSalesOrderBundle:OrderStatus';
@@ -267,13 +265,11 @@ class OrderDataSetup
         $contact->setLastName('Mustermann');
         $this->em->persist($contact);
 
-
         $this->accountContact = new AccountContact();
         $this->accountContact->setAccount($this->account);
         $this->accountContact->setContact($this->contact);
         $this->accountContact->setMain(true);
         $this->contact->addAccountContact($this->accountContact);
-
 
         $user = new User();
         $user->setUsername('test');
@@ -321,7 +317,6 @@ class OrderDataSetup
         $order2->setNumber('12345');
         $order2->setDeliveryAddress(null);
         $order2->setInvoiceAddress(null);
-
 
         // product order unit
         $orderUnit = new Unit();
