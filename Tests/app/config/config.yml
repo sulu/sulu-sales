@@ -17,4 +17,5 @@ sulu_sales_order:
 
 parameters:
     mailer_from: test@test.com
+    website_locale: en
 

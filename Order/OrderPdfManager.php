@@ -51,6 +51,11 @@ class OrderPdfManager
     protected $entityManager;
 
     /**
+     * @var string
+     */
+    protected $websiteLocale;
+
+    /**
      * @param ObjectManager $entityManager
      * @param PdfManager $pdfManager
      * @param string $templateConfirmationPath
@@ -58,6 +63,7 @@ class OrderPdfManager
      * @param string $templateHeaderPath
      * @param string $templateFooterPath
      * @param string $templateMacrosPath
+     * @param string $locale
      */
     public function __construct(
         ObjectManager $entityManager,
@@ -66,7 +72,8 @@ class OrderPdfManager
         $templateBasePath,
         $templateHeaderPath,
         $templateFooterPath,
-        $templateMacrosPath
+        $templateMacrosPath,
+        $locale
     ) {
         $this->entityManager = $entityManager;
         $this->pdfManager = $pdfManager;
@@ -75,6 +82,7 @@ class OrderPdfManager
         $this->templateHeaderPath = $templateHeaderPath;
         $this->templateFooterPath = $templateFooterPath;
         $this->templateMacrosPath = $templateMacrosPath;
+        $this->websiteLocale = $locale;
     }
 
     /**
@@ -142,13 +150,16 @@ class OrderPdfManager
         $data = array(
             'recipient' => $order->getDeliveryAddress(),
             'responsibleContact' => $order->getResponsibleContact(),
-            'deliveryAddress' => $order->getInvoiceAddress(),
+            'deliveryAddress' => $order->getDeliveryAddress(),
+            'customerContact' => $order->getCustomerContact(),
+            'billingAddress' => $order->getInvoiceAddress(),
             'order' => $order,
             'customerNumber' => $customerNumber,
             'orderApiEntity' => $apiOrder,
             'itemApiEntities' => $apiOrder->getItems(),
             'templateBasePath' => $this->templateBasePath,
             'templateMacrosPath' => $this->templateMacrosPath,
+            'website_locale' => $this->websiteLocale,
         );
 
         return $data;
