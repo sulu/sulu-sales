@@ -11,6 +11,7 @@ namespace Sulu\Bundle\Sales\OrderBundle\Tests;
 
 use DateTime;
 
+use Sulu\Bundle\ContactBundle\Entity\AccountContact;
 use Symfony\Component\HttpKernel\Client;
 
 use Doctrine\ORM\EntityManager;
@@ -69,6 +70,10 @@ class OrderDataSetup
      * @var Account
      */
     public $account2;
+    /**
+     * @var AccountContact
+     */
+    public $accountContact;
     /**
      * @var Address
      */
@@ -265,6 +270,14 @@ class OrderDataSetup
         $contact->setLastName('Mustermann');
         $this->em->persist($contact);
 
+
+        $this->accountContact = new AccountContact();
+        $this->accountContact->setAccount($this->account);
+        $this->accountContact->setContact($this->contact);
+        $this->accountContact->setMain(true);
+        $this->contact->addAccountContact($this->accountContact);
+
+
         $user = new User();
         $user->setUsername('test');
         $user->setPassword('test');
@@ -439,6 +452,7 @@ class OrderDataSetup
         $this->em->persist($item2);
 
         $this->em->persist($this->currency);
+        $this->em->persist($this->accountContact);
         $this->em->persist($this->productPrice);
         $this->em->persist($user);
         $this->em->persist($this->orderTypeManual);
