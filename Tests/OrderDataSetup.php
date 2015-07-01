@@ -10,13 +10,10 @@
 namespace Sulu\Bundle\Sales\OrderBundle\Tests;
 
 use DateTime;
-
-use Sulu\Bundle\ContactBundle\Entity\AccountContact;
-use Symfony\Component\HttpKernel\Client;
-
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Sulu\Bundle\ContactExtensionBundle\Entity\Account;
+use Sulu\Bundle\ContactBundle\Entity\AccountContact;
 use Sulu\Bundle\ContactBundle\Entity\Address;
 use Sulu\Bundle\ContactBundle\Entity\AddressType;
 use Sulu\Bundle\ContactBundle\Entity\Contact;
