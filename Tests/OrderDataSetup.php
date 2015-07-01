@@ -10,12 +10,10 @@
 namespace Sulu\Bundle\Sales\OrderBundle\Tests;
 
 use DateTime;
-
-use Symfony\Component\HttpKernel\Client;
-
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Sulu\Bundle\ContactExtensionBundle\Entity\Account;
+use Sulu\Bundle\ContactBundle\Entity\AccountContact;
 use Sulu\Bundle\ContactBundle\Entity\Address;
 use Sulu\Bundle\ContactBundle\Entity\AddressType;
 use Sulu\Bundle\ContactBundle\Entity\Contact;
@@ -44,11 +42,9 @@ use Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatus;
 use Sulu\Bundle\Sales\OrderBundle\Entity\OrderType;
 use Sulu\Bundle\Sales\OrderBundle\Entity\OrderTypeTranslation;
 use Sulu\Bundle\SecurityBundle\Entity\User;
-use Sulu\Bundle\TestBundle\Testing\SuluTestCase;
 
 class OrderDataSetup
 {
-
     public $locale = 'en';
 
     protected static $orderStatusEntityName = 'SuluSalesOrderBundle:OrderStatus';
@@ -69,6 +65,10 @@ class OrderDataSetup
      * @var Account
      */
     public $account2;
+    /**
+     * @var AccountContact
+     */
+    public $accountContact;
     /**
      * @var Address
      */
@@ -265,6 +265,12 @@ class OrderDataSetup
         $contact->setLastName('Mustermann');
         $this->em->persist($contact);
 
+        $this->accountContact = new AccountContact();
+        $this->accountContact->setAccount($this->account);
+        $this->accountContact->setContact($this->contact);
+        $this->accountContact->setMain(true);
+        $this->contact->addAccountContact($this->accountContact);
+
         $user = new User();
         $user->setUsername('test');
         $user->setPassword('test');
@@ -311,7 +317,6 @@ class OrderDataSetup
         $order2->setNumber('12345');
         $order2->setDeliveryAddress(null);
         $order2->setInvoiceAddress(null);
-
 
         // product order unit
         $orderUnit = new Unit();
@@ -439,6 +444,7 @@ class OrderDataSetup
         $this->em->persist($item2);
 
         $this->em->persist($this->currency);
+        $this->em->persist($this->accountContact);
         $this->em->persist($this->productPrice);
         $this->em->persist($user);
         $this->em->persist($this->orderTypeManual);
