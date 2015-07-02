@@ -2,67 +2,110 @@
 {% import templateMacrosPath as macros %}
 
 {% block recipient_business_info %}
-    {% if order.getCustomerAccount() and order.getCustomerAccount().getUid() %}
-        UID: {{ order.getCustomerAccount().getUid() |default('-') }} |
-        TEL: {{ order.getCustomerAccount().getMainPhone() |default('-') }}
+    {% if order.customerAccount and order.customerAccount.uid %}
+        UID: {{ order.customerAccount.uid|default('-') }} |
+        TEL: {{ order.customerAccount.mainPhone|default('-') }}
     {% endif %}
 {% endblock %}
 
 {% block recipient %}
     <div class="">
-        {{ recipient.getAccountName() }}<br/>
-        <span class="bold">{{ recipient.getFirstName() }} {{ recipient.getLastName() }}</span><br/>
-        {{ recipient.getStreet() }} {{ recipient.getNumber() }}<br/>
-        {{ recipient.getZip() }} {{ recipient.getCity() }}<br/>
-        {{ recipient.getCountry() |upper }}
+        {{ recipient.accountName }}<br/>
+        <span class="bold">
+            {{ recipient.firstName }} {{ recipient.lastName }}
+        </span><br/>
+        {{ recipient.street }} {{ recipient.number }}<br/>
+        {{ recipient.zip }} {{ recipient.city }}<br/>
+        {{ recipient.country|upper }}
     </div>
 {% endblock %}
 
 {% block responsibleperson  %}
-    <div class="">
-        <b>SachbearbeiterIn:</b><br>
-        {{ responsibleContact.getFullName() |default('-') }}<br/>
-        Tel: {{ responsibleContact.getMainPhone() |default('-') }}<br/>
-        Fax: {{ responsibleContact.getMainFax() |default('-') }}<br/>
-        E-Mail: {{ responsibleContact.getMainEmail() |default('-') }}
-    </div>
+    {% if customerContact %}
+        <b>Besteller</b><br/>
+        {{ customerContact.fullName }}<br/>
+        {% if customerContact.mainPhone %}
+            Tel: {{ customerContact.mainPhone }}<br/>
+        {% endif %}
+        {% if customerContact.mainFax %}
+        Fax: {{ customerContact.mainFax }}<br/>
+        {% endif %}
+        {% if customerContact.mainEmail %}
+            {{ customerContact.mainEmail }}
+        {% endif %}
+    {% endif %}
 {% endblock %}
 
 {% block pdf_title %}
-    Bestellung {{ order.getNumber() }}
+    {% if order.type and order.type.id > 1 %}
+        Shop-Bestellung {{ order.number }}
+    {% else %}
+        Bestellung {{ order.number }}
+    {% endif %}
 {% endblock %}
 
-{% block invoice_address %}{% endblock %}
+{% block invoice_address %}
+    <div class="grid__item four-tenths">
+        <p class="paragraph">
+            <span class="bold">Rechnungsadresse:</span><br/>
+            {{ billingAddress.accountName }}<br/>
+            {% if billingAddress.firstName or billingAddress.lastName %}
+                <span class="bold">
+                    z.H. {{ billingAddress.firstName }} {{ billingAddress.lastName }}
+                </span><br/>
+            {% endif %}
+            {{ billingAddress.street }} {{ billingAddress.number }}<br/>
+            {{ billingAddress.zip }} {{ billingAddress.city }}<br/>
+            {{ billingAddress.country|upper }}
+        </p>
+        <p>
+            {% if billingAddress.uid %}
+                UID: {{ billingAddress.uid }}<br/>
+            {% endif %}
+            {% if billingAddress.mainPhone is defined and billingAddress.mainPhone %}
+                Tel: {{ billingAddress.mainPhone }}
+            {% endif %}
+        </p>
+    </div>
+{% endblock %}
 
 {% block orderdetails %}
-    <div class="grid__item four-tenths">
-        <p>
-            Angebotsnummer:<br>
-            {{ order.getOrderNumber() |default('-') }}
-        </p>
-        <p>
-            Kundennummer:<br>
-            {{ customerNumber |default('-') }}
-        </p>
-        {% if order.getOrderDate() %}
-        <p>
-            Bestelldatum:<br/>
-            {{ order.getOrderDate().date |date('d.m.Y') }}
-        </p>
+    <div class="grid__item three-tenths">
+        {% if order.orderNumber %}
+            <p>
+                Angebotsnummer:<br/>
+                {{ order.orderNumber }}
+            </p>
+        {% endif %}
+        {% if customerNumber %}
+            <p>
+                Kundennummer:<br/>
+                {{ customerNumber }}
+            </p>
+        {% endif %}
+        {% if order.orderDate %}
+            <p>
+                Bestelldatum:<br/>
+                {{ order.orderDate.date|date('d.m.Y') }}
+            </p>
         {% endif %}
     </div>
 {% endblock %}
 
 {% block shippingdetails %}
     <div class="grid__item three-tenths">
-        <p>
-            Kostenstelle:<br/>
-            {{ order.getCostCentre() |default('-') }}
-        </p>
-        <p>
-            Kommission:<br/>
-            {{ order.getCommission() |default('-') }}
-        </p>
+        {% if order.costCentre %}
+            <p>
+                Kostenstelle:<br/>
+                {{ order.costCentre }}
+            </p>
+        {% endif %}
+        {% if order.commission %}
+            <p>
+                Kommission:<br/>
+                {{ order.commission }}
+            </p>
+        {% endif %}
     </div>
 {% endblock %}
 
@@ -76,26 +119,38 @@
 
 {% block productlist_items %}
     {% for item in itemApiEntities %}
-        {{ macros.item(loop.index, item) }}
+        {{ macros.item(loop.index, item, website_locale) }}
     {% endfor %}
 {% endblock %}
 
 {% block productlist_footer_shippingcost_value %}
-    {{ orderApiEntity.getDeliveryCostFormatted() |default('-') }}
+    {{ orderApiEntity.deliveryCostFormatted|default('-') }}
 {% endblock %}
 
 {% block productlist_footer_total_value %}
-    {{ orderApiEntity.getTotalNetPriceFormatted() |default('-') }}
+    {{ orderApiEntity.getTotalNetPriceFormatted(website_locale)|default('-') }}
 {% endblock %}
 
 {% block payment_terms %}
-    {% if order.getTermsOfPayment() %}
-        {{ order.getTermsOfPayment().getTerms() }}
-    {% endif %}
+    {{ order.termsOfPayment.terms|default('-') }}
 {% endblock %}
 
 {% block delivery_terms %}
-    {% if order.getTermsOfDelivery() %}
-        {{ order.getTermsOfDelivery().getTerms() }}
+    {{ order.termsOfDelivery.terms|default('-') }}
+{% endblock %}
+
+{% block note_ekb %}
+    {{ internal.cfp|default('-') }}
+{% endblock %}
+
+{% block note_bonus %}
+    {{ internal.bonusConditions|default('-') }}
+{% endblock %}
+
+{% block sender %}
+    {% if customerContact %}
+        {{ customerContact.fullName }}
+    {% else %}
+        {{ recipient.accountName }}
     {% endif %}
 {% endblock %}
