@@ -104,7 +104,11 @@ class OrderEmailManager
             $recipient = $this->confirmationRecipientEmailAddress;
         }
 
-        return $this->sendConfirmationEmail($recipient, $apiOrder, $this->templateShopOwnerConfirmationPath, $customerContact);
+        return $this->sendConfirmationEmail($recipient,
+            $apiOrder,
+            $this->templateShopOwnerConfirmationPath,
+            $customerContact
+        );
     }
 
     /**
@@ -121,7 +125,11 @@ class OrderEmailManager
         ApiOrderInterface $apiOrder,
         ContactInterface $customerContact = null
     ) {
-        return $this->sendConfirmationEmail($recipient, $apiOrder, $this->templateCustomerConfirmationPath, $customerContact);
+        return $this->sendConfirmationEmail($recipient,
+            $apiOrder,
+            $this->templateCustomerConfirmationPath,
+            $customerContact
+        );
     }
 
     /**
