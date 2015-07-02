@@ -147,8 +147,33 @@ class OrderEmailManager
         $tmplData = array(
             'order' => $apiOrder,
             'contact' => $customerContact,
-            'footerTxt' => $this->templateFooterTxtPath,
-            'footerHtml' => $this->templateFooterHtmlPath,
+        );
+
+        return $this->sendMail($recipient, $templatePath, $tmplData, $apiOrder);
+    }
+
+    /**
+     * Sends an email
+     *
+     * @param string $recipient
+     * @param string $templatePath
+     * @param array $data
+     * @param ApiOrderInterface $apiOrder
+     *
+     * @return bool
+     */
+    public function sendMail(
+        $recipient,
+        $templatePath,
+        $data = array(),
+        ApiOrderInterface $apiOrder = null
+    ) {
+        $tmplData = array_merge(
+            $data,
+            array(
+                'footerTxt' => $this->templateFooterTxtPath,
+                'footerHtml' => $this->templateFooterHtmlPath,
+            )
         );
 
         $template = $this->twig->loadTemplate($templatePath);
@@ -157,23 +182,25 @@ class OrderEmailManager
         $emailBodyText = $template->renderBlock('body_text', $tmplData);
         $emailBodyHtml = $template->renderBlock('body_html', $tmplData);
 
-        $pdf = $this->pdfManager->createOrderConfirmation($apiOrder);
-        $pdfFileName = $this->pdfManager->getPdfName($apiOrder);
-
-        // now send mail
-        $attachment = \Swift_Attachment::newInstance()
-            ->setFilename($pdfFileName)
-            ->setContentType('application/pdf')
-            ->setBody($pdf);
-
         /** @var \Swift_Message $message */
         $message = \Swift_Message::newInstance()
             ->setSubject($subject)
             ->setFrom($this->emailFrom)
             ->setTo($recipient)
             ->setBody($emailBodyText, 'text/plain')
-            ->addPart($emailBodyHtml, 'text/html')
-            ->attach($attachment);
+            ->addPart($emailBodyHtml, 'text/html');
+
+        // add pdf if order is supplied
+        if ($apiOrder) {
+            $pdf = $this->pdfManager->createOrderConfirmation($apiOrder);
+            $pdfFileName = $this->pdfManager->getPdfName($apiOrder);
+            // now send mail
+            $attachment = \Swift_Attachment::newInstance()
+                ->setFilename($pdfFileName)
+                ->setContentType('application/pdf')
+                ->setBody($pdf);
+            $message->attach($attachment);
+        }
 
         $failedRecipients = array();
         $this->mailer->send($message, $failedRecipients);

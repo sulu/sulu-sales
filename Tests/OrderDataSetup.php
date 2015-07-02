@@ -12,6 +12,7 @@ namespace Sulu\Bundle\Sales\OrderBundle\Tests;
 use DateTime;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Sulu\Bundle\ContactBundle\Entity\AccountInterface;
 use Sulu\Bundle\ContactExtensionBundle\Entity\Account;
 use Sulu\Bundle\ContactBundle\Entity\AccountContact;
 use Sulu\Bundle\ContactBundle\Entity\Address;
@@ -69,6 +70,10 @@ class OrderDataSetup
      * @var AccountContact
      */
     public $accountContact;
+    /**
+     * @var AccountContact
+     */
+    public $accountContact2;
     /**
      * @var Address
      */
@@ -265,11 +270,8 @@ class OrderDataSetup
         $contact->setLastName('Mustermann');
         $this->em->persist($contact);
 
-        $this->accountContact = new AccountContact();
-        $this->accountContact->setAccount($this->account);
-        $this->accountContact->setContact($this->contact);
-        $this->accountContact->setMain(true);
-        $this->contact->addAccountContact($this->accountContact);
+        $this->accountContact = $this->createAccountContact($this->account, $this->contact, true);
+        $this->accountContact2 = $this->createAccountContact($this->account, $this->contact2, true);
 
         $user = new User();
         $user->setUsername('test');
@@ -444,7 +446,6 @@ class OrderDataSetup
         $this->em->persist($item2);
 
         $this->em->persist($this->currency);
-        $this->em->persist($this->accountContact);
         $this->em->persist($this->productPrice);
         $this->em->persist($user);
         $this->em->persist($this->orderTypeManual);
@@ -489,7 +490,7 @@ class OrderDataSetup
      *
      * @return \Sulu\Bundle\Sales\CoreBundle\Entity\ItemInterface
      */
-    private function createNewTestItem()
+    protected function createNewTestItem()
     {
         $item = $this->itemFactory->createEntity();
         $item->setName('Product1');
@@ -515,9 +516,11 @@ class OrderDataSetup
     }
 
     /**
+     * Creates a test order
+     *
      * @return Order
      */
-    private function createNewTestOrder()
+    protected function createNewTestOrder()
     {
         // order
         $order = new Order();
@@ -547,5 +550,27 @@ class OrderDataSetup
         $order->setResponsibleContact($this->contact2);
 
         return $order;
+    }
+
+    /**
+     * Creates account contact relation
+     *
+     * @param AccountInterface $account
+     * @param Contact $contact
+     * @param bool $isMain
+     *
+     * @return AccountContact
+     */
+    protected function createAccountContact(AccountInterface $account, Contact $contact, $isMain = true)
+    {
+        $accountContact = new AccountContact();
+        $accountContact->setAccount($account);
+        $accountContact->setContact($contact);
+        $accountContact->setMain($isMain);
+        $this->contact->addAccountContact($accountContact);
+
+        $this->em->persist($accountContact);
+
+        return $accountContact;
     }
 }
