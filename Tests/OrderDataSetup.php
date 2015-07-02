@@ -14,6 +14,8 @@ use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Sulu\Bundle\ContactExtensionBundle\Entity\Account;
 use Sulu\Bundle\ContactBundle\Entity\AccountContact;
+use Sulu\Bundle\ContactBundle\Entity\AccountAddress;
+use Sulu\Bundle\ContactBundle\Entity\AccountInterface;
 use Sulu\Bundle\ContactBundle\Entity\Address;
 use Sulu\Bundle\ContactBundle\Entity\AddressType;
 use Sulu\Bundle\ContactBundle\Entity\Contact;
@@ -69,6 +71,10 @@ class OrderDataSetup
      * @var AccountContact
      */
     public $accountContact;
+    /**
+     * @var AccountContact
+     */
+    public $accountContact2;
     /**
      * @var Address
      */
@@ -237,6 +243,13 @@ class OrderDataSetup
         $this->address2->setCountry($country);
         $this->address2->setAddressType($addressType);
 
+        // add address to entities
+        $accountAddress = new AccountAddress();
+        $accountAddress->setAccount($this->account);
+        $accountAddress->setAddress($this->address);
+        $accountAddress->setMain(true);
+        $this->account->addAccountAddress($accountAddress);
+
         // phone
         $phoneType = new PhoneType();
         $phoneType->setName('Business');
@@ -265,11 +278,8 @@ class OrderDataSetup
         $contact->setLastName('Mustermann');
         $this->em->persist($contact);
 
-        $this->accountContact = new AccountContact();
-        $this->accountContact->setAccount($this->account);
-        $this->accountContact->setContact($this->contact);
-        $this->accountContact->setMain(true);
-        $this->contact->addAccountContact($this->accountContact);
+        $this->accountContact = $this->createAccountContact($this->account, $this->contact, true);
+        $this->accountContact2 = $this->createAccountContact($this->account, $this->contact2, true);
 
         $user = new User();
         $user->setUsername('test');
@@ -443,8 +453,8 @@ class OrderDataSetup
         $this->em->persist($item);
         $this->em->persist($item2);
 
+        $this->em->persist($accountAddress);
         $this->em->persist($this->currency);
-        $this->em->persist($this->accountContact);
         $this->em->persist($this->productPrice);
         $this->em->persist($user);
         $this->em->persist($this->orderTypeManual);
@@ -467,8 +477,6 @@ class OrderDataSetup
         $this->em->persist($this->phone);
         $this->em->persist($this->contact);
         $this->em->persist($this->contact2);
-        $this->em->persist($this->order);
-        $this->em->persist($order2);
         $this->em->persist($this->orderAddressDelivery);
         $this->em->persist($this->orderAddressInvoice);
         $this->em->persist($this->item);
@@ -485,39 +493,11 @@ class OrderDataSetup
     }
 
     /**
-     * Creates new item for test purpose
+     * Creates a test order
      *
-     * @return \Sulu\Bundle\Sales\CoreBundle\Entity\ItemInterface
-     */
-    private function createNewTestItem()
-    {
-        $item = $this->itemFactory->createEntity();
-        $item->setName('Product1');
-        $item->setNumber('123');
-        $item->setQuantity(2);
-        $item->setQuantityUnit('Pcs');
-        $item->setUseProductsPrice(true);
-        $item->setTax(20);
-        $item->setPrice($this->productPrice->getPrice());
-        $item->setDiscount(10);
-        $item->setDescription('This is a description');
-        $item->setWeight(15.8);
-        $item->setWidth(5);
-        $item->setHeight(6);
-        $item->setLength(7);
-        $item->setCreated(new DateTime());
-        $item->setChanged(new DateTime());
-        $item->setProduct($this->product);
-        $item->setSupplier($this->account);
-        $item->setSupplierName($this->account->getName());
-
-        return $item;
-    }
-
-    /**
      * @return Order
      */
-    private function createNewTestOrder()
+    public function createNewTestOrder()
     {
         // order
         $order = new Order();
@@ -546,6 +526,60 @@ class OrderDataSetup
         $order->setChanger($this->user);
         $order->setResponsibleContact($this->contact2);
 
+        $this->em->persist($order);
+
         return $order;
+    }
+
+    /**
+     * Creates new item for test purpose
+     *
+     * @return \Sulu\Bundle\Sales\CoreBundle\Entity\ItemInterface
+     */
+    public function createNewTestItem()
+    {
+        $item = $this->itemFactory->createEntity();
+        $item->setName('Product1');
+        $item->setNumber('123');
+        $item->setQuantity(2);
+        $item->setQuantityUnit('Pcs');
+        $item->setUseProductsPrice(true);
+        $item->setTax(20);
+        $item->setPrice($this->productPrice->getPrice());
+        $item->setDiscount(10);
+        $item->setDescription('This is a description');
+        $item->setWeight(15.8);
+        $item->setWidth(5);
+        $item->setHeight(6);
+        $item->setLength(7);
+        $item->setCreated(new DateTime());
+        $item->setChanged(new DateTime());
+        $item->setProduct($this->product);
+        $item->setSupplier($this->account);
+        $item->setSupplierName($this->account->getName());
+
+        return $item;
+    }
+
+    /**
+     * Creates account contact relation
+     *
+     * @param AccountInterface $account
+     * @param Contact $contact
+     * @param bool $isMain
+     *
+     * @return AccountContact
+     */
+    protected function createAccountContact(AccountInterface $account, Contact $contact, $isMain = true)
+    {
+        $accountContact = new AccountContact();
+        $accountContact->setAccount($account);
+        $accountContact->setContact($contact);
+        $accountContact->setMain($isMain);
+        $this->contact->addAccountContact($accountContact);
+
+        $this->em->persist($accountContact);
+
+        return $accountContact;
     }
 }
