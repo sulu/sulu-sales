@@ -21,10 +21,11 @@ use Sulu\Bundle\Sales\CoreBundle\Manager\OrderAddressManager;
 use Sulu\Bundle\Sales\OrderBundle\Cart\Exception\CartSubmissionException;
 use Sulu\Bundle\Sales\OrderBundle\Api\ApiOrderInterface;
 use Sulu\Bundle\Sales\OrderBundle\Api\Order as ApiOrder;
-use Sulu\Bundle\Sales\OrderBundle\Entity\OrderInterface;
 use Sulu\Bundle\Sales\OrderBundle\Entity\Order;
+use Sulu\Bundle\Sales\OrderBundle\Entity\OrderInterface;
 use Sulu\Bundle\Sales\OrderBundle\Entity\OrderRepository;
 use Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatus;
+use Sulu\Bundle\Sales\OrderBundle\Entity\OrderType;
 use Sulu\Bundle\Sales\OrderBundle\Order\OrderEmailManager;
 use Sulu\Bundle\Sales\OrderBundle\Order\Exception\OrderException;
 use Sulu\Bundle\Sales\OrderBundle\Order\OrderFactoryInterface;
@@ -669,12 +670,16 @@ class CartManager extends BaseSalesManager
         }
 
         // TODO: anonymous order
+        // set order type
         if ($user) {
             $name = $user->getContact()->getFullName();
+            $cart->setType($this->orderManager->getOrderTypeEntityById(OrderType::SHOP));
         } else {
             $name = 'Anonymous';
+            $cart->setType($this->orderManager->getOrderTypeEntityById(OrderType::ANONYMOUS));
         }
         $cart->setCustomerName($name);
+
 
         $this->orderManager->convertStatus($cart, OrderStatus::STATUS_IN_CART, false, $persist);
 

@@ -16,6 +16,7 @@ use Hateoas\Representation\CollectionRepresentation;
 use Sulu\Bundle\Sales\CoreBundle\SalesDependency\SalesDependencyClassInterface;
 use Sulu\Bundle\Sales\OrderBundle\Api\Order;
 use Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatus;
+use Sulu\Bundle\Sales\OrderBundle\Entity\OrderType;
 use Sulu\Bundle\Sales\OrderBundle\Order\Exception\MissingOrderAttributeException;
 use Sulu\Bundle\Sales\OrderBundle\Order\Exception\OrderDependencyNotFoundException;
 use Sulu\Bundle\Sales\OrderBundle\Order\Exception\OrderException;
@@ -171,8 +172,11 @@ class OrderController extends RestController implements ClassResourceInterface, 
     public function postAction(Request $request)
     {
         try {
+            $data = $request->request->all();
+            $data['type'] = OrderType::MANUAL;
+
             $order = $this->getManager()->save(
-                $request->request->all(),
+                $data,
                 $this->getLocale($request),
                 $this->getUser()->getId()
             );
