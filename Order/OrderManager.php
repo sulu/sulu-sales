@@ -14,7 +14,6 @@ use DateTime;
 use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\NoResultException;
-use Sulu\Bundle\Sales\OrderBundle\Api\ApiOrderInterface;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Sulu\Component\Security\Authentication\UserRepositoryInterface;
 use Sulu\Component\Persistence\RelationTrait;
@@ -42,7 +41,7 @@ use Sulu\Bundle\Sales\OrderBundle\Order\Exception\OrderDependencyNotFoundExcepti
 use Sulu\Bundle\Sales\OrderBundle\Order\Exception\OrderException;
 use Sulu\Bundle\Sales\OrderBundle\Order\Exception\OrderNotFoundException;
 use Sulu\Bundle\Sales\OrderBundle\Api\Order;
-use Sulu\Bundle\Sales\OrderBundle\Api\OrderType as ApiOrderType;
+use Sulu\Bundle\Sales\OrderBundle\Api\ApiOrderInterface;
 
 class OrderManager
 {

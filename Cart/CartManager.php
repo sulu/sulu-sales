@@ -680,7 +680,6 @@ class CartManager extends BaseSalesManager
         }
         $cart->setCustomerName($name);
 
-
         $this->orderManager->convertStatus($cart, OrderStatus::STATUS_IN_CART, false, $persist);
 
         if ($persist) {
