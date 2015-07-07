@@ -41,6 +41,7 @@ use Sulu\Bundle\Sales\OrderBundle\Order\Exception\OrderDependencyNotFoundExcepti
 use Sulu\Bundle\Sales\OrderBundle\Order\Exception\OrderException;
 use Sulu\Bundle\Sales\OrderBundle\Order\Exception\OrderNotFoundException;
 use Sulu\Bundle\Sales\OrderBundle\Api\Order;
+use Sulu\Bundle\Sales\OrderBundle\Api\ApiOrderInterface;
 
 class OrderManager
 {
@@ -178,9 +179,13 @@ class OrderManager
      * @param int|null $id If defined, the Order with the given ID will be updated
      * @param int|null $statusId if defined, the status will be set to the given value
      * @param bool $flush Defines if a flush should be performed
+     * @param bool $patch
      *
-     * @throws Exception\OrderNotFoundException
-     * @throws Exception\OrderException
+     * @throws EntityNotFoundException
+     * @throws MissingOrderAttributeException
+     * @throws OrderDependencyNotFoundException
+     * @throws OrderException
+     * @throws OrderNotFoundException
      *
      * @return null|Order|\Sulu\Bundle\Sales\OrderBundle\Entity\Order
      */
@@ -225,7 +230,7 @@ class OrderManager
         );
 
         // set type of order (if set)
-        $this->setOrderType($data, $order);
+        $this->setOrderType($data, $order, $patch);
 
         $this->setDate(
             $data,
@@ -852,16 +857,17 @@ class OrderManager
      * Sets OrderType on an order
      *
      * @param array $data
-     * @param Order $order
+     * @param ApiOrderInterface $order
      *
      * @throws EntityNotFoundException
      * @throws OrderException
      */
-    private function setOrderType($data, $order)
+    private function setOrderType($data, ApiOrderInterface $order, $patch = false)
     {
         // get OrderType
-        $type = $this->getProperty($data, 'type', null);
-        if (!is_null($type)) {
+        $type = $this->getProperty($data, 'type', $order->getType());
+        // set order type
+        if (isset($data['type'])) {
             if (is_array($type) && isset($type['id'])) {
                 // if provided as array
                 $typeId = $type['id'];
@@ -871,10 +877,14 @@ class OrderManager
             } else {
                 throw new OrderException('No typeid given');
             }
-        } else {
+        } elseif (!$patch) {
             // default type is manual
             $typeId = OrderType::MANUAL;
+        } else {
+            // keep current type
+            return;
         }
+
         // get entity
         $orderType = $this->getOrderTypeEntityById($typeId);
         if (!$orderType) {
