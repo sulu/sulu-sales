@@ -34,6 +34,7 @@ class SuluSalesOrderExtension extends Extension
         // set email templates
         $this->setParameters($container, 'sulu_sales_order.email_templates', $config['email_templates']);
 
+        // email confirmation settings
         $shopEmailFrom = null;
         if (isset($config['shop_email_from'])) {
             $shopEmailFrom = $config['shop_email_from'];
@@ -44,6 +45,14 @@ class SuluSalesOrderExtension extends Extension
         }
         $container->setParameter('sulu_sales_order.shop_email_from', $shopEmailFrom);
         $container->setParameter('sulu_sales_order.shop_email_confirmation_to', $shopEmailConfirmationTo);
+        $container->setParameter(
+            'sulu_sales_order.send_email_confirmation_to_customer',
+            $config['send_email_confirmation_to_customer']
+        );
+        $container->setParameter(
+            'sulu_sales_order.send_email_confirmation_to_shopowner',
+            $config['send_email_confirmation_to_shopowner']
+        );
     }
 
     /**

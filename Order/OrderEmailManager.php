@@ -47,7 +47,18 @@ class OrderEmailManager
     /**
      * @var string
      */
-    protected $templateShopOwnerConfirmationPath;
+    protected $templateShopownerConfirmationPath;
+
+    /**
+     * @var bool
+     */
+    protected $sendCustomerEmailConfirmation;
+
+    /**
+     * @var bool
+     */
+    protected $sendShopownerEmailConfirmation;
+
 
     /**
      * @param \Twig_Environment $twig
@@ -56,7 +67,7 @@ class OrderEmailManager
      * @param string $emailFrom
      * @param string $confirmationRecipientEmailAddress
      * @param string $templateCustomerConfirmationPath
-     * @param string $templateShopOwnerConfirmationPath
+     * @param string $templateShopownerConfirmationPath
      * @param string $templateFooterHtmlPath
      * @param string $templateFooterTxtPath
      */
@@ -67,9 +78,11 @@ class OrderEmailManager
         $emailFrom,
         $confirmationRecipientEmailAddress,
         $templateCustomerConfirmationPath,
-        $templateShopOwnerConfirmationPath,
+        $templateShopownerConfirmationPath,
         $templateFooterHtmlPath,
-        $templateFooterTxtPath
+        $templateFooterTxtPath,
+        $sendEmailConfirmationToShopowner,
+        $sendEmailConfirmationToCustomer
     ) {
         // services
         $this->twig = $twig;
@@ -80,9 +93,12 @@ class OrderEmailManager
         $this->confirmationRecipientEmailAddress = $confirmationRecipientEmailAddress;
         // templates
         $this->templateCustomerConfirmationPath = $templateCustomerConfirmationPath;
-        $this->templateShopOwnerConfirmationPath = $templateShopOwnerConfirmationPath;
+        $this->templateShopownerConfirmationPath = $templateShopownerConfirmationPath;
         $this->templateFooterTxtPath = $templateFooterTxtPath;
         $this->templateFooterHtmlPath = $templateFooterHtmlPath;
+        // define if emails should be sent
+        $this->sendEmailConfirmationToShopowner = $sendEmailConfirmationToShopowner;
+        $this->sendEmailConfirmationToCustomer = $sendEmailConfirmationToCustomer;
     }
 
     /**
@@ -94,11 +110,15 @@ class OrderEmailManager
      *
      * @return bool
      */
-    public function sendShopOwnerConfirmation(
+    public function sendShopownerConfirmation(
         $recipient,
         ApiOrderInterface $apiOrder,
         ContactInterface $customerContact = null
     ) {
+        if (!$this->sendEmailConfirmationToShopowner) {
+            return false;
+        }
+
         if (empty($recipient)) {
             // fallback address for shop-owner order confirmations
             $recipient = $this->confirmationRecipientEmailAddress;
@@ -107,7 +127,7 @@ class OrderEmailManager
         return $this->sendConfirmationEmail(
             $recipient,
             $apiOrder,
-            $this->templateShopOwnerConfirmationPath,
+            $this->templateShopownerConfirmationPath,
             $customerContact
         );
     }
@@ -126,6 +146,10 @@ class OrderEmailManager
         ApiOrderInterface $apiOrder,
         ContactInterface $customerContact = null
     ) {
+        if (!$this->sendEmailConfirmationToCustomer) {
+            return false;
+        }
+
         return $this->sendConfirmationEmail(
             $recipient,
             $apiOrder,
