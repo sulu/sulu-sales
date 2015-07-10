@@ -71,6 +71,8 @@ class OrderEmailManager
      * @param string $templateShopownerConfirmationPath
      * @param string $templateFooterHtmlPath
      * @param string $templateFooterTxtPath
+     * @param bool $sendEmailConfirmationToShopowner
+     * @param bool $sendEmailConfirmationToCustomer
      */
     public function __construct(
         \Twig_Environment $twig,

@@ -96,6 +96,8 @@
             <argument>%sulu_sales_order.email_templates.shopowner_confirmation%</argument>
             <argument>%sulu_sales_order.email_templates.footer_html%</argument>
             <argument>%sulu_sales_order.email_templates.footer_txt%</argument>
+            <argument>%sulu_sales_order.send_email_confirmation_to_shopowner%</argument>
+            <argument>%sulu_sales_order.send_email_confirmation_to_customer%</argument>
         </service>
 
         <service id="sulu_sales_order.order_pdf_manager" class="%sulu_sales_order.order_pdf_manager.class%">
