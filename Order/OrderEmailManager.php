@@ -11,6 +11,7 @@ namespace Sulu\Bundle\Sales\OrderBundle\Order;
 
 use Sulu\Bundle\Sales\OrderBundle\Api\ApiOrderInterface;
 use Sulu\Component\Contact\Model\ContactInterface;
+use Sulu\Component\Security\Authentication\UserInterface;
 
 class OrderEmailManager
 {
@@ -193,6 +194,7 @@ class OrderEmailManager
      * @param string $templatePath
      * @param array $data
      * @param ApiOrderInterface $apiOrder
+     * @param array $blindCopyRecipients Recipients to send bcc
      *
      * @return bool
      */
@@ -200,7 +202,8 @@ class OrderEmailManager
         $recipient,
         $templatePath,
         $data = array(),
-        ApiOrderInterface $apiOrder = null
+        ApiOrderInterface $apiOrder = null,
+        $blindCopyRecipients = array()
     ) {
         $tmplData = array_merge(
             $data,
@@ -223,6 +226,11 @@ class OrderEmailManager
             ->setTo($recipient)
             ->setBody($emailBodyText, 'text/plain')
             ->addPart($emailBodyHtml, 'text/html');
+        
+        // add blind copy recipients
+        foreach ($blindCopyRecipients as $bcc) {
+            $message->addBcc($bcc);
+        }
 
         // add pdf if order is supplied
         if ($apiOrder) {
@@ -246,6 +254,38 @@ class OrderEmailManager
         }
 
         return true;
+    }
+
+    /**
+     * Get Email address of a user; fallback to contact / account if not defined
+     *
+     * @param UserInterface $user
+     *
+     * @return string|null
+     */
+    public function getEmailAddressOfUser(UserInterface $user)
+    {
+        // take users email address
+        $userEmail = $user->getEmail();
+        if ($userEmail) {
+            return $userEmail;
+        }
+
+        // fallback 1: take contacts main-email
+        $contact = $user->getContact();
+        $contactMainEmail = $contact->getMainEmail();
+        if ($contact && $contactMainEmail) {
+            return $contactMainEmail;
+        }
+
+        // fallback 2: take contact's account main-email
+        $account = $contact->getAccount();
+        $accountMainEmail = $account->getMainEmail();
+        if ($account && $accountMainEmail) {
+            return $accountMainEmail;
+        }
+
+        return null;
     }
 
     /**
