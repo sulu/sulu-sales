@@ -9,6 +9,7 @@
  */
 namespace Sulu\Bundle\Sales\OrderBundle\Order;
 
+use Sulu\Bundle\ContactBundle\Entity\AccountInterface;
 use Sulu\Bundle\Sales\OrderBundle\Api\ApiOrderInterface;
 use Sulu\Component\Contact\Model\ContactInterface;
 use Sulu\Component\Security\Authentication\UserInterface;
@@ -262,10 +263,11 @@ class OrderEmailManager
      * Get Email address of a user; fallback to contact / account if not defined
      *
      * @param UserInterface $user
+     * @param bool $useFallback
      *
-     * @return string|null
+     * @return null|string
      */
-    public function getEmailAddressOfUser(UserInterface $user)
+    public function getEmailAddressOfUser(UserInterface $user, $useFallback = true)
     {
         // take users email address
         $userEmail = $user->getEmail();
@@ -273,17 +275,51 @@ class OrderEmailManager
             return $userEmail;
         }
 
-        // fallback 1: take contacts main-email
+        // fallback: get contacts / accounts main-email
         $contact = $user->getContact();
+        if ($useFallback && $contact) {
+            return $this->getEmailAddressOfContact($contact);
+        }
+
+        return null;
+    }
+
+    /**
+     * Gets email address of a contact
+     *
+     * @param ContactInterface $contact
+     * @param bool $useFallback
+     *
+     * @return string|null
+     */
+    public function getEmailAddressOfContact(ContactInterface $contact, $useFallback = true)
+    {
+        // take contacts main-email
         $contactMainEmail = $contact->getMainEmail();
         if ($contact && $contactMainEmail) {
             return $contactMainEmail;
         }
 
-        // fallback 2: take contact's account main-email
+        // fallback take contact's main-account main-email
         $account = $contact->getAccount();
+        if ($useFallback && $account) {
+            return $this->getEmailAddressOfAccount($account);
+        }
+
+        return null;
+    }
+
+    /**
+     * Get Email-Address of account
+     *
+     * @param AccountInterface $account
+     *
+     * @return string|null
+     */
+    public function getEmailAddressOfAccount(AccountInterface $account)
+    {
         $accountMainEmail = $account->getMainEmail();
-        if ($account && $accountMainEmail) {
+        if ($accountMainEmail) {
             return $accountMainEmail;
         }
 

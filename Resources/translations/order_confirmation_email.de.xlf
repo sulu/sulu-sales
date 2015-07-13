@@ -24,7 +24,7 @@
             </trans-unit>
             <trans-unit id="6">
                 <source>default.owner</source>
-                <target>Shop-Besitzer</target>
+                <target>Shop-Besitzer(in)</target>
             </trans-unit>
             <trans-unit id="7">
                 <source>default.customer</source>
