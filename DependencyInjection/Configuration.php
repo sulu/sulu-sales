@@ -46,6 +46,8 @@ class Configuration implements ConfigurationInterface
             ->end()
             ->scalarNode('shop_email_from')->end()
             ->scalarNode('shop_email_confirmation_to')->end()
+            ->scalarNode('send_email_confirmation_to_customer')->defaultValue(true)->end()
+            ->scalarNode('send_email_confirmation_to_shopowner')->defaultValue(true)->end()
         ->end();
 
         return $treeBuilder;

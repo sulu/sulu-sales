@@ -9,8 +9,10 @@
  */
 namespace Sulu\Bundle\Sales\OrderBundle\Order;
 
+use Sulu\Bundle\ContactBundle\Entity\AccountInterface;
 use Sulu\Bundle\Sales\OrderBundle\Api\ApiOrderInterface;
 use Sulu\Component\Contact\Model\ContactInterface;
+use Sulu\Component\Security\Authentication\UserInterface;
 
 class OrderEmailManager
 {
@@ -47,7 +49,18 @@ class OrderEmailManager
     /**
      * @var string
      */
-    protected $templateShopOwnerConfirmationPath;
+    protected $templateShopownerConfirmationPath;
+
+    /**
+     * @var bool
+     */
+    protected $sendCustomerEmailConfirmation;
+
+    /**
+     * @var bool
+     */
+    protected $sendShopownerEmailConfirmation;
+
 
     /**
      * @param \Twig_Environment $twig
@@ -56,9 +69,11 @@ class OrderEmailManager
      * @param string $emailFrom
      * @param string $confirmationRecipientEmailAddress
      * @param string $templateCustomerConfirmationPath
-     * @param string $templateShopOwnerConfirmationPath
+     * @param string $templateShopownerConfirmationPath
      * @param string $templateFooterHtmlPath
      * @param string $templateFooterTxtPath
+     * @param bool $sendEmailConfirmationToShopowner
+     * @param bool $sendEmailConfirmationToCustomer
      */
     public function __construct(
         \Twig_Environment $twig,
@@ -67,9 +82,11 @@ class OrderEmailManager
         $emailFrom,
         $confirmationRecipientEmailAddress,
         $templateCustomerConfirmationPath,
-        $templateShopOwnerConfirmationPath,
+        $templateShopownerConfirmationPath,
         $templateFooterHtmlPath,
-        $templateFooterTxtPath
+        $templateFooterTxtPath,
+        $sendEmailConfirmationToShopowner,
+        $sendEmailConfirmationToCustomer
     ) {
         // services
         $this->twig = $twig;
@@ -80,9 +97,12 @@ class OrderEmailManager
         $this->confirmationRecipientEmailAddress = $confirmationRecipientEmailAddress;
         // templates
         $this->templateCustomerConfirmationPath = $templateCustomerConfirmationPath;
-        $this->templateShopOwnerConfirmationPath = $templateShopOwnerConfirmationPath;
+        $this->templateShopownerConfirmationPath = $templateShopownerConfirmationPath;
         $this->templateFooterTxtPath = $templateFooterTxtPath;
         $this->templateFooterHtmlPath = $templateFooterHtmlPath;
+        // define if emails should be sent
+        $this->sendEmailConfirmationToShopowner = $sendEmailConfirmationToShopowner;
+        $this->sendEmailConfirmationToCustomer = $sendEmailConfirmationToCustomer;
     }
 
     /**
@@ -94,11 +114,15 @@ class OrderEmailManager
      *
      * @return bool
      */
-    public function sendShopOwnerConfirmation(
+    public function sendShopownerConfirmation(
         $recipient,
         ApiOrderInterface $apiOrder,
         ContactInterface $customerContact = null
     ) {
+        if (!$this->sendEmailConfirmationToShopowner) {
+            return false;
+        }
+
         if (empty($recipient)) {
             // fallback address for shop-owner order confirmations
             $recipient = $this->confirmationRecipientEmailAddress;
@@ -107,7 +131,7 @@ class OrderEmailManager
         return $this->sendConfirmationEmail(
             $recipient,
             $apiOrder,
-            $this->templateShopOwnerConfirmationPath,
+            $this->templateShopownerConfirmationPath,
             $customerContact
         );
     }
@@ -126,6 +150,10 @@ class OrderEmailManager
         ApiOrderInterface $apiOrder,
         ContactInterface $customerContact = null
     ) {
+        if (!$this->sendEmailConfirmationToCustomer) {
+            return false;
+        }
+
         return $this->sendConfirmationEmail(
             $recipient,
             $apiOrder,
@@ -169,6 +197,7 @@ class OrderEmailManager
      * @param string $templatePath
      * @param array $data
      * @param ApiOrderInterface $apiOrder
+     * @param array $blindCopyRecipients Recipients to send bcc
      *
      * @return bool
      */
@@ -176,7 +205,8 @@ class OrderEmailManager
         $recipient,
         $templatePath,
         $data = array(),
-        ApiOrderInterface $apiOrder = null
+        ApiOrderInterface $apiOrder = null,
+        $blindCopyRecipients = array()
     ) {
         $tmplData = array_merge(
             $data,
@@ -199,6 +229,11 @@ class OrderEmailManager
             ->setTo($recipient)
             ->setBody($emailBodyText, 'text/plain')
             ->addPart($emailBodyHtml, 'text/html');
+        
+        // add blind copy recipients
+        foreach ($blindCopyRecipients as $bcc) {
+            $message->addBcc($bcc);
+        }
 
         // add pdf if order is supplied
         if ($apiOrder) {
@@ -222,6 +257,73 @@ class OrderEmailManager
         }
 
         return true;
+    }
+
+    /**
+     * Get Email address of a user; fallback to contact / account if not defined
+     *
+     * @param UserInterface $user
+     * @param bool $useFallback
+     *
+     * @return null|string
+     */
+    public function getEmailAddressOfUser(UserInterface $user, $useFallback = true)
+    {
+        // take users email address
+        $userEmail = $user->getEmail();
+        if ($userEmail) {
+            return $userEmail;
+        }
+
+        // fallback: get contacts / accounts main-email
+        $contact = $user->getContact();
+        if ($useFallback && $contact) {
+            return $this->getEmailAddressOfContact($contact);
+        }
+
+        return null;
+    }
+
+    /**
+     * Gets email address of a contact
+     *
+     * @param ContactInterface $contact
+     * @param bool $useFallback
+     *
+     * @return string|null
+     */
+    public function getEmailAddressOfContact(ContactInterface $contact, $useFallback = true)
+    {
+        // take contacts main-email
+        $contactMainEmail = $contact->getMainEmail();
+        if ($contact && $contactMainEmail) {
+            return $contactMainEmail;
+        }
+
+        // fallback take contact's main-account main-email
+        $account = $contact->getAccount();
+        if ($useFallback && $account) {
+            return $this->getEmailAddressOfAccount($account);
+        }
+
+        return null;
+    }
+
+    /**
+     * Get Email-Address of account
+     *
+     * @param AccountInterface $account
+     *
+     * @return string|null
+     */
+    public function getEmailAddressOfAccount(AccountInterface $account)
+    {
+        $accountMainEmail = $account->getMainEmail();
+        if ($accountMainEmail) {
+            return $accountMainEmail;
+        }
+
+        return null;
     }
 
     /**
