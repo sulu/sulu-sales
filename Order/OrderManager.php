@@ -908,7 +908,9 @@ class OrderManager
             static::$orderEntityName,
             'public.id',
             array(),
-            true
+            true,
+            false,
+            'string'
         );
         $this->fieldDescriptors['number'] = new DoctrineFieldDescriptor(
             'number',
@@ -917,7 +919,8 @@ class OrderManager
             'salesorder.orders.number',
             array(),
             false,
-            true
+            true,
+            'string'
         );
 
         // TODO: get customer from order-address
@@ -944,7 +947,7 @@ class OrderManager
             ' ',
             false,
             false,
-            '',
+            'string',
             '',
             '160px'
         );
@@ -971,7 +974,7 @@ class OrderManager
             ' ',
             false,
             false,
-            '',
+            'string',
             '',
             '160px',
             false
@@ -992,7 +995,10 @@ class OrderManager
                     static::$orderStatusEntityName . '.translations',
                     static::$orderStatusTranslationEntityName . ".locale = '" . $locale . "'"
                 )
-            )
+            ),
+            false,
+            false,
+            'string'
         );
 
         $this->fieldDescriptors['type'] = new DoctrineFieldDescriptor(
@@ -1010,7 +1016,10 @@ class OrderManager
                     static::$orderTypeEntityName . '.translations',
                     static::$orderTypeTranslationEntityName . ".locale = '" . $locale . "'"
                 )
-            )
+            ),
+            false,
+            false,
+            'string'
         );
     }
 

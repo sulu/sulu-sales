@@ -91,6 +91,16 @@ define(['sulusalesorder/util/sidebar'], function(Sidebar) {
                     el: this.$find('#list-toolbar-container'),
                     instanceName: 'orders',
                     inHeader: true,
+                    groups: [
+                        {
+                            id: 1,
+                            align: 'left'
+                        },
+                        {
+                            id: 2,
+                            align: 'right'
+                        }
+                    ],
                     template: getListToolbarTemplate.call(this)
                 },
                 {
@@ -99,6 +109,7 @@ define(['sulusalesorder/util/sidebar'], function(Sidebar) {
                     searchInstanceName: 'orders',
                     searchFields: ['fullName'],
                     resultKey: 'orders',
+                    instanceName: 'orders',
                     viewOptions: {
                         table: {
                             selectItem: null,
@@ -116,7 +127,9 @@ define(['sulusalesorder/util/sidebar'], function(Sidebar) {
                             fullWidth: true
                         }
                     }
-                }
+                },
+                'orders',
+                '#orders-list-info'
             );
             Sidebar.initForList(this.sandbox);
         }

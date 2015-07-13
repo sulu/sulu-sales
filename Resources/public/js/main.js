@@ -13,44 +13,55 @@ require.config({
     }
 });
 
-define({
+define(['config'], function(Config) {
 
-    name: "SuluSalesOrderBundle",
+    return {
 
-    initialize: function(app) {
+        name: "SuluSalesOrderBundle",
 
-        'use strict';
+        initialize: function(app) {
 
-        var sandbox = app.sandbox;
+            'use strict';
 
-        app.components.addSource('sulusalesorder', '/bundles/sulusalesorder/js/components');
+            var sandbox = app.sandbox;
 
-        // list all orders
-        sandbox.mvc.routes.push({
-            route: 'sales/orders',
-            callback: function() {
-                this.html('<div data-aura-component="orders@sulusalesorder" data-aura-display="list"/>');
-            }
-        });
+            app.components.addSource('sulusalesorder', '/bundles/sulusalesorder/js/components');
 
-        // show form for createing a new order
-        sandbox.mvc.routes.push({
-            route: 'sales/orders/add',
-            callback: function() {
-                this.html(
-                    '<div data-aura-component="orders/components/content@sulusalesorder" data-aura-display="content" data-aura-content="form" />'
-                );
-            }
-        });
+            Config.set('suluresource.filters.type.orders', {
+                breadCrumb: [
+                    {title: 'navigation.sales'},
+                    {title: 'salesorder.orders.title', link: 'sales/orders'}
+                ],
+                routeToList: 'sales/orders'
+            });
 
-        // show form for editing an order
-        sandbox.mvc.routes.push({
-            route: 'sales/orders/edit::id/:content',
-            callback: function(id, content) {
-                this.html(
-                    '<div data-aura-component="orders/components/content@sulusalesorder" data-aura-display="content" data-aura-content="' + content + '" data-aura-id="' + id + '"/>'
-                );
-            }
-        });
-    }
+            // list all orders
+            sandbox.mvc.routes.push({
+                route: 'sales/orders',
+                callback: function() {
+                    this.html('<div data-aura-component="orders@sulusalesorder" data-aura-display="list"/>');
+                }
+            });
+
+            // show form for createing a new order
+            sandbox.mvc.routes.push({
+                route: 'sales/orders/add',
+                callback: function() {
+                    this.html(
+                        '<div data-aura-component="orders/components/content@sulusalesorder" data-aura-display="content" data-aura-content="form" />'
+                    );
+                }
+            });
+
+            // show form for editing an order
+            sandbox.mvc.routes.push({
+                route: 'sales/orders/edit::id/:content',
+                callback: function(id, content) {
+                    this.html(
+                        '<div data-aura-component="orders/components/content@sulusalesorder" data-aura-display="content" data-aura-content="' + content + '" data-aura-id="' + id + '"/>'
+                    );
+                }
+            });
+        }
+    };
 });
