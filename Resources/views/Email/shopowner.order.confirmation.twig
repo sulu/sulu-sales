@@ -19,7 +19,7 @@
     </head>
     <body>
         <p>
-            <strong>{{ macros.getSalutation(contact) }},</strong>
+            <strong>{{ macros.getSalutation() }},</strong>
         </p>
         <p>
             {{ macros.translateContent(contact, order) }}
@@ -32,7 +32,7 @@
 {% import _self as macros %}
 
 {% spaceless %}
-{{ macros.getSalutation(contact) }},
+{{ macros.getSalutation() }},
 {{ macros.translateContent(contact, order) }}
 {% endspaceless %}
 
