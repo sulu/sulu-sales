@@ -44,7 +44,7 @@ define([
          */
         bindCustomEventsForListSidebar = function() {
             // navigate to edit contact
-            this.sandbox.on('husky.datagrid.item.click', function(id) {
+            this.sandbox.on('sulu.salesshipping.shipping.sidebar.load', function(id) {
                 // get data for sidebar via controller
                 getDataForListSidebar.call(this, {
                     data: id,
