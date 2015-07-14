@@ -37,7 +37,7 @@
         "symfony-cmf/testing": "~1.2",
         "knplabs/knp-snappy-bundle": "dev-master",
         "sulu/test-bundle": "dev-develop",
-        "massive/search-bundle": "0.6.*"
+        "massive/search-bundle": "0.7.*"
     },
     "autoload": {
         "psr-0": {
