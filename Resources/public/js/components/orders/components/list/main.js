@@ -44,6 +44,14 @@ define(['sulusalesorder/util/sidebar'], function(Sidebar) {
                     ]
                 }
             ];
+        },
+
+        datagridAction = function(id) {
+            this.sandbox.emit('sulu.salesorder.orders.load', id);
+        },
+
+        datagridClick = function(id) {
+            this.sandbox.emit('sulu.salesorder.orders.sidebar.load', id);
         };
 
     return {
@@ -51,9 +59,7 @@ define(['sulusalesorder/util/sidebar'], function(Sidebar) {
 
         layout: {
             content: {
-                width: 'max',
-                leftSpace: false,
-                rightSpace: false
+                width: 'max'
             },
             sidebar: {
                 width: 'fixed',
@@ -106,23 +112,9 @@ define(['sulusalesorder/util/sidebar'], function(Sidebar) {
                     searchFields: ['fullName'],
                     resultKey: 'orders',
                     instanceName: constants.datagridInstanceName,
-                    viewOptions: {
-                        table: {
-                            selectItem: null,
-                            icons: [
-                                {
-                                    icon: 'pencil',
-                                    column: 'number',
-                                    align: 'left',
-                                    callback: function(id) {
-                                        this.sandbox.emit('sulu.salesorder.orders.load', id);
-                                    }.bind(this)
-                                }
-                            ],
-                            highlightSelected: true,
-                            fullWidth: true
-                        }
-                    }
+                    actionCallback: datagridAction.bind(this),
+                    clickCallback: datagridClick.bind(this)
+
                 },
                 'orders',
                 '#orders-list-info'
