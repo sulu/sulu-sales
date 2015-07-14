@@ -11,14 +11,10 @@ define(['sulusalesorder/util/sidebar'], function(Sidebar) {
 
     'use strict';
 
-    var bindCustomEvents = function() {
-            // delete clicked
-            this.sandbox.on('sulu.list-toolbar.delete', function() {
-                this.sandbox.emit('husky.datagrid.items.get-selected', function(ids) {
-                    this.sandbox.emit('sulu.salesorder.order.delete', ids);
-                }.bind(this));
-            }, this);
-
+    var constants = {
+            datagridInstanceName: 'orders'
+        },
+        bindCustomEvents = function() {
             // add clicked
             this.sandbox.on('sulu.list-toolbar.add', function() {
                 this.sandbox.emit('sulu.salesorder.order.new');
@@ -109,7 +105,7 @@ define(['sulusalesorder/util/sidebar'], function(Sidebar) {
                     searchInstanceName: 'orders',
                     searchFields: ['fullName'],
                     resultKey: 'orders',
-                    instanceName: 'orders',
+                    instanceName: constants.datagridInstanceName,
                     viewOptions: {
                         table: {
                             selectItem: null,
