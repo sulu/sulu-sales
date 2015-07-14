@@ -67,6 +67,10 @@ define([
                     ]
                 }
             ];
+        },
+
+        datagridAction = function(id) {
+            this.sandbox.emit('sulu.salesshipping.shipping.load', id)
         };
 
     return {
@@ -111,22 +115,7 @@ define([
                     searchInstanceName: 'shippings',
                     searchFields: ['fullName'],
                     resultKey: 'shippings',
-                    viewOptions: {
-                        table: {
-                            icons: [
-                                {
-                                    icon: 'pencil',
-                                    column: 'number',
-                                    align: 'left',
-                                    callback: function(id) {
-                                        this.sandbox.emit('sulu.salesshipping.shipping.load', id, this.orderId);
-                                    }.bind(this)
-                                }
-                            ],
-                            highlightSelected: true,
-                            fullWidth: false
-                        }
-                    }
+                    actionCallback: datagridAction.bind(this)
                 }
             );
         }

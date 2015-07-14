@@ -12,41 +12,47 @@ define(['sulusalesshipping/util/sidebar'], function(Sidebar) {
     'use strict';
 
     var bindCustomEvents = function() {
-        // navigate to edit contact
-        this.sandbox.on('husky.datagrid.item.click', function(id) {
-            // get data for sidebar via controller
-            this.sandbox.emit('salesorder.orders.sidebar.getData', {
-                data: id,
-                callback: function(contact, account) {
-                    this.sandbox.emit(
-                        'sulu.sidebar.set-widget',
+            // navigate to edit contact
+            this.sandbox.on('husky.datagrid.item.click', function(id) {
+                // get data for sidebar via controller
+                this.sandbox.emit('salesorder.orders.sidebar.getData', {
+                    data: id,
+                    callback: function(contact, account) {
+                        this.sandbox.emit(
+                            'sulu.sidebar.set-widget',
                             '/admin/widget-groups/order-info?contact=' + contact + '&account=' + account
-                    );
-                }.bind(this)
-            });
-        }, this);
+                        );
+                    }.bind(this)
+                });
+            }, this);
 
-        // delete clicked
-        this.sandbox.on('sulu.list-toolbar.delete', function() {
-            this.sandbox.emit('husky.datagrid.items.get-selected', function(ids) {
-                this.sandbox.emit('sulu.salesshipping.shipping.delete', ids);
-            }.bind(this));
-        }, this);
+            // delete clicked
+            this.sandbox.on('sulu.list-toolbar.delete', function() {
+                this.sandbox.emit('husky.datagrid.items.get-selected', function(ids) {
+                    this.sandbox.emit('sulu.salesshipping.shipping.delete', ids);
+                }.bind(this));
+            }, this);
 
-        // add clicked
-        this.sandbox.on('sulu.list-toolbar.add', function() {
-            this.sandbox.emit('sulu.salesshipping.shipping.new');
-        }, this);
-    };
+            // add clicked
+            this.sandbox.on('sulu.list-toolbar.add', function() {
+                this.sandbox.emit('sulu.salesshipping.shipping.new');
+            }, this);
+        },
+
+        datagridAction = function(id) {
+            this.sandbox.emit('sulu.salesshipping.shipping.load', id);
+        },
+
+        datagridClick = function(id) {
+            this.sandbox.emit('sulu.salesshipping.shipping.sidebar.load', id);
+        };
 
     return {
         view: true,
 
         layout: {
             content: {
-                width: 'max',
-                leftSpace: false,
-                rightSpace: false
+                width: 'max'
             },
             sidebar: {
                 width: 'fixed',
@@ -87,22 +93,8 @@ define(['sulusalesshipping/util/sidebar'], function(Sidebar) {
                     searchInstanceName: 'shippings',
                     searchFields: ['fullName'],
                     resultKey: 'shippings',
-                    viewOptions: {
-                        table: {
-                            icons: [
-                                {
-                                    icon: 'pencil',
-                                    column: 'number',
-                                    align: 'left',
-                                    callback: function(id) {
-                                        this.sandbox.emit('sulu.salesshipping.shipping.load', id);
-                                    }.bind(this)
-                                }
-                            ],
-                            highlightSelected: true,
-                            fullWidth: true
-                        }
-                    }
+                    actionCallback: datagridAction.bind(this),
+                    clickCallback: datagridClick.bind(this)
                 }
             );
 
