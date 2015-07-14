@@ -11,14 +11,10 @@ define(['sulusalesorder/util/sidebar'], function(Sidebar) {
 
     'use strict';
 
-    var bindCustomEvents = function() {
-            // delete clicked
-            this.sandbox.on('sulu.list-toolbar.delete', function() {
-                this.sandbox.emit('husky.datagrid.items.get-selected', function(ids) {
-                    this.sandbox.emit('sulu.salesorder.order.delete', ids);
-                }.bind(this));
-            }, this);
-
+    var constants = {
+            datagridInstanceName: 'orders'
+        },
+        bindCustomEvents = function() {
             // add clicked
             this.sandbox.on('sulu.list-toolbar.add', function() {
                 this.sandbox.emit('sulu.salesorder.order.new');
@@ -91,6 +87,16 @@ define(['sulusalesorder/util/sidebar'], function(Sidebar) {
                     el: this.$find('#list-toolbar-container'),
                     instanceName: 'orders',
                     inHeader: true,
+                    groups: [
+                        {
+                            id: 1,
+                            align: 'left'
+                        },
+                        {
+                            id: 2,
+                            align: 'right'
+                        }
+                    ],
                     template: getListToolbarTemplate.call(this)
                 },
                 {
@@ -99,6 +105,7 @@ define(['sulusalesorder/util/sidebar'], function(Sidebar) {
                     searchInstanceName: 'orders',
                     searchFields: ['fullName'],
                     resultKey: 'orders',
+                    instanceName: constants.datagridInstanceName,
                     viewOptions: {
                         table: {
                             selectItem: null,
@@ -116,7 +123,9 @@ define(['sulusalesorder/util/sidebar'], function(Sidebar) {
                             fullWidth: true
                         }
                     }
-                }
+                },
+                'orders',
+                '#orders-list-info'
             );
             Sidebar.initForList(this.sandbox);
         }
