@@ -14,7 +14,7 @@
         <field name="title" type="string" column="title" length="255" nullable="true"/>
         <field name="street" type="string" column="street" length="255" nullable="false"/>
         <field name="addition" type="string" column="addition" length="255" nullable="true"/>
-        <field name="number" type="string" column="number" length="25" nullable="false"/>
+        <field name="number" type="string" column="number" length="25" nullable="true"/>
         <field name="city" type="string" column="city" length="255" nullable="false"/>
         <field name="zip" type="string" column="zip" length="10" nullable="false"/>
         <field name="state" type="string" column="state" length="255" nullable="true"/>
