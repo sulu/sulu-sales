@@ -290,14 +290,14 @@ class OrderController extends RestController implements ClassResourceInterface, 
     {
         return new DoctrineFieldDescriptor(
             'id',
-            'status',
+            'status_id',
             self::$orderStatusEntityName,
             'salesorder.orders.status',
             array(
                 self::$orderStatusEntityName => new DoctrineJoinDescriptor(
-                        self::$orderStatusEntityName,
-                        self::$orderEntityName . '.status'
-                    )
+                    self::$orderStatusEntityName,
+                    self::$orderEntityName . '.status'
+                ),
             )
         );
     }
