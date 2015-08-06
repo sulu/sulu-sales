@@ -301,7 +301,7 @@ class OrderEmailManager
         }
 
         // fallback take contact's main-account main-email
-        $account = $contact->getAccount();
+        $account = $contact->getMainAccount();
         if ($useFallback && $account) {
             return $this->getEmailAddressOfAccount($account);
         }
