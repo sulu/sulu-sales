@@ -333,4 +333,20 @@ interface ApiItemInterface
      * @return float
      */
     public function getTotalNetPrice();
+
+    /**
+     * Get delivery date
+     *
+     * @return DateTime
+     */
+    public function getDeliveryDate();
+
+    /**
+     * Set delivery date
+     *
+     * @param DateTime $deliveryDate
+     *
+     * @return Item
+     */
+    public function setDeliveryDate(DateTime $deliveryDate);
 }
