@@ -169,6 +169,29 @@ class Item extends ApiWrapper implements
 
     /**
      * @VirtualProperty
+     * @SerializedName("deliveryDate")
+     *
+     * @return DateTime
+     */
+    public function getDeliveryDate()
+    {
+        return $this->entity->getDeliveryDate();
+    }
+
+    /**
+     * @param DateTime $deliveryDate
+     *
+     * @return Item
+     */
+    public function setDeliveryDate(DateTime $deliveryDate)
+    {
+        $this->entity->setDeliveryDate($deliveryDate);
+
+        return $this;
+    }
+
+    /**
+     * @VirtualProperty
      * @SerializedName("changed")
      *
      * @return DateTime
