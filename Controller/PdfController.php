@@ -38,14 +38,19 @@ class PdfController extends RestController
     /**
      * Finds a order object by a given id from the url
      * and returns a rendered pdf in a download window
+     *
      * @param Request $request
      * @param $id
-     * @return Response
+     *
      * @throws OrderNotFoundException
+     *
+     * @return Response
      */
     public function orderConfirmationAction(Request $request, $id)
     {
         $locale = $this->getLocale($request);
+
+        $this->get('translator')->setLocale($locale);
 
         try {
             $orderApiEntity = $this->getOrderManager()->findByIdAndLocale($id, $locale);
