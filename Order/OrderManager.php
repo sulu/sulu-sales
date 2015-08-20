@@ -683,14 +683,16 @@ class OrderManager
      * @param string $locale
      * @param int $statusId
      * @param UserInterface $user
+     * @param int $limit
      *
      * @return array|null
      */
-    public function findByStatusIdAndUser($locale, $statusId, $user) {
+    public function findByStatusIdAndUser($locale, $statusId, $user, $limit = null) {
         return $this->orderRepository->findByStatusIdAndUser(
             $locale,
             $statusId,
-            $user
+            $user,
+            $limit
         );
     }
 
