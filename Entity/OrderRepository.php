@@ -45,7 +45,7 @@ class OrderRepository extends EntityRepository
                 ->setParameter('id', $id);
 
             $query = $qb->getQuery();
-            
+
             if (!$multipleResults) {
                 return $query->getSingleResult();
             } else {
@@ -178,12 +178,13 @@ class OrderRepository extends EntityRepository
      * @param string $locale
      * @param int $statusId
      * @param UserInterface $user
+     * @param int $limit
      *
      * @return array|null
      */
-    public function findByStatusIdAndUser($locale, $statusId, UserInterface $user)
+    public function findByStatusIdAndUser($locale, $statusId, UserInterface $user, $limit = null)
     {
-        return $this->findByStatusIdAndUser($locale, array($statusId), $user);
+        return $this->findByStatusIdsAndUser($locale, array($statusId), $user, $limit);
     }
 
     /**
@@ -192,10 +193,11 @@ class OrderRepository extends EntityRepository
      * @param string $locale
      * @param array $statusIds
      * @param UserInterface $user
+     * @param int $limit
      *
      * @return array|null
      */
-    public function findByStatusIdsAndUser($locale, $statusIds, UserInterface $user)
+    public function findByStatusIdsAndUser($locale, $statusIds, UserInterface $user, $limit = null)
     {
         try {
             $qb = $this->getOrderQuery($locale)
@@ -203,7 +205,8 @@ class OrderRepository extends EntityRepository
                 ->setParameter('user', $user)
                 ->andWhere('status.id IN (:statusId)')
                 ->setParameter('statusId', $statusIds)
-                ->orderBy('o.created', 'DESC');
+                ->orderBy('o.created', 'DESC')
+                ->setMaxResults($limit);
 
             return $qb->getQuery()->getResult();
         } catch (NoResultException $exc) {
