@@ -16,6 +16,7 @@ use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\NoResultException;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Sulu\Component\Security\Authentication\UserRepositoryInterface;
+use Sulu\Component\Security\Authentication\UserInterface;
 use Sulu\Component\Persistence\RelationTrait;
 use Sulu\Component\Rest\Exception\EntityNotFoundException;
 use Sulu\Component\Rest\ListBuilder\Doctrine\FieldDescriptor\DoctrineConcatenationFieldDescriptor;
@@ -674,6 +675,23 @@ class OrderManager
         }
 
         return $order;
+    }
+
+    /**
+     * Finds orders by statusId and user
+     *
+     * @param string $locale
+     * @param int $statusId
+     * @param UserInterface $user
+     *
+     * @return array|null
+     */
+    public function findByStatusIdAndUser($locale, $statusId, $user) {
+        return $this->orderRepository->findByStatusIdAndUser(
+            $locale,
+            $statusId,
+            $user
+        );
     }
 
     /**

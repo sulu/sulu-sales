@@ -45,7 +45,7 @@ class OrderRepository extends EntityRepository
                 ->setParameter('id', $id);
 
             $query = $qb->getQuery();
-            
+
             if (!$multipleResults) {
                 return $query->getSingleResult();
             } else {
@@ -183,7 +183,7 @@ class OrderRepository extends EntityRepository
      */
     public function findByStatusIdAndUser($locale, $statusId, UserInterface $user)
     {
-        return $this->findByStatusIdAndUser($locale, array($statusId), $user);
+        return $this->findByStatusIdsAndUser($locale, array($statusId), $user);
     }
 
     /**
