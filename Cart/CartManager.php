@@ -15,6 +15,7 @@ use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Sulu\Component\Security\Authentication\UserInterface;
 use Sulu\Component\Persistence\RelationTrait;
+use Sulu\Bundle\Sales\CoreBundle\Entity\ItemInterface;
 use Sulu\Bundle\Sales\CoreBundle\Pricing\GroupedItemsPriceCalculatorInterface;
 use Sulu\Bundle\Sales\CoreBundle\Manager\BaseSalesManager;
 use Sulu\Bundle\Sales\CoreBundle\Manager\OrderAddressManager;
@@ -23,6 +24,7 @@ use Sulu\Bundle\Sales\OrderBundle\Api\ApiOrderInterface;
 use Sulu\Bundle\Sales\OrderBundle\Api\Order as ApiOrder;
 use Sulu\Bundle\Sales\OrderBundle\Entity\Order;
 use Sulu\Bundle\Sales\OrderBundle\Entity\OrderInterface;
+use Sulu\Bundle\Sales\OrderBundle\Entity\OrderAddress;
 use Sulu\Bundle\Sales\OrderBundle\Entity\OrderRepository;
 use Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatus;
 use Sulu\Bundle\Sales\OrderBundle\Entity\OrderType;
@@ -203,7 +205,7 @@ class CartManager extends BaseSalesManager
     /**
      * Updates changed prices
      *
-     * @param $items
+     * @param array $items
      *
      * @return bool
      */
@@ -235,6 +237,8 @@ class CartManager extends BaseSalesManager
         $cart = $this->getUserCart($user, $locale);
         $userId = $user ? $user->getId() : null;
         $this->orderManager->save($data, $locale, $userId, $cart->getId(), null, null, true);
+
+        $this->removeItemAddressesThatAreEqualToOrderAddress($cart);
 
         return $cart;
     }
@@ -537,9 +541,9 @@ class CartManager extends BaseSalesManager
     /**
      * Adds a product to cart
      *
-     * @param $data
-     * @param null $user
-     * @param null $locale
+     * @param array $data
+     * @param UserInterface|null $user
+     * @param string|null $locale
      *
      * @return null|Order
      */
@@ -579,6 +583,11 @@ class CartManager extends BaseSalesManager
 
         $this->orderManager->updateItem($item, $data, $locale, $userId);
 
+        $this->removeOrderAddressIfContactAddressIdIsEqualTo(
+            $item,
+            $cart->getDeliveryAddress()->getContactAddress()->getId()
+        );
+
         $this->orderManager->updateApiEntity($cart, $locale);
 
         return $cart;
@@ -610,8 +619,8 @@ class CartManager extends BaseSalesManager
      * Function creates an empty cart
      * this means an order with status 'in_cart' is created and all necessary data is set
      *
-     * @param $user
-     * @param $persist
+     * @param UserInterface $user
+     * @param bool $persist
      * @param null|string $currencyCode
      *
      * @return Order
@@ -699,8 +708,8 @@ class CartManager extends BaseSalesManager
      * Returns array containing number of items and total-price
      * array('totalItems', 'totalPrice')
      *
-     * @param $user
-     * @param $locale
+     * @param UserInterface $user
+     * @param string $locale
      *
      * @return array
      */
@@ -714,5 +723,38 @@ class CartManager extends BaseSalesManager
             'totalPriceFormatted' => $cart->getTotalNetPriceFormatted(),
             'currency' => $cart->getCurrencyCode()
         );
+    }
+
+    /**
+     * Remove all item delivery-addresses that are the same as the default
+     * delivery address of the order
+     *
+     * @param ApiOrderInterface $order
+     */
+    protected function removeItemAddressesThatAreEqualToOrderAddress($order)
+    {
+        $deliveryAddressId = $order->getDeliveryAddress()->getContactAddress()->getId();
+        foreach ($order->getItems() as $item) {
+            $itemEntity = $item->getEntity();
+            $this->removeOrderAddressIfContactAddressIdIsEqualTo($itemEntity, $deliveryAddressId);
+        }
+    }
+
+    /**
+     * Remove deliveryAddress if it has a relation to a certain contact-address-id
+     *
+     * @param OrderAddress $deliveryAddress
+     * @param int $contactAddressId
+     */
+    protected function removeOrderAddressIfContactAddressIdIsEqualTo($item, $contactAddressId)
+    {
+        $deliveryAddress = $item->getDeliveryAddress();
+        if ($deliveryAddress
+            && $deliveryAddress->getContactAddress()
+            && $deliveryAddress->getContactAddress()->getID() === $contactAddressId
+        ) {
+            $item->setDeliveryAddress(null);
+            $this->em->remove($deliveryAddress);
+        }
     }
 }
