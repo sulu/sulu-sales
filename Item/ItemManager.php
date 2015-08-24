@@ -170,7 +170,6 @@ class ItemManager
         // set item data
         $item->setQuantity($this->getProperty($data, 'quantity', null));
         $item->setUseProductsPrice($this->getProperty($data, 'useProductsPrice', true));
-
         $this->setDate(
             $data,
             'deliveryDate',
