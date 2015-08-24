@@ -336,4 +336,20 @@ interface ItemInterface
      * @return float
      */
     public function getTotalNetPrice();
+
+    /**
+     * Set deliveryDate
+     *
+     * @param \DateTime $deliveryDate
+     *
+     * @return Item
+     */
+    public function setDeliveryDate($deliveryDate);
+
+    /**
+     * Get deliveryDate
+     *
+     * @return \DateTime
+     */
+    public function getDeliveryDate();
 }

@@ -171,6 +171,13 @@ class ItemManager
         $item->setQuantity($this->getProperty($data, 'quantity', null));
         $item->setUseProductsPrice($this->getProperty($data, 'useProductsPrice', true));
 
+        $this->setDate(
+            $data,
+            'deliveryDate',
+            $item->getDeliveryDate(),
+            array($item, 'setDeliveryDate')
+        );
+
         // terms of delivery
         $product = null;
         if ($isNewItem) {
@@ -638,5 +645,23 @@ class ItemManager
         }
 
         return $result;
+    }
+
+    /**
+     * Sets a date if it's set in data
+     *
+     * @param array $data
+     * @param string $key
+     * @param DateTime $currentDate
+     * @param callable $setCallback
+     */
+    protected function setDate($data, $key, $currentDate, callable $setCallback)
+    {
+        if (($date = $this->getProperty($data, $key, $currentDate)) !== null) {
+            if (is_string($date)) {
+                $date = new DateTime($data[$key]);
+            }
+            call_user_func($setCallback, $date);
+        }
     }
 }
