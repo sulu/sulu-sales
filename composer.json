@@ -21,6 +21,7 @@
         "jackalope/jackalope-jackrabbit": "~1.2.0",
 
         "sulu/sulu": "dev-develop",
+        "sulu/document-manager": "dev-master",
         "sulu/product-bundle": "dev-develop"
     },
     "require-dev": {
