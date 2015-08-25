@@ -42,9 +42,9 @@
 {% macro getGender(contact) %}
     {% if contact and contact.getFormOfAddress() %}
         {% if contact.getFormOfAddress() == 0 %}
-            {{ 'contact.contacts.formOfAddress.male'|trans }}
+            {{ 'contact.contacts.formOfAddress.male'|trans({},'backend') }}
         {% else %}
-            {{ 'contact.contacts.formOfAddress.female'|trans }}
+            {{ 'contact.contacts.formOfAddress.female'|trans({},'backend') }}
         {% endif %}
     {% endif %}
 {% endmacro %}
