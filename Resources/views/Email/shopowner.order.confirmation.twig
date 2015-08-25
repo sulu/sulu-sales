@@ -2,8 +2,8 @@
 
 {% block subject %}
     {% trans with {
-        '%number%': order.number,
-        '%date%': order.orderDate|localizeddate('medium', 'none')|default('')
+    '%number%': order.number,
+    '%date%': order.orderDate|localizeddate('medium', 'none')|default('')
     } %}owner.subject{% endtrans %}
 {% endblock %}
 
@@ -18,41 +18,42 @@
         </style>
     </head>
     <body>
-        <p>
-            <strong>{{ macros.getSalutation() }},</strong>
-        </p>
-        <p>
-            {{ macros.translateContent(contact, order) }}
-        </p>
+    <p>
+        <strong>{{ macros.getSalutation() }},</strong>
+    </p>
+
+    <p>
+        {{ macros.translateContent(contact, order) }}
+    </p>
     </body>
     </html>
 {% endblock %}
 
-{% block body_text %}
+{% block body_text %}{% spaceless %}
 {% import _self as macros %}
-
-{% spaceless %}
 {{ macros.getSalutation() }},
 {{ macros.translateContent(contact, order) }}
-{% endspaceless %}
+{% endspaceless %}{% endblock %}
 
-{% endblock %}
+{% macro getSalutation(contact) %}{% spaceless %}
+    {{ contact.getSalutation()|default('default.salutation'|trans) ~ ' ' ~ contact.getFullName()|default('default.owner'|trans) }}
+{% endspaceless %}{% endmacro %}
 
-{% macro getSalutation(contact) %}{{ contact.getSalutation()|default('default.salutation'|trans) ~ ' ' ~ contact.getFullName()|default('default.owner'|trans) }}{% endmacro %}
-{% macro getGender(contact) %}
-    {% if contact and contact.getFormOfAddress() %}
+{% macro getGender(contact) %}{% spaceless %}
+    {% if contact and contact.getFormOfAddress() is not null %}
         {% if contact.getFormOfAddress() == 0 %}
             {{ 'contact.contacts.formOfAddress.male'|trans({},'backend') }}
         {% else %}
             {{ 'contact.contacts.formOfAddress.female'|trans({},'backend') }}
         {% endif %}
     {% endif %}
-{% endmacro %}
-{% macro translateContent(contact, order) %}
+{% endspaceless %}{% endmacro %}
+
+{% macro translateContent(contact, order) %}{% spaceless %}
     {% import _self as macros %}
     {% trans with {
     '%gender%': macros.getGender(contact),
     '%customerName%': contact.getFullName(),
     '%customerAccount%': order.getCustomerAccount().name
     } %}owner.content{% endtrans %}
-{% endmacro %}
+{% endspaceless %}{% endmacro %}
