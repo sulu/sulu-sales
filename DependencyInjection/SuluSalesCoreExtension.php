@@ -10,16 +10,11 @@
 
 namespace Sulu\Bundle\Sales\CoreBundle\DependencyInjection;
 
-use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Config\FileLocator;
-use Symfony\Component\HttpKernel\DependencyInjection\Extension;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader;
+use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 
-/**
- * This is the class that loads and manages your bundle configuration
- *
- * To learn more see {@link http://symfony.com/doc/current/cookbook/bundles/extension.html}
- */
 class SuluSalesCoreExtension extends Extension
 {
     /**
@@ -34,10 +29,13 @@ class SuluSalesCoreExtension extends Extension
         $loader->load('services.xml');
 
         $this->setDefaultRoutes($config);
+
         $container->setParameter(
             'sulu_sales_core.routes',
             $config['routes']
         );
+
+        $this->setParameters($container, 'sulu_sales_core.email_templates', $config['email_templates']);
     }
 
     /**
@@ -66,6 +64,23 @@ class SuluSalesCoreExtension extends Extension
                     'details' => 'sales/invoices/edit:[id]/details',
                     'add' => 'sales/invoices/edit:[id]/add'
                 )
+            );
+        }
+    }
+
+    /**
+     * Sets parameters to container as specified by key value pair in params-array
+     *
+     * @param ContainerBuilder $container
+     * @param string $basicPath
+     * @param array $paramsArray
+     */
+    private function setParameters(ContainerBuilder $container, $basicPath, $paramsArray)
+    {
+        foreach ($paramsArray as $key => $params) {
+            $container->setParameter(
+                $basicPath . '.' . $key,
+                $paramsArray[$key]
             );
         }
     }
