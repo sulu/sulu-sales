@@ -46,7 +46,7 @@ class Configuration implements ConfigurationInterface
                         ->scalarNode('footer_html')->defaultValue('')->end()
                     ->end()
                 ->end()
-                ->scalarNode('shop_email_from')->end()
+                ->scalarNode('email_from')->end()
             ->end()
         ;
 

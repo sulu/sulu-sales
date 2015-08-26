@@ -50,9 +50,9 @@
         <service id="sulu_sales_core.email_manager" class="%sulu_sales_core.email_manager.class%">
             <argument type="service" id="twig" />
             <argument type="service" id="mailer" />
-            <argument>%sulu_sales_order.shop_email_from%</argument>
-            <argument>%sulu_sales_order.email_templates.footer_html%</argument>
-            <argument>%sulu_sales_order.email_templates.footer_txt%</argument>
+            <argument>%sulu_sales_core.email_from%</argument>
+            <argument>%sulu_sales_core.email_templates.footer_html%</argument>
+            <argument>%sulu_sales_core.email_templates.footer_txt%</argument>
         </service>
 
         <service id="sulu_sales_core.grouped_price_calculator" class="%sulu_sales_core.grouped_price_calculator.class%">

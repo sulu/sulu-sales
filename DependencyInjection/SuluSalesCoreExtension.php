@@ -35,6 +35,11 @@ class SuluSalesCoreExtension extends Extension
             $config['routes']
         );
 
+        $container->setParameter(
+            'sulu_sales_core.email_from',
+            $config['email_from']
+        );
+
         $this->setParameters($container, 'sulu_sales_core.email_templates', $config['email_templates']);
     }
 

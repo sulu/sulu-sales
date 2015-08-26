@@ -37,27 +37,6 @@ class EmailManager
     protected $templateFooterTxtPath;
 
     /**
-     * @var string
-     */
-    protected $templateCustomerConfirmationPath;
-
-    /**
-     * @var string
-     */
-    protected $templateShopownerConfirmationPath;
-
-    /**
-     * @var bool
-     */
-    protected $sendCustomerEmailConfirmation;
-
-    /**
-     * @var bool
-     */
-    protected $sendShopownerEmailConfirmation;
-
-
-    /**
      * @param \Twig_Environment $twig
      * @param \Swift_Mailer $mailer
      * @param string $emailFrom
