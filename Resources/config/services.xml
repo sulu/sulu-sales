@@ -21,6 +21,7 @@
         <parameter key="sulu_sales_core.order_address_entity">Sulu\Bundle\Sales\CoreBundle\Entity\OrderAddress</parameter>
         <parameter key="sulu_sales_core.order_address_api_entity">Sulu\Bundle\Sales\CoreBundle\Api\OrderAddress</parameter>
         <parameter key="sulu_sales_core.item_factory.class">Sulu\Bundle\Sales\CoreBundle\Item\ItemFactory</parameter>
+        <parameter key="sulu_sales_core.email_manager.class">Sulu\Bundle\Sales\CoreBundle\Manager\EmailManager</parameter>
     </parameters>
 
     <services>

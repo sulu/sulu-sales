@@ -7,10 +7,9 @@
  * This source file is subject to the MIT license that is bundled
  * with this source code in the file LICENSE.
  */
-namespace Sulu\Bundle\Sales\OrderBundle\Order;
+namespace Sulu\Bundle\Sales\CoreBundle\Manager;
 
 use Sulu\Bundle\ContactBundle\Entity\AccountInterface;
-use Sulu\Bundle\Sales\OrderBundle\Api\ApiOrderInterface;
 use Sulu\Component\Contact\Model\ContactInterface;
 use Sulu\Component\Security\Authentication\UserInterface;
 
@@ -60,34 +59,6 @@ class EmailManager
         // templates
         $this->templateFooterTxtPath = $templateFooterTxtPath;
         $this->templateFooterHtmlPath = $templateFooterHtmlPath;
-    }
-
-    /**
-     * @param string $recipient The email-address of the customer
-     * @param ApiOrderInterface $apiOrder
-     * @param string $templatePath Template to render
-     * @param ContactInterface|null $customerContact
-     *
-     * @return bool
-     */
-    public function sendConfirmationEmail(
-        $recipient,
-        ApiOrderInterface $apiOrder,
-        $templatePath,
-        ContactInterface $customerContact = null
-    ) {
-        if (empty($recipient)) {
-            $this->writeLog('No recipient specified.');
-
-            return false;
-        }
-
-        $tmplData = array(
-            'order' => $apiOrder,
-            'contact' => $customerContact,
-        );
-
-        return $this->sendMail($recipient, $templatePath, $tmplData, $apiOrder);
     }
 
     /**

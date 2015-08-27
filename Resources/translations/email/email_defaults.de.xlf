@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+    <file source-language="de" datatype="plaintext" original="file.ext">
+        <body>
+            <trans-unit id="1">
+                <source>default.salutation</source>
+                <target>Liebe(r)</target>
+            </trans-unit>
+            <trans-unit id="2">
+                <source>default.owner</source>
+                <target>Shop-Besitzer(in)</target>
+            </trans-unit>
+            <trans-unit id="3">
+                <source>default.customer</source>
+                <target>Kunde</target>
+            </trans-unit>
+            <trans-unit id="4">
+                <source>gender.male</source>
+                <target>Herr</target>
+            </trans-unit>
+            <trans-unit id="5">
+                <source>gender.female</source>
+                <target>Frau</target>
+            </trans-unit>
+            <trans-unit id="6">
+                <source>farewell</source>
+                <target>Mit freundlichen Grüßen</target>
+            </trans-unit>
+            <trans-unit id="7">
+                <source>further.information</source>
+                <target>Bei Fragen  stehen wir Ihnen gerne zur Verfügung!</target>
+            </trans-unit>
+            <trans-unit id="8">
+                <source>default.full_salutation</source>
+                <target>Sehr geehrte Damen und Herren</target>
+            </trans-unit>
+        </body>
+    </file>
+</xliff>
