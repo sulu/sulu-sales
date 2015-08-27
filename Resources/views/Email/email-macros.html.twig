@@ -23,3 +23,9 @@
         {% include template %}
     {% endif %}
 {% endmacro %}
+
+{% macro parseAddress(address) %}
+    {{ address.getStreet() }} {{ address.getNumber() }}, {{ address.getZip() }} {{ address.getCity() }}
+{% endmacro %}
+
+
