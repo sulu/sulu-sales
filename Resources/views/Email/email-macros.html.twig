@@ -1,0 +1,31 @@
+{% trans_default_domain "email_defaults" %}
+
+{% macro getSalutation(contact) %}{% spaceless %}
+    {% if contact is defined and contact is not null %}
+        {{ contact.getSalutation()|default('default.salutation'|trans) ~ ' ' ~ contact.getFullName()|default('default.owner'|trans) }}
+    {% else %}
+        {{ 'default.full_salutation'|trans }}
+    {% endif %}
+{% endspaceless %}{% endmacro %}
+
+{% macro getGender(contact) %}{% spaceless %}
+    {% if contact and contact.getFormOfAddress() is not null %}
+        {% if contact.getFormOfAddress() == 0 %}
+            {{ 'gender.male'|trans }}
+        {% else %}
+            {{ 'gender.female'|trans }}
+        {% endif %}
+    {% endif %}
+{% endspaceless %}{% endmacro %}
+
+{% macro includeTemplateIfNotEmpty(template) %}
+    {% if template is defined and template is not empty %}
+        {% include template %}
+    {% endif %}
+{% endmacro %}
+
+{% macro parseAddress(address) %}
+    {{ address.getStreet() }} {{ address.getNumber() }}, {{ address.getZip() }} {{ address.getCity() }}
+{% endmacro %}
+
+

@@ -39,6 +39,14 @@ class Configuration implements ConfigurationInterface
                         ->end()
                     ->end()
                 ->end()
+                ->arrayNode('email_templates')
+                    ->addDefaultsIfNotSet()
+                    ->children()
+                        ->scalarNode('footer_txt')->defaultValue('')->end()
+                        ->scalarNode('footer_html')->defaultValue('')->end()
+                    ->end()
+                ->end()
+                ->scalarNode('email_from')->defaultValue('')->end()
             ->end()
         ;
 
