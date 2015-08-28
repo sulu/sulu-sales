@@ -48,7 +48,7 @@
             </trans-unit>
             <trans-unit id="12">
                 <source>delivery.date</source>
-                <target>Delivery Date</target>
+                <target>Delivery date</target>
             </trans-unit>
             <trans-unit id="13">
                 <source>note</source>

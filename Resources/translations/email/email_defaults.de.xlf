@@ -28,7 +28,7 @@
             </trans-unit>
             <trans-unit id="7">
                 <source>further.information</source>
-                <target>Bei Fragen  stehen wir Ihnen gerne zur Verfügung!</target>
+                <target>Bei Fragen stehen wir Ihnen gerne zur Verfügung!</target>
             </trans-unit>
             <trans-unit id="8">
                 <source>default.full_salutation</source>
