@@ -9,37 +9,16 @@
  */
 namespace Sulu\Bundle\Sales\OrderBundle\Order;
 
-use Sulu\Bundle\ContactBundle\Entity\AccountInterface;
+use Sulu\Bundle\Sales\CoreBundle\Manager\EmailManager;
 use Sulu\Bundle\Sales\OrderBundle\Api\ApiOrderInterface;
 use Sulu\Component\Contact\Model\ContactInterface;
-use Sulu\Component\Security\Authentication\UserInterface;
 
-class OrderEmailManager
+class OrderEmailManager extends EmailManager
 {
-    /**
-     * @var \Twig_Environment
-     */
-    protected $twig;
-
     /**
      * @var OrderPdfManager
      */
     protected $pdfManager;
-
-    /**
-     * @var \Swift_Mailer
-     */
-    protected $mailer;
-
-    /**
-     * @var string
-     */
-    protected $templateFooterHtmlPath;
-
-    /**
-     * @var string
-     */
-    protected $templateFooterTxtPath;
 
     /**
      * @var string
@@ -60,7 +39,6 @@ class OrderEmailManager
      * @var bool
      */
     protected $sendShopownerEmailConfirmation;
-
 
     /**
      * @param \Twig_Environment $twig
@@ -187,7 +165,7 @@ class OrderEmailManager
             'contact' => $customerContact,
         );
 
-        return $this->sendMail($recipient, $templatePath, $tmplData, $apiOrder);
+        return $this->sendOrderMail($recipient, $templatePath, $tmplData, $apiOrder);
     }
 
     /**
@@ -201,7 +179,7 @@ class OrderEmailManager
      *
      * @return bool
      */
-    public function sendMail(
+    public function sendOrderMail(
         $recipient,
         $templatePath,
         $data = array(),
@@ -257,85 +235,5 @@ class OrderEmailManager
         }
 
         return true;
-    }
-
-    /**
-     * Get Email address of a user; fallback to contact / account if not defined
-     *
-     * @param UserInterface $user
-     * @param bool $useFallback
-     *
-     * @return null|string
-     */
-    public function getEmailAddressOfUser(UserInterface $user, $useFallback = true)
-    {
-        // take users email address
-        $userEmail = $user->getEmail();
-        if ($userEmail) {
-            return $userEmail;
-        }
-
-        // fallback: get contacts / accounts main-email
-        $contact = $user->getContact();
-        if ($useFallback && $contact) {
-            return $this->getEmailAddressOfContact($contact);
-        }
-
-        return null;
-    }
-
-    /**
-     * Gets email address of a contact
-     *
-     * @param ContactInterface $contact
-     * @param bool $useFallback
-     *
-     * @return string|null
-     */
-    public function getEmailAddressOfContact(ContactInterface $contact, $useFallback = true)
-    {
-        // take contacts main-email
-        $contactMainEmail = $contact->getMainEmail();
-        if ($contact && $contactMainEmail) {
-            return $contactMainEmail;
-        }
-
-        // fallback take contact's main-account main-email
-        $account = $contact->getMainAccount();
-        if ($useFallback && $account) {
-            return $this->getEmailAddressOfAccount($account);
-        }
-
-        return null;
-    }
-
-    /**
-     * Get Email-Address of account
-     *
-     * @param AccountInterface $account
-     *
-     * @return string|null
-     */
-    public function getEmailAddressOfAccount(AccountInterface $account)
-    {
-        $accountMainEmail = $account->getMainEmail();
-        if ($accountMainEmail) {
-            return $accountMainEmail;
-        }
-
-        return null;
-    }
-
-    /**
-     * Writes a new line to mail error log
-     *
-     * @param string $message
-     */
-    private function writeLog($message)
-    {
-        $fileName = 'app/logs/mail/error.log';
-
-        $log = sprintf("[%s]: %s\n", date_format(new \DateTime(), 'Y-m-d H:i:s'), $message);
-        file_put_contents($fileName, $log, FILE_APPEND);
     }
 }
