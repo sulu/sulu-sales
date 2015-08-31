@@ -32,7 +32,7 @@ trait DataHelperTrait
     }
 
     /**
-     * Sets a date if it's set in data.
+     * Sets a date if it is set in given data.
      *
      * @param array $data
      * @param string $key
@@ -41,7 +41,9 @@ trait DataHelperTrait
      */
     private function setDate($data, $key, $defaultDate, callable $setCallback)
     {
-        if (($date = $this->getProperty($data, $key, $defaultDate)) !== null) {
+        $date = $this->getProperty($data, $key, $defaultDate);
+
+        if ($date !== null) {
             // set to null if empty
             if (empty($date)) {
                 $date = null;
