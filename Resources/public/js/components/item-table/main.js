@@ -13,18 +13,18 @@
  *
  * @param {Object} [options] Configuration object
  * @param {Array}  [options.data] Array of data [string, object]
- * @param {Bool}  [options.isEditable] Defines if component is editable
+ * @param {Bool}   [options.isEditable] Defines if component is editable
  * @param {Array}  [options.columns] Defines which columns should be shown. Array of strings
- * @param {Bool}  [options.hasNestedItems] this is used, when data array is merged (must be an object
- *        containing an attribute called 'item'
+ * @param {Bool}   [options.hasNestedItems] this is used, when data array is merged (must be an object
+ *                 containing an attribute called 'item'
  * @param {Array}  [options.defaultData] can be used to pass extra default parameters to an item
- * @param {Object}  [options.columnCallbacks] if a specific column is clicked (as name) a callback can be defined
- *        by provide key with a function
- * @param {Object}  [options.rowCallback] Is called, when a row is clicked. Passes rowId and rowData
- * @param {Object}  [options.settings] Configuration Object for displaying Options overlay
- * @param {Object}  [options.urlFilter] Object containing key value pairs to extend the url
- * @param {String}  [options.addressKey] Defines how to access address value over api
- * @param {Bool}  [options.allowDuplicatedProducts] Defines if a product can be added multiple times to items list
+ * @param {Object} [options.columnCallbacks] if a specific column is clicked (as name) a callback can be defined
+ *                 by provide key with a function
+ * @param {Object} [options.rowCallback] Is called, when a row is clicked. Passes rowId and rowData
+ * @param {Object} [options.settings] Configuration Object for displaying Options overlay
+ * @param {Object} [options.urlFilter] Object containing key value pairs to extend the url
+ * @param {String} [options.addressKey] Defines how to access address value over api
+ * @param {Bool}   [options.allowDuplicatedProducts] Defines if a product can be added multiple times to items list
  */
 define([
     'text!sulusalescore/components/item-table/item.form.html',
@@ -662,9 +662,10 @@ define([
         },
 
         /**
-         * called when a product gets selected in auto-complete
-         * @param product
-         * @param event
+         * Called when a product gets selected in auto-complete.
+         *
+         * @param {Object} product
+         * @param {Object} event
          */
         productSelected = function(product, event) {
 
@@ -672,7 +673,7 @@ define([
                 rowId = this.sandbox.dom.attr($row, 'id'),
                 itemData = {};
 
-            if (productIsforbiddenDuplicate.call(this, product.id)) {
+            if (productIsForbiddenDuplicate.call(this, product.id)) {
                 this.sandbox.emit('sulu.labels.warning.show',
                     this.sandbox.translate('salescore.item-table.warning.product-already-added'),
                     'labels.warning',
@@ -714,11 +715,11 @@ define([
         /**
          * Checks if a product is not an unallowed duplicate.
          *
-         * @param {String} productId
+         * @param {String|Int} productId
          *
          * @returns {Bool}
          */
-        productIsforbiddenDuplicate = function(productId) {
+        productIsForbiddenDuplicate = function(productId) {
             if (!this.options.allowDuplicatedProducts && this.addedProductIds.indexOf(productId) !== -1) {
                 return true;
             }
@@ -727,9 +728,10 @@ define([
         },
 
         /**
+         * Initializes the product's auto-complete.
          * TODO: move to template when mapper type is implemented
-         * initializes the product's auto-complete
-         * @param $row
+         *
+         * @param {Object} $row
          */
         initProductSearch = function($row) {
             var options = Config.get('suluproduct.components.autocomplete.default');
@@ -771,8 +773,9 @@ define([
         },
 
         /**
-         * removes item at rowId
-         * @param rowId
+         * Removes item at rowId.
+         *
+         * @param {String} rowId
          */
         removeItemData = function(rowId) {
             // remove from items data
@@ -782,9 +785,10 @@ define([
         },
 
         /**
-         * adds item to data at index rowId
-         * @param rowId
-         * @param itemData
+         * Adds item to data at index rowId.
+         *
+         * @param {String} rowId
+         * @param {Object} itemData
          */
         addItemData = function(rowId, itemData) {
             this.items[rowId] = itemData;
