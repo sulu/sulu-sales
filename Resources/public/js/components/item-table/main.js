@@ -24,6 +24,7 @@
  * @param {Object}  [options.settings] Configuration Object for displaying Options overlay
  * @param {Object}  [options.urlFilter] Object containing key value pairs to extend the url
  * @param {String}  [options.addressKey] Defines how to access address value over api
+ * @param {Bool}  [options.allowDuplicatedProducts] Defines if a product can be added multiple times to items list
  */
 define([
     'text!sulusalescore/components/item-table/item.form.html',
@@ -59,12 +60,12 @@ define([
             columnCallbacks: {},
             rowCallback: null,
             settings: false,
-            addressKey: 'deliveryAddress'
+            addressKey: 'deliveryAddress',
+            allowDuplicatedProducts: true
         },
 
         urls = {
             products: '/admin/api/products{?filter*}',
-            productsFlat: '/admin/api/products?flat=true&searchFields=number,name&fields=id,name,number{&filter*}',
             product: '/admin/api/products/'
         },
 
@@ -671,6 +672,17 @@ define([
                 rowId = this.sandbox.dom.attr($row, 'id'),
                 itemData = {};
 
+            if (productIsforbiddenDuplicate.call(this, product.id)) {
+                this.sandbox.emit('sulu.labels.warning.show',
+                    this.sandbox.translate('salescore.item-table.warning.product-already-added'),
+                    'labels.warning',
+                    ''
+                );
+                return;
+            }
+
+            this.addedProductIds.push(product.id);
+
             // show loader
             this.sandbox.start([
                 {
@@ -700,18 +712,34 @@ define([
         },
 
         /**
+         * Checks if a product is not an unallowed duplicate.
+         *
+         * @param {String} productId
+         *
+         * @returns {Bool}
+         */
+        productIsforbiddenDuplicate = function(productId) {
+            if (!this.options.allowDuplicatedProducts && this.addedProductIds.indexOf(productId) !== -1) {
+                return true;
+            }
+
+            return false;
+        },
+
+        /**
          * TODO: move to template when mapper type is implemented
          * initializes the product's auto-complete
          * @param $row
          */
         initProductSearch = function($row) {
             var options = Config.get('suluproduct.components.autocomplete.default');
+            var remoteUrl = options.remoteUrl + '{&filter*}{&limit*}';
+            options.remoteUrl = this.sandbox.uritemplate.parse(remoteUrl).expand({
+                filter: this.options.urlFilter,
+                limit: constants.autocompleteLimit
+            });
             options.el = this.sandbox.dom.find(constants.productSearchClass, $row);
             options.selectCallback = productSelected.bind(this);
-            var remoteUrl = this.sandbox.uritemplate.parse(urls.productsFlat).expand({
-                filter: this.options.urlFilter
-            });
-            options.remoteUrl = remoteUrl + '&limit=' + constants.autocompleteLimit;
             options.limit = constants.autocompleteLimit;
             options.instanceName += this.rowCount;
 
@@ -773,13 +801,20 @@ define([
         },
 
         /**
-         * removes row with
-         * @param rowId
-         * @param $row the row element
+         * Removes an item-row.
+         *
+         * @param {String} rowId
+         * @param {Object} $row the row element
          */
         removeItemRow = function(rowId, $row) {
             // remove from table
             this.sandbox.dom.remove($row);
+
+            // remove product id
+            if (!!this.items[rowId] && !!this.items[rowId].product) {
+                var index = this.addedProductIds.indexOf(this.items[rowId].product.id);
+                this.addedProductIds.splice(index,1);
+            }
 
             // remove from data
             removeItemData.call(this, rowId);
@@ -794,7 +829,12 @@ define([
         },
 
         /**
-         * creates and returns a new row element
+         * Creates and returns a new row element.
+         *
+         * @param {Object} itemData
+         * @param {String} rowId
+         *
+         * @returns {Object}
          */
         createItemRow = function(itemData, rowId) {
             if (!rowId) {
@@ -1122,6 +1162,7 @@ define([
             // variables
             this.items = {};
             this.rowCount = 0;
+            this.addedProductIds = [];
             this.table = null;
             this.currency = this.options.currency || rowDefaults.currency;
 
