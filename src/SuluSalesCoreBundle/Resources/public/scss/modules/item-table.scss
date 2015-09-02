@@ -1,0 +1,171 @@
+@mixin border-bottom($size: 2px) {
+    border-bottom: $size solid #ccc;
+}
+
+$rowPadding : 0 20px 0 0;
+
+body {
+    counter-reset: rowcount;
+}
+
+.item-table-list-form {
+
+    margin-top:20px;
+
+    &.disabled {
+        .add-row,
+        .item-remove {
+            display:none;
+        }
+        .global-price-table {
+            margin-right: 0;
+        }
+
+        input {
+            background-color: transparent;
+        }
+
+        .husky-toolbar .toolbar-item {
+            display: none;
+        }
+    }
+}
+
+.item-table-list {
+    list-style: none;
+    padding: 0;
+
+    .header {
+        @include border-bottom;
+
+        border-color: #ccc;
+        vertical-align: top;
+        font-size: 14px;
+        padding: 8px 10px;
+
+        tr {
+           height: 30px;
+
+            > * {
+                padding: $rowPadding;
+            }
+        }
+        .input-field {
+            display: none;
+        }
+    }
+    .is-numeric,
+    .is-numeric input {
+        text-align: right;
+    }
+}
+
+// overwrite
+.husky-validate-error *:not(.husky-validate-error) > .husky-validate:not(label) {
+    border: 1px solid #ccc;
+}
+
+.item-table-row {
+    height: 50px;
+    @include border-bottom(1px);
+
+    // show row number (but not for first row)
+    .row-number {
+        &:before {
+            counter-increment: rowcount;
+            content: counter(rowcount);
+        }
+    }
+
+    &:hover {
+//       background-color: rgba(white,0.5);
+    }
+
+    &:last-child {
+        @include border-bottom;
+    }
+
+
+    &.new {
+        .product-search {
+            display: block;
+        }
+    }
+
+    .span {
+        height: 100%;
+    }
+
+    // column specifics
+    .item-name {
+        min-width: 170px;
+    }
+
+    .product-search {
+        margin: 0;
+        display: none;
+    }
+
+    // add padding to each row element
+    > * {
+        padding: $rowPadding;
+    }
+
+    > *:first-child {
+        padding-left: 20px;
+    }
+}
+
+.item-remove {
+    a, a:visited, a:active {
+        color: black;
+    }
+}
+
+.item-add {
+    a {
+        color: black;
+        &:hover, &:visited {
+            color: black;
+        }
+    }
+
+    margin-top: 20px;
+
+    .add-row {
+        font-size: 10px;
+    }
+}
+
+.item-overall-price {
+    text-align: right;
+}
+
+.item-price {
+  min-width: 100px;
+}
+
+// global price
+.global-price-container {
+    padding-top: 15px;
+    position: relative;
+
+    .global-price-table {
+        width: initial;
+        float: right;
+        margin-right: 31px;
+        text-align: right;
+
+        td {
+            padding: $rowPadding;
+        }
+
+        tr {
+            height: 30px;
+            &:last-child {
+                font-weight: bold;
+                border-top: 1px solid #ccc;;
+            }
+        }
+    }
+}
