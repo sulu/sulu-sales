@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+    <entity name="Sulu\Bundle\Sales\CoreBundle\Entity\Item" table="sc_items"
+            repository-class="Sulu\Bundle\Sales\CoreBundle\Entity\ItemRepository">
+        <field name="supplierName" type="string" column="supplierName" length="255" nullable="true"/>
+
+        <one-to-many field="attributes" target-entity="Sulu\Bundle\Sales\CoreBundle\Entity\ItemAttribute" mapped-by="item"/>
+
+        <many-to-one field="deliveryAddress" target-entity="Sulu\Bundle\Sales\CoreBundle\Entity\OrderAddress">
+            <join-columns>
+                <join-column name="idOrderAddressesDelivery" nullable="true"/>
+            </join-columns>
+        </many-to-one>
+        <many-to-one field="supplier" target-entity="Sulu\Bundle\ContactBundle\Entity\AccountInterface">
+            <join-columns>
+                <join-column name="idAccountsSupplier" referenced-column-name="id" on-delete="SET NULL" nullable="true"/>
+            </join-columns>
+        </many-to-one>
+    </entity>
+</doctrine-mapping>

@@ -1,0 +1,13 @@
+{% if address is defined %}
+    <div class="grid-row m-bottom-0">
+            <span class="block grey">
+                {{ address.street }}
+                {{ address.number }}{% if address.street or address.number is defined %},{% endif %}
+
+                {{ address.zip }}
+                {{ address.city }}{% if address.city or address.zip is defined %},{% endif %}
+
+                {{ address.country }}
+            </span>
+    </div>
+{% endif %}

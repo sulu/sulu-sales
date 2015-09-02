@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+    <file source-language="de" datatype="plaintext" original="file.ext">
+        <body>
+            <trans-unit id="a50accg2ac221350142c0b4720e29ab1" resname="navigation.sales">
+                <source>navigation.sales</source>
+                <target>Verkauf</target>
+            </trans-unit>
+            <trans-unit id="a50accg2ac221350142c0b4720e29ab2" resname="navigation.sales.order">
+                <source>navigation.sales.order</source>
+                <target>Aufträge</target>
+            </trans-unit>
+            <trans-unit id="a50accg2ac221350142c0b4720e29ab3" resname="salescore.item.product">
+                <source>navigation.item.product</source>
+                <target>Artikel</target>
+            </trans-unit>
+            <trans-unit id="a50accg2ac221350142c0b4720e29ab4" resname="salescore.item.number">
+                <source>navigation.item.number</source>
+                <target>Art.Nr</target>
+            </trans-unit>
+            <trans-unit id="a50accg2ac221350142c0b4720e29ab5" resname="salescore.item.quantity">
+                <source>navigation.item.quantity</source>
+                <target>Menge</target>
+            </trans-unit>
+            <trans-unit id="a50accg2ac221350142c0b4720e29ab6" resname="salescore.item.unit">
+                <source>navigation.item.unit</source>
+                <target>Einheit</target>
+            </trans-unit>
+            <trans-unit id="a50accg2ac221350142c0b4720e29ab7" resname="salescore.item.price">
+                <source>navigation.item.price</source>
+                <target>Preis</target>
+            </trans-unit>
+            <trans-unit id="a50accg2ac221350142c0b4720e29ab8" resname="salescore.item.discount">
+                <source>navigation.item.discount</source>
+                <target>Rabatt [%]</target>
+            </trans-unit>
+            <trans-unit id="a50accg2ac221350142c0b4720e29ab9" resname="salescore.item.overall-value">
+                <source>navigation.item.overall-value</source>
+                <target>Positionswert</target>
+            </trans-unit>
+            <trans-unit id="a50accg2ac221350142c0b4720e29a10" resname="salescore.item.add">
+                <source>navigation.item.add</source>
+                <target>Weitere Positionseingabe</target>
+            </trans-unit>
+            <trans-unit id="a50accg2ac221350142c0b4720e29a11" resname="salescore.item.net-price">
+                <source>salescore.item.net-price</source>
+                <target>Nettopreis</target>
+            </trans-unit>
+            <trans-unit id="a50accg2ac221350142c0b4720e29a12" resname="salescore.item.overall-price">
+                <source>salescore.item.overall-price</source>
+                <target>Gesamtpreis</target>
+            </trans-unit>
+            <trans-unit id="a50accg2ac221350142c0b4720e29a13" resname="salescore.item.vat">
+                <source>salescore.item.vat</source>
+                <target>Ust</target>
+            </trans-unit>
+            <trans-unit id="a50accg2ac221350142c0b4720e29a14" resname="salescore.customer">
+                <source>salescore.customer</source>
+                <target>Kunde</target>
+            </trans-unit>
+            <trans-unit id="a50accg2ac221350142c0b4720e29a15" resname="salescore.contact">
+                <source>salescore.contact</source>
+                <target>Ansprechpartner</target>
+            </trans-unit>
+            <trans-unit id="a50accg2ac221350142c0b4720e29a16" resname="salescore.item.available-quantity">
+                <source>salescore.item.available-quantity</source>
+                <target>Verfügbar</target>
+            </trans-unit>
+            <trans-unit id="a50accg2ac221350142c0b4720e29a17" resname="salescore.item.order-quantity">
+                <source>salescore.item.order-quantity</source>
+                <target>Auftragsmenge</target>
+            </trans-unit>
+            <trans-unit id="a50accg2ac221350142c0b4720e29a18" resname="salescore.account">
+                <source>salescore.account</source>
+                <target>Kunde</target>
+            </trans-unit>
+            <trans-unit id="a50accg2ac221350142c0b4720e29a19" resname="salescore.contact">
+                <source>salescore.contact</source>
+                <target>Ansprechpartner</target>
+            </trans-unit>
+            <trans-unit id="a50accg2ac221350142c0b4720e29a20" resname="salescore.status">
+                <source>salescore.status</source>
+                <target>Status</target>
+            </trans-unit>
+            <trans-unit id="a50accg2ac221350142c0b4720e29a21" resname="salescore.item.processed-quantity">
+                <source>salescore.item.processed-quantity</source>
+                <target>Bearb. Menge</target>
+            </trans-unit>
+            <trans-unit id="a50accg2ac221350142c0b4720e29a22" resname="salescore.conversion-failed">
+                <source>salescore.conversion-failed</source>
+                <target>Statusänderung fehlgeschlagen.</target>
+            </trans-unit>
+            <trans-unit id="a50accg2ac221350142c0b4720e29a23" resname="salescore.shipping-failed">
+                <source>salescore.shipping-failed</source>
+                <target>Neue Lieferung konnte nicht erstellt werden</target>
+            </trans-unit>
+            <trans-unit id="a50accg2ac221350142c0b4720e29a24" resname="salescore.items">
+                <source>salescore.items</source>
+                <target>Positionen</target>
+            </trans-unit>
+            <trans-unit id="a50accg2ac221350142c0b4720e29a25" resname="salescore.shipping.date">
+                <source>salescore.shipping.date</source>
+                <target>Lieferdatum</target>
+            </trans-unit>
+            <trans-unit id="a50accg2ac221350142c0b4720e29a26" resname="salescore.currency">
+                <source>salescore.currency</source>
+                <target>Währung</target>
+            </trans-unit>
+            <trans-unit id="a50accg2ac221350142c0b4720e29a27" resname="salescore.paymentMethod">
+                <source>salescore.paymentMethod</source>
+                <target>Zahlungsart</target>
+            </trans-unit>
+            <trans-unit id="a50accg2ac221350142c0b4720e29a28" resname="salescore.sidebar.contact">
+                <source>salescore.sidebar.contact</source>
+                <target>Ansprechpartner</target>
+            </trans-unit>
+            <trans-unit id="a50accg2ac221350142c0b4720e29a29" resname="salescore.sidebar.customer">
+                <source>salescore.sidebar.customer</source>
+                <target>Kunde</target>
+            </trans-unit>
+            <trans-unit id="a50accg2ac221350142c0b4720e29a30" resname="sales.core.flow-of-documents">
+                <source>sales.core.flow-of-documents</source>
+                <target>Belege</target>
+            </trans-unit>
+            <trans-unit id="a50accg2ac221350142c0b4720e29a31" resname="salescore.order">
+                <source>salescore.order</source>
+                <target>Auftrag</target>
+            </trans-unit>
+            <trans-unit id="a50accg2ac221350142c0b4720e29a32" resname="salescore.shipping">
+                <source>salescore.shipping</source>
+                <target>Lieferung</target>
+            </trans-unit>
+            <trans-unit id="a50accg2ac221350142c0b4720e29a33" resname="salescore.orderDate">
+                <source>salescore.orderDate</source>
+                <target>Auftragsdatum</target>
+            </trans-unit>
+            <trans-unit id="a50accg2ac221350142c0b4720e29a34" resname="salescore.item.description">
+                <source>salescore.item.description</source>
+                <target>Kurzbeschreibung</target>
+            </trans-unit>
+            <trans-unit id="a50accg2ac221350142c0b4720e29a35" resname="salescore.validation-warning">
+                <source>salescore.validation-warning</source>
+                <target>Die eingegebenen Daten sind ungültig.</target>
+            </trans-unit>
+            <trans-unit id="a50accg2ac221350142c0b4720e29a36" resname="salescore.item-table.error.loading-product">
+                <source>salescore.item-table.error.loading-product</source>
+                <target>Die Produktdaten konnten nicht geladen werden.</target>
+            </trans-unit>
+            <trans-unit id="a50accg2ac221350142c0b4720e29a37" resname="salescore.item-table.error.changing-currency">
+                <source>salescore.item-table.error.changing-currency</source>
+                <target>Beim Ändern der Währung ist ein Fehler aufgetreten.</target>
+            </trans-unit>
+            <trans-unit id="a50accg2ac221350142c0b4720e29a38" resname="salescore.delivery-cost">
+                <source>salescore.delivery-cost</source>
+                <target>Lieferkosten</target>
+            </trans-unit>
+            <trans-unit id="1" resname="salescore.change-address">
+                <source>salescore.change-address</source>
+                <target>Adresse ändern</target>
+            </trans-unit>
+            <trans-unit id="2" resname="salescore.item.tax-rate">
+                <source>salescore.item.tax-rate</source>
+                <target>Steuerklasse</target>
+            </trans-unit>
+            <trans-unit id="3" resname="salescore.item.delivery-date">
+                <source>salescore.item.delivery-date</source>
+                <target>Lieferdatum</target>
+            </trans-unit>
+            <trans-unit id="4" resname="salescore.delivery-date">
+                <source>salescore.delivery-date</source>
+                <target>Lieferdatum</target>
+            </trans-unit>
+            <trans-unit id="5" resname="salescore.use-main-delivery-address">
+                <source>salescore.use-main-delivery-address</source>
+                <target>Wie Lieferadresse</target>
+            </trans-unit>
+            <trans-unit id="6" resname="salescore.item-table.warning.product-already-added">
+                <source>salescore.item-table.warning.product-already-added</source>
+                <target>Produkt bereits der Liste hinzugefügt.</target>
+            </trans-unit>
+        </body>
+    </file>
+</xliff>

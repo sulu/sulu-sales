@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+    <file source-language="en" datatype="plaintext" original="file.ext">
+        <body>
+            <trans-unit id="1">
+                <source>default.salutation</source>
+                <target>Dear</target>
+            </trans-unit>
+            <trans-unit id="2">
+                <source>default.owner</source>
+                <target>shop owner</target>
+            </trans-unit>
+            <trans-unit id="3">
+                <source>default.customer</source>
+                <target>customer</target>
+            </trans-unit>
+            <trans-unit id="4">
+                <source>gender.male</source>
+                <target>Mr.</target>
+            </trans-unit>
+            <trans-unit id="5">
+                <source>gender.female</source>
+                <target>Ms.</target>
+            </trans-unit>
+            <trans-unit id="6">
+                <source>farewell</source>
+                <target>Best regards</target>
+            </trans-unit>
+            <trans-unit id="7">
+                <source>further.information</source>
+                <target>For any further information, don't hesitate to contact us!</target>
+            </trans-unit>
+            <trans-unit id="8">
+                <source>default.full_salutation</source>
+                <target>Dear Sir or Madam</target>
+            </trans-unit>
+            <trans-unit id="9">
+                <source>item.quantity</source>
+                <target>Quantity</target>
+            </trans-unit>
+            <trans-unit id="10">
+                <source>item.name</source>
+                <target>Name</target>
+            </trans-unit>
+            <trans-unit id="11">
+                <source>delivery.address</source>
+                <target>Delivery address</target>
+            </trans-unit>
+            <trans-unit id="12">
+                <source>delivery.date</source>
+                <target>Delivery date</target>
+            </trans-unit>
+            <trans-unit id="13">
+                <source>note</source>
+                <target>Note</target>
+            </trans-unit>
+        </body>
+    </file>
+</xliff>
