@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+    <file source-language="de" datatype="plaintext" original="file.ext">
+        <body>
+            <trans-unit id="1">
+                <source>customer.subject</source>
+                <target>Bestellung %number% vom %date%</target>
+            </trans-unit>
+            <trans-unit id="2">
+                <source>default.salutation</source>
+                <target>Liebe(r)</target>
+            </trans-unit>
+            <trans-unit id="3">
+                <source>customer.content</source>
+                <target>Vielen Dank für die Bestellung in unserem Webshop. Weitere Details zur Bestellung findest du im Anhang.</target>
+            </trans-unit>
+            <trans-unit id="4">
+                <source>owner.subject</source>
+                <target>Bestellung %number% vom %date%</target>
+            </trans-unit>
+            <trans-unit id="5">
+                <source>owner.content</source>
+                <target>%gender% %customerName% / %customerAccount% hat soeben eine Bestellung aufgegeben. Alle Informationen können der Bestellbestätigung entnommen werden.</target>
+            </trans-unit>
+            <trans-unit id="6">
+                <source>default.owner</source>
+                <target>Shop-Besitzer(in)</target>
+            </trans-unit>
+            <trans-unit id="7">
+                <source>default.customer</source>
+                <target>Kunde</target>
+            </trans-unit>
+        </body>
+    </file>
+</xliff>

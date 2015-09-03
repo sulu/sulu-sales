@@ -1,0 +1,144 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+    <parameters>
+        <parameter key="sulu_sales_order.admin.class">Sulu\Bundle\Sales\OrderBundle\Admin\SuluSalesOrderAdmin</parameter>
+        <parameter key="sulu_sales_order.admin.content_navigation.class">Sulu\Bundle\Sales\OrderBundle\Admin\SuluSalesOrderContentNavigation</parameter>
+        <parameter key="sulu_sales_order.order_repository.class">Sulu\Bundle\Sales\OrderBundle\Entity\OrderRepository</parameter>
+        <parameter key="sulu_sales_order.order_status_repository.class">Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatusRepository</parameter>
+        <parameter key="sulu_sales_order.order_type_repository.class">Sulu\Bundle\Sales\OrderBundle\Entity\OrderTypeRepository</parameter>
+        <parameter key="sulu_sales_order.order_manager.class">Sulu\Bundle\Sales\OrderBundle\Order\OrderManager</parameter>
+        <parameter key="sulu_sales_order.order_listener.class">Sulu\Bundle\Sales\OrderBundle\EventListener\OrderListener</parameter>
+        <parameter key="sulu_sales_order.widgets.order_details.class">Sulu\Bundle\Sales\OrderBundle\Widgets\OrderDetails</parameter>
+        <parameter key="sulu_sales_order.widgets.order_flow_of_documents.class">Sulu\Bundle\Sales\OrderBundle\Widgets\FlowOfDocuments</parameter>
+        <parameter key="sulu_sales_order.order_dependency_manager.class">Sulu\Bundle\Sales\OrderBundle\Order\OrderDependencyManager</parameter>
+        <parameter key="sulu_sales_order.order_updater.class">Sulu\Bundle\Sales\OrderBundle\Order\OrderUpdater</parameter>
+        <parameter key="sulu_sales_order.cart_manager.class">Sulu\Bundle\Sales\OrderBundle\Cart\CartManager</parameter>
+        <parameter key="sulu_sales_order.order_pdf_manager.class">Sulu\Bundle\Sales\OrderBundle\Order\OrderPdfManager</parameter>
+        <parameter key="sulu_sales_order.order_factory.class">Sulu\Bundle\Sales\OrderBundle\Order\OrderFactory</parameter>
+        <parameter key="sulu_sales_order.order_email_manager.class">Sulu\Bundle\Sales\OrderBundle\Order\OrderEmailManager</parameter>
+    </parameters>
+    <services>
+        <!--ADMIN-->
+        <service id="sulu_sales_order.admin" class="%sulu_sales_order.admin.class%">
+            <tag name="sulu.admin" />
+            <tag name="sulu.context" context="admin"/>
+            <argument type="service" id="sulu_security.security_checker"/>
+            <argument>%sulu_admin.name%</argument>
+        </service>
+
+        <service id="sulu_sales_order.admin.content_navigation" class="%sulu_sales_order.admin.content_navigation.class%">
+            <tag name="sulu_admin.content_navigation" alias="order"/>
+            <tag name="sulu.context" context="admin"/>
+        </service>
+
+
+        <!--FACTORIES-->
+        <service id="sulu_sales_order.order_factory" class="%sulu_sales_order.order_factory.class%">
+            <argument type="service" id="sulu_sales_core.item_factory" />
+        </service>
+
+        <!--REPOSITORIES-->
+        <service id="sulu_sales_order.order_repository" class="%sulu_sales_order.order_repository.class%"
+                 factory-method="getRepository" factory-service="doctrine.orm.entity_manager">
+            <argument>SuluSalesOrderBundle:Order</argument>
+        </service>
+
+        <service id="sulu_sales_order.order_status_repository" class="%sulu_sales_order.order_status_repository.class%"
+                 factory-method="getRepository" factory-service="doctrine.orm.entity_manager">
+            <argument>SuluSalesOrderBundle:OrderStatus</argument>
+        </service>
+
+        <service id="sulu_sales_order.order_type_repository" class="%sulu_sales_order.order_type_repository.class%"
+                 factory-method="getRepository" factory-service="doctrine.orm.entity_manager">
+            <argument>SuluSalesOrderBundle:OrderType</argument>
+        </service>
+
+        <!--MANAGERS-->
+
+        <service id="sulu_sales_order.order_manager" class="%sulu_sales_order.order_manager.class%">
+            <argument type="service" id="doctrine.orm.entity_manager" />
+            <argument type="service" id="sulu_sales_order.order_repository" />
+            <argument type="service" id="sulu_security.user_repository" />
+            <argument type="service" id="sulu_contact.account_repository" />
+            <argument type="service" id="sulu_sales_core.item_manager" />
+            <argument type="service" id="sulu_sales_order.order_status_repository" />
+            <argument type="service" id="sulu_sales_order.order_type_repository" />
+            <argument type="service" id="session" />
+            <argument type="service" id="sulu_sales_core.grouped_price_calculator" />
+            <argument type="service" id="sulu_product.product_manager" />
+            <argument type="service" id="sulu_sales_order.order_factory" />
+            <argument type="service" id="sulu_sales_core.order_address_manager" />
+        </service>
+
+        <service id="sulu_sales_order.cart_manager" class="%sulu_sales_order.cart_manager.class%">
+            <argument type="service" id="doctrine.orm.entity_manager" />
+            <argument type="service" id="session" />
+            <argument type="service" id="sulu_sales_order.order_repository" />
+            <argument type="service" id="sulu_sales_order.order_manager" />
+            <argument type="service" id="sulu_sales_core.grouped_price_calculator" />
+            <argument>%sulu_product.default_currency%</argument>
+            <argument type="service" id="sulu_contact.account_manager" />
+            <argument type="service" id="sulu_sales_order.order_factory" />
+            <argument type="service" id="sulu_sales_core.order_address_manager" />
+            <argument type="service" id="sulu_sales_order.order_email_manager" />
+        </service>
+
+        <service id="sulu_sales_order.order_email_manager" class="%sulu_sales_order.order_email_manager.class%">
+            <argument type="service" id="twig" />
+            <argument type="service" id="mailer" />
+            <argument type="service" id="sulu_sales_order.order_pdf_manager" />
+            <argument>%sulu_sales_order.shop_email_from%</argument>
+            <argument>%sulu_sales_order.shop_email_confirmation_to%</argument>
+            <argument>%sulu_sales_order.email_templates.customer_confirmation%</argument>
+            <argument>%sulu_sales_order.email_templates.shopowner_confirmation%</argument>
+            <argument>%sulu_sales_order.email_templates.footer_html%</argument>
+            <argument>%sulu_sales_order.email_templates.footer_txt%</argument>
+            <argument>%sulu_sales_order.send_email_confirmation_to_shopowner%</argument>
+            <argument>%sulu_sales_order.send_email_confirmation_to_customer%</argument>
+        </service>
+
+        <service id="sulu_sales_order.order_pdf_manager" class="%sulu_sales_order.order_pdf_manager.class%">
+            <argument type="service" id="doctrine.orm.entity_manager" />
+            <argument type="service" id="massive_pdf.pdf_manager" />
+            <argument>%sulu_sales_order.pdf_templates.confirmation%</argument>
+            <argument>%sulu_sales_order.pdf_templates.base%</argument>
+            <argument>%sulu_sales_order.pdf_templates.header%</argument>
+            <argument>%sulu_sales_order.pdf_templates.footer%</argument>
+            <argument>%sulu_sales_order.pdf_templates.macros%</argument>
+            <argument>%website_locale%</argument>
+        </service>
+
+        <service id="sulu_sales_order.order_dependency_manager"
+                 class="%sulu_sales_order.order_dependency_manager.class%"/>
+        <!--LISTENERS-->
+
+        <service id="sulu_sales_order.order_updater" class="%sulu_sales_order.order_updater.class%">
+            <argument type="service" id="service_container" />
+        </service>
+
+        <service id="sulu_sales_order.order_listener" class="%sulu_sales_order.order_listener.class%">
+            <argument type="service" id="service_container" />
+            <tag name="kernel.event_subscriber"/>
+            <tag name="doctrine.event_listener" event="postPersist" method="postPersist"/>
+            <tag name="doctrine.event_listener" event="postDelete" method="postDelete"/>
+            <tag name="doctrine.event_listener" event="preUpdate" method="preUpdate"/>
+        </service>
+
+        <!--WIDGETS-->
+
+        <service id="sulu_sales_order.widget.order_details" class="%sulu_sales_order.widgets.order_details.class%">
+            <tag name="sulu.widget" alias="sulu-sales-order-order-details"/>
+            <argument type="service" id="doctrine.orm.entity_manager"/>
+        </service>
+
+        <service id="sulu_sales_order.widget.order_flow_of_documents" class="%sulu_sales_order.widgets.order_flow_of_documents.class%">
+            <tag name="sulu.widget" alias="sulu-sales-order-order-flow-of-documents"/>
+            <argument type="service" id="sulu_sales_order.order_dependency_manager"/>
+            <argument>%sulu_sales_core.routes%</argument>
+        </service>
+
+    </services>
+</container>

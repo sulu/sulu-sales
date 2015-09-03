@@ -1,0 +1,1 @@
+define([],function(){"use strict";return{CREATED:1,IN_CART:2,CONFIRMED:4,CLOSED_MANUALLY:8,CANCELED:16,COMPLETED:32}});
