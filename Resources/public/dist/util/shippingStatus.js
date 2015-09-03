@@ -1,0 +1,1 @@
+define([],function(){"use strict";return{CREATED:1,DELIVERY_NOTE:2,SHIPPED:4,CANCELED:8}});
