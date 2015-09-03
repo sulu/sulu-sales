@@ -1,0 +1,75 @@
+<% var disabled = '';
+if (rowClass === 'new' || isEditable == 'false' || isEditable == false) {
+disabled =  'disabled';
+}
+%>
+
+<tr id="<%= rowId %>" class="item-table-row <%= rowClass %>" data-id="<%= id %>">
+    <td class="row-number grey-font"></td>
+    <% if (columns.indexOf('name') > -1) { %>
+    <td class="item-name <%= !!disabled ? 'grey-font' : 'pointer' %>" data-name="name">
+        <span title="<%= supplierName %>"><%= name %></span>
+
+        <div class="product-search input-field"></div>
+    </td>
+    <% } if (columns.indexOf('number') > -1) { %>
+    <td class="number item-number is-numeric <%= !!disabled ? 'grey-font' : 'pointer' %>" data-name="number">
+        <span><%= number %></span>
+    </td>
+    <% } if (columns.indexOf('address') > -1) { %>
+    <td class="address item-address <%= !!disabled ? 'grey-font' : 'pointer' %>" data-name="address" data-address="<%= addressObject %>">
+        <span><%= address %></span>
+    </td>
+    <% } if (columns.indexOf('description') > -1) { %>
+    <td class="description grey-font">
+        <span><%= description %></span>
+    </td>
+    <% } if (columns.indexOf('quantity') > -1) { %>
+    <td class="item-quantity is-numeric" data-name="quantity">
+        <span>
+            <input class="input-field form-element"
+                   data-validation-required="true"
+                   value="<%= quantity %>"
+                   data-type="decimal"
+                   data-validation-min="0.01"
+                   data-validation-max="999999999"
+            <%= disabled %>/>
+        </span>
+    </td>
+    <% } if (columns.indexOf('quantityUnit') > -1) { %>
+    <td class="item-quantity-unit is-numeric grey-font"  data-name="quantityUnit">
+        <%= quantityUnit %>
+    </td>
+    <% } if (columns.indexOf('price') > -1) { %>
+    <td class="item-price is-numeric" data-name="price">
+        <span>
+            <input class="price input-field form-element"
+                   data-validation-required="true"
+                   value="<%= price %>"
+                   data-type="decimal"
+                   data-validation-min="0.0"
+            <%= disabled %>/>
+        </span>
+    </td>
+    <% } if (columns.indexOf('discount') > -1) { %>
+    <td class="item-discount is-numeric" data-name="discount">
+        <span>
+            <input class="discount input-field form-element"
+                   value="<%= discount %>"
+                   data-type="decimal"
+                   data-validation-max="100.0"
+                   data-validation-min="0.0"
+            <%= disabled %>/>
+        </span>
+    </td>
+    <% } if (columns.indexOf('totalPrice') > -1) { %>
+    <td class="item-overall-price is-numeric grey-font" data-name="overallPrice">
+        <span class="overall-price">
+            <%= overallPrice %>
+        </span>
+    </td>
+    <% } %>
+    <td class="item-remove">
+        <a href="#"><i class="fa fa-times remove-row"></i></a>
+    </td>
+</tr>

@@ -1,0 +1,1 @@
+define([],function(){"use strict";return{parseDate:function(a,b){a=a&&a.getDate()?a:new Date,b=b||"mm/dd/yyyy";var c=a.getDate(),d=a.getMonth()+1,e=a.getFullYear(),f=b;return 10>c&&(c="0"+c),10>d&&(d="0"+d),f=f.replace("mm",d),f=f.replace("dd",c),f=f.replace("yyyy",e)}}});

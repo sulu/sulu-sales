@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+    <file source-language="en" datatype="plaintext" original="file.ext">
+        <body>
+            <trans-unit id="a50accg2ac181350142c0b4720e29ff1" resname="salesorder.orders.title">
+                <source>salesorder.orders.title</source>
+                <target>Orders</target>
+            </trans-unit>
+            <trans-unit id="a50accg2ac181350142c0b4720e29ff2" resname="salesorder.orders.number">
+                <source>salesorder.orders.number</source>
+                <target>Order reference</target>
+            </trans-unit>
+            <trans-unit id="a50accg2ac181350142c0b4720e29ff3" resname="salesorder.orders.contact">
+                <source>salesorder.orders.contact</source>
+                <target>Contact</target>
+            </trans-unit>
+            <trans-unit id="a50accg2ac181350142c0b4720e29ff4" resname="salesorder.orders.contactNumber">
+                <source>salesorder.orders.contactNumber</source>
+                <target>Contact ID</target>
+            </trans-unit>
+            <trans-unit id="a50accg2ac181350142c0b4720e29ff5" resname="salesorder.orders.status">
+                <source>salesorder.orders.status</source>
+                <target>Status</target>
+            </trans-unit>
+            <trans-unit id="a50accg2ac181350142c0b4720e29ff6" resname="salesorder.order">
+                <source>salesorder.order</source>
+                <target>Order</target>
+            </trans-unit>
+            <trans-unit id="a50accg2ac181350142c0b4720e29ff7" resname="salesorder.orders.account">
+                <source>salesorder.orders.account</source>
+                <target>Customer</target>
+            </trans-unit>
+            <trans-unit id="a50accg2ac181350142c0b4720e29ff8" resname="salesorder.orders.commission">
+                <source>salesorder.orders.commission</source>
+                <target>Commission</target>
+            </trans-unit>
+            <trans-unit id="a50accg2ac181350142c0b4720e29ff9" resname="salesorder.orders.responsibleContact">
+                <source>salesorder.orders.responsibleContact</source>
+                <target>Advisor</target>
+            </trans-unit>
+            <trans-unit id="a50accg2ac181350142c0b4720e29f10" resname="salesorder.orders.costCentre">
+                <source>salesorder.orders.costCentre</source>
+                <target>Cost Centre</target>
+            </trans-unit>
+            <trans-unit id="a50accg2ac181350142c0b4720e29f11" resname="salesorder.orders.taxFree">
+                <source>salesorder.orders.taxFree</source>
+                <target>Tax-free</target>
+            </trans-unit>
+            <trans-unit id="a50accg2ac181350142c0b4720e29f12" resname="salesorder.orders.deliveryAddress">
+                <source>salesorder.orders.deliveryAddress</source>
+                <target>Delivery addr.</target>
+            </trans-unit>
+            <trans-unit id="a50accg2ac181350142c0b4720e29f13" resname="salesorder.orders.invoiceAddress">
+                <source>salesorder.orders.invoiceAddress</source>
+                <target>Invoice Addr.</target>
+            </trans-unit>
+            <trans-unit id="a50accg2ac181350142c0b4720e29f14" resname="salesorder.orders.addressOverlayTitle">
+                <source>salesorder.orders.addressOverlayTitle</source>
+                <target>Assigne or add an address</target>
+            </trans-unit>
+            <trans-unit id="a50accg2ac181350142c0b4720e29f15" resname="salesorder.orders.addressOverlayWarningTitle">
+                <source>salesorder.orders.addressOverlayWarningTitle</source>
+                <target>Attention</target>
+            </trans-unit>
+            <trans-unit id="a50accg2ac181350142c0b4720e29f16" resname="salesorder.orders.addressOverlayWarningMessage">
+                <source>salesorder.orders.addressOverlayWarningMessage</source>
+                <target>The address will be used for this order only!</target>
+            </trans-unit>
+            <trans-unit id="a50accg2ac181350142c0b4720e29f17" resname="salesorder.orders.confirm">
+                <source>salesorder.orders.confirm</source>
+                <target>Confirm order</target>
+            </trans-unit>
+            <trans-unit id="a50accg2ac181350142c0b4720e29f18" resname="salesorder.orders.edit">
+                <source>salesorder.orders.edit</source>
+                <target>Edit order</target>
+            </trans-unit>
+            <trans-unit id="a50accg2ac181350142c0b4720e29f19" resname="salesorder.orders.shipping.create">
+                <source>salesorder.orders.shipping.create</source>
+                <target>Create an order</target>
+            </trans-unit>
+            <trans-unit id="a50accg2ac181350142c0b4720e29f20" resname="salesorder.orders.orderDate">
+                <source>salesorder.orders.orderDate</source>
+                <target>Order date</target>
+            </trans-unit>
+            <trans-unit id="a50accg2ac181350142c0b4720e29f21" resname="salesorder.orders.delete">
+                <source>salesorder.orders.delete</source>
+                <target>Delete Order</target>
+            </trans-unit>
+            <trans-unit id="30" resname="salesorder.orders.type">
+                <source>salesorder.orders.type</source>
+                <target>Type</target>
+            </trans-unit>
+        </body>
+    </file>
+</xliff>
