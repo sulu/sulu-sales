@@ -1,0 +1,54 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<html>
+    <head>
+        <base href="{{ app.request.schemeAndHttpHost }}" />
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <title></title>
+        <meta name="description" content="">
+        <link rel="stylesheet" href="{{ asset('bundles/sulusalescore/css/pdfstyles.css') }}"/>
+
+        <script>
+         function pageCounter() {
+           var vars = {};
+           var x = document.location.search.substring(1).split('&');
+           for (var i in x) {
+             var z = x[i].split('=',2);
+             vars[z[0]] = unescape(z[1]);
+           }
+           var x = ['topage', 'page'];
+           for (var i in x) {
+             var y = document.getElementsByClassName(x[i]);
+             for (var j=0; j<y.length; ++j) {
+               y[j].textContent = vars[x[i]];
+             }
+           }
+         }
+        </script>
+    </head>
+    <body class="footer" onload="pageCounter()">
+        <div class="grid footer-container">
+            <div class="grid__item one-third">
+                <b>My Company</b><br/>
+                My Street 1 | 0000 My Town | Austria<br/>
+                T: +43 000 000 00-0<br/>
+                F: +43 000 000 00-000
+            </div>
+            <div class="grid__item one-third" style="padding-left: 70px;">
+                sulu@suku.io<br/>
+                www.sulu.io<br/>
+                UID-Nr. ATU 00000000<br/>
+                Firmenbuch Nr.0000000
+            </div>
+            <div class="grid__item one-third">
+                <b>Bankverbindung:</b><br/>
+                My Bank<br/>
+                IBAN: AT00 0000 0000 0000 0000<br/>
+                BIC: XXXXXXXX
+            </div>
+            <div class="grid__item text-align-right">
+                <span class="page"></span>/<span class="topage"></span>
+            </div>
+        </div>
+    </body>
+</html>
