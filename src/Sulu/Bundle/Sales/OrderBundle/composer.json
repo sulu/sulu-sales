@@ -26,7 +26,7 @@
         "sulu/sales-core-bundle": "dev-develop"
     },
     "require-dev": {
-        "doctrine/orm": "2.4.*",
+        "doctrine/orm": "2.5.*",
         "jackalope/jackalope-doctrine-dbal": "~1.2.0",
         "jackalope/jackalope-jackrabbit": "~1.2.0",
         "massive/search-bundle": "0.7.*",
