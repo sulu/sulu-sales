@@ -48,68 +48,60 @@ define([
         /**
          * set header toolbar based on current order status
          */
-        setHeaderToolbar = function() {
+        getToolbarButtons = function() {
 
             var i, len,
                 workflow,
                 currentSection = null,
                 data = this.options.data,
-                toolbarItems = [
-                    {
-                        id: 'save-button',
-                        icon: 'floppy-o',
-                        iconSize: 'large',
-                        class: 'highlight',
-                        position: 1,
-                        group: 'left',
-                        disabled: true,
-                        callback: function() {
-                            this.sandbox.emit('sulu.header.toolbar.save');
-                        }.bind(this)
-                    }
-                ],
+                toolbarItems = {
+                    save: {}
+                },
                 workflowDropdown = {
                     icon: 'hand-o-right',
                     iconSize: 'large',
                     group: 'left',
                     id: 'workflow',
-                    position: 40,
-                    items: []
+                    dropdownItems: []
                 },
                 divider = {
                     divider: true
                 };
 
-            // show settings template is order already saved
-            if (this.options.data.id) {
-                // add workflows provided by api
-                for (i = -1, len = data.workflows.length; ++i < len;) {
-                    workflow = data.workflows[i];
-
-                    // if new section, add divider
-                    if (workflowDropdown.items.length === 0) {
-                        currentSection = workflow.section;
-                    } else if (!!currentSection &&
-                        currentSection !== workflow.section) {
-                        workflowDropdown.items.push(divider);
-                        currentSection = workflow.section;
-                    }
-                    // add workflow item
-                    workflowDropdown.items.push({
-                        title: this.sandbox.translate(workflow.title),
-                        callback: createWorkflowCallback.bind(this, workflow)
-                    });
-                }
-
-                // add workflow items
-                if (workflowDropdown.items.length > 0) {
-                    toolbarItems.push(workflowDropdown);
-                }
-            }
+            //// show settings template is order already saved
+            //if (this.options.data.id) {
+            //    // add workflows provided by api
+            //    for (i = -1, len = data.workflows.length; ++i < len;) {
+            //        workflow = data.workflows[i];
+            //
+            //        // if new section, add divider
+            //        if (workflowDropdown.dropdownItems.length === 0) {
+            //            currentSection = workflow.section;
+            //        } else if (!!currentSection &&
+            //            currentSection !== workflow.section) {
+            //            workflowDropdown.dropdownItems.push(divider);
+            //            currentSection = workflow.section;
+            //        }
+            //        // add workflow item
+            //        workflowDropdown.dropdownItems.push({
+            //            title: this.sandbox.translate(workflow.title),
+            //            callback: createWorkflowCallback.bind(this, workflow)
+            //        });
+            //    }
+            //
+            //    // add workflow items
+            //    if (workflowDropdown.dropdownItems.length > 0) {
+            //        toolbarItems.workflows = {options: workflowDropdown};
+            //    }
+            //}
             // show toolbar
-            this.sandbox.emit('sulu.header.set-toolbar', {
-                template: toolbarItems
-            });
+            //this.sandbox.emit('sulu.header.set-toolbar', {
+            //    template: toolbarItems
+            //});
+
+            return {
+                buttons: toolbarItems
+            };
         },
 
         /**
@@ -563,6 +555,12 @@ define([
             }
         },
 
+        header: function() {
+            return {
+                toolbar: getToolbarButtons.call(this)
+            };
+        },
+
         templates: ['/admin/order/template/order/form'],
 
         initialize: function() {
@@ -602,7 +600,7 @@ define([
             bindCustomEvents.call(this);
 
             // set header
-            setHeaderToolbar.call(this);
+            //setHeaderToolbar.call(this);
             setSaved.call(this, true);
 
             // render form
