@@ -28,10 +28,6 @@ define(['config'], function(Config) {
             app.components.addSource('sulusalesorder', '/bundles/sulusalesorder/js/components');
 
             Config.set('suluresource.filters.type.orders', {
-                breadCrumb: [
-                    {title: 'navigation.sales'},
-                    {title: 'salesorder.orders.title', link: 'sales/orders'}
-                ],
                 routeToList: 'sales/orders'
             });
 
@@ -39,7 +35,7 @@ define(['config'], function(Config) {
             sandbox.mvc.routes.push({
                 route: 'sales/orders',
                 callback: function() {
-                    this.html('<div data-aura-component="orders@sulusalesorder" data-aura-display="list"/>');
+                    return '<div data-aura-component="orders@sulusalesorder" data-aura-display="list"/>';
                 }
             });
 
@@ -47,9 +43,7 @@ define(['config'], function(Config) {
             sandbox.mvc.routes.push({
                 route: 'sales/orders/add',
                 callback: function() {
-                    this.html(
-                        '<div data-aura-component="orders/components/content@sulusalesorder" data-aura-display="content" data-aura-content="form" />'
-                    );
+                    return '<div data-aura-component="orders/components/content@sulusalesorder" data-aura-display="content" data-aura-content="form" />';
                 }
             });
 
@@ -57,9 +51,7 @@ define(['config'], function(Config) {
             sandbox.mvc.routes.push({
                 route: 'sales/orders/edit::id/:content',
                 callback: function(id, content) {
-                    this.html(
-                        '<div data-aura-component="orders/components/content@sulusalesorder" data-aura-display="content" data-aura-content="' + content + '" data-aura-id="' + id + '"/>'
-                    );
+                    return '<div data-aura-component="orders/components/content@sulusalesorder" data-aura-display="content" data-aura-content="' + content + '" data-aura-id="' + id + '"/>';
                 }
             });
         }

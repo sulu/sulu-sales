@@ -16,34 +16,24 @@ define(['sulusalesorder/util/sidebar'], function(Sidebar) {
         },
         bindCustomEvents = function() {
             // add clicked
-            this.sandbox.on('sulu.list-toolbar.add', function() {
+            this.sandbox.on('sulu.toolbar.add', function() {
                 this.sandbox.emit('sulu.salesorder.order.new');
             }, this);
         },
 
         // list-toolbar template
         getListToolbarTemplate = function() {
-            return [
-                {
-                    id: 'add',
-                    icon: 'plus-circle',
-                    class: 'highlight-white',
-                    position: 1,
-                    title: this.sandbox.translate('sulu.list-toolbar.add'),
-                    callback: function() {
-                        this.sandbox.emit('sulu.list-toolbar.add');
-                    }.bind(this)
-                },
-                {
-                    id: 'settings',
-                    icon: 'gear',
-                    items: [
-                        {
-                            type: 'columnOptions'
-                        }
-                    ]
+            return this.sandbox.sulu.buttons.get({
+                settings: {
+                    options: {
+                        dropdownItems: [
+                            {
+                                type: 'columnOptions'
+                            }
+                        ]
+                    }
                 }
-            ];
+            });
         },
 
         datagridAction = function(id) {
@@ -71,10 +61,11 @@ define(['sulusalesorder/util/sidebar'], function(Sidebar) {
             title: 'salesorder.orders.title',
             noBack: true,
 
-            breadcrumb: [
-                {title: 'navigation.sales'},
-                {title: 'salesorder.orders.title'}
-            ]
+            toolbar: {
+                buttons: {
+                    add: {}
+                }
+            }
         },
 
         templates: ['/admin/order/template/order/list'],
@@ -92,7 +83,6 @@ define(['sulusalesorder/util/sidebar'], function(Sidebar) {
                 {
                     el: this.$find('#list-toolbar-container'),
                     instanceName: 'orders',
-                    inHeader: true,
                     groups: [
                         {
                             id: 1,
@@ -109,7 +99,7 @@ define(['sulusalesorder/util/sidebar'], function(Sidebar) {
                     el: this.sandbox.dom.find('#orders-list', this.$el),
                     url: '/admin/api/orders?flat=true',
                     searchInstanceName: 'orders',
-                    searchFields: ['fullName'],
+                    searchFields: ['number', 'account', 'contact'],
                     resultKey: 'orders',
                     instanceName: constants.datagridInstanceName,
                     actionCallback: datagridAction.bind(this),

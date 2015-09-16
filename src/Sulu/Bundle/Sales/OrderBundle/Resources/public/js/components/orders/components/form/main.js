@@ -11,7 +11,7 @@ define([
     'sulusalesorder/util/sidebar',
     'sulusalesorder/util/orderStatus',
     'sulusalescore/util/helper',
-    'sulucontact/model/account',
+    'sulucontact/models/account',
     'config',
     'widget-groups'
 ], function(Sidebar, OrderStatus, CoreHelper, Account, Config, WidgetGroups) {
