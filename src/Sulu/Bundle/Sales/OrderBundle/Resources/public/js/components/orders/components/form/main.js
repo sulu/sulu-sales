@@ -47,33 +47,6 @@ define([
         },
 
         /**
-         * confirm an order, checks for unsaved data and shows a warning
-         */
-        confirmOrder = function() {
-            HeaderUtil.checkForUnsavedData.call(this, function() {
-                    this.sandbox.emit('sulu.salesorder.order.confirm');
-                },
-                showErrorLabel.bind(this, constants.translationConversionFailed)
-            );
-        },
-
-        /**
-         * edit an order, checks for unsaved data and shows a warning
-         */
-        editOrder = function() {
-            HeaderUtil.checkForUnsavedData.call(this, function() {
-                    this.sandbox.emit('sulu.salesorder.order.edit');
-                },
-                showErrorLabel.bind(this, constants.translationConversionFailed)
-            );
-        },
-
-        showErrorLabel = function(translationKey) {
-            this.sandbox.emit('sulu.labels.error.show',
-                this.sandbox.translate(translationKey));
-        },
-
-        /**
          * get status of current order
          */
         getOrderStatusId = function() {
@@ -98,9 +71,6 @@ define([
         },
 
         bindCustomEvents = function() {
-            // status change events
-            this.sandbox.on('sulu.salesorder.order.edit.clicked', editOrder.bind(this));
-            this.sandbox.on('sulu.salesorder.order.confirm.clicked', confirmOrder.bind(this));
             this.sandbox.on('sulu.salesorder.set-order-status', setOrderStatuses.bind(this));
             this.sandbox.on('sulu.salesorder.set-currencies', setCurrencies.bind(this));
 

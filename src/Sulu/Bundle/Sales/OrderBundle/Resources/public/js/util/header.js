@@ -89,6 +89,28 @@ define([], function() {
         },
 
         /**
+         * confirm an order, checks for unsaved data and shows a warning
+         */
+        confirmOrder = function() {
+            HeaderUtil.checkForUnsavedData.call(this, function() {
+                    this.sandbox.emit('sulu.salesorder.order.confirm');
+                },
+                showErrorLabel.bind(this, constants.translationConversionFailed)
+            );
+        },
+
+        /**
+         * edit an order, checks for unsaved data and shows a warning
+         */
+        editOrder = function() {
+            HeaderUtil.checkForUnsavedData.call(this, function() {
+                    this.sandbox.emit('sulu.salesorder.order.edit');
+                },
+                showErrorLabel.bind(this, constants.translationConversionFailed)
+            );
+        },
+
+        /**
          * Shows an error Label
          *
          * @param {String} translationKey
@@ -130,6 +152,12 @@ define([], function() {
             }
         },
 
+        bindWorkflowEvents = function() {
+            // status change events
+            this.sandbox.on('sulu.salesorder.order.edit.clicked', editOrder.bind(this));
+            this.sandbox.on('sulu.salesorder.order.confirm.clicked', confirmOrder.bind(this));
+        },
+
         /**
          * Sets header title and breadCrumb according to order and additions.
          *
@@ -162,6 +190,11 @@ define([], function() {
         };
 
     return {
+
+        initialize: function() {
+            bindWorkflowEvents.call(this);
+        },
+
         /**
          * Sets header data: breadcrumb, headline for an order.
          *

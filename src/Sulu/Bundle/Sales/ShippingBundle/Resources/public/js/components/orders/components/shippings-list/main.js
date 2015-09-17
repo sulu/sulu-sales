@@ -11,8 +11,9 @@ define([
     'app-config',
     'sulusalesorder/util/sidebar',
     'sulusalesorder/util/orderStatus',
+    'sulusalesorder/util/header',
     'widget-groups'
-], function(AppConfig, Sidebar, OrderStatus, WidgetGroups) {
+], function(AppConfig, Sidebar, OrderStatus, OrderHeaderUtil, WidgetGroups) {
 
     'use strict';
 
@@ -90,6 +91,13 @@ define([
 
             this.render();
             bindCustomEvents.call(this);
+
+            // TODO: all order events must accessible globally
+            // therefore first a service must be implemented
+            // for handling all toolbar events, before this line can be uncommented
+            // https://github.com/sulu-io/sulu-sales/issues/5
+            //OrderHeaderUtil.setToolbar.call(this, this.options.data);
+            this.sandbox.emit('sulu.header.set-toolbar', {buttons: {}});
 
             if (!!this.options.data && !!this.options.data.id && WidgetGroups.exists('shipping-detail')) {
                 Sidebar.initForDetail(this.sandbox, this.options.data);
