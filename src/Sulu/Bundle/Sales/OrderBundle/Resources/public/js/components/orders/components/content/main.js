@@ -12,12 +12,17 @@ define(function() {
     'use strict';
 
     return {
-        header: {
-            tabs: {
-                url: '/admin/content-navigations?alias=order'
-            },
-            toolbar: {
-                template: []
+        header: function() {
+
+            return {
+                tabs: {
+                    url: '/admin/content-navigations?alias=order'
+                },
+                toolbar: {
+                    buttons: {
+                        save: {}
+                    }
+                }
             }
         }
     };

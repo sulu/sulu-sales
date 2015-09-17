@@ -124,7 +124,7 @@ define([
 
         loadAction: function(id, force) {
             force = (force === true);
-            this.sandbox.emit('sulu.router.navigate', 'sales/shippings/edit:' + id + '/details', true, false, force);
+            this.sandbox.emit('sulu.router.navigate', 'sales/shippings/edit:' + id + '/details', true, force);
         },
 
         showDeleteWarning: function(ids) {

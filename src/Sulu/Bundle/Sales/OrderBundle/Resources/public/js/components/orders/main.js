@@ -72,7 +72,7 @@ define([
          * create a new shipping for an order
          */
         createOrderShipping: function() {
-            this.sandbox.emit('sulu.router.navigate', HeaderUtil.getUrl.call(this, this.options.id, 'shippings/add'), true, false);
+            this.sandbox.emit('sulu.router.navigate', HeaderUtil.getUrl.call(this, this.options.id, 'shippings/add'), true);
         },
 
         /**
@@ -96,7 +96,7 @@ define([
 
         loadOrder: function(id, force) {
             force = (force === true);
-            this.sandbox.emit('sulu.router.navigate', HeaderUtil.getUrl.call(this, id, 'details'), true, false, force);
+            this.sandbox.emit('sulu.router.navigate', HeaderUtil.getUrl.call(this, id, 'details'), true, force);
         },
 
         showDeleteWarning: function(ids) {

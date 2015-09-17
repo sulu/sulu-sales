@@ -48,7 +48,7 @@ define([
         /**
          * set header toolbar based on current order status
          */
-        getToolbarButtons = function() {
+        setToolbarButtons = function() {
 
             var i, len,
                 workflow,
@@ -68,40 +68,36 @@ define([
                     divider: true
                 };
 
-            //// show settings template is order already saved
-            //if (this.options.data.id) {
-            //    // add workflows provided by api
-            //    for (i = -1, len = data.workflows.length; ++i < len;) {
-            //        workflow = data.workflows[i];
-            //
-            //        // if new section, add divider
-            //        if (workflowDropdown.dropdownItems.length === 0) {
-            //            currentSection = workflow.section;
-            //        } else if (!!currentSection &&
-            //            currentSection !== workflow.section) {
-            //            workflowDropdown.dropdownItems.push(divider);
-            //            currentSection = workflow.section;
-            //        }
-            //        // add workflow item
-            //        workflowDropdown.dropdownItems.push({
-            //            title: this.sandbox.translate(workflow.title),
-            //            callback: createWorkflowCallback.bind(this, workflow)
-            //        });
-            //    }
-            //
-            //    // add workflow items
-            //    if (workflowDropdown.dropdownItems.length > 0) {
-            //        toolbarItems.workflows = {options: workflowDropdown};
-            //    }
-            //}
-            // show toolbar
-            //this.sandbox.emit('sulu.header.set-toolbar', {
-            //    template: toolbarItems
-            //});
+            // show settings template is order already saved
+            if (this.options.data.id) {
+                // add workflows provided by api
+                for (i = -1, len = data.workflows.length; ++i < len;) {
+                    workflow = data.workflows[i];
 
-            return {
+                    // if new section, add divider
+                    if (workflowDropdown.dropdownItems.length === 0) {
+                        currentSection = workflow.section;
+                    } else if (!!currentSection &&
+                        currentSection !== workflow.section) {
+                        workflowDropdown.dropdownItems.push(divider);
+                        currentSection = workflow.section;
+                    }
+                    // add workflow item
+                    workflowDropdown.dropdownItems.push({
+                        title: this.sandbox.translate(workflow.title),
+                        callback: createWorkflowCallback.bind(this, workflow)
+                    });
+                }
+
+                // add workflow items
+                if (workflowDropdown.dropdownItems.length > 0) {
+                    toolbarItems.workflows = {options: workflowDropdown};
+                }
+            }
+
+            this.sandbox.emit('sulu.header.set-toolbar', {
                 buttons: toolbarItems
-            };
+            });
         },
 
         /**
@@ -555,12 +551,6 @@ define([
             }
         },
 
-        header: function() {
-            return {
-                toolbar: getToolbarButtons.call(this)
-            };
-        },
-
         templates: ['/admin/order/template/order/form'],
 
         initialize: function() {
@@ -605,6 +595,8 @@ define([
 
             // render form
             this.render();
+
+            setToolbarButtons.call(this);
 
             // listen for changes in form
             this.listenForChange();
