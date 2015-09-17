@@ -12,35 +12,154 @@ define([], function() {
     'use strict';
 
     /**
-     * Sets header title and breadCrumb according to order and additions.
-     *
-     * @param {Object} order
-     * @param {Object} options
+     * set header toolbar based on current order status
      */
-    var setHeadline = function(order, options) {
-        var title, hasOptions,
-            titleAddition = null,
-            orderEvent = null;
+    var setHeaderToolbar = function(order) {
+            var i, len,
+                workflow,
+                currentSection = null,
+                toolbarItems = {
+                    save: {}
+                },
+                workflowDropdown = {
+                    icon: 'hand-o-right',
+                    iconSize: 'large',
+                    group: 'left',
+                    id: 'workflow',
+                    dropdownItems: []
+                },
+                divider = {
+                    divider: true
+                };
 
-        title = this.sandbox.translate('salesorder.order');
+            // show settings template is order already saved
+            if (order.id) {
+                // add workflows provided by api
+                for (i = -1, len = order.workflows.length; ++i < len;) {
+                    workflow = order.workflows[i];
 
-        // parse options
-        hasOptions = typeof options === 'object';
-        if (hasOptions && options.hasOwnProperty('titleAddition')) {
-            titleAddition = options.titleAddition;
-        }
+                    // if new section, add divider
+                    if (workflowDropdown.dropdownItems.length === 0) {
+                        currentSection = workflow.section;
+                    } else if (!!currentSection &&
+                        currentSection !== workflow.section) {
+                        workflowDropdown.dropdownItems.push(divider);
+                        currentSection = workflow.section;
+                    }
+                    // add workflow item
+                    workflowDropdown.dropdownItems.push({
+                        title: this.sandbox.translate(workflow.title),
+                        callback: createWorkflowCallback.bind(this, workflow)
+                    });
+                }
 
-        // set title based on order
-        if (!!order && !!order.number) {
-            title += ' #' + order.number;
-        }
-        // title addition
-        if (!!titleAddition) {
-            title += ' ' + titleAddition;
-        }
+                // add workflow items
+                if (workflowDropdown.dropdownItems.length > 0) {
+                    toolbarItems.workflows = {options: workflowDropdown};
+                }
+            }
 
-        this.sandbox.emit('sulu.header.set-title', title);
-    };
+            this.sandbox.emit('sulu.header.set-toolbar', {
+                buttons: toolbarItems
+            });
+        },
+
+        /**
+         * creates a callback for a workflow
+         * @param workflow
+         */
+        createWorkflowCallback = function(workflow) {
+            // if event is defined, call event
+            if (workflow.hasOwnProperty('event') && !!workflow.event) {
+                var params = workflow.parameters || null;
+                this.sandbox.emit(workflow.event, params);
+            }
+            // else if route, check for unsaved data before routing
+            else if (workflow.hasOwnProperty('route') && !!workflow.route) {
+                checkForUnsavedData.call(this, function() {
+                        this.sandbox.emit('sulu.router.navigate', workflow.route);
+                    }.bind(this),
+                    showErrorLabel.bind(this, '')
+                );
+            }
+            // otherwise, log error
+            else {
+                this.sandbox.logger.log('no route or event provided for workflow with title ' + workflow.title);
+            }
+        },
+
+        /**
+         * Shows an error Label
+         *
+         * @param {String} translationKey
+         */
+        showErrorLabel = function(translationKey) {
+            this.sandbox.emit('sulu.labels.error.show',
+                this.sandbox.translate(translationKey));
+        },
+
+        /**
+         * Checks for unsaved data. if unsaved, a dialog is shown, else immediately proceed.
+         *
+         * @param callback - called when no unsaved data, or warning was confirmed
+         * @param errorCallback - if submission fails
+         */
+        checkForUnsavedData = function(callback, errorCallback) {
+            if (typeof callback !== 'function') {
+                return;
+            }
+
+            // check if unsaved data
+            if (!this.saved) {
+                // show dialog
+                this.sandbox.emit('sulu.overlay.show-warning',
+                    'sulu.overlay.be-careful',
+                    'sulu.overlay.save-unsaved-changes-confirm',
+                    null,
+                    function() {
+                        this.submit().then(
+                            callback.bind(this),
+                            errorCallback.bind(this)
+                        );
+                    }.bind(this)
+                );
+            }
+            // otherwise proceed
+            else {
+                callback.call(this);
+            }
+        },
+
+        /**
+         * Sets header title and breadCrumb according to order and additions.
+         *
+         * @param {Object} order
+         * @param {Object} options
+         */
+        setHeadline = function(order, options) {
+            var title, hasOptions,
+                titleAddition = null,
+                orderEvent = null;
+
+            title = this.sandbox.translate('salesorder.order');
+
+            // parse options
+            hasOptions = typeof options === 'object';
+            if (hasOptions && options.hasOwnProperty('titleAddition')) {
+                titleAddition = options.titleAddition;
+            }
+
+            // set title based on order
+            if (!!order && !!order.number) {
+                title += ' #' + order.number;
+            }
+            // title addition
+            if (!!titleAddition) {
+                title += ' ' + titleAddition;
+            }
+
+            this.sandbox.emit('sulu.header.set-title', title);
+        };
 
     return {
         /**
@@ -55,6 +174,26 @@ define([], function() {
             order = order.toJSON();
             // sets headline and breadcrumb
             setHeadline.call(this, order, options);
+        },
+
+        /**
+         * Set Header Buttons
+         * Attention: needs this context.
+         *
+         * @param {Object} order
+         */
+        setToolbar: function(order) {
+            setHeaderToolbar.call(this, order)
+        },
+
+        /**
+         * Checks for unsaved data. if unsaved, a dialog is shown, else immediately proceed.
+         *
+         * @param callback - called when no unsaved data, or warning was confirmed
+         * @param errorCallback - if submission fails
+         */
+        checkForUnsavedData: function(callback, errorCallback) {
+            checkForUnsavedData.call(this, callback, errorCallback);
         },
 
         /**
@@ -75,6 +214,27 @@ define([], function() {
             }
 
             return url;
+        },
+
+        /**
+         * Enables the save-button
+         */
+        enableSave: function() {
+            this.sandbox.emit('sulu.header.toolbar.item.enable', 'save', false);
+        },
+
+        /**
+         * Disables the save-button
+         */
+        disableSave: function() {
+            this.sandbox.emit('sulu.header.toolbar.item.disable', 'save', false);
+        },
+
+        /**
+         * Sets the save-button in loading-state
+         */
+        loadingSave: function() {
+            this.sandbox.emit('sulu.header.toolbar.item.loading', 'save');
         }
     };
 });

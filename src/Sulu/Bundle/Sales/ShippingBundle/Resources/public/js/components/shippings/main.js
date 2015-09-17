@@ -139,7 +139,7 @@ define([
 
         // show confirmation and delete
         delShippingHandler: function(ids) {
-            this.sandbox.emit('sulu.header.toolbar.item.loading', 'options-button');
+            this.sandbox.emit('sulu.tab.saving');
 
             if (this.sandbox.util.typeOf(ids) === 'array') {
                 this.sandbox.util.foreach(ids, function(id) {
@@ -182,8 +182,6 @@ define([
 
         // save action
         saveAction: function(data) {
-            this.sandbox.emit('sulu.header.toolbar.item.loading', 'save-button');
-
             this.shipping.set(data);
             this.shipping.save(null, {
                 // on success save contacts id

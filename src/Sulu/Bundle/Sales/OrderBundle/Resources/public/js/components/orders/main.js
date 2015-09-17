@@ -111,8 +111,6 @@ define([
 
         // show confirmation and delete account
         delOrderHandler: function(ids) {
-            this.sandbox.emit('sulu.header.toolbar.item.loading', 'options-button');
-
             if (this.sandbox.util.typeOf(ids) === 'array') {
                 this.sandbox.util.foreach(ids, function(id) {
                     this.delOrder(id, function() {
@@ -154,7 +152,8 @@ define([
 
         // saves an account
         saveOrder: function(data) {
-            this.sandbox.emit('sulu.header.toolbar.item.loading', 'save-button');
+            this.sandbox.emit('sulu.tab.saving');
+            HeaderUtil.loadingSave.call(this);
 
             this.order.set(data);
             this.order.save(null, {
