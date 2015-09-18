@@ -182,6 +182,7 @@ define([
 
         // save action
         saveAction: function(data) {
+            OrderHeaderUtil.loadingSave.call(this);
             this.shipping.set(data);
             this.shipping.save(null, {
                 // on success save contacts id

@@ -34,6 +34,12 @@ define([
             this.sandbox.on('sulu.header.back', function() {
                 this.sandbox.emit('sulu.salesshipping.orders.list');
             }, this);
+
+            //// checkbox clicked
+            //this.sandbox.on('husky.datagrid.number.selections', function(number) {
+            //    var postfix = number > 0 ? 'enable' : 'disable';
+            //    this.sandbox.emit('sulu.header.toolbar.shippings.item.' + postfix, 'delete', false);
+            //}, this);
         },
 
         getListToolbarTemplate = function() {
@@ -50,7 +56,7 @@ define([
                     }.bind(this)
                 },
                 {
-                    id: 'delete',
+                    id: 'deleteSelected',
                     icon: 'trash-o',
                     position: 2,
                     title: this.sandbox.translate('sulu.list-toolbar.delete'),
@@ -61,7 +67,7 @@ define([
                 {
                     id: 'settings',
                     icon: 'gear',
-                    items: [
+                    dropdownItems: [
                         {
                             type: 'columnOptions'
                         }
@@ -95,7 +101,6 @@ define([
             // TODO: all order events must accessible globally
             // therefore first a service must be implemented
             // for handling all toolbar events, before this line can be uncommented
-            // https://github.com/sulu-io/sulu-sales/issues/5
             //OrderHeaderUtil.setToolbar.call(this, this.options.data);
             this.sandbox.emit('sulu.header.set-toolbar', {buttons: {}});
 
@@ -121,7 +126,7 @@ define([
                     el: this.sandbox.dom.find('#shippings-list', this.$el),
                     url: '/admin/api/shippings?flat=true&orderId=' + this.orderId,
                     searchInstanceName: 'shippings',
-                    searchFields: ['fullName'],
+                    searchFields: ['number', 'account', 'contact'],
                     resultKey: 'shippings',
                     actionCallback: datagridAction.bind(this)
                 }
