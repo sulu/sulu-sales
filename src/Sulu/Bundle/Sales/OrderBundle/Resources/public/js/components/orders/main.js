@@ -72,7 +72,11 @@ define([
          * create a new shipping for an order
          */
         createOrderShipping: function() {
-            this.sandbox.emit('sulu.router.navigate', HeaderUtil.getUrl.call(this, this.options.id, 'shippings/add'), true);
+            this.sandbox.emit(
+                'sulu.router.navigate',
+                HeaderUtil.getUrl.call(this, this.options.id, 'shippings/add'),
+                true
+            );
         },
 
         /**

@@ -12,7 +12,7 @@ define([], function() {
     'use strict';
 
     /**
-     * set header toolbar based on current order status
+     * Set header toolbar based on current order status.
      */
     var setHeaderToolbar = function(order) {
             var i, len,
@@ -65,8 +65,9 @@ define([], function() {
         },
 
         /**
-         * creates a callback for a workflow
-         * @param workflow
+         * Creates a callback for a workflow.
+         *
+         * @param {Object} workflow
          */
         createWorkflowCallback = function(workflow) {
             // if event is defined, call event
@@ -89,7 +90,7 @@ define([], function() {
         },
 
         /**
-         * confirm an order, checks for unsaved data and shows a warning
+         * Confirm an order, checks for unsaved data and shows a warning.
          */
         confirmOrder = function() {
             HeaderUtil.checkForUnsavedData.call(this, function() {
@@ -100,7 +101,7 @@ define([], function() {
         },
 
         /**
-         * edit an order, checks for unsaved data and shows a warning
+         * Edit an order, checks for unsaved data and shows a warning.
          */
         editOrder = function() {
             HeaderUtil.checkForUnsavedData.call(this, function() {
@@ -111,7 +112,7 @@ define([], function() {
         },
 
         /**
-         * Shows an error Label
+         * Shows an error Label.
          *
          * @param {String} translationKey
          */
@@ -123,8 +124,8 @@ define([], function() {
         /**
          * Checks for unsaved data. if unsaved, a dialog is shown, else immediately proceed.
          *
-         * @param callback - called when no unsaved data, or warning was confirmed
-         * @param errorCallback - if submission fails
+         * @param {Function} callback - called when no unsaved data, or warning was confirmed
+         * @param {Function} errorCallback - if submission fails
          */
         checkForUnsavedData = function(callback, errorCallback) {
             if (typeof callback !== 'function') {
@@ -152,6 +153,9 @@ define([], function() {
             }
         },
 
+        /**
+         * Bind workflow events.
+         */
         bindWorkflowEvents = function() {
             // status change events
             this.sandbox.on('sulu.salesorder.order.edit.clicked', editOrder.bind(this));
@@ -210,7 +214,7 @@ define([], function() {
         },
 
         /**
-         * Set Header Buttons
+         * Set Header Buttons.
          * Attention: needs this context.
          *
          * @param {Object} order
