@@ -453,7 +453,6 @@ define([
             bindCustomEvents.call(this);
 
             // set header
-            //setHeaderToolbar.call(this);
             setSaved.call(this, true);
 
             // render form
