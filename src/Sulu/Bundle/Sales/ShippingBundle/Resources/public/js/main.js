@@ -30,7 +30,7 @@ define({
         sandbox.mvc.routes.push({
             route: 'sales/shippings',
             callback: function() {
-                this.html('<div data-aura-component="shippings@sulusalesshipping" data-aura-display="list"/>');
+                return '<div data-aura-component="shippings@sulusalesshipping" data-aura-display="list"/>';
             }
         });
 
@@ -38,9 +38,7 @@ define({
         sandbox.mvc.routes.push({
             route: 'sales/shippings/add',
             callback: function() {
-                this.html(
-                    '<div data-aura-component="shippings/components/content@sulusalesshipping" data-aura-display="content" data-aura-content="form" />'
-                );
+                return '<div data-aura-component="shippings/components/content@sulusalesshipping" data-aura-display="content" data-aura-content="form" />';
             }
         });
 
@@ -48,9 +46,7 @@ define({
         sandbox.mvc.routes.push({
             route: 'sales/shippings/edit::id/:content',
             callback: function(id, content) {
-                this.html(
-                    '<div data-aura-component="shippings/components/content@sulusalesshipping" data-aura-display="content" data-aura-content="' + content + '" data-aura-id="' + id + '"/>'
-                );
+               return '<div data-aura-component="shippings/components/content@sulusalesshipping" data-aura-display="content" data-aura-content="' + content + '" data-aura-id="' + id + '"/>';
             }
         });
 
@@ -60,9 +56,7 @@ define({
         sandbox.mvc.routes.push({
             route: 'sales/orders/edit::id/shippings/add',
             callback: function(id) {
-                this.html(
-                    '<div data-aura-component="shippings/components/content@sulusalesshipping" data-aura-display="content" data-aura-content="form" data-aura-order-id="' + id + '"/>'
-                );
+                return '<div data-aura-component="shippings/components/content@sulusalesshipping" data-aura-display="content" data-aura-content="form" data-aura-order-id="' + id + '"/>';
             }
         });
     }

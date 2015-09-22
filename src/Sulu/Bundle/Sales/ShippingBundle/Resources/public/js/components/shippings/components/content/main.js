@@ -17,7 +17,9 @@ define(function() {
                 url: '/admin/content-navigations?alias=shipping'
             },
             toolbar: {
-                template: []
+                buttons: {
+                    save: {}
+                }
             }
         }
     };

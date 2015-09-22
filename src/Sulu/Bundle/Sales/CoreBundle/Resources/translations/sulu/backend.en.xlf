@@ -178,6 +178,10 @@
                 <source>salescore.item-table.warning.product-already-added</source>
                 <target>Product is already in list.</target>
             </trans-unit>
+            <trans-unit id="7" resname="workflows.title">
+                <source>workflows.title</source>
+                <target>Workflows</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>

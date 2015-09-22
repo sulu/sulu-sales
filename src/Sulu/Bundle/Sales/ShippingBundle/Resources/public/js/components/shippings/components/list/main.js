@@ -91,7 +91,7 @@ define(['sulusalesshipping/util/sidebar'], function(Sidebar) {
                     el: this.sandbox.dom.find('#shippings-list', this.$el),
                     url: '/admin/api/shippings?flat=true',
                     searchInstanceName: 'shippings',
-                    searchFields: ['fullName'],
+                    searchFields: ['number', 'account', 'contact'],
                     resultKey: 'shippings',
                     actionCallback: datagridAction.bind(this),
                     clickCallback: datagridClick.bind(this)

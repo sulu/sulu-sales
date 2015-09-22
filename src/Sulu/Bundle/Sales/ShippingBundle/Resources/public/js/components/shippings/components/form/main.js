@@ -10,8 +10,9 @@
 define([
     'sulusalesshipping/util/shippingStatus',
     'sulusalesshipping/util/sidebar',
+    'sulusalesorder/util/header',
     'widget-groups'
-], function(ShippingStatus, Sidebar, WidgetGroups) {
+], function(ShippingStatus, Sidebar, HeaderUtil, WidgetGroups) {
 
     'use strict';
 
@@ -34,28 +35,15 @@ define([
          * set header toolbar based on current order status
          */
         setHeaderToolbar = function() {
-
-            var toolbarItems = [
-                    {
-                        id: 'save-button',
-                        icon: 'floppy-o',
-                        iconSize: 'large',
-                        class: 'highlight',
-                        position: 1,
-                        group: 'left',
-                        disabled: true,
-                        callback: function() {
-                            this.sandbox.emit('sulu.header.toolbar.save');
-                        }.bind(this)
-                    }
-                ],
+            var toolbarItems = {
+                    save: {}
+                },
                 workflowDropdown = {
                     icon: 'hand-o-right',
                     iconSize: 'large',
                     group: 'left',
                     id: 'workflow',
-                    position: 40,
-                    items: []
+                    dropdownItems: []
                 },
                 workflowItems = {
                     confirm: {
@@ -83,24 +71,24 @@ define([
             if (this.options.data.id) {
                 // define workflow based on status
                 if (this.shippingStatusId === ShippingStatus.CREATED) {
-                    workflowDropdown.items.push(workflowItems.confirm);
+                    workflowDropdown.dropdownItems.push(workflowItems.confirm);
                 } else if (this.shippingStatusId === ShippingStatus.DELIVERY_NOTE) {
-                    workflowDropdown.items.push(workflowItems.edit);
-                    workflowDropdown.items.push(workflowItems.cancel);
-                    workflowDropdown.items.push(workflowItems.divider);
-                    workflowDropdown.items.push(workflowItems.ship);
+                    workflowDropdown.dropdownItems.push(workflowItems.edit);
+                    workflowDropdown.dropdownItems.push(workflowItems.cancel);
+                    workflowDropdown.dropdownItems.push(workflowItems.divider);
+                    workflowDropdown.dropdownItems.push(workflowItems.ship);
                 } else if (this.shippingStatusId === ShippingStatus.SHIPPED) {
-                    workflowDropdown.items.push(workflowItems.cancel);
+                    workflowDropdown.dropdownItems.push(workflowItems.cancel);
                 }
 
                 // add workflow items
-                if (workflowDropdown.items.length > 0) {
-                    toolbarItems.push(workflowDropdown);
+                if (workflowDropdown.dropdownItems.length > 0) {
+                    toolbarItems.workflows = {options: workflowDropdown};
                 }
             }
             // show toolbar
             this.sandbox.emit('sulu.header.set-toolbar', {
-                template: toolbarItems
+                buttons: toolbarItems
             });
         },
 
@@ -187,7 +175,7 @@ define([
             }, this);
 
             // save
-            this.sandbox.on('sulu.header.toolbar.save', function() {
+            this.sandbox.on('sulu.toolbar.save', function() {
                 this.submit();
             }, this);
 
@@ -243,8 +231,11 @@ define([
          */
         setSaved = function(saved) {
             if (saved !== this.saved) {
-                var type = (!!this.options.data && !!this.options.data.id) ? 'edit' : 'add';
-                this.sandbox.emit('sulu.header.toolbar.state.change', type, saved, true);
+                if (!!saved) {
+                    HeaderUtil.disableSave.call(this);
+                } else {
+                    HeaderUtil.enableSave.call(this);
+                }
             }
             this.saved = saved;
         },

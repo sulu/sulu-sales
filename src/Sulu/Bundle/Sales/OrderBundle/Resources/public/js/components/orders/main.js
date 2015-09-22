@@ -72,7 +72,11 @@ define([
          * create a new shipping for an order
          */
         createOrderShipping: function() {
-            this.sandbox.emit('sulu.router.navigate', HeaderUtil.getUrl.call(this, this.options.id, 'shippings/add'), true, false);
+            this.sandbox.emit(
+                'sulu.router.navigate',
+                HeaderUtil.getUrl.call(this, this.options.id, 'shippings/add'),
+                true
+            );
         },
 
         /**
@@ -96,7 +100,7 @@ define([
 
         loadOrder: function(id, force) {
             force = (force === true);
-            this.sandbox.emit('sulu.router.navigate', HeaderUtil.getUrl.call(this, id, 'details'), true, false, force);
+            this.sandbox.emit('sulu.router.navigate', HeaderUtil.getUrl.call(this, id, 'details'), true, force);
         },
 
         showDeleteWarning: function(ids) {
@@ -111,8 +115,6 @@ define([
 
         // show confirmation and delete account
         delOrderHandler: function(ids) {
-            this.sandbox.emit('sulu.header.toolbar.item.loading', 'options-button');
-
             if (this.sandbox.util.typeOf(ids) === 'array') {
                 this.sandbox.util.foreach(ids, function(id) {
                     this.delOrder(id, function() {
@@ -154,7 +156,8 @@ define([
 
         // saves an account
         saveOrder: function(data) {
-            this.sandbox.emit('sulu.header.toolbar.item.loading', 'save-button');
+            this.sandbox.emit('sulu.tab.saving');
+            HeaderUtil.loadingSave.call(this);
 
             this.order.set(data);
             this.order.save(null, {

@@ -17,15 +17,15 @@
     ],
     "require": {
         "php": ">=5.4",
-        "doctrine/orm": "~2.4",
+        "doctrine/orm": "~2.5",
         "willdurand/hateoas-bundle": "0.3.*",
         "oro/doctrine-extensions": "1.0.*",
         "symfony-cmf/routing-bundle": "1.2.*",
 
         "sulu/sulu": "dev-develop",
         "sulu/product-bundle": "dev-develop",
-        "massive/pdf-bundle": "dev-develop",
-        "sulu/product-bundle": "dev-develop",
+        "massive/pdf-bundle": "dev-feature/doctrine",
+        "sulu/product-bundle": "dev-feature/doctrine",
         "sulu/contact-extension-bundle": "dev-develop"
 
     },
