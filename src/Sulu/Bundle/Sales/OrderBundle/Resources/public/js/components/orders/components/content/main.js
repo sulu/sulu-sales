@@ -20,7 +20,12 @@ define(function() {
                 },
                 toolbar: {
                     buttons: {
-                        save: {}
+                        save: {},
+                        delete: {
+                            options: {
+                                disabled: true
+                            }
+                        }
                     }
                 }
             }

@@ -55,21 +55,21 @@ define([
         },
 
         /**
-         * confirm an order
+         * Confirm an order.
          */
         confirmOrder: function() {
             this.convertStatus('confirm');
         },
 
         /**
-         * edit an order, which is already confirmed
+         * Edit an order, which is already confirmed.
          */
         editOrder: function() {
             this.convertStatus('edit');
         },
 
         /**
-         * create a new shipping for an order
+         * Create a new shipping for an order.
          */
         createOrderShipping: function() {
             this.sandbox.emit(
@@ -80,8 +80,9 @@ define([
         },
 
         /**
-         * convert status of an order
-         * @param statusString
+         * Convert status of an order.
+         *
+         * @param {String} statusString
          */
         convertStatus: function(statusString) {
             // set action
@@ -129,10 +130,11 @@ define([
         },
 
         /**
-         * deletes an order
-         * @param id
-         * @param successCallback
-         * @param failCallback
+         * Deletes an order.
+         *
+         * @param {Number} id
+         * @param {Function} successCallback
+         * @param {Function} failCallback
          */
         delOrder: function(id, successCallback, failCallback) {
 

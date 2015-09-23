@@ -1,1 +1,1 @@
-define(function(){"use strict";return{header:function(){return{tabs:{url:"/admin/content-navigations?alias=order"},toolbar:{buttons:{save:{}}}}}}});
+define(function(){"use strict";return{header:function(){return{tabs:{url:"/admin/content-navigations?alias=order"},toolbar:{buttons:{save:{},"delete":{options:{disabled:!0}}}}}}}});

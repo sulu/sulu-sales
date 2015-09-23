@@ -18,11 +18,6 @@ use JMS\Serializer\Annotation\Groups;
 use JMS\Serializer\Annotation\Exclude;
 use JMS\Serializer\Annotation\MaxDepth;
 use Sulu\Bundle\ContactBundle\Entity\AccountInterface;
-use Sulu\Bundle\Sales\OrderBundle\Entity\OrderInterface;
-use Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatus;
-use Sulu\Bundle\Sales\OrderBundle\Api\OrderStatus as ApiOrderStatus;
-use Sulu\Component\Rest\ApiWrapper;
-use Sulu\Component\Security\Authentication\UserInterface;
 use Sulu\Bundle\ContactBundle\Entity\Contact;
 use Sulu\Bundle\ContactExtensionBundle\Entity\TermsOfDelivery;
 use Sulu\Bundle\ContactExtensionBundle\Entity\TermsOfPayment;
@@ -31,6 +26,11 @@ use Sulu\Bundle\Sales\CoreBundle\Core\SalesDocument;
 use Sulu\Bundle\Sales\CoreBundle\Entity\ItemInterface;
 use Sulu\Bundle\Sales\CoreBundle\Entity\OrderAddressInterface;
 use Sulu\Bundle\Sales\CoreBundle\Item\ItemFactoryInterface;
+use Sulu\Bundle\Sales\OrderBundle\Api\OrderStatus as ApiOrderStatus;
+use Sulu\Bundle\Sales\OrderBundle\Entity\OrderInterface;
+use Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatus;
+use Sulu\Component\Rest\ApiWrapper;
+use Sulu\Component\Security\Authentication\UserInterface;
 
 /**
  * The order class which will be exported to the API
@@ -41,18 +41,27 @@ use Sulu\Bundle\Sales\CoreBundle\Item\ItemFactoryInterface;
 class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
 {
     /**
-     * Define permissions for front-end
+     * Define if deletion is allowed.
      *
      * @var array
      */
-    private $permissions = array();
+    private $allowDelete = array();
 
     /**
-     * Define workflows for front-end
+     * Cache for items
+     *
+     * @Exclude
      *
      * @var array
      */
-    private $workflows = array();
+    private $cacheItems;
+
+    /**
+     * Defines the status code of the cart
+     *
+     * @var null|array
+     */
+    private $cartStatusCodes = null;
 
     /**
      * Groups items by suppliers
@@ -71,13 +80,11 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     private $hasChangedPrices = false;
 
     /**
-     * Cache for items
-     *
      * @Exclude
      *
-     * @var array
+     * @var ItemFactoryInterface
      */
-    private $cacheItems;
+    private $itemFactory;
 
     /**
      * Indicated if items have been changed
@@ -87,18 +94,18 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     private $itemsChanged = false;
 
     /**
-     * Defines the status code of the cart
+     * Define permissions for front-end
      *
-     * @var null|array
+     * @var array
      */
-    private $cartStatusCodes = null;
+    private $permissions = array();
 
     /**
-     * @Exclude
+     * Define workflows for front-end
      *
-     * @var ItemFactoryInterface
+     * @var array
      */
-    private $itemFactory;
+    private $workflows = array();
 
     /**
      * @param OrderInterface $order The order to wrap
@@ -1185,5 +1192,29 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     public function isPending()
     {
         return $this->getStatus()->getId() === OrderStatus::STATUS_CART_PENDING;
+    }
+
+    /**
+     * Set if Deletion is allowed.
+     *
+     * @param bool $allow
+     */
+    public function setAllowDelete($allow)
+    {
+        $this->allowDelete = $allow;
+    }
+
+    /**
+     * Return if deletion is allowed.
+     *
+     * @VirtualProperty
+     * @SerializedName("allowDelete")
+     * @Groups({"fullOrder"})
+     *
+     * @return bool
+     */
+    public function allowDelete()
+    {
+        return $this->allowDelete;
     }
 }

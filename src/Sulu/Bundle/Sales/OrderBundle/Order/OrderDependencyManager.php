@@ -15,14 +15,11 @@ use Sulu\Bundle\Sales\CoreBundle\SalesDependency\SalesDependencyClassInterface;
 use Sulu\Bundle\Sales\OrderBundle\Api\Order;
 use Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatus;
 
-/**
- * Class OrderPersmission
- * @package Sulu\Bundle\Sales\OrderBundle\Order
- */
 class OrderDependencyManager extends AbstractSalesDependency implements SalesDependencyClassInterface
 {
     /**
-     * returns name of the dependency class
+     * Returns name of the dependency class.
+     *
      * @return string
      */
     public function getName()
@@ -31,8 +28,10 @@ class OrderDependencyManager extends AbstractSalesDependency implements SalesDep
     }
 
     /**
-     * returns array of parameters
+     * Returns array of parameters.
+     *
      * @param Order $order
+     *
      * @return bool
      */
     public function allowDelete($order)
@@ -49,12 +48,15 @@ class OrderDependencyManager extends AbstractSalesDependency implements SalesDep
                 return false;
             }
         }
+
         return true;
     }
 
     /**
-     * returns the identifying name
+     * Returns the identifying name.
+     *
      * @param Order $order
+     *
      * @return bool
      */
     public function allowCancel($order)
@@ -65,13 +67,16 @@ class OrderDependencyManager extends AbstractSalesDependency implements SalesDep
                 return false;
             }
         }
+
         return true;
     }
 
     /**
+     * Returns all Documents.
      *
-     * @param $orderId
-     * @param $locale
+     * @param int $orderId
+     * @param string $locale
+     *
      * @return array
      */
     public function getDocuments($orderId, $locale)
@@ -87,30 +92,26 @@ class OrderDependencyManager extends AbstractSalesDependency implements SalesDep
     }
 
     /**
-     * returns all possible workflows for the current entity
+     * Returns all possible workflows for the current entity.
      *
      * @param Order $order
+     *
      * @return array
      */
     public function getWorkflows($order)
     {
-        $workflows = array();
-        $actions = array(
+        $workflows = array(
             'confirm' => array(
                 'section' => $this->getName(),
                 'title' => 'salesorder.orders.confirm',
-                'event' => 'sulu.salesorder.order.confirm.clicked'
+                'event' => 'sulu.salesorder.order.confirm.clicked',
+                'disabled' => true,
             ),
             'edit' => array(
                 'section' => $this->getName(),
                 'title' => 'salesorder.orders.edit',
-                'event' => 'sulu.salesorder.order.edit.clicked'
-            ),
-            'delete' => array(
-                'section' => $this->getName(),
-                'title' => 'salesorder.orders.delete',
-                'event' => 'sulu.salesorder.order.delete',
-                'parameters'=> array('id'=> $order->getId())
+                'event' => 'sulu.salesorder.order.edit.clicked',
+                'disabled' => true,
             ),
         );
 
@@ -118,16 +119,10 @@ class OrderDependencyManager extends AbstractSalesDependency implements SalesDep
         $orderStatusId = $order->getStatus()->getId();
         // order is in created state
         if ($orderStatusId === OrderStatus::STATUS_CREATED) {
-            $workflows[] = $actions['confirm'];
-        }
-        // order is confirmed
+            $workflows['confirm']['disabled'] = false;
+        } // order is confirmed
         else if ($orderStatusId === OrderStatus::STATUS_CONFIRMED) {
-            $workflows[] = $actions['edit'];
-        }
-
-        // order is allowed to be deleted
-        if ($this->allowDelete($order)) {
-            $workflows[] = $actions['delete'];
+            $workflows['edit']['disabled'] = false;
         }
 
         // get workflows from dependencies
@@ -135,6 +130,7 @@ class OrderDependencyManager extends AbstractSalesDependency implements SalesDep
         foreach ($this->dependencyClasses as $dependency) {
             $workflows = array_merge($workflows, $dependency->getWorkflows($order));
         }
-        return $workflows;
+
+        return array_values($workflows);
     }
 }
