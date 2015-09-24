@@ -18,7 +18,7 @@ define([], function() {
     /**
      * Set header toolbar based on current order status.
      */
-    setHeaderToolbar = function(order) {
+        setHeaderToolbar = function(order) {
             var i, len,
                 workflow,
                 currentSection = null,

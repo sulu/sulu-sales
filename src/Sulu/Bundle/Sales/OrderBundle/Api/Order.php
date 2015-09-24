@@ -35,7 +35,6 @@ use Sulu\Component\Security\Authentication\UserInterface;
 /**
  * The order class which will be exported to the API
  *
- * @package Sulu\Bundle\Sales\OrderBundle\Api
  * @Relation("self", href="expr('/api/admin/orders/' ~ object.getId())")
  */
 class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
@@ -48,7 +47,7 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     private $allowDelete = array();
 
     /**
-     * Cache for items
+     * Cache for items.
      *
      * @Exclude
      *
@@ -57,14 +56,14 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     private $cacheItems;
 
     /**
-     * Defines the status code of the cart
+     * Defines the status code of the cart.
      *
      * @var null|array
      */
     private $cartStatusCodes = null;
 
     /**
-     * Groups items by suppliers
+     * Groups items by suppliers.
      *
      * @Exclude
      *
@@ -73,7 +72,7 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     private $groupedItems = array();
 
     /**
-     * Defines if changes of items have been changed since last view
+     * Defines if changes of items have been changed since last view.
      *
      * @var bool
      */
@@ -87,21 +86,21 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     private $itemFactory;
 
     /**
-     * Indicated if items have been changed
+     * Indicated if items have been changed.
      *
      * @var bool
      */
     private $itemsChanged = false;
 
     /**
-     * Define permissions for front-end
+     * Define permissions for front-end.
      *
      * @var array
      */
     private $permissions = array();
 
     /**
-     * Define workflows for front-end
+     * Define workflows for front-end.
      *
      * @var array
      */
@@ -120,7 +119,7 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     }
 
     /**
-     * Returns the id of the order entity
+     * Returns the id of the order entity.
      *
      * @VirtualProperty
      * @SerializedName("id")
@@ -204,8 +203,6 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     }
 
     /**
-     * Set sessionId
-     *
      * @param string $sessionId
      *
      * @return Order
@@ -218,8 +215,6 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     }
 
     /**
-     * Get sessionId
-     *
      * @VirtualProperty
      * @SerializedName("changed")
      *
@@ -231,8 +226,6 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     }
 
     /**
-     * Set status
-     *
      * @param OrderStatus
      *
      * @return Order
@@ -245,8 +238,6 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     }
 
     /**
-     * Set bitmaskStatus
-     *
      * @param integer $bitmaskStatus
      *
      * @return Order
@@ -289,8 +280,6 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     }
 
     /**
-     * Set type
-     *
      * @param OrderType
      *
      * @return Order
@@ -303,8 +292,6 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     }
 
     /**
-     * Get order tpye
-     *
      * @VirtualProperty
      * @SerializedName("type")
      *
@@ -320,8 +307,6 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     }
 
     /**
-     * Set currency-code
-     *
      * @param string $currency
      *
      * @return Order
@@ -334,8 +319,6 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     }
 
     /**
-     * Get currency-code
-     *
      * @VirtualProperty
      * @SerializedName("currencyCode")
      * @Groups({"cart"})
@@ -405,8 +388,6 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     }
 
     /**
-     * Set termsOfPayment
-     *
      * @param TermsOfPayment $termsOfPayment
      *
      * @return Order
@@ -419,8 +400,6 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     }
 
     /**
-     * Get termsOfPayment
-     *
      * @VirtualProperty
      * @SerializedName("termsOfPayment")
      *
@@ -439,8 +418,6 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     }
 
     /**
-     * Set termsOfPayment
-     *
      * @param string $termsOfPayment
      *
      * @return Order
@@ -453,8 +430,6 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     }
 
     /**
-     * Get termsOfPayment
-     *
      * @VirtualProperty
      * @SerializedName("termsOfPaymentContent")
      *
@@ -466,8 +441,6 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     }
 
     /**
-     * Set termsOfDelivery
-     *
      * @param string $termsOfDelivery
      *
      * @return Order
@@ -480,8 +453,6 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     }
 
     /**
-     * Get termsOfDelivery
-     *
      * @VirtualProperty
      * @SerializedName("termsOfDeliveryContent")
      *
@@ -517,8 +488,6 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     }
 
     /**
-     * Set costCentre
-     *
      * @param string $costCentre
      *
      * @return Order
@@ -531,8 +500,6 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     }
 
     /**
-     * Get costCentre
-     *
      * @VirtualProperty
      * @SerializedName("costCentre")
      * @Groups({"cart"})
@@ -545,8 +512,6 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     }
 
     /**
-     * Set commission
-     *
      * @param string $commission
      *
      * @return Order
@@ -559,8 +524,6 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     }
 
     /**
-     * Get commission
-     *
      * @VirtualProperty
      * @SerializedName("commission")
      * @Groups({"cart"})
@@ -573,8 +536,6 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     }
 
     /**
-     * Set desiredDeliveryDate
-     *
      * @param \DateTime $desiredDeliveryDate
      *
      * @return Order
@@ -587,8 +548,6 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     }
 
     /**
-     * Get desiredDeliveryDate
-     *
      * @VirtualProperty
      * @SerializedName("desiredDeliveryDate")
      * @Groups({"cart"})
@@ -601,8 +560,6 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     }
 
     /**
-     * Set taxfree
-     *
      * @param boolean $taxfree
      *
      * @return Order
@@ -615,8 +572,6 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     }
 
     /**
-     * Get taxfree
-     *
      * @VirtualProperty
      * @SerializedName("taxfree")
      *
@@ -628,8 +583,6 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     }
 
     /**
-     * Set account
-     *
      * @param AccountInterface $account
      *
      * @return Order
@@ -642,8 +595,6 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     }
 
     /**
-     * Get account
-     *
      * @VirtualProperty
      * @SerializedName("customerAccount")
      *
@@ -662,8 +613,6 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     }
 
     /**
-     * Set contact
-     *
      * @param Contact $contact
      *
      * @return Order
@@ -676,8 +625,6 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     }
 
     /**
-     * Get contact
-     *
      * @VirtualProperty
      * @SerializedName("customerContact")
      *
@@ -697,8 +644,6 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     }
 
     /**
-     * Set responsibleContact
-     *
      * @param Contact $responsibleContact
      *
      * @return Order
@@ -711,8 +656,6 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     }
 
     /**
-     * Get responsibleContact
-     *
      * @VirtualProperty
      * @SerializedName("responsibleContact")
      *
@@ -731,8 +674,6 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     }
 
     /**
-     * Add item
-     *
      * @param ItemInterface $item
      *
      * @return Order
@@ -746,8 +687,6 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     }
 
     /**
-     * Remove item
-     *
      * @param ItemInterface $item
      *
      * @return Order
@@ -761,8 +700,6 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     }
 
     /**
-     * Get items
-     *
      * @VirtualProperty
      * @SerializedName("items")
      * @Groups({"cart"})
@@ -785,8 +722,6 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     }
 
     /**
-     * Get items ordered by suppliers
-     *
      * @VirtualProperty
      * @SerializedName("supplierItems")
      * @Groups({"cartExtended"})
@@ -799,8 +734,6 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     }
 
     /**
-     * Set supplier items
-     *
      * @param $supplierItems
      *
      * @return $this
@@ -831,8 +764,6 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     }
 
     /**
-     * Set changer
-     *
      * @param UserInterface $changer
      *
      * @return Order
@@ -845,8 +776,6 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     }
 
     /**
-     * Get changer
-     *
      * @return UserInterface
      */
     public function getChanger()
@@ -855,8 +784,6 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     }
 
     /**
-     * Set creator
-     *
      * @param UserInterface $creator
      *
      * @return Order
@@ -869,8 +796,6 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     }
 
     /**
-     * Get creator
-     *
      * @return UserInterface
      */
     public function getCreator()
@@ -879,8 +804,6 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     }
 
     /**
-     * Set deliveryAddress
-     *
      * @param OrderAddressInterface $deliveryAddress
      *
      * @return Order
@@ -893,8 +816,6 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     }
 
     /**
-     * Get deliveryAddress
-     *
      * @VirtualProperty
      * @SerializedName("deliveryAddress")
      * @Groups({"cart"})
@@ -911,8 +832,6 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     }
 
     /**
-     * Set invoiceAddress
-     *
      * @param OrderAddressInterface $invoiceAddress
      *
      * @return Order
@@ -925,8 +844,6 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     }
 
     /**
-     * Get invoiceAddress
-     *
      * @VirtualProperty
      * @SerializedName("invoiceAddress")
      * @Groups({"cart"})
@@ -1098,7 +1015,7 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
      */
     public function getWorkflows()
     {
-        return $this->$workflows;
+        return $this->workflows;
     }
 
     /**
@@ -1139,8 +1056,6 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     }
 
     /**
-     * Set changed prices
-     *
      * @param $hasChangedPrices
      *
      * @return Order
