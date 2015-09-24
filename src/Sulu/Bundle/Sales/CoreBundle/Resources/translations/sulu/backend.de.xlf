@@ -182,6 +182,14 @@
                 <source>workflows.title</source>
                 <target>Workflows</target>
             </trans-unit>
+            <trans-unit id="8" resname="public.and">
+                <source>public.and</source>
+                <target>und</target>
+            </trans-unit>
+            <trans-unit id="9" resname="public.more">
+                <source>public.more</source>
+                <target>Weitere</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>
