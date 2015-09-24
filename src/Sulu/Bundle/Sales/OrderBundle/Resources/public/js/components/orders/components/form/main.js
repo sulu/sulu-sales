@@ -41,7 +41,6 @@ define([
             deliveryTermsInstanceName: 'delivery-terms',
             contactSelectId: '#contact-select',
             validateWarningTranslation: 'form.validation-warning',
-            translationConversionFailed: 'salescore.conversion-failed',
             translationShippingFailed: 'salescore.shipping-failed',
             autocompleteLimit: 20
         },
@@ -328,7 +327,6 @@ define([
                             initAddressComponents.call(this, addressData, constants.deliveryAddressInstanceName, preselect);
                             setSettingsOverlayAdresses.call(this, addressData, preselect);
                             this.options.data.deliveryAddress = preselect;
-//                            setFormData.call(this, this.options.data);
                         }.bind(this));
 
                         preselect = null;
@@ -346,7 +344,6 @@ define([
                         this.sandbox.data.when(this.dfdInvoiceAddressInitialized).then(function() {
                             initAddressComponents.call(this, addressData, constants.billingAddressInstanceName, preselect);
                             this.options.data.invoiceAddress = preselect;
-//                            setFormData.call(this, this.options.data);
                         }.bind(this));
                     }
 
@@ -408,8 +405,11 @@ define([
         view: true,
 
         layout: {
+            content: {
+                width: 'fixed'
+            },
             sidebar: {
-                width: 'fixed',
+                width: 'max',
                 cssClasses: 'sidebar-padding-50'
             }
         },
@@ -451,6 +451,7 @@ define([
 
             // bind events
             bindCustomEvents.call(this);
+            HeaderUtil.initialize.call(this);
 
             // set header
             setSaved.call(this, true);

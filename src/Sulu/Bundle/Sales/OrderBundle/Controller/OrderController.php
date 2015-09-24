@@ -154,6 +154,7 @@ class OrderController extends RestController implements ClassResourceInterface, 
                 // if order was found
                 if ($order) {
                     $order->setWorkflows($this->getDependencyManager()->getWorkflows($order));
+                    $order->setAllowDelete($this->getDependencyManager()->allowDelete($order));
                 }
 
                 return $order;

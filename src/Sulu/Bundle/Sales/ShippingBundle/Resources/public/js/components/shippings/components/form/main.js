@@ -36,31 +36,41 @@ define([
          */
         setHeaderToolbar = function() {
             var toolbarItems = {
-                    save: {}
+                    save: {},
+                    delete: {
+                        options: {
+                            disabled: true
+                        }
+                    }
                 },
                 workflowDropdown = {
                     icon: 'hand-o-right',
                     iconSize: 'large',
                     group: 'left',
                     id: 'workflow',
+                    title: 'workflows.title',
                     dropdownItems: []
                 },
                 workflowItems = {
                     confirm: {
                         title: this.sandbox.translate('salesshipping.shippings.confirm'),
-                        callback: confirmClickedHandler.bind(this)
+                        callback: confirmClickedHandler.bind(this),
+                        disabled: true
                     },
                     edit: {
                         title: this.sandbox.translate('salesshipping.shippings.edit'),
-                        callback: editClickedHandler.bind(this)
+                        callback: editClickedHandler.bind(this),
+                        disabled: true
                     },
                     ship: {
                         title: this.sandbox.translate('salesshipping.shippings.ship'),
-                        callback: shipClickedHandler.bind(this)
+                        callback: shipClickedHandler.bind(this),
+                        disabled: true
                     },
                     cancel: {
                         title: this.sandbox.translate('salesshipping.shippings.cancel'),
-                        callback: cancelClickedHandler.bind(this)
+                        callback: cancelClickedHandler.bind(this),
+                        disabled: true
                     },
                     divider: {
                         divider: true
@@ -71,15 +81,20 @@ define([
             if (this.options.data.id) {
                 // define workflow based on status
                 if (this.shippingStatusId === ShippingStatus.CREATED) {
-                    workflowDropdown.dropdownItems.push(workflowItems.confirm);
+                    toolbarItems.delete.options.disabled = false;
+                    workflowItems.confirm.disabled = false;
                 } else if (this.shippingStatusId === ShippingStatus.DELIVERY_NOTE) {
-                    workflowDropdown.dropdownItems.push(workflowItems.edit);
-                    workflowDropdown.dropdownItems.push(workflowItems.cancel);
-                    workflowDropdown.dropdownItems.push(workflowItems.divider);
-                    workflowDropdown.dropdownItems.push(workflowItems.ship);
+                    workflowItems.edit.disabled = false;
+                    workflowItems.cancel.disabled = false;
+                    workflowItems.ship.disabled = false;
                 } else if (this.shippingStatusId === ShippingStatus.SHIPPED) {
-                    workflowDropdown.dropdownItems.push(workflowItems.cancel);
+                    workflowItems.cancel.disabled = false;
                 }
+                workflowDropdown.dropdownItems.push(workflowItems.confirm);
+                workflowDropdown.dropdownItems.push(workflowItems.edit);
+                workflowDropdown.dropdownItems.push(workflowItems.cancel);
+                workflowDropdown.dropdownItems.push(workflowItems.divider);
+                workflowDropdown.dropdownItems.push(workflowItems.ship);
 
                 // add workflow items
                 if (workflowDropdown.dropdownItems.length > 0) {
@@ -164,7 +179,7 @@ define([
         bindCustomEvents = function() {
 
             // delete shipping
-            this.sandbox.on('sulu.header.toolbar.delete', function() {
+            this.sandbox.on('sulu.toolbar.delete', function() {
                 this.sandbox.emit('sulu.salesshipping.shipping.delete', this.options.data.id);
             }, this);
 
@@ -328,8 +343,11 @@ define([
         view: true,
 
         layout: {
+            content: {
+                width: 'fixed'
+            },
             sidebar: {
-                width: 'fixed',
+                width: 'max',
                 cssClasses: 'sidebar-padding-50'
             }
         },

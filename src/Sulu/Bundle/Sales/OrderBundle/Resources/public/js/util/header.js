@@ -11,20 +11,33 @@ define([], function() {
 
     'use strict';
 
+    var translations = {
+            conversionFailed: 'salescore.conversion-failed'
+        },
+
     /**
      * Set header toolbar based on current order status.
      */
-    var setHeaderToolbar = function(order) {
+        setHeaderToolbar = function(order) {
             var i, len,
                 workflow,
                 currentSection = null,
                 toolbarItems = {
-                    save: {}
+                    save: {},
+                    delete: {
+                        options: {
+                            callback: function() {
+                                this.sandbox.emit('sulu.salesorder.order.delete');
+                            }.bind(this),
+                            disabled: true
+                        }
+                    }
                 },
                 workflowDropdown = {
                     icon: 'hand-o-right',
                     iconSize: 'large',
                     group: 'left',
+                    title: 'workflows.title',
                     id: 'workflow',
                     dropdownItems: []
                 },
@@ -34,6 +47,10 @@ define([], function() {
 
             // show settings template is order already saved
             if (order.id) {
+                if (order.allowDelete) {
+                    toolbarItems.delete.options.disabled = false;
+                }
+
                 // add workflows provided by api
                 for (i = -1, len = order.workflows.length; ++i < len;) {
                     workflow = order.workflows[i];
@@ -49,7 +66,8 @@ define([], function() {
                     // add workflow item
                     workflowDropdown.dropdownItems.push({
                         title: this.sandbox.translate(workflow.title),
-                        callback: createWorkflowCallback.bind(this, workflow)
+                        callback: createWorkflowCallback.bind(this, workflow),
+                        disabled: workflow.disabled
                     });
                 }
 
@@ -93,10 +111,10 @@ define([], function() {
          * Confirm an order, checks for unsaved data and shows a warning.
          */
         confirmOrder = function() {
-            HeaderUtil.checkForUnsavedData.call(this, function() {
+            checkForUnsavedData.call(this, function() {
                     this.sandbox.emit('sulu.salesorder.order.confirm');
                 },
-                showErrorLabel.bind(this, constants.translationConversionFailed)
+                showErrorLabel.bind(this, translations.conversionFailed)
             );
         },
 
@@ -104,10 +122,10 @@ define([], function() {
          * Edit an order, checks for unsaved data and shows a warning.
          */
         editOrder = function() {
-            HeaderUtil.checkForUnsavedData.call(this, function() {
+            checkForUnsavedData.call(this, function() {
                     this.sandbox.emit('sulu.salesorder.order.edit');
                 },
-                showErrorLabel.bind(this, constants.translationConversionFailed)
+                showErrorLabel.bind(this, translations.conversionFailed)
             );
         },
 

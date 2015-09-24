@@ -36,10 +36,9 @@
         "phpunit/phpunit": "~4.0.0",
         "jackalope/jackalope-doctrine-dbal": "~1.2.0",
         "jackalope/jackalope-jackrabbit": "~1.2.0",
-        "knplabs/knp-snappy-bundle": "dev-master",
         "massive/search-bundle": "0.7.*",
         "sulu/test-bundle": "dev-develop",
-        "sulu/document-manager": "dev-master"
+        "sulu/document-manager": "dev-develop"
     },
     "replace": {
         "sulu/sales-core-bundle": "self.version",
