@@ -310,9 +310,9 @@ class OrderDataSetup
         $this->orderAddressDelivery->setUid($this->account->getUid());
         $this->orderAddressDelivery->setPhone($this->phone->getPhone());
         $this->orderAddressDelivery->setPhoneMobile('+43 123 / 456');
+        $this->orderAddressDelivery->setContactAddress($this->address);
 
         // clone address for invoice
-        $this->orderAddressInvoice = clone $this->orderAddressDelivery;
         $this->orderAddressInvoice = clone $this->orderAddressDelivery;
 
         $this->termsOfDelivery = new TermsOfDelivery();

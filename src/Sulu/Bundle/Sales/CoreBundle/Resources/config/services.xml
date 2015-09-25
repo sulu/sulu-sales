@@ -12,6 +12,8 @@
         <parameter key="sulu_sales_core.widgets.simple_account.class">Sulu\Bundle\Sales\CoreBundle\Widgets\SimpleAccount</parameter>
         <parameter key="sulu_sales_core.widgets.simple_contact.class">Sulu\Bundle\Sales\CoreBundle\Widgets\SimpleContact</parameter>
         <parameter key="sulu_sales_core.widgets.multiple_accounts.class">Sulu\Bundle\Sales\CoreBundle\Widgets\MultipleAccounts</parameter>
+        <parameter key="sulu_sales_core.widgets.suppliers.class">Sulu\Bundle\Sales\CoreBundle\Widgets\SuppliersWidget</parameter>
+        <parameter key="sulu_sales_core.widgets.customers.class">Sulu\Bundle\Sales\CoreBundle\Widgets\CustomersWidget</parameter>
         <parameter key="sulu_sales_core.grouped_price_calculator.class">Sulu\Bundle\Sales\CoreBundle\Pricing\GroupedItemsPriceCalculator</parameter>
         <parameter key="sulu_sales_core.item_price_calculator.class">Sulu\Bundle\Sales\CoreBundle\Pricing\ItemPriceCalculator</parameter>
         <parameter key="sulu_sales_core.order_address_manager.class">Sulu\Bundle\Sales\CoreBundle\Manager\OrderAddressManager</parameter>
@@ -85,7 +87,16 @@
         <!--WIDGETS-->
         <service id="sulu_sales_core.widget.multiple_accounts" class="%sulu_sales_core.widgets.multiple_accounts.class%">
             <tag name="sulu.widget" alias="sulu-sales-core-multiple-accounts"/>
-            <argument type="service" id="doctrine.orm.entity_manager"/>
+            <argument type="service" id="sulu_contact.account_repository"/>
+        </service>
+
+        <service id="sulu_sales_core.widget.customers" class="%sulu_sales_core.widgets.customers.class%">
+            <tag name="sulu.widget" alias="sulu-sales-core-customers"/>
+            <argument type="service" id="sulu_contact.account_repository"/>
+        </service>
+
+        <service id="sulu_sales_core.widget.suppliers" class="%sulu_sales_core.widgets.suppliers.class%">
+            <tag name="sulu.widget" alias="sulu-sales-core-suppliers"/>
             <argument type="service" id="sulu_contact.account_repository"/>
         </service>
 
