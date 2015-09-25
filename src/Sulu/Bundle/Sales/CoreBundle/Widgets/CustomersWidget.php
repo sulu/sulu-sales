@@ -24,6 +24,4 @@ class CustomersWidget extends MultipleAccounts
         'headline' => 'customerHeadline',
         'emptyLabel' => 'purchasedemand.demand.noCustomersAssigned'
     ];
-
-
 }

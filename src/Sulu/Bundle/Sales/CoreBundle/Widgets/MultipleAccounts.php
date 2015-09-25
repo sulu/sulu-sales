@@ -48,9 +48,8 @@ class MultipleAccounts implements WidgetInterface
     /**
      * @param AccountRepository $accountRepository
      */
-    function __construct(
-        AccountRepository $accountRepository
-    ) {
+    function __construct(AccountRepository $accountRepository)
+    {
         $this->accountRepository = $accountRepository;
     }
 
