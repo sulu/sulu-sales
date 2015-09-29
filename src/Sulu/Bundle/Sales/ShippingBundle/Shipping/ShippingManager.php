@@ -13,23 +13,23 @@ namespace Sulu\Bundle\Sales\ShippingBundle\Shipping;
 use DateTime;
 use Doctrine\Common\Persistence\ObjectManager;
 use Sulu\Bundle\Sales\CoreBundle\Entity\Item;
+use Sulu\Bundle\Sales\CoreBundle\Entity\OrderAddress;
+use Sulu\Bundle\Sales\CoreBundle\Item\ItemManager;
+use Sulu\Bundle\Sales\ShippingBundle\Api\Shipping;
 use Sulu\Bundle\Sales\ShippingBundle\Entity\ShippingActivityLog;
+use Sulu\Bundle\Sales\ShippingBundle\Entity\ShippingItem as ShippingItemEntity;
 use Sulu\Bundle\Sales\ShippingBundle\Entity\ShippingRepository;
+use Sulu\Bundle\Sales\ShippingBundle\Entity\ShippingStatus as ShippingStatusEntity;
+use Sulu\Bundle\Sales\ShippingBundle\Shipping\Exception\MissingShippingAttributeException;
+use Sulu\Bundle\Sales\ShippingBundle\Shipping\Exception\ShippingDependencyNotFoundException;
+use Sulu\Bundle\Sales\ShippingBundle\Shipping\Exception\ShippingException;
+use Sulu\Bundle\Sales\ShippingBundle\Shipping\Exception\ShippingNotFoundException;
 use Sulu\Component\Rest\Exception\EntityNotFoundException;
 use Sulu\Component\Rest\ListBuilder\Doctrine\FieldDescriptor\DoctrineConcatenationFieldDescriptor;
 use Sulu\Component\Rest\ListBuilder\Doctrine\FieldDescriptor\DoctrineFieldDescriptor;
 use Sulu\Component\Rest\ListBuilder\Doctrine\FieldDescriptor\DoctrineJoinDescriptor;
 use Sulu\Component\Rest\RestHelperInterface;
 use Sulu\Component\Security\Authentication\UserRepositoryInterface;
-use Sulu\Bundle\Sales\CoreBundle\Item\ItemManager;
-use Sulu\Bundle\Sales\CoreBundle\Entity\OrderAddress;
-use Sulu\Bundle\Sales\ShippingBundle\Shipping\Exception\MissingShippingAttributeException;
-use Sulu\Bundle\Sales\ShippingBundle\Shipping\Exception\ShippingDependencyNotFoundException;
-use Sulu\Bundle\Sales\ShippingBundle\Shipping\Exception\ShippingException;
-use Sulu\Bundle\Sales\ShippingBundle\Shipping\Exception\ShippingNotFoundException;
-use Sulu\Bundle\Sales\ShippingBundle\Entity\ShippingItem as ShippingItemEntity;
-use Sulu\Bundle\Sales\ShippingBundle\Entity\ShippingStatus as ShippingStatusEntity;
-use Sulu\Bundle\Sales\ShippingBundle\Api\Shipping;
 
 class ShippingManager
 {
@@ -75,11 +75,6 @@ class ShippingManager
      * @var DoctrineFieldDescriptor[]
      */
     private $orderFieldDescriptors = array();
-
-    /**
-     * @var string
-     */
-    private $itemEntity;
 
     /** constructor */
     public function __construct(
@@ -518,8 +513,23 @@ class ShippingManager
     {
         $this->initializeOrderFieldDescriptors($locale);
 
-        $this->fieldDescriptors['id'] = new DoctrineFieldDescriptor('id', 'id', self::$shippingEntityName, 'public.id', array(), true);
-        $this->fieldDescriptors['number'] = new DoctrineFieldDescriptor('number', 'number', self::$shippingEntityName, 'salesshipping.shippings.number', array(), false, true);
+        $this->fieldDescriptors['id'] = new DoctrineFieldDescriptor(
+            'id',
+            'id',
+            self::$shippingEntityName,
+            'public.id',
+            array(),
+            true
+        );
+        $this->fieldDescriptors['number'] = new DoctrineFieldDescriptor(
+            'number',
+            'number',
+            self::$shippingEntityName,
+            'salesshipping.shippings.number',
+            array(),
+            false,
+            true
+        );
 
         $contactJoin = array(
             self::$orderAddressEntityName => new DoctrineJoinDescriptor(
@@ -595,7 +605,6 @@ class ShippingManager
         );
 
         $this->fieldDescriptors['orderNumber'] = $this->orderFieldDescriptors['orderNumber'];
-
     }
 
     private function initializeOrderFieldDescriptors()
@@ -620,6 +629,17 @@ class ShippingManager
             self::$orderEntityName,
             'public.id',
             $orderJoin
+        );
+
+        $this->fieldDescriptors['created'] = new DoctrineFieldDescriptor(
+            'created',
+            'created',
+            static::$orderEntityName,
+            'public.created',
+            array(),
+            false,
+            false,
+            'date'
         );
     }
 
