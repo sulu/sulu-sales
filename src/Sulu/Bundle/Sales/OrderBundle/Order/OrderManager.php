@@ -1041,6 +1041,52 @@ class OrderManager
             false,
             'string'
         );
+
+        $this->fieldDescriptors['created'] = new DoctrineFieldDescriptor(
+            'created',
+            'created',
+            static::$orderEntityName,
+            'public.created',
+            array(),
+            false,
+            false,
+            'date'
+        );
+
+        $contactJoin = array(
+            self::$contactEntityName => new DoctrineJoinDescriptor(
+                self::$contactEntityName,
+                self::$orderEntityName . '.responsibleContact'
+            )
+        );
+
+        $this->fieldDescriptors['responsibleContact'] = new DoctrineConcatenationFieldDescriptor(
+            array(
+                new DoctrineFieldDescriptor(
+                    'firstName',
+                    'contact',
+                    self::$contactEntityName,
+                    'contact.contacts.contact',
+                    $contactJoin
+                ),
+                new DoctrineFieldDescriptor(
+                    'lastName',
+                    'contact',
+                    self::$contactEntityName,
+                    'contact.contacts.contact',
+                    $contactJoin
+                )
+            ),
+            'responsibleContact',
+            'salesorder.orders.contact',
+            ' ',
+            false,
+            false,
+            'string',
+            '',
+            '160px',
+            false
+        );
     }
 
 

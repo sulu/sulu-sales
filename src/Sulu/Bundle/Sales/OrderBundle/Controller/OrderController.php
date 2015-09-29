@@ -114,6 +114,8 @@ class OrderController extends RestController implements ClassResourceInterface, 
             // exclude in cart orders
             $listBuilder->whereNot($this->getStatusFieldDescriptor(), OrderStatus::STATUS_IN_CART);
 
+            $listBuilder->sort($this->getManager()->getFieldDescriptor('created', $this->getLocale($request)), 'DESC');
+
             $list = new ListRepresentation(
                 $listBuilder->execute(),
                 self::$entityKey,
