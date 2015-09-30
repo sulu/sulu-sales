@@ -18,9 +18,9 @@
     {% endif %}
 {% endspaceless %}{% endmacro %}
 
-{% macro includeTemplateIfNotEmpty(template) %}
+{% macro includeTemplateIfNotEmpty(template, context) %}
     {% if template is defined and template is not empty %}
-        {% include template %}
+        {{ include(template, {context: context}) }}
     {% endif %}
 {% endmacro %}
 
