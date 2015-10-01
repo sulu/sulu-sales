@@ -76,6 +76,7 @@
                 <div id="responsible-contact-select"
                      data-aura-component="select@husky"
                      data-aura-data='{{ systemUser|json_encode()|raw }}'
+                     data-aura-default-value='[{{ systemUserId }}]'
                      data-aura-default-label="<%=translate('public.please-choose')%>"
                      data-aura-value-name="fullName"
                      data-aura-multiple-select="false"
