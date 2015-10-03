@@ -191,7 +191,7 @@
                 <target>Weitere</target>
             </trans-unit>
             <trans-unit id="10" resname="salescore.no-assignment">
-                <source>salescore.no-assignment<source>
+                <source>salescore.no-assignment</source>
                 <target>Keine Zuweisung</target>
             </trans-unit>
         </body>
