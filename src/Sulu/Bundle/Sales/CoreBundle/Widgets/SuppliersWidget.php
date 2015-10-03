@@ -22,6 +22,6 @@ class SuppliersWidget extends MultipleAccounts
         'ids' => 'supplierIds',
         'limit' => 'supplierLimit',
         'headline' => 'supplierHeadline',
-        'emptyLabel' => 'purchasedemand.demand.noCustomerAssigned',
+        'emptyLabel' => 'salescore.no-assignment',
     ];
 }

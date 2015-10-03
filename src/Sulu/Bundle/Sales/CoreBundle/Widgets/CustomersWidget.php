@@ -22,6 +22,6 @@ class CustomersWidget extends MultipleAccounts
         'ids' => 'customerIds',
         'limit' => 'customerLimit',
         'headline' => 'customerHeadline',
-        'emptyLabel' => 'purchasedemand.demand.noCustomersAssigned'
+        'emptyLabel' => 'salescore.no-assignment'
     ];
 }

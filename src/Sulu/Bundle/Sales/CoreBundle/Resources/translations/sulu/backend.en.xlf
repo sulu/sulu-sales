@@ -190,6 +190,10 @@
                 <source>public.more</source>
                 <target>more</target>
             </trans-unit>
+            <trans-unit id="10" resname="salescore.no-assignment">
+                <source>salescore.no-assignment<source>
+                <target>No assignment</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>
