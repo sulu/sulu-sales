@@ -3,6 +3,7 @@
 namespace Sulu\Bundle\Sales\ShippingBundle\Api;
 
 use DateTime;
+use JMS\Serializer\Annotation\ExclusionPolicy;
 use JMS\Serializer\Annotation\VirtualProperty;
 use Hateoas\Configuration\Annotation\Relation;
 use JMS\Serializer\Annotation\SerializedName;
@@ -26,6 +27,7 @@ use Sulu\Bundle\Sales\ShippingBundle\Api\ShippingStatus as ApiShippingStatus;
  *
  * @package Sulu\Bundle\Sales\ShippingBundle\Api
  * @Relation("self", href="expr('/api/admin/shippings/' ~ object.getId())")
+ * @ExclusionPolicy("all")
  */
 class Shipping extends ApiWrapper implements SalesDocument
 {
