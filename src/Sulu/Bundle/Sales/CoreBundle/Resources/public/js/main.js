@@ -11,20 +11,28 @@ require.config({
     paths: {
         sulusalescore: '../../sulusalescore/js',
         'type/editableDataRow': '../../sulusalescore/js/components/editable-data-row/editable-data-row-type',
-        'type/itemTable': '../../sulusalescore/js/components/item-table/item-table-type'
-
+        'type/itemTable': '../../sulusalescore/js/components/item-table/item-table-type',
+        'extensions/sulu-buttons-salescore': '../../sulusalescore/js/extensions/sulu-buttons'
     }
 });
 
-define({
+define([
+    'extensions/sulu-buttons-salescore'
+], function(SalesButtons) {
 
-    name: "SuluSalesCoreBundle",
+    return {
+        name: "SuluSalesCoreBundle",
 
-    initialize: function(app) {
+        initialize: function(app) {
 
-        'use strict';
+            'use strict';
 
-        app.components.addSource('sulusalescore', '/bundles/sulusalescore/js/components');
+            var sandbox = app.sandbox;
 
+            sandbox.sulu.buttons.push(SalesButtons.getButtons());
+
+            app.components.addSource('sulusalescore', '/bundles/sulusalescore/js/components');
+
+        }
     }
 });

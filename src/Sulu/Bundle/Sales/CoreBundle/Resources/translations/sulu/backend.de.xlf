@@ -194,6 +194,10 @@
                 <source>salescore.no-assignment</source>
                 <target>Keine Zuweisung</target>
             </trans-unit>
+            <trans-unit id="11" resname="salescore.transition.title">
+                <source>salescore.transition.title</source>
+                <target>Überführung</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>

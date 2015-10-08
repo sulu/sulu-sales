@@ -7,7 +7,7 @@ body {
 .item-table-list-form {
   margin-top: 20px;
 }
-/* line 17, ../scss/modules/item-table.scss */
+/* line 16, ../scss/modules/item-table.scss */
 .item-table-list-form.disabled .add-row,
 .item-table-list-form.disabled .item-remove {
   display: none;
@@ -32,7 +32,7 @@ body {
 }
 /* line 38, ../scss/modules/item-table.scss */
 .item-table-list .header {
-  border-bottom: 2px solid #cccccc;
+  border-bottom: 2px solid #ccc;
   border-color: #ccc;
   vertical-align: top;
   font-size: 14px;
@@ -50,7 +50,7 @@ body {
 .item-table-list .header .input-field {
   display: none;
 }
-/* line 58, ../scss/modules/item-table.scss */
+/* line 57, ../scss/modules/item-table.scss */
 .item-table-list .is-numeric,
 .item-table-list .is-numeric input {
   text-align: right;
@@ -64,7 +64,7 @@ body {
 /* line 68, ../scss/modules/item-table.scss */
 .item-table-row {
   height: 50px;
-  border-bottom: 1px solid #cccccc;
+  border-bottom: 1px solid #ccc;
 }
 /* line 74, ../scss/modules/item-table.scss */
 .item-table-row .row-number:before {
@@ -73,7 +73,7 @@ body {
 }
 /* line 84, ../scss/modules/item-table.scss */
 .item-table-row:last-child {
-  border-bottom: 2px solid #cccccc;
+  border-bottom: 2px solid #ccc;
 }
 /* line 90, ../scss/modules/item-table.scss */
 .item-table-row.new .product-search {
@@ -195,17 +195,22 @@ body {
   font-weight: bold;
 }
 
+/* line 2, ../scss/modules/transition-overlay.scss */
+.transition-overlay-container .overlay-header {
+  display: none;
+}
+
 /* line 1, ../scss/modules/editable-data-row.scss */
 .disabled .editable-row {
   cursor: auto !important;
 }
 
-/* line 7, ../scss/main.scss */
+/* line 8, ../scss/main.scss */
 .not-clickable {
   color: #999;
 }
 
-/* line 13, ../scss/main.scss */
+/* line 14, ../scss/main.scss */
 h2.divider {
   clear: both;
 }
