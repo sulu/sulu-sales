@@ -32,7 +32,6 @@ define([
             sandbox.sulu.buttons.push(SalesButtons.getButtons());
 
             app.components.addSource('sulusalescore', '/bundles/sulusalescore/js/components');
-
         }
     }
 });
