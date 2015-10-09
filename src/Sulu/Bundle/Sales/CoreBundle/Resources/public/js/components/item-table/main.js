@@ -14,6 +14,8 @@
  * @param {Object} [options] Configuration object
  * @param {Array}  [options.data] Array of data [string, object]
  * @param {Bool}   [options.isEditable] Defines if component is editable
+ * @param {Bool}   [options.displayToolbars] Defines if toolbars should be shown, when component is editable.
+ *                  If false, no rows can be added or deleted.
  * @param {Array}  [options.columns] Defines which columns should be shown. Array of strings
  * @param {Bool}   [options.hasNestedItems] this is used, when data array is merged (must be an object
  *                 containing an attribute called 'item'
@@ -45,6 +47,7 @@ define([
             formId: 'item-table-form',
             data: [],
             isEditable: true,
+            displayToolbars: true,
             columns: [
                 'name',
                 'number',
@@ -462,7 +465,8 @@ define([
             // if input or link was clicked, do nothing
             if (event.target.tagName.toUpperCase() === 'INPUT' ||
                 event.target.tagName.toUpperCase() === 'A' ||
-                !this.options.isEditable) {
+                !this.options.isEditable
+            ) {
                 return;
             }
 
@@ -849,6 +853,7 @@ define([
                 data = this.sandbox.util.extend({}, rowDefaults, this.options.defaultData, itemData,
                     {
                         isEditable: this.options.isEditable,
+                        displayToolbars: this.options.displayToolbars,
                         columns: this.options.columns,
                         rowId: rowId ? rowId : constants.rowIdPrefix + this.rowCount,
                         rowNumber: this.rowCount
@@ -1194,6 +1199,7 @@ define([
                     formId: this.options.formId,
                     addText: this.sandbox.translate('salescore.item.add'),
                     isEditable: this.options.isEditable,
+                    displayToolbars: this.options.displayToolbars,
                     columns: this.options.columns
                 }
             );

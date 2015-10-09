@@ -1,5 +1,15 @@
 .transition-overlay-container {
+    width: 80%;
+
+    .slides .slide {
+        width: 100%;
+    }
+
     .overlay-header {
         display: none;
+    }
+
+    .overlay-footer {
+        width: 100%;
     }
 }

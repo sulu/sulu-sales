@@ -12,21 +12,25 @@ body {
 
     margin-top:20px;
 
+    &.hide-toolbars,
     &.disabled {
         .add-row,
         .item-remove {
             display:none;
         }
+
         .global-price-table {
             margin-right: 0;
         }
 
-        input {
-            background-color: transparent;
-        }
-
         .husky-toolbar .toolbar-item {
             display: none;
+        }
+    }
+
+    &.disabled {
+        input {
+            background-color: transparent;
         }
     }
 }

@@ -1,4 +1,8 @@
-<div id="<%= formId %>" class="item-table-list-form<% if (isEditable == 'false' || isEditable == false) {print(' disabled');} %>">
+<% var displayClass = ''; %>
+<% if (displayToolbars == false) { %>
+<%      displayClass =  'hide-toolbars'; %>
+<% } %>
+<div id="<%= formId %>" class="item-table-list-form<% if (isEditable == 'false' || isEditable == false) {print(' disabled');} %> <%= displayClass %>">
     <div class="item-table-container">
         <table class="item-table-list"></table>
     </div>
