@@ -27,6 +27,7 @@
  * @param {Object} [options.urlFilter] Object containing key value pairs to extend the url
  * @param {String} [options.addressKey] Defines how to access address value over api
  * @param {Bool}   [options.allowDuplicatedProducts] Defines if a product can be added multiple times to items list
+ * @param {Bool}   [options.showItemCount] Defines if the column which shows the item count should be displayed.
  */
 define([
     'text!sulusalescore/components/item-table/item.form.html',
@@ -43,11 +44,9 @@ define([
     // TODO: order-address handling: set contact-data as well
 
     var defaults = {
-            urlFilter: {},
-            formId: 'item-table-form',
-            data: [],
-            isEditable: true,
-            displayToolbars: true,
+            addressKey: 'deliveryAddress',
+            allowDuplicatedProducts: true,
+            columnCallbacks: {},
             columns: [
                 'name',
                 'number',
@@ -58,13 +57,16 @@ define([
                 'discount',
                 'totalPrice'
             ],
-            hasNestedItems: false,
+            data: [],
             defaultData: {},
-            columnCallbacks: {},
+            displayToolbars: true,
+            formId: 'item-table-form',
+            hasNestedItems: false,
+            isEditable: true,
             rowCallback: null,
             settings: false,
-            addressKey: 'deliveryAddress',
-            allowDuplicatedProducts: true
+            showItemCount: true,
+            urlFilter: {}
         },
 
         urls = {
@@ -142,7 +144,8 @@ define([
         eventNamespace = 'sulu.item-table.',
 
         /**
-         * raised when item-table is initialized
+         * Raised when item-table is initialized.
+         *
          * @event sulu.item-table[.INSTANCENAME].initialized
          */
         EVENT_INITIALIZED = function() {
@@ -150,7 +153,8 @@ define([
         },
 
         /**
-         * raised when an item is changed
+         * Raised when an item is changed.
+         *
          * @event sulu.item-table.changed
          */
         EVENT_CHANGED = function() {
@@ -158,10 +162,10 @@ define([
         },
 
         /**
-         * Sets new default data
+         * Sets new default data.
          *
-         * @param key
-         * @param value
+         * @param {String} key
+         * @param {mixed} value
          *
          * @event sulu.item-table[.INSTANCENAME].set-default-data
          */
@@ -170,9 +174,9 @@ define([
         },
 
         /**
-         * TODO: Reset all addresses to a certain address
+         * Reset all addresses to a certain address.
          *
-         * @param {object} address
+         * @param {Object} address
          *
          * @event sulu.item-table[.INSTANCENAME].reset-item-addresses
          */
@@ -181,7 +185,8 @@ define([
         },
 
         /**
-         * Changes the currency and selects related price if available
+         * Changes the currency and selects related price if available.
+         *
          * @event sulu.item-table[.INSTANCENAME].change-currency
          */
         EVENT_CHANGE_CURRENCY = function() {
@@ -189,9 +194,9 @@ define([
         },
 
         /**
-         * Set addresses of overlay select
+         * Set addresses of overlay select.
          *
-         * @param addresses
+         * @param {Array} addresses
          *
          * @event sulu.item-table[.INSTANCENAME].set-addresses
          */
@@ -200,22 +205,36 @@ define([
         },
 
         /**
-         * returns event name
-         * @param suffix
-         * @returns {string}
+         * Event for retreiving item-table data.
+         *
+         * @param {Function} callback
+         *
+         * @event sulu.item-table[.INSTANCENAME].get-data
+         */
+        EVENT_GET_DATA = function() {
+            return getEventName.call(this, 'get-data');
+        },
+
+        /**
+         * Returns event name.
+         *
+         * @param {String} suffix
+         *
+         * @returns {String}
          */
         getEventName = function(suffix) {
             return eventNamespace + this.options.instanceName + '.' + suffix;
         },
 
         /**
-         * data that is shown in header
+         * Data that is shown in header.
          */
         getHeaderData = function() {
             return {
                 rowClass: 'header',
                 name: this.sandbox.translate('salescore.item.product'),
                 number: this.sandbox.translate('salescore.item.number'),
+                account: this.sandbox.translate('public.company'),
                 address: this.sandbox.translate('address.delivery'),
                 description: this.sandbox.translate('salescore.item.description'),
                 quantity: this.sandbox.translate('salescore.item.quantity'),
@@ -233,6 +252,7 @@ define([
             this.sandbox.on(EVENT_SET_DEFAULT_DATA.call(this), setDefaultData.bind(this));
             this.sandbox.on(EVENT_CHANGE_CURRENCY.call(this), changeCurrency.bind(this));
             this.sandbox.on(EVENT_SET_ADRESSES.call(this), setAddresses.bind(this));
+            this.sandbox.on(EVENT_GET_DATA.call(this), getData.bind(this));
             this.sandbox.on(EVENT_RESET_ITEM_ADDRESSES.call(this), resetItemAddresses.bind(this));
         },
 
@@ -263,8 +283,9 @@ define([
         },
 
         /**
-         * Set addresses of settings overlay
-         * @param addresses
+         * Set addresses of settings overlay.
+         *
+         * @param {Array} addresses
          */
         setAddresses = function(addresses) {
             if (!!this.options.settings) {
@@ -273,8 +294,20 @@ define([
         },
 
         /**
-         * Resets addresses of all items to a certain address
-         * @param address
+         * Set addresses of settings overlay.
+         *
+         * @param {Function} addresses
+         */
+        getData= function(callback) {
+            if (typeof callback === "function") {
+                callback(this.getItems());
+            }
+        },
+
+        /**
+         * Resets addresses of all items to a certain address.
+         *
+         * @param {Object} address
          */
         resetItemAddresses = function(address) {
             var i, item;
@@ -292,8 +325,9 @@ define([
         },
 
         /**
-         * Changes currency for item table
-         * @param currency
+         * Changes currency for item table.
+         *
+         * @param {String} currency
          */
         changeCurrency = function(currency) {
             var ids,
@@ -328,8 +362,9 @@ define([
         },
 
         /**
-         * Updates the price for every product and the total
-         * @param data
+         * Updates the price for every product and the total.
+         *
+         * @param {Object} data
          */
         updatePricesForEachProduct = function(data) {
             var $el,
@@ -360,9 +395,11 @@ define([
         },
 
         /**
-         * Returns an associative array of productIds and prices
-         * @param products
-         * @returns Array associative array of productsIds/prices
+         * Returns an associative array of productIds and prices.
+         *
+         * @param {Array} products
+         *
+         * @returns {Array} associative array of productsIds/prices
          */
         getArrayForProductPrices = function(products) {
             var data = {};
@@ -377,8 +414,9 @@ define([
         },
 
         /**
-         * Loads product data
-         * @param ids
+         * Loads product data.
+         *
+         * @param {Array} ids
          */
         fetchProductData = function(ids) {
             var url = this.sandbox.uritemplate.parse(urls.products).expand({
@@ -390,7 +428,7 @@ define([
         },
 
         /**
-         * Stops the loader component and shows the list again
+         * Stops the loader component and shows the list again.
          */
         stopLoader = function() {
             this.sandbox.stop(this.$loader);
@@ -398,8 +436,9 @@ define([
         },
 
         /**
-         * Shows and starts a loader
-         * @param dfdLoaderStarted
+         * Shows and starts a loader.
+         *
+         * @param {Object} dfdLoaderStarted
          */
         startLoader = function(dfdLoaderStarted) {
             prepareDomForLoader.call(this);
@@ -419,7 +458,7 @@ define([
         },
 
         /**
-         * Creats dom element for loader and appends it to
+         * Creates dom element for loader and appends it to.
          */
         prepareDomForLoader = function() {
             var height = this.sandbox.dom.height(this.$el);
@@ -434,8 +473,10 @@ define([
         },
 
         /**
-         * Retrievs all product ids from all products currently in the table
-         * @param items
+         * Retrievs all product ids from all products currently in the table.
+         *
+         * @param {Array} items
+         *
          * @returns {Array} of ids
          */
         getAllProductIds = function(items) {
@@ -449,17 +490,19 @@ define([
         },
 
         /**
-         * sets default data
-         * @param key
-         * @param value
+         * Sets default data.
+         *
+         * @param {String} key
+         * @param {mixed} value
          */
         setDefaultData = function(key, value) {
             this.options.defaultData[key] = value;
         },
 
         /**
-         * triggers callback function if set for column
-         * @param event
+         * Triggers callback function if set for column.
+         *
+         * @param {Object} event
          */
         rowClicked = function(event) {
             // if input or link was clicked, do nothing
@@ -484,8 +527,9 @@ define([
         },
 
         /**
-         * triggers callback function if set for column
-         * @param event
+         * Triggers callback function if set for column.
+         *
+         * @param {Object} event
          */
         rowCellClicked = function(event) {
             var name = this.sandbox.dom.data(event.currentTarget, 'name'),
@@ -496,8 +540,9 @@ define([
         },
 
         /**
-         * triggered when quantity is changed
-         * @param event
+         * Triggered when quantity is changed.
+         *
+         * @param {Object} event
          */
         quantityChangedHandler = function(event) {
             var rowId = getRowData.call(this, event).id;
@@ -515,8 +560,9 @@ define([
         },
 
         /**
-         * triggered when price is changed
-         * @param event
+         * Triggered when price is changed.
+         *
+         * @param {Object} event
          */
         priceChangedHandler = function(event) {
             var rowId = getRowData.call(this, event).id;
@@ -534,8 +580,9 @@ define([
         },
 
         /**
-         * triggered when discount is changed
-         * @param event
+         * Triggered when discount is changed.
+         *
+         * @param {Object} event
          */
         discountChangedHandler = function(event) {
             var rowId = getRowData.call(this, event).id;
@@ -553,8 +600,10 @@ define([
         },
 
         /**
-         * returns an object containing a row's ID and jquery element
-         * @param event
+         * Returns an object containing a row's ID and jquery element.
+         *
+         * @param {Object} event
+         *
          * @returns {{row: *, id: *}}
          */
         getRowData = function(event) {
@@ -567,6 +616,7 @@ define([
         },
 
         /**
+         * Updates overall price.
          *
          * @param rowId
          */
@@ -580,7 +630,7 @@ define([
         },
 
         /**
-         * updates row with global prices
+         * Updates row with global prices.
          */
         updateGlobalPrice = function() {
             var items = this.getItems(), result, $table, i;
@@ -622,15 +672,24 @@ define([
             }
         },
 
+        /**
+         * Adds a new price row.
+         *
+         * @param {Object} $table
+         * @param {String} title
+         * @param {mixed} value
+         */
         addPriceRow = function($table, title, value) {
             var $row = this.sandbox.dom.createElement(templates.priceRow.call(this, title, value));
             this.sandbox.dom.append($table, $row);
         },
 
         /**
-         * returns formated overallPrice + currency as string (based on item)
-         * @param item
-         * @returns {string}
+         * Returns formated overallPrice + currency as string (based on item).
+         *
+         * @param {Object} item
+         *
+         * @returns {String}
          */
         getOverallPriceString = function(item) {
             setItemDefaults(item);
@@ -646,8 +705,9 @@ define([
         },
 
         /**
-         * Sets defaults for items for proper calculation
-         * @param item
+         * Sets defaults for items for proper calculation.
+         *
+         * @param {Object} item
          */
         setItemDefaults = function(item) {
             item.price = item.price || 0;
@@ -657,9 +717,11 @@ define([
         },
 
         /**
-         * returns items currency; if not set, default-currency
-         * @param item
-         * @returns string
+         * Returns items currency; if not set, default-currency.
+         *
+         * @param {Object} item
+         *
+         * @returns {String}
          */
         getCurrency = function(item) {
             return !!item.currency ? item.currency : this.currency;
@@ -765,7 +827,9 @@ define([
         },
 
         /**
-         *  DOM-EVENT listener: remove row
+         *  DOM-EVENT listener: remove row.
+         *
+         *  @param {Object} event
          */
         removeRowClicked = function(event) {
             event.preventDefault();
@@ -801,7 +865,9 @@ define([
         },
 
         /**
-         *  DOM-EVENT listener: add a new row
+         *  DOM-EVENT listener: add a new row.
+         *
+         *  @param {Object} event
          */
         addNewItemClicked = function(event) {
             event.preventDefault();
@@ -856,7 +922,8 @@ define([
                         displayToolbars: this.options.displayToolbars,
                         columns: this.options.columns,
                         rowId: rowId ? rowId : constants.rowIdPrefix + this.rowCount,
-                        rowNumber: this.rowCount
+                        rowNumber: this.rowCount,
+                        showItemCount: this.options.showItemCount
                     });
 
             // handle address
@@ -879,8 +946,9 @@ define([
         },
 
         /**
-         * adds an existing item to the list
-         * @param itemData
+         * Adds an existing item to the list.
+         *
+         * @param {Object} itemData
          */
         addItemRow = function(itemData) {
             var $row, nested;
@@ -900,9 +968,10 @@ define([
         },
 
         /**
-         * updates a specific row
-         * @param rowId
-         * @param itemData
+         * Updates a specific row.
+         *
+         * @param {String} rowId
+         * @param {Object} itemData
          */
         updateItemRow = function(rowId, itemData) {
             var $row = createItemRow.call(this, itemData, rowId);
@@ -921,8 +990,9 @@ define([
         },
 
         /**
-         * add validation to row
-         * @param $row
+         * Add validation to row.
+         *
+         * @param {Object} $row
          */
         addValidationFields = function($row) {
             if (this.options.columns.indexOf('quantity') > 0) {
@@ -937,8 +1007,9 @@ define([
         },
 
         /**
-         * remove validation from row
-         * @param $row
+         * Remove validation from row.
+         *
+         * @param {Object} $row
          */
         removeValidationFields = function($row) {
             if (this.options.columns.indexOf('quantity') > 0) {
@@ -953,7 +1024,7 @@ define([
         },
 
         /**
-         * adds a new item
+         * Adds a new item.
          */
         addNewItemRow = function() {
             var $row,
@@ -965,7 +1036,9 @@ define([
         },
 
         /**
-         * rerenders component
+         * Rerenders component.
+         *
+         * @param {Array} items
          */
         rerenderItems = function(items) {
             this.items = {};
@@ -974,8 +1047,9 @@ define([
         },
 
         /**
-         * renders Items
-         * @param items
+         * Renders Items.
+         *
+         * @param {Array} items
          */
         renderItems = function(items) {
             var i, length, item, $row, rowId;
@@ -993,9 +1067,11 @@ define([
         },
 
         /**
-         * sets an item, based on product
-         * @param productData
-         * @returns {*}
+         * Sets an item, based on product.
+         *
+         * @param {Object} productData
+         *
+         * @returns {Object}
          */
         setItemByProduct = function(productData) {
             // merge with row defaults
@@ -1028,7 +1104,11 @@ define([
         },
 
         /**
-         * Inits the overlay with a specific template
+         * Inits the overlay with a specific template.
+         *
+         * @param {Object} data
+         * @param {Object} settings
+         * @param {String} rowId
          */
         initSettingsOverlay = function(data, settings, rowId) {
             var $overlay, $content, title, subTitle,
@@ -1126,7 +1206,14 @@ define([
                 }
             ]);
         },
-        
+
+        /**
+         * Returns address by id.
+         *
+         * @param {Number} id
+         *
+         * @returns {Object}
+         */
         getAddressById = function(id) {
             var i,len,
                 addresses = this.options.settings.addresses;
@@ -1139,7 +1226,7 @@ define([
         },
 
         /**
-         * renders table head
+         * Renders table head.
          */
         renderHeader = function() {
             var rowData = this.sandbox.util.extend({}, rowDefaults, this.options, {header: getHeaderData.call(this)}),
@@ -1148,14 +1235,14 @@ define([
         },
 
         /**
-         * sets components data-items to current items
+         * Sets components data-items to current items.
          */
         refreshItemsData = function() {
             this.sandbox.dom.data(this.$el, 'items', this.getItems());
         },
 
         /**
-         * initialize husky-validation
+         * Initialize husky-validation.
          */
         initializeForm = function() {
             this.sandbox.form.create(this.selectorFormId);
@@ -1200,7 +1287,8 @@ define([
                     addText: this.sandbox.translate('salescore.item.add'),
                     isEditable: this.options.isEditable,
                     displayToolbars: this.options.displayToolbars,
-                    columns: this.options.columns
+                    columns: this.options.columns,
+                    showItemCount: this.options.showItemCount
                 }
             );
 
@@ -1224,7 +1312,9 @@ define([
         },
 
         /**
-         * returns current items
+         * Returns current items.
+         *
+         * @returns {Array}
          */
         getItems: function() {
             var i,
@@ -1233,6 +1323,7 @@ define([
             for (i in this.items) {
                 items.push(this.items[i]);
             }
+
             return items;
         }
     };

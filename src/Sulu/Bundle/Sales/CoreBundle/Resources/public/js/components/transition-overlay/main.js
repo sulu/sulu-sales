@@ -11,8 +11,12 @@
  * @class transition-overlay@sulusalescore
  * @constructor
  *
- * @param {Object} [options] Configuration object
- * @param {String} [options.selectData] data that is shown in select TODO:
+ * @param {Object}   [options] Configuration object
+ * @param {String}   [options.columns] Columns to be shown in item-table
+ * @param {Array}    [options.customerData] Data that is shown in the customer select
+ * @param {Array}    [options.customerItemData] Array of data containing customer information and it's items
+ * @param {Function} [options.okCallback] Callback function when transition should be made
+ * @param {Array}    [options.transitionData] Data that is shown in transition select
  */
 define([
     'text!sulusalescore/components/transition-overlay/transition-overlay.html'
@@ -21,10 +25,17 @@ define([
     'use strict';
 
     var defaults = {
+            columns: [
+                'quantity',
+                'quantityUnit',
+                'name',
+                'account',
+                'address'
+            ],
             customerData: [],
-            transitionData: [],
             customerItemData: [],
-            itemUrl: null
+            okCallback: null,
+            transitionData: []
         },
 
         constants = {
@@ -110,9 +121,8 @@ define([
                         cssClass: 'transition-overlay-container',
                         instanceName: 'transition',
                         data: overlayContent,
-                        skin: 'wide'
-                        //,
-                        //okCallback:
+                        skin: 'wide',
+                        okCallback: submitTransition.bind(this)
                     }
                 }
             ]);
@@ -159,6 +169,11 @@ define([
                     continue;
                 }
 
+                // add account to each item
+                this.sandbox.util.foreach(customer.items, function(item) {
+                    item.account = cropString(customer.name, constants.MAX_CUSTOMER_LENGTH);
+                });
+
                 // add to items
                 items = items.concat(customer.items);
 
@@ -176,9 +191,9 @@ define([
          * @param {String} String
          * @param {Number} maxLength
          */
-        shortenString = function(string, maxLength) {
+        cropString = function(string, maxLength) {
             var result = string;
-            if (string.length > maxLength) {
+            if (string.length > maxLength + 2) {
                 result = string.substring(0, maxLength) + '..';
             }
 
@@ -194,17 +209,14 @@ define([
             this.sandbox.start([{
                 name: 'item-table@sulusalescore',
                 options: {
-                    el: selectors.itemsTable,
-                    showPrice: false,
+                    columns: this.options.columns,
+                    data: filterCustomerDataById.call(this, customerId),
                     displayToolbars: false,
+                    el: selectors.itemsTable,
                     hasNestedItems: true,
-                    columns: [
-                        'quantity',
-                        'quantityUnit',
-                        'name',
-                        'address'
-                    ],
-                    data: filterCustomerDataById.call(this, customerId)
+                    instanceName: 'transition',
+                    showPrice: false,
+                    showItemCount: false
                 }
             }]);
         },
@@ -231,28 +243,53 @@ define([
                 {
                     name: 'select@husky',
                     options: {
-                        el: selectors.transitionSelect,
                         data: transitionData,
-                        style: 'action big',
-                        preSelectedElements: [transitionData[0].name]
+                        el: selectors.transitionSelect,
+                        instanceName: 'transition',
+                        preSelectedElements: [transitionData[0].name],
+                        style: 'action big'
                     }
-
                 },
                 {
                     name: 'select@husky',
                     options: {
-                        el: selectors.customerSelect,
                         data: customerData,
                         defaultLabel: this.sandbox.translate('public.all'),
+                        deselectCallback: rerenderItemTable.bind(this),
                         deselectField: this.sandbox.translate('public.all'),
-                        selectCallback: rerenderItemTable.bind(this),
-                        deselectCallback: rerenderItemTable.bind(this)
-                    },
+                        el: selectors.customerSelect,
+                        instanceName: 'customer',
+                        selectCallback: rerenderItemTable.bind(this)
+                    }
                 }
             ]);
 
             // start item-table
             startItemsTable.call(this);
+        },
+
+        /**
+         * Submit data from transition overlay.
+         */
+        submitTransition = function() {
+            var transitionKey,
+                itemsData;
+
+            // gather data
+            this.sandbox.emit('husky.select.transition.get-checked', function(selection) {
+                transitionKey = selection[0];
+            });
+            this.sandbox.emit('sulu.item-table.transition.get-data', function(items) {
+                itemsData = items;
+            });
+
+            // return data
+            if (!!this.options.okCallback) {
+                this.options.okCallback({
+                    transition: transitionKey,
+                    items: itemsData
+                });
+            }
         };
 
     return {

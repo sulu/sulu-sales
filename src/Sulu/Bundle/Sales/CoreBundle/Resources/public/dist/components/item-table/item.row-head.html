@@ -1,14 +1,19 @@
 <thead class="header grey-font">
     <tr id="<%= rowId %>" class="<%= rowClass %>" data-id="<%= id %>">
+        <% if (showItemCount != false) { %>
         <td class="row-number">
         </td>
-        <% if (columns.indexOf('name') > -1) { %>
+        <% } if (columns.indexOf('name') > -1) { %>
         <td class="item-name">
             <%= header.name %>
         </td>
         <% } if (columns.indexOf('number') > -1) { %>
         <td class="item-number is-numeric">
             <%= header.number %>
+        </td>
+        <% } if (columns.indexOf('account') > -1) { %>
+        <td class="item-account">
+            <%= header.account %>
         </td>
         <% } if (columns.indexOf('address') > -1) { %>
         <td class="item-address">
