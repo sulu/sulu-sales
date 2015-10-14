@@ -202,6 +202,10 @@
                 <source>salescore.supplier</source>
                 <target>Lieferant</target>
             </trans-unit>
+            <trans-unit id="13" resname="salescore.transition.successful">
+                <source>salescore.transition.successful</source>
+                <target>Folgebeleg erfolgreich erstellt.</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>
