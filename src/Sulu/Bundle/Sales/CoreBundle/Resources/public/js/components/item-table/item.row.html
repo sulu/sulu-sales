@@ -5,8 +5,9 @@ disabled =  'disabled';
 %>
 
 <tr id="<%= rowId %>" class="item-table-row <%= rowClass %>" data-id="<%= id %>">
+    <% if (showItemCount != false) { %>
     <td class="row-number grey-font"></td>
-    <% if (columns.indexOf('name') > -1) { %>
+    <% } if (columns.indexOf('name') > -1) { %>
     <td class="item-name <%= !!disabled ? 'grey-font' : 'pointer' %>" data-name="name">
         <span title="<%= supplierName %>"><%= name %></span>
 
@@ -15,6 +16,10 @@ disabled =  'disabled';
     <% } if (columns.indexOf('number') > -1) { %>
     <td class="number item-number is-numeric <%= !!disabled ? 'grey-font' : 'pointer' %>" data-name="number">
         <span><%= number %></span>
+    </td>
+    <% } if (columns.indexOf('account') > -1) { %>
+    <td class="<%= !!disabled ? 'grey-font' : 'pointer' %>" data-name="account">
+        <span><%= account.name %></span>
     </td>
     <% } if (columns.indexOf('address') > -1) { %>
     <td class="address item-address <%= !!disabled ? 'grey-font' : 'pointer' %>" data-name="address" data-address="<%= addressObject %>">

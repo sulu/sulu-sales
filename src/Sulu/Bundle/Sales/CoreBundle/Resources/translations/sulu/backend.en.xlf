@@ -194,6 +194,14 @@
                 <source>salescore.no-assignment</source>
                 <target>No assignment</target>
             </trans-unit>
+            <trans-unit id="11" resname="salescore.transition.title">
+                <source>salescore.transition.title</source>
+                <target>Transition</target>
+            </trans-unit>
+            <trans-unit id="12" resname="salescore.supplier">
+                <source>salescore.supplier</source>
+                <target>Supplier</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>
