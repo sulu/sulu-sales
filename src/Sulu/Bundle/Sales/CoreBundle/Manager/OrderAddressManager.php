@@ -40,8 +40,7 @@ class OrderAddressManager
     public function __construct(
         EntityManagerInterface $em,
         OrderAddressRepository $orderAddressRepository
-    )
-    {
+    ) {
         $this->em = $em;
         $this->orderAddressRepository = $orderAddressRepository;
     }
@@ -115,8 +114,7 @@ class OrderAddressManager
         $contact = null,
         $account = null,
         $orderAddress = null
-    )
-    {
+    ) {
         $address = $this->em->getRepository(static::$addressEntityName)->find($addressId);
 
         if (!$address) {
@@ -142,8 +140,7 @@ class OrderAddressManager
         $contact = null,
         $account = null,
         $orderAddress = null
-    )
-    {
+    ) {
         if (!$orderAddress) {
             $orderAddress = new static::$orderAddressEntity;
         }
@@ -257,9 +254,11 @@ class OrderAddressManager
 
     /**
      * Returns the entry from the data with the given key, or the given default value, if the key does not exist
+     *
      * @param array $data
      * @param string $key
      * @param string $default
+     *
      * @return mixed
      */
     protected function getProperty(array $data, $key, $default = null)

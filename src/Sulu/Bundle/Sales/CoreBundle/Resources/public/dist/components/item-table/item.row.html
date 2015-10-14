@@ -19,7 +19,7 @@ disabled =  'disabled';
     </td>
     <% } if (columns.indexOf('account') > -1) { %>
     <td class="<%= !!disabled ? 'grey-font' : 'pointer' %>" data-name="account">
-        <span><%= account %></span>
+        <span><%= account.name %></span>
     </td>
     <% } if (columns.indexOf('address') > -1) { %>
     <td class="address item-address <%= !!disabled ? 'grey-font' : 'pointer' %>" data-name="address" data-address="<%= addressObject %>">

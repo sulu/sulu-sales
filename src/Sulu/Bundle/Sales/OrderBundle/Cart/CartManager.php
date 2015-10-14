@@ -579,6 +579,8 @@ class CartManager extends BaseSalesManager
         $cart = $this->getUserCart($user, $locale);
         $userId = $user ? $user->getId() : null;
 
+        $this->validateOrCreateAddresses($cart, $user);
+
         $item = $this->orderManager->getOrderItemById($itemId, $cart->getEntity());
 
         $this->orderManager->updateItem($item, $data, $locale, $userId);

@@ -235,6 +235,8 @@ define([
                 name: this.sandbox.translate('salescore.item.product'),
                 number: this.sandbox.translate('salescore.item.number'),
                 account: this.sandbox.translate('public.company'),
+                customer: this.sandbox.translate('salescore.customer'),
+                supplier: this.sandbox.translate('salescore.supplier'),
                 address: this.sandbox.translate('address.delivery'),
                 description: this.sandbox.translate('salescore.item.description'),
                 quantity: this.sandbox.translate('salescore.item.quantity'),

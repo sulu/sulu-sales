@@ -171,7 +171,10 @@ define([
 
                 // add account to each item
                 this.sandbox.util.foreach(customer.items, function(item) {
-                    item.account = cropString(customer.name, constants.MAX_CUSTOMER_LENGTH);
+                    item.account = {
+                        name: cropString(customer.name, constants.MAX_CUSTOMER_LENGTH),
+                        id: customer.id
+                    }
                 });
 
                 // add to items
