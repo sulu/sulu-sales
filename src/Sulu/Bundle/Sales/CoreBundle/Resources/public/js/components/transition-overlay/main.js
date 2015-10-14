@@ -42,8 +42,11 @@ define([
             MAX_CUSTOMER_LENGTH: 20
         },
 
-        selectors = {
+        classes = {
             overlayContainerClass: 'transition-overlay-inner-container',
+        },
+
+        selectors = {
             transitionSelect: '#transition-select',
             customerSelect: '#customer-select',
             itemsTable: '#item-table'
@@ -77,17 +80,6 @@ define([
         },
 
         /**
-         * bind custom events
-         */
-        bindCustomEvents = function() {
-
-        },
-
-        bindDomEvents = function() {
-
-        },
-
-        /**
          * Renders the transition overlay.
          *
          * @param {Object} data
@@ -95,11 +87,11 @@ define([
         initOverlay = function(data) {
             var $overlay, overlayContent, templateData;
 
-            //// prevent multiple initialization of the overlay
-            //this.sandbox.stop(this.sandbox.dom.find('.'+selectors.overlayContainerClass, this.$el));
-            //this.sandbox.dom.remove(this.sandbox.dom.find('.'+selectors.overlayContainerClass, this.$el));
+            // prevent multiple initialization of the overlay
+            this.sandbox.stop(this.sandbox.dom.find('.' + classes.overlayContainerClass, this.$el));
+            this.sandbox.dom.remove(this.sandbox.dom.find('.' + classes.overlayContainerClass, this.$el));
 
-            $overlay = this.sandbox.dom.createElement('<div class="' + selectors.overlayContainerClass + '"></div>');
+            $overlay = this.sandbox.dom.createElement('<div class="' + classes.overlayContainerClass + '"></div>');
             this.sandbox.dom.append(this.$el, $overlay);
 
             templateData = {
