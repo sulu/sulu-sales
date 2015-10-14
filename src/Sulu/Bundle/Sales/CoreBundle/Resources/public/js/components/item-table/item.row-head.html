@@ -15,6 +15,10 @@
         <td class="item-account">
             <%= header.account %>
         </td>
+        <% } if (columns.indexOf('supplier') > -1) { %>
+        <td class="item-supplier">
+            <%= header.supplier %>
+        </td>
         <% } if (columns.indexOf('address') > -1) { %>
         <td class="item-address">
             <%= header.address %>
