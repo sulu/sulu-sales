@@ -293,9 +293,6 @@ define([
 
             this.options = this.sandbox.util.extend({}, defaults, this.options);
 
-            bindCustomEvents.call(this);
-            bindDomEvents.call(this);
-
             this.render();
 
             this.sandbox.emit(EVENT_INITIALIZED.call(this));
