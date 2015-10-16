@@ -410,6 +410,40 @@ class Item extends ApiWrapper implements
 
     /**
      * @VirtualProperty
+     * @SerializedName("unitPrice")
+     * @Groups({"cart"})
+     *
+     * @return float
+     */
+    public function getUnitPrice()
+    {
+        $product = $this->getProduct();
+        $orderContentRatio = $product->getOrderContentRatio();
+        $price = $this->getPrice();
+
+        if ($orderContentRatio) {
+            return round($price / $orderContentRatio, 2);
+        }
+
+        return $price;
+    }
+
+    /**
+     * @VirtualProperty
+     * @SerializedName("unitPriceFormatted")
+     * @Groups({"cart"})
+     *
+     * @return string
+     */
+    public function getUnitPriceFormatted($locale = null)
+    {
+        $formatter = $this->getFormatter($locale);
+
+        return $formatter->format((float)$this->getUnitPrice());
+    }
+
+    /**
+     * @VirtualProperty
      * @SerializedName("totalNetPriceFormatted")
      * @Groups({"cart"})
      *
