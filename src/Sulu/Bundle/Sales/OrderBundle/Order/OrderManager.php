@@ -1078,7 +1078,7 @@ class OrderManager
                 )
             ),
             'responsibleContact',
-            'salesorder.orders.contact',
+            'salescore.responsible-contact',
             ' ',
             false,
             false,

@@ -202,6 +202,10 @@
                 <source>salescore.supplier</source>
                 <target>Lieferant</target>
             </trans-unit>
+            <trans-unit id="13" resname="salescore.responsible-contact">
+                <source>salescore.responsible-contact</source>
+                <target>Sachbearbeiter</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>
