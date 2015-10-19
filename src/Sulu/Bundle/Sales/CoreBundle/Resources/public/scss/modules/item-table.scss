@@ -4,12 +4,11 @@
 
 $rowPadding : 0 20px 0 0;
 
-body {
+.item-table-container {
     counter-reset: rowcount;
 }
 
 .item-table-list-form {
-
     margin-top:20px;
 
     &.hide-toolbars,
