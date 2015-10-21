@@ -114,7 +114,18 @@ define([
                         instanceName: 'transition',
                         data: overlayContent,
                         skin: 'wide',
-                        okCallback: submitTransition.bind(this)
+                        okCallback: submitTransition.bind(this),
+                        okDefaultText: 'test test'
+                        //slides: [
+                        //    {
+                        //        buttons: [
+                        //            {
+                        //                type: 'ok',
+                        //                text: 'blah schmafu'
+                        //            }
+                        //        ]
+                        //    }
+                        //]
                     }
                 }
             ]);
@@ -249,9 +260,9 @@ define([
                     name: 'select@husky',
                     options: {
                         data: customerData,
-                        defaultLabel: this.sandbox.translate('public.all'),
+                        defaultLabel: this.sandbox.translate('salescore.all-customers'),
                         deselectCallback: rerenderItemTable.bind(this),
-                        deselectField: this.sandbox.translate('public.all'),
+                        deselectField: this.sandbox.translate('salescore.all-customers'),
                         el: selectors.customerSelect,
                         instanceName: 'customer',
                         selectCallback: rerenderItemTable.bind(this)
