@@ -15,6 +15,7 @@
  * @param {String}   [options.columns] Columns to be shown in item-table
  * @param {Array}    [options.customerData] Data that is shown in the customer select
  * @param {Array}    [options.customerItemData] Array of data containing customer information and it's items
+ * @param {String}   [options.okButtonText] Text that is shown at ok-button
  * @param {Function} [options.okCallback] Callback function when transition should be made
  * @param {Array}    [options.transitionData] Data that is shown in transition select
  */
@@ -34,6 +35,7 @@ define([
             ],
             customerData: [],
             customerItemData: [],
+            okButtonText: 'salescore.create-transition',
             okCallback: null,
             transitionData: []
         },
@@ -115,17 +117,7 @@ define([
                         data: overlayContent,
                         skin: 'wide',
                         okCallback: submitTransition.bind(this),
-                        okDefaultText: 'test test'
-                        //slides: [
-                        //    {
-                        //        buttons: [
-                        //            {
-                        //                type: 'ok',
-                        //                text: 'blah schmafu'
-                        //            }
-                        //        ]
-                        //    }
-                        //]
+                        okDefaultText: this.sandbox.translate(this.options.okButtonText)
                     }
                 }
             ]);

@@ -210,6 +210,10 @@
                 <source>salescore.all-customers</source>
                 <target>All customers</target>
             </trans-unit>
+            <trans-unit id="15" resname="salescore.create-transition">
+                <source>salescore.create-transition</source>
+                <target>Create new transition</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>

@@ -41,16 +41,6 @@ class TransitionData
     protected $internalNote;
 
     /**
-     * @var Account
-     */
-    protected $customer;
-
-    /**
-     * @var Account
-     */
-    protected $supplier;
-
-    /**
      * @var float
      */
     protected $deliveryCost;
@@ -58,16 +48,28 @@ class TransitionData
     /**
      * @var Contact
      */
-    protected $responsiblePerson;
+    protected $responsibleContact;
 
     /**
      * @var array
      */
     protected $items;
 
+    /**
+     * @var array
+     */
+    protected $customerItems;
+
+    /**
+     * @var array
+     */
+    protected $customerSupplierItems;
+
     public function __construct()
     {
         $this->items = [];
+        $this->customerItems = [];
+        $this->customerSupplierItems = [];
     }
 
     /**
@@ -167,38 +169,6 @@ class TransitionData
     }
 
     /**
-     * @return Account
-     */
-    public function getCustomer()
-    {
-        return $this->customer;
-    }
-
-    /**
-     * @param Account $customer
-     */
-    public function setCustomer($customer)
-    {
-        $this->customer = $customer;
-    }
-
-    /**
-     * @return Account
-     */
-    public function getSupplier()
-    {
-        return $this->supplier;
-    }
-
-    /**
-     * @param Account $supplier
-     */
-    public function setSupplier($supplier)
-    {
-        $this->supplier = $supplier;
-    }
-
-    /**
      * @return float
      */
     public function getDeliveryCost()
@@ -217,17 +187,17 @@ class TransitionData
     /**
      * @return Contact
      */
-    public function getResponsiblePerson()
+    public function getResponsibleContact()
     {
-        return $this->responsiblePerson;
+        return $this->responsibleContact;
     }
 
     /**
-     * @param Contact $responsiblePerson
+     * @param Contact $responsibleContact
      */
-    public function setResponsiblePerson($responsiblePerson)
+    public function setresponsibleContact($responsibleContact)
     {
-        $this->responsiblePerson = $responsiblePerson;
+        $this->responsibleContact = $responsibleContact;
     }
 
     /**
@@ -236,6 +206,22 @@ class TransitionData
     public function getItems()
     {
         return $this->items;
+    }
+
+    /**
+     * @return array
+     */
+    public function getCustomerItems()
+    {
+        return $this->customerItems;
+    }
+
+    /**
+     * @return array
+     */
+    public function getCustomerSupplierItems()
+    {
+        return $this->customerSupplierItems;
     }
 
     /**
@@ -259,10 +245,12 @@ class TransitionData
     /**
      * @param $data
      */
-    public function setResponsiblePersonByData($data)
+    public function setResponsibleContactByData($data)
     {
-        $supplier = new Contact($this->getProperty('id', $data), $this->getProperty('fullName', $data));
-        $this->supplier = $supplier;
+        $this->responsibleContact = new Contact(
+            $this->getProperty('id', $data),
+            $this->getProperty('fullName', $data)
+        );
     }
 
     /**
@@ -273,43 +261,63 @@ class TransitionData
         foreach($data as $itemData) {
             $item = new Item();
 
-            $item->setPrice($this->getProperty('price', $itemData));
+            if (isset($itemData['item'])) {
+                $itemData = array_merge($itemData, $itemData['item']);
+            }
+
+            // stop if quantity is smaller than 0
+            if ($this->getProperty('quantity', $itemData, 0) < 1) {
+                continue;
+            }
+
+            $item->setPrice($this->getProperty('price', $itemData, 0));
             $item->setQuantity($this->getProperty('quantity', $itemData));
             $item->setQuantityUnit($this->getProperty('quantityUnit', $itemData));
+            $item->setAddress($this->getProperty('address', $itemData));
+            $item->setUseProductsPrice($this->getProperty('useProductsPrice', $itemData));
 
-            if ($itemData['product']) {
-                $customer = new Product(
+            if (isset($itemData['product'])) {
+                $product = new Product(
                     $this->getProperty('id', $itemData['product'])
                 );
-                $item->setCustomer($customer);
+                $item->setProduct($product);
             }
-            if ($itemData['customer']) {
+
+            // set account to customer
+            if (isset($itemData['account']) && !isset($itemData['customer'])) {
+                $itemData['customer'] = $itemData['account'];
+            }
+
+            if (isset($itemData['customer'])) {
                 $customer = new Account(
                     $this->getProperty('id', $itemData['customer']),
                     $this->getProperty('name', $itemData['customer'])
                 );
-                $item->setCustomer($customer);
+                $item->setCustomerAccount($customer);
             }
-            if ($itemData['supplier']) {
+            if (isset($itemData['supplier'])) {
                 $customer = new Account(
                     $this->getProperty('id', $itemData['supplier']),
                     $this->getProperty('name', $itemData['supplier'])
                 );
-                $item->setSupplier($customer);
+                $item->setSupplierAccount($customer);
             }
-        }
-    }
 
-    /**
-     * @param array $data
-     */
-    public function setResponsibleContactByData($data)
-    {
-        $contact = new Contact(
-            $data['responsibleContact']['id'],
-            $data['responsibleContact']['fullName']
-        );
-        $this->setResponsiblePerson($contact);
+            // add to items array
+            $this->items[] = $item;
+
+            // create ordered item arrays
+            $customerId = 0;
+            $supplierId = 0;
+            if ($item->getCustomerAccount()) {
+                $customerId = $item->getCustomerAccount()->getId();
+            }
+            if ($item->getSupplierAccount()) {
+                $supplierId = $item->getSupplierAccount()->getId();
+            }
+            $this->customerItems[$customerId][] = $item;
+            $this->customerSupplierItems[$customerId][$supplierId][] = $item;
+        }
     }
 
     /**
@@ -320,7 +328,7 @@ class TransitionData
         $result = [];
 
         foreach ($this->items as $item) {
-            $result[] = $item->toArray();
+            $result[] = $this->createDataArray($item);
         }
 
         return $result;
@@ -337,13 +345,39 @@ class TransitionData
             'commission' => $this->commission,
             'costCentre' => $this->costCentre,
             'deliveryCost' => $this->deliveryCost,
-            'items' => $this->,
+            'responsibleContact' => $this->createDataArray($this->responsibleContact),
+            'items' => $this->itemsToArray(),
         ];
     }
 
+    /**
+     * Calls to Array on a certain object, if method exists.
+     *
+     * @param Object $object
+     *
+     * @return null|array
+     */
+    private function createDataArray($object)
+    {
+        if ($object && method_exists($object, 'toArray')) {
+            return $object->toArray();
+        }
+
+        return null;
+    }
+
+    /**
+     * Get property of an array.
+     *
+     * @param string $key
+     * @param array $data
+     * @param mixed|null $default
+     *
+     * @return mixed
+     */
     protected function getProperty($key, $data, $default = null)
     {
-        if (isset($key['data'])) {
+        if (isset($data[$key])) {
             return $data[$key];
         }
 

@@ -31,6 +31,11 @@ class Item
     private $quantityUnit;
 
     /**
+     * @var bool
+     */
+    private $useProductsPrice;
+
+    /**
      * @var Product
      */
     private $product;
@@ -38,12 +43,17 @@ class Item
     /**
      * @var Account
      */
-    private $supplier;
+    private $supplierAccount;
 
     /**
      * @var Account
      */
-    private $customer;
+    private $customerAccount;
+
+    /**
+     * @var Address
+     */
+    private $address;
 
     /**
      * @return float
@@ -112,33 +122,33 @@ class Item
     /**
      * @return Account
      */
-    public function getSupplier()
+    public function getSupplierAccount()
     {
-        return $this->supplier;
+        return $this->supplierAccount;
     }
 
     /**
      * @param Account $supplier
      */
-    public function setSupplier($supplier)
+    public function setSupplierAccount($supplier)
     {
-        $this->supplier = $supplier;
+        $this->supplierAccount = $supplier;
     }
 
     /**
      * @return Account
      */
-    public function getCustomer()
+    public function getCustomerAccount()
     {
-        return $this->customer;
+        return $this->customerAccount;
     }
 
     /**
      * @param Account $customer
      */
-    public function setCustomer($customer)
+    public function setCustomerAccount($customer)
     {
-        $this->customer = $customer;
+        $this->customerAccount = $customer;
     }
 
     /**
@@ -146,13 +156,65 @@ class Item
      */
     public function toArray()
     {
-        return [
+        $data = [
+            'address' => $this->address,
+            'customerAccount' => $this->createDataArray($this->customerAccount),
+            'price' => $this->price,
+            'product' => $this->createDataArray($this->product),
+            'supplierAccount' => $this->createDataArray($this->supplierAccount),
+            'useProductsPrice' => $this->useProductsPrice,
             'quantity' => $this->quantity,
             'quantityUnit' => $this->quantityUnit,
-            'price' => $this->price,
-            'product' => $this->product->toArray(),
-            'supplier' => $this->supplier->toArray(),
-            'customer' => $this->customer->toArray(),
         ];
+
+        return array_filter($data);
+    }
+
+    /**
+     * @return Address
+     */
+    public function getAddress()
+    {
+        return $this->address;
+    }
+
+    /**
+     * @param Address $address
+     */
+    public function setAddress($address)
+    {
+        $this->address = $address;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getUseProductsPrice()
+    {
+        return $this->useProductsPrice;
+    }
+
+    /**
+     * @param bool $useProductsPrice
+     */
+    public function setUseProductsPrice($useProductsPrice)
+    {
+        $this->useProductsPrice = $useProductsPrice;
+    }
+
+    /**
+     * Calls to Array on a certain object, if method exists.
+     *
+     * @param Object $object
+     *
+     * @return null|array
+     */
+    private function createDataArray($object)
+    {
+        if ($object && method_exists($object, 'toArray')) {
+            return $object->toArray();
+        }
+
+        return null;
     }
 }
