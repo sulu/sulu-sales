@@ -171,7 +171,7 @@ class Item
     }
 
     /**
-     * @return Address
+     * @return array
      */
     public function getAddress()
     {
@@ -179,7 +179,7 @@ class Item
     }
 
     /**
-     * @param Address $address
+     * @param array $address
      */
     public function setAddress($address)
     {
