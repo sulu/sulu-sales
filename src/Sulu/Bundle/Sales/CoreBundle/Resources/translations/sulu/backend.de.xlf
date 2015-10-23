@@ -206,6 +206,14 @@
                 <source>salescore.responsible-contact</source>
                 <target>Sachbearbeiter</target>
             </trans-unit>
+            <trans-unit id="14" resname="salescore.all-customers">
+                <source>salescore.all-customers</source>
+                <target>Alle Kunden</target>
+            </trans-unit>
+            <trans-unit id="15" resname="salescore.create-transition">
+                <source>salescore.create-transition</source>
+                <target>Neuen Folgebeleg erstellen</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>

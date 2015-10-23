@@ -10,6 +10,7 @@
 
 namespace Sulu\Bundle\Sales\CoreBundle\Transition;
 
+use Sulu\Bundle\Sales\CoreBundle\Transition\TransitionData\TransitionData;
 use Symfony\Component\EventDispatcher\Event;
 
 /**
@@ -28,7 +29,7 @@ class TransitionEvent extends Event
     protected $targetKey;
 
     /**
-     * @var array
+     * @var TransitionData
      */
     protected $data;
 
@@ -40,10 +41,10 @@ class TransitionEvent extends Event
     /**
      * @param string $targetKey Target entity key.
      * @param string $referenceKey Source entity key.
-     * @param array $data
+     * @param TransitionData $data
      * @param string $locale
      */
-    public function __construct($targetKey, $referenceKey, $data, $locale)
+    public function __construct($targetKey, $referenceKey, TransitionData $data, $locale)
     {
         $this->targetKey = $targetKey;
         $this->referenceKey = $referenceKey;

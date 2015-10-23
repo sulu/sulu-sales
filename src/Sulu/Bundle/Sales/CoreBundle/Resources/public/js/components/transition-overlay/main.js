@@ -15,6 +15,7 @@
  * @param {String}   [options.columns] Columns to be shown in item-table
  * @param {Array}    [options.customerData] Data that is shown in the customer select
  * @param {Array}    [options.customerItemData] Array of data containing customer information and it's items
+ * @param {String}   [options.okButtonText] Text that is shown at ok-button
  * @param {Function} [options.okCallback] Callback function when transition should be made
  * @param {Array}    [options.transitionData] Data that is shown in transition select
  */
@@ -34,6 +35,7 @@ define([
             ],
             customerData: [],
             customerItemData: [],
+            okButtonText: 'salescore.create-transition',
             okCallback: null,
             transitionData: []
         },
@@ -114,7 +116,8 @@ define([
                         instanceName: 'transition',
                         data: overlayContent,
                         skin: 'wide',
-                        okCallback: submitTransition.bind(this)
+                        okCallback: submitTransition.bind(this),
+                        okDefaultText: this.sandbox.translate(this.options.okButtonText)
                     }
                 }
             ]);
@@ -249,9 +252,9 @@ define([
                     name: 'select@husky',
                     options: {
                         data: customerData,
-                        defaultLabel: this.sandbox.translate('public.all'),
+                        defaultLabel: this.sandbox.translate('salescore.all-customers'),
                         deselectCallback: rerenderItemTable.bind(this),
-                        deselectField: this.sandbox.translate('public.all'),
+                        deselectField: this.sandbox.translate('salescore.all-customers'),
                         el: selectors.customerSelect,
                         instanceName: 'customer',
                         selectCallback: rerenderItemTable.bind(this)
