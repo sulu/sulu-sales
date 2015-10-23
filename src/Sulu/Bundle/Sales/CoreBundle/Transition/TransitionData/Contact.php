@@ -11,7 +11,7 @@
 namespace Sulu\Bundle\Sales\CoreBundle\Transition\TransitionData;
 
 /**
- * Transition Data for an account
+ * Transition Data for an contact
  */
 class Contact
 {
