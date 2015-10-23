@@ -89,7 +89,7 @@ class Item extends ApiWrapper implements
      *
      * @VirtualProperty
      * @SerializedName("id")
-     * @Groups({"cart"})
+     * @Groups({"Default","cart"})
      *
      * @return int
      */
@@ -292,7 +292,7 @@ class Item extends ApiWrapper implements
     /**
      * @VirtualProperty
      * @SerializedName("quantity")
-     * @Groups({"cart"})
+     * @Groups({"Default","cart"})
      *
      * @return float
      */
@@ -385,7 +385,7 @@ class Item extends ApiWrapper implements
     /**
      * @VirtualProperty
      * @SerializedName("price")
-     * @Groups({"cart"})
+     * @Groups({"Default","cart"})
      *
      * @return float
      */
@@ -397,7 +397,7 @@ class Item extends ApiWrapper implements
     /**
      * @VirtualProperty
      * @SerializedName("priceFormatted")
-     * @Groups({"cart"})
+     * @Groups({"Default","cart"})
      *
      * @return string
      */
@@ -411,7 +411,7 @@ class Item extends ApiWrapper implements
     /**
      * @VirtualProperty
      * @SerializedName("unitPrice")
-     * @Groups({"cart"})
+     * @Groups({"Default","cart"})
      *
      * @return float
      */
@@ -431,7 +431,7 @@ class Item extends ApiWrapper implements
     /**
      * @VirtualProperty
      * @SerializedName("unitPriceFormatted")
-     * @Groups({"cart"})
+     * @Groups({"Default","cart"})
      *
      * @return string
      */
@@ -445,7 +445,7 @@ class Item extends ApiWrapper implements
     /**
      * @VirtualProperty
      * @SerializedName("totalNetPriceFormatted")
-     * @Groups({"cart"})
+     * @Groups({"Default","cart"})
      *
      * @return string
      */
@@ -461,7 +461,7 @@ class Item extends ApiWrapper implements
      *
      * @VirtualProperty
      * @SerializedName("totalNetPrice")
-     * @Groups({"cart"})
+     * @Groups({"Default","cart"})
      *
      * @return float
      */
@@ -732,7 +732,7 @@ class Item extends ApiWrapper implements
     /**
      * @VirtualProperty
      * @SerializedName("product")
-     * @Groups({"cart"})
+     * @Groups({"Default","cart"})
      *
      * @return ApiProductInterface
      */
@@ -769,7 +769,7 @@ class Item extends ApiWrapper implements
      *
      * @VirtualProperty
      * @SerializedName("deliveryAddress")
-     * @Groups({"cart"})
+     * @Groups({"Default","cart"})
      *
      * @return OrderAddress $deliveryAddress
      */
@@ -868,7 +868,7 @@ class Item extends ApiWrapper implements
      *
      * @VirtualProperty
      * @SerializedName("priceChange")
-     * @Groups({"cart"})
+     * @Groups({"Default","cart"})
      *
      * @return array|null
      */

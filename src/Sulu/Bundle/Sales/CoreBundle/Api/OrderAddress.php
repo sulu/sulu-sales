@@ -27,7 +27,7 @@ class OrderAddress extends ApiWrapper
      * @return int
      * @VirtualProperty
      * @SerializedName("id")
-     * @Groups({"cart"})
+     * @Groups({"Default","cart"})
      */
     public function getId()
     {
@@ -54,7 +54,7 @@ class OrderAddress extends ApiWrapper
      * @return string
      * @VirtualProperty
      * @SerializedName("salutation")
-     * @Groups({"cart"})
+     * @Groups({"Default","cart"})
      */
     public function getSalutation()
     {
@@ -81,7 +81,7 @@ class OrderAddress extends ApiWrapper
      * @return string
      * @VirtualProperty
      * @SerializedName("firstName")
-     * @Groups({"cart"})
+     * @Groups({"Default","cart"})
      */
     public function getFirstName()
     {
@@ -108,7 +108,7 @@ class OrderAddress extends ApiWrapper
      * @return string
      * @VirtualProperty
      * @SerializedName("lastName")
-     * @Groups({"cart"})
+     * @Groups({"Default","cart"})
      */
     public function getLastName()
     {
@@ -135,7 +135,7 @@ class OrderAddress extends ApiWrapper
      * @return string
      * @VirtualProperty
      * @SerializedName("accountName")
-     * @Groups({"cart"})
+     * @Groups({"Default","cart"})
      */
     public function getAccountName()
     {
@@ -162,7 +162,7 @@ class OrderAddress extends ApiWrapper
      * @return string
      * @VirtualProperty
      * @SerializedName("title")
-     * @Groups({"cart"})
+     * @Groups({"Default","cart"})
      */
     public function getTitle()
     {
@@ -189,7 +189,7 @@ class OrderAddress extends ApiWrapper
      * @return string
      * @VirtualProperty
      * @SerializedName("street")
-     * @Groups({"cart"})
+     * @Groups({"Default","cart"})
      */
     public function getStreet()
     {
@@ -216,7 +216,7 @@ class OrderAddress extends ApiWrapper
      * @return string
      * @VirtualProperty
      * @SerializedName("addition")
-     * @Groups({"cart"})
+     * @Groups({"Default","cart"})
      */
     public function getAddition()
     {
@@ -243,7 +243,7 @@ class OrderAddress extends ApiWrapper
      * @return string
      * @VirtualProperty
      * @SerializedName("number")
-     * @Groups({"cart"})
+     * @Groups({"Default","cart"})
      */
     public function getNumber()
     {
@@ -270,7 +270,7 @@ class OrderAddress extends ApiWrapper
      * @return string
      * @VirtualProperty
      * @SerializedName("city")
-     * @Groups({"cart"})
+     * @Groups({"Default","cart"})
      */
     public function getCity()
     {
@@ -297,7 +297,7 @@ class OrderAddress extends ApiWrapper
      * @return string
      * @VirtualProperty
      * @SerializedName("zip")
-     * @Groups({"cart"})
+     * @Groups({"Default","cart"})
      */
     public function getZip()
     {
@@ -324,7 +324,7 @@ class OrderAddress extends ApiWrapper
      * @return string
      * @VirtualProperty
      * @SerializedName("state")
-     * @Groups({"cart"})
+     * @Groups({"Default","cart"})
      */
     public function getState()
     {
@@ -351,7 +351,7 @@ class OrderAddress extends ApiWrapper
      * @return string
      * @VirtualProperty
      * @SerializedName("country")
-     * @Groups({"cart"})
+     * @Groups({"Default","cart"})
      */
     public function getCountry()
     {
@@ -378,7 +378,7 @@ class OrderAddress extends ApiWrapper
      * @return string
      * @VirtualProperty
      * @SerializedName("uid")
-     * @Groups({"cart"})
+     * @Groups({"Default","cart"})
      */
     public function getUid()
     {
@@ -405,7 +405,7 @@ class OrderAddress extends ApiWrapper
      * @return string
      * @VirtualProperty
      * @SerializedName("phone")
-     * @Groups({"cart"})
+     * @Groups({"Default","cart"})
      */
     public function getPhone()
     {
@@ -432,7 +432,7 @@ class OrderAddress extends ApiWrapper
      * @return string
      * @VirtualProperty
      * @SerializedName("phoneMobile")
-     * @Groups({"cart"})
+     * @Groups({"Default","cart"})
      */
     public function getPhoneMobile()
     {
@@ -459,7 +459,7 @@ class OrderAddress extends ApiWrapper
      * @return string
      * @VirtualProperty
      * @SerializedName("note")
-     * @Groups({"cart"})
+     * @Groups({"Default","cart"})
      */
     public function getNote()
     {
@@ -486,7 +486,7 @@ class OrderAddress extends ApiWrapper
      * @return string
      * @VirtualProperty
      * @SerializedName("postboxCity")
-     * @Groups({"cart"})
+     * @Groups({"Default","cart"})
      */
     public function getPostboxCity()
     {
@@ -513,7 +513,7 @@ class OrderAddress extends ApiWrapper
      * @return string
      * @VirtualProperty
      * @SerializedName("postboxNumber")
-     * @Groups({"cart"})
+     * @Groups({"Default","cart"})
      */
     public function getPostboxNumber()
     {
@@ -540,7 +540,7 @@ class OrderAddress extends ApiWrapper
      * @return string
      * @VirtualProperty
      * @SerializedName("postboxCode")
-     * @Groups({"cart"})
+     * @Groups({"Default","cart"})
      */
     public function getPostboxPostcode()
     {
@@ -567,7 +567,7 @@ class OrderAddress extends ApiWrapper
      * @return string
      * @VirtualProperty
      * @SerializedName("email")
-     * @Groups({"cart"})
+     * @Groups({"Default","cart"})
      */
     public function getEmail()
     {
@@ -607,7 +607,7 @@ class OrderAddress extends ApiWrapper
      * @return int|null
      * @VirtualProperty
      * @SerializedName("contactAddressId")
-     * @Groups({"cart"})
+     * @Groups({"Default","cart"})
      */
     public function getContactAddressId()
     {

@@ -11,9 +11,10 @@
 namespace Sulu\Bundle\Sales\OrderBundle\Controller;
 
 use FOS\RestBundle\Routing\ClassResourceInterface;
+use FOS\RestBundle\Controller\Annotations\Post;
 use Hateoas\Representation\CollectionRepresentation;
-
-use Sulu\Bundle\Sales\CoreBundle\SalesDependency\SalesDependencyClassInterface;
+use JMS\Serializer\SerializationContext;
+use Symfony\Component\HttpFoundation\Request;
 use Sulu\Bundle\Sales\OrderBundle\Api\Order;
 use Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatus;
 use Sulu\Bundle\Sales\OrderBundle\Entity\OrderType;
@@ -34,13 +35,9 @@ use Sulu\Component\Rest\ListBuilder\ListRepresentation;
 use Sulu\Component\Rest\RestController;
 use Sulu\Component\Rest\RestHelperInterface;
 use Sulu\Component\Security\SecuredControllerInterface;
-use Symfony\Component\HttpFoundation\Request;
-use FOS\RestBundle\Controller\Annotations\Post;
 
 /**
  * Makes orders available through a REST API
- *
- * @package Sulu\Bundle\Sales\OrderBundle\Controller
  */
 class OrderController extends RestController implements ClassResourceInterface, SecuredControllerInterface
 {
@@ -161,6 +158,12 @@ class OrderController extends RestController implements ClassResourceInterface, 
 
                 return $order;
             }
+        );
+
+        $view->setSerializationContext(
+            SerializationContext::create()->setGroups(
+                ['Default', 'partialCategory']
+            )
         );
 
         return $this->handleView($view);

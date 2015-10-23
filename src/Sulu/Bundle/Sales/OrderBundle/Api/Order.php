@@ -134,7 +134,7 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     /**
      * @VirtualProperty
      * @SerializedName("number")
-     * @Groups({"cart"})
+     * @Groups({"Default","cart"})
      *
      * @return int
      */
@@ -158,7 +158,7 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     /**
      * @VirtualProperty
      * @SerializedName("created")
-     * @Groups({"cart"})
+     * @Groups({"Default","cart"})
      *
      * @return DateTime
      */
@@ -321,7 +321,7 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     /**
      * @VirtualProperty
      * @SerializedName("currencyCode")
-     * @Groups({"cart"})
+     * @Groups({"Default","cart"})
      *
      * @return string
      */
@@ -478,7 +478,7 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     /**
      * @VirtualProperty
      * @SerializedName("deliveryCost")
-     * @Groups({"cart"})
+     * @Groups({"Default","cart"})
      *
      * @return float
      */
@@ -502,7 +502,7 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     /**
      * @VirtualProperty
      * @SerializedName("costCentre")
-     * @Groups({"cart"})
+     * @Groups({"Default","cart"})
      *
      * @return string
      */
@@ -526,7 +526,7 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     /**
      * @VirtualProperty
      * @SerializedName("commission")
-     * @Groups({"cart"})
+     * @Groups({"Default","cart"})
      *
      * @return string
      */
@@ -550,7 +550,7 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     /**
      * @VirtualProperty
      * @SerializedName("desiredDeliveryDate")
-     * @Groups({"cart"})
+     * @Groups({"Default","cart"})
      *
      * @return \DateTime
      */
@@ -702,7 +702,7 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     /**
      * @VirtualProperty
      * @SerializedName("items")
-     * @Groups({"cart"})
+     * @Groups({"Default","cart"})
      *
      * @return \Doctrine\Common\Collections\Collection
      */
@@ -818,7 +818,7 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     /**
      * @VirtualProperty
      * @SerializedName("deliveryAddress")
-     * @Groups({"cart"})
+     * @Groups({"Default","cart"})
      *
      * @return OrderAddressInterface
      */
@@ -846,7 +846,7 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     /**
      * @VirtualProperty
      * @SerializedName("invoiceAddress")
-     * @Groups({"cart"})
+     * @Groups({"Default","cart"})
      *
      * @return OrderAddressInterface
      */
@@ -895,7 +895,7 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     /**
      * @VirtualProperty
      * @SerializedName("totalNetPrice")
-     * @Groups({"cart"})
+     * @Groups({"Default","cart"})
      *
      * @return float
      */
@@ -907,7 +907,7 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     /**
      * @VirtualProperty
      * @SerializedName("totalNetPriceFormatted")
-     * @Groups({"cart"})
+     * @Groups({"Default","cart"})
      *
      * @return string
      */
@@ -921,7 +921,7 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     /**
      * @VirtualProperty
      * @SerializedName("deliveryCostFormatted")
-     * @Groups({"cart"})
+     * @Groups({"Default","cart"})
      *
      * @return string
      */
@@ -947,7 +947,7 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     /**
      * @VirtualProperty
      * @SerializedName("orderDate")
-     * @Groups({"cart"})
+     * @Groups({"Default","cart"})
      *
      * @return DateTime
      */
@@ -1046,7 +1046,7 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     /**
      * @VirtualProperty
      * @SerializedName("hasChangedPrices")
-     * @Groups({"cart"})
+     * @Groups({"Default","cart"})
      *
      * @return bool
      */
@@ -1072,7 +1072,7 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
      *
      * @VirtualProperty
      * @SerializedName("cartErrorCodes")
-     * @Groups({"cart"})
+     * @Groups({"Default","cart"})
      *
      * @return array
      */
@@ -1100,7 +1100,7 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
      *
      * @VirtualProperty
      * @SerializedName("isPending")
-     * @Groups({"cart"})
+     * @Groups({"Default","cart"})
      *
      * @return bool
      */
