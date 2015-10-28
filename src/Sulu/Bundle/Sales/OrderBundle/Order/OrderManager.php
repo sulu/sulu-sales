@@ -25,6 +25,7 @@ use Sulu\Component\Rest\ListBuilder\Doctrine\FieldDescriptor\DoctrineJoinDescrip
 use Sulu\Bundle\ContactBundle\Entity\AccountRepository;
 use Sulu\Bundle\ContactBundle\Entity\Contact;
 use Sulu\Bundle\ProductBundle\Product\ProductManagerInterface;
+use Sulu\Bundle\Sales\CoreBundle\Api\ApiItemInterface;
 use Sulu\Bundle\Sales\CoreBundle\Entity\ItemInterface;
 use Sulu\Bundle\Sales\CoreBundle\Manager\OrderAddressManager;
 use Sulu\Bundle\Sales\CoreBundle\Item\Exception\ItemNotFoundException;
@@ -702,13 +703,15 @@ class OrderManager
      * @param int $userId
      * @param Order $order
      *
-     * @return mixed
+     * @return ApiItemInterface
      */
     public function addItem($itemData, $locale, $userId, $order)
     {
         $item = $this->itemManager->save($itemData, $locale, $userId);
 
-        return $order->addItem($item->getEntity());
+        $order->addItem($item->getEntity());
+
+        return $item;
     }
 
     /**
