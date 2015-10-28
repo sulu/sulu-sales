@@ -15,6 +15,9 @@ use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Sulu\Component\Security\Authentication\UserInterface;
 use Sulu\Component\Persistence\RelationTrait;
+use Sulu\Bundle\ProductBundle\Entity\Status;
+use Sulu\Bundle\ProductBundle\Product\Exception\ProductNotFoundException;
+use Sulu\Bundle\ProductBundle\Product\Exception\ProductNotActiveException;
 use Sulu\Bundle\Sales\CoreBundle\Entity\ItemInterface;
 use Sulu\Bundle\Sales\CoreBundle\Pricing\GroupedItemsPriceCalculatorInterface;
 use Sulu\Bundle\Sales\CoreBundle\Manager\BaseSalesManager;
@@ -555,7 +558,9 @@ class CartManager extends BaseSalesManager
         // define user-id
         $userId = $user ? $user->getId() : null;
 
-        $this->orderManager->addItem($data, $locale, $userId, $cart);
+        $item = $this->orderManager->addItem($data, $locale, $userId, $cart);
+
+        $this->validateIfItemProductActive($item->getEntity());
 
         $this->orderManager->updateApiEntity($cart, $locale);
 
@@ -758,5 +763,30 @@ class CartManager extends BaseSalesManager
             $item->setDeliveryAddress(null);
             $this->em->remove($deliveryAddress);
         }
+    }
+
+    /**
+     * Checks if product of an item is in active state.
+     *
+     * @param ItemInterface $item
+     *
+     * @throws ProductNotActiveException
+     * @throws ProductNotFoundException
+     *
+     * @return bool
+     */
+    protected function validateIfItemProductActive(ItemInterface $item)
+    {
+        $product = $item->getProduct();
+
+        if (!$product) {
+            throw new ProductNotFoundException('item ' . $item->getId());
+        }
+
+        if ($product->getStatus()->getId() !== Status::ACTIVE) {
+            throw new ProductNotActiveException($product->getId());
+        }
+
+        return true;
     }
 }
