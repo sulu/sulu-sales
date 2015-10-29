@@ -56,6 +56,16 @@ class Item
     private $address;
 
     /**
+     * @var string
+     */
+    private $deliveryDate;
+
+    /**
+     * @var string
+     */
+    private $note;
+
+    /**
      * @return float
      */
     public function getPrice()
@@ -165,6 +175,8 @@ class Item
             'useProductsPrice' => $this->useProductsPrice,
             'quantity' => $this->quantity,
             'quantityUnit' => $this->quantityUnit,
+            'deliveryDate' => $this->deliveryDate,
+            'note' => $this->note,
         ];
 
         return array_filter($data);
@@ -200,6 +212,38 @@ class Item
     public function setUseProductsPrice($useProductsPrice)
     {
         $this->useProductsPrice = $useProductsPrice;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDeliveryDate()
+    {
+        return $this->deliveryDate;
+    }
+
+    /**
+     * @param string $deliveryDate
+     */
+    public function setDeliveryDate($deliveryDate)
+    {
+        $this->deliveryDate = $deliveryDate;
+    }
+
+    /**
+     * @return string
+     */
+    public function getNote()
+    {
+        return $this->note;
+    }
+
+    /**
+     * @param string $note
+     */
+    public function setNote($note)
+    {
+        $this->note = $note;
     }
 
     /**
