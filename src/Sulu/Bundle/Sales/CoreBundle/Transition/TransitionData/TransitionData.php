@@ -275,6 +275,7 @@ class TransitionData
             $item->setQuantityUnit($this->getProperty('quantityUnit', $itemData));
             $item->setAddress($this->getProperty('address', $itemData));
             $item->setUseProductsPrice($this->getProperty('useProductsPrice', $itemData));
+            $item->setDeliveryDate($this->getProperty('deliveryDate', $itemData));
 
             if (isset($itemData['product'])) {
                 $product = new Product(
@@ -345,6 +346,7 @@ class TransitionData
             'commission' => $this->commission,
             'costCentre' => $this->costCentre,
             'deliveryCost' => $this->deliveryCost,
+            'internalNote' => $this->getInternalNote(),
             'responsibleContact' => $this->createDataArray($this->responsibleContact),
             'items' => $this->itemsToArray(),
         ];

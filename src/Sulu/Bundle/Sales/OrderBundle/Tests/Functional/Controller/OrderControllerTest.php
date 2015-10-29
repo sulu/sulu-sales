@@ -11,7 +11,6 @@
 namespace Sulu\Bundle\Sales\OrderBundle\Tests\Functional\Controller;
 
 use DateTime;
-
 use Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatus;
 use Sulu\Bundle\Sales\OrderBundle\Tests\OrderTestBase;
 
