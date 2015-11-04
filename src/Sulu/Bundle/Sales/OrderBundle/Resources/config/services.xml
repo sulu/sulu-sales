@@ -90,6 +90,7 @@
             <argument type="service" id="twig" />
             <argument type="service" id="mailer" />
             <argument type="service" id="sulu_sales_order.order_pdf_manager" />
+            <argument type="service" id="jms_serializer.serializer" />
             <argument>%sulu_sales_order.shop_email_from%</argument>
             <argument>%sulu_sales_order.shop_email_confirmation_to%</argument>
             <argument>%sulu_sales_order.email_templates.customer_confirmation%</argument>

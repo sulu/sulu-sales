@@ -9,6 +9,8 @@
  */
 namespace Sulu\Bundle\Sales\OrderBundle\Order;
 
+use JMS\Serializer\SerializationContext;
+use JMS\Serializer\Serializer;
 use Sulu\Bundle\Sales\CoreBundle\Manager\EmailManager;
 use Sulu\Bundle\Sales\OrderBundle\Api\ApiOrderInterface;
 use Sulu\Component\Contact\Model\ContactInterface;
@@ -19,6 +21,11 @@ class OrderEmailManager extends EmailManager
      * @var OrderPdfManager
      */
     protected $pdfManager;
+
+    /**
+     * @var Serializer
+     */
+    protected $serializer;
 
     /**
      * @var string
@@ -44,6 +51,7 @@ class OrderEmailManager extends EmailManager
      * @param \Twig_Environment $twig
      * @param \Swift_Mailer $mailer
      * @param OrderPdfManager $pdfManager
+     * @param Serializer $serializer
      * @param string $emailFrom
      * @param string $confirmationRecipientEmailAddress
      * @param string $templateCustomerConfirmationPath
@@ -57,6 +65,7 @@ class OrderEmailManager extends EmailManager
         \Twig_Environment $twig,
         \Swift_Mailer $mailer,
         OrderPdfManager $pdfManager,
+        Serializer $serializer,
         $emailFrom,
         $confirmationRecipientEmailAddress,
         $templateCustomerConfirmationPath,
@@ -70,6 +79,7 @@ class OrderEmailManager extends EmailManager
         $this->twig = $twig;
         $this->mailer = $mailer;
         $this->pdfManager = $pdfManager;
+        $this->serializer = $serializer;
         // email addresses
         $this->emailFrom = $emailFrom;
         $this->confirmationRecipientEmailAddress = $confirmationRecipientEmailAddress;
@@ -176,6 +186,7 @@ class OrderEmailManager extends EmailManager
      * @param array $data
      * @param ApiOrderInterface $apiOrder
      * @param array $blindCopyRecipients Recipients to send bcc
+     * @param bool $sendXMLOrder
      *
      * @return bool
      */
@@ -184,7 +195,8 @@ class OrderEmailManager extends EmailManager
         $templatePath,
         $data = array(),
         ApiOrderInterface $apiOrder = null,
-        $blindCopyRecipients = array()
+        $blindCopyRecipients = array(),
+        $sendXMLOrder = false
     ) {
         $tmplData = array_merge(
             $data,
@@ -223,6 +235,10 @@ class OrderEmailManager extends EmailManager
                 ->setContentType('application/pdf')
                 ->setBody($pdf);
             $message->attach($attachment);
+
+            if ($sendXMLOrder) {
+                $message->attach($this->createXMLAttachment($apiOrder));
+            }
         }
 
         $failedRecipients = array();
@@ -235,5 +251,19 @@ class OrderEmailManager extends EmailManager
         }
 
         return true;
+    }
+
+    /**
+     * @param ApiOrderInterface $apiOrder
+     *
+     * @return \Swift_Mime_Attachment
+     */
+    private function createXMLAttachment(ApiOrderInterface $apiOrder)
+    {
+        $xmlFilename = 'PA_OrderConfirmation-' . $apiOrder->getNumber() . '.xml';
+        $context = SerializationContext::create()->setGroups(['xmlOrder']);
+        $serialized = $this->serializer->serialize($apiOrder, 'xml', $context);
+
+        return \Swift_Attachment::newInstance($serialized, $xmlFilename, 'application/xml');
     }
 }
