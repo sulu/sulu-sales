@@ -2,27 +2,34 @@
 
 namespace Sulu\Bundle\Sales\CoreBundle\Entity;
 
+use JMS\Serializer\Annotation\Groups;
+use JMS\Serializer\Annotation\SerializedName;
+use JMS\Serializer\Annotation\VirtualProperty;
 use Sulu\Bundle\ContactBundle\Entity\Address;
 
 abstract class BaseOrderAddress implements OrderAddressInterface
 {
     /**
      * @var string
+     * @Groups({"Default", "xmlOrder"})
      */
     private $salutation;
 
     /**
      * @var string
+     * @Groups({"Default", "xmlOrder"})
      */
     private $firstName;
 
     /**
      * @var string
+     * @Groups({"Default", "xmlOrder"})
      */
     private $lastName;
 
     /**
      * @var string
+     * @Groups({"Default", "xmlOrder"})
      */
     private $accountName;
 
@@ -33,6 +40,7 @@ abstract class BaseOrderAddress implements OrderAddressInterface
 
     /**
      * @var string
+     * @Groups({"Default", "xmlOrder"})
      */
     private $street;
 
@@ -43,41 +51,49 @@ abstract class BaseOrderAddress implements OrderAddressInterface
 
     /**
      * @var string
+     * @Groups({"Default", "xmlOrder"})
      */
     private $number;
 
     /**
      * @var string
+     * @Groups({"Default", "xmlOrder"})
      */
     private $city;
 
     /**
      * @var string
+     * @Groups({"Default", "xmlOrder"})
      */
     private $zip;
 
     /**
      * @var string
+     * @Groups({"Default", "xmlOrder"})
      */
     private $state;
 
     /**
      * @var string
+     * @Groups({"Default", "xmlOrder"})
      */
     private $country;
 
     /**
      * @var string
+     * @Groups({"Default", "xmlOrder"})
      */
     private $uid;
 
     /**
      * @var string
+     * @Groups({"Default", "xmlOrder"})
      */
     private $email;
 
     /**
      * @var string
+     * @Groups({"Default", "xmlOrder"})
      */
     private $phone;
 
@@ -88,21 +104,25 @@ abstract class BaseOrderAddress implements OrderAddressInterface
 
     /**
      * @var integer
+     * @Groups({"Default", "xmlOrder"})
      */
     private $id;
 
     /**
      * @var string
+     * @Groups({"Default", "xmlOrder"})
      */
     private $postboxCity;
 
     /**
      * @var string
+     * @Groups({"Default", "xmlOrder"})
      */
     private $postboxNumber;
 
     /**
      * @var string
+     * @Groups({"Default", "xmlOrder"})
      */
     private $postboxPostcode;
 

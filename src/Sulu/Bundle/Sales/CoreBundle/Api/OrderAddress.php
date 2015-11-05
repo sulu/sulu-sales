@@ -3,11 +3,10 @@
 namespace Sulu\Bundle\Sales\CoreBundle\Api;
 
 use JMS\Serializer\Annotation\VirtualProperty;
-use Sulu\Bundle\Sales\CoreBundle\Entity\OrderAddress as Entity;
-
 use JMS\Serializer\Annotation\Groups;
-use Sulu\Component\Rest\ApiWrapper;
 use JMS\Serializer\Annotation\SerializedName;
+use Sulu\Component\Rest\ApiWrapper;
+use Sulu\Bundle\Sales\CoreBundle\Entity\OrderAddress as Entity;
 
 /**
  * Defines the type of an order
