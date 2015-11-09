@@ -361,6 +361,7 @@ class OrderDataSetup
         $this->product->setStatus($productStatus);
         $this->product->setCreated(new DateTime());
         $this->product->setChanged(new DateTime());
+        $this->product->setSupplier($this->account);
         $this->product->setOrderUnit($orderUnit);
 
         // product translation
@@ -374,6 +375,7 @@ class OrderDataSetup
 
         // product
         $this->product2 = clone($this->product);
+        $this->product2->setSupplier($this->account);
         $translation2 = clone($this->productTranslation);
         $translation2->setProduct($this->product2);
         $this->product2->addTranslation($translation2);
