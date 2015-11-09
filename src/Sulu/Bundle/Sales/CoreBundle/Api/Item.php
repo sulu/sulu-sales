@@ -792,6 +792,7 @@ class Item extends ApiWrapper implements
     {
         $formatter = new \NumberFormatter($locale, \NumberFormatter::DECIMAL);
         $formatter->setAttribute(\NumberFormatter::MIN_FRACTION_DIGITS, 2);
+        $formatter->setAttribute(\NumberFormatter::MAX_FRACTION_DIGITS, 2);
         $formatter->setAttribute(\NumberFormatter::DECIMAL_ALWAYS_SHOWN, 1);
 
         return $formatter;
