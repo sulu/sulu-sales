@@ -24,7 +24,7 @@
         "sulu/sulu": "dev-develop",
         "sulu/product-bundle": "dev-develop",
         "massive/pdf-bundle": "dev-develop",
-        "sulu/product-bundle": "0.0.1",
+        "sulu/product-bundle": "~0.0",
         "sulu/contact-extension-bundle": "dev-develop"
     },
     "require-dev": {
