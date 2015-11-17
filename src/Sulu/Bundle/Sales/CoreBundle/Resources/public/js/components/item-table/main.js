@@ -1281,7 +1281,6 @@ define([
         },
 
         render: function() {
-
             // add translations for template
             var templateData = this.sandbox.util.extend({},
                 {
