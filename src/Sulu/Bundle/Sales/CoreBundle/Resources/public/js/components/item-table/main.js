@@ -28,6 +28,7 @@
  * @param {String} [options.addressKey] Defines how to access address value over api
  * @param {Bool}   [options.allowDuplicatedProducts] Defines if a product can be added multiple times to items list
  * @param {Bool}   [options.showItemCount] Defines if the column which shows the item count should be displayed.
+ * @param {Bool}   [options.taxfree] Defines if table should contain taxes
  */
 define([
     'text!sulusalescore/components/item-table/item.form.html',
@@ -66,12 +67,14 @@ define([
             rowCallback: null,
             settings: false,
             showItemCount: true,
-            urlFilter: {}
+            urlFilter: {},
+            taxfree: false
         },
 
         urls = {
             products: '/admin/api/products{?filter*}',
-            product: '/admin/api/products/'
+            product: '/admin/api/products/',
+            pricing: '/admin/api/pricings'
         },
 
         constants = {
@@ -769,6 +772,7 @@ define([
                     // set item to product
                     itemData = setItemByProduct.call(this, response);
                     updateItemRow.call(this, rowId, itemData);
+                    updateItemPrice.call(this, rowId);
                 }.bind(this))
                 .fail(function(request, message, error) {
                         this.sandbox.emit('sulu.labels.error.show',
@@ -777,6 +781,36 @@ define([
                             ''
                         );
                         this.sandbox.logger.error(request, message, error);
+                }.bind(this));
+        },
+
+        /**
+         * Fetches price for a specific item.
+         *
+         * @param int rowId
+         */
+        updateItemPrice = function(rowId) {
+            var item = this.items[rowId];
+
+            // load product price
+            this.sandbox.util.save(urls.pricing, 'POST' , {
+                currency: this.currency,
+                taxfree: this.options.taxfree,
+                items: [item]
+            }).then(function(response) {
+                // set item to product
+                //itemData = setItemByProduct.call(this, response);
+                //updateItemRow.call(this, rowId, itemData);
+
+                console.log(response);
+            }.bind(this))
+                .fail(function(request, message, error) {
+                    this.sandbox.emit('sulu.labels.warning.show',
+                        this.sandbox.translate('salescore.item-table.'),
+                        'labels.error',
+                        ''
+                    );
+                    this.sandbox.logger.error(request, message, error);
                 }.bind(this));
         },
 

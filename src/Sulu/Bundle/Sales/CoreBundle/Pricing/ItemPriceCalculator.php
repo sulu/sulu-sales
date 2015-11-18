@@ -11,6 +11,7 @@
 namespace Sulu\Bundle\Sales\CoreBundle\Pricing;
 
 use Sulu\Bundle\ProductBundle\Product\ProductPriceManagerInterface;
+use Sulu\Bundle\Sales\CoreBundle\Api\ApiItemInterface;
 use Sulu\Bundle\Sales\CoreBundle\Pricing\Exceptions\PriceCalculationException;
 
 /**
@@ -88,7 +89,33 @@ class ItemPriceCalculator
      */
     public function calculate($item, $currency = null, $useProductsPrice = true)
     {
+        $priceValue = $this->getSingleItemPrice($item, $currency, $useProductsPrice);
+
+        $itemPrice = $priceValue * $item->getCalcQuantity();
+
+        // calculate items discount
+        $discount = ($itemPrice / 100) * $item->getCalcDiscount();
+
+        // calculate total item price
+        $totalPrice = $itemPrice - $discount;
+
+        return $totalPrice;
+    }
+
+    /**
+     * Returns price of a single item based on it's quantity
+     *
+     * @param ApiItemInterface $item
+     * @param null|string $currency
+     * @param null|bool $useProductsPrice
+     */
+    public function getSingleItemPrice($item, $currency = null, $useProductsPrice = null)
+    {
         $currency = $this->getCurrency($currency);
+
+        if ($useProductsPrice === null) {
+            $useProductsPrice = $item->getUseProductsPrice();
+        }
 
         // validate item
         $this->validateItem($item);
@@ -103,16 +130,6 @@ class ItemPriceCalculator
         if ($item->getPrice() && $item->getPrice() !== $priceValue) {
             $item->setPriceChange($item->getPrice(), $priceValue);
         }
-
-        $itemPrice = $priceValue * $item->getCalcQuantity();
-
-        // calculate items discount
-        $discount = ($itemPrice / 100) * $item->getCalcDiscount();
-
-        // calculate total item price
-        $totalPrice = $itemPrice - $discount;
-
-        return $totalPrice;
     }
 
     /**

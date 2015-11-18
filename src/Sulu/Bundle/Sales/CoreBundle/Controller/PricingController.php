@@ -11,9 +11,9 @@
 namespace Sulu\Bundle\Sales\CoreBundle\Controller;
 
 use FOS\RestBundle\Routing\ClassResourceInterface;
+use Symfony\Component\HttpFoundation\Request;
 use Sulu\Bundle\Sales\CoreBundle\Item\ItemManager;
 use Sulu\Bundle\Sales\CoreBundle\Pricing\ItemPriceCalculator;
-use Symfony\Component\HttpFoundation\Request;
 use Sulu\Component\Rest\RestController;
 
 /**
@@ -21,14 +21,23 @@ use Sulu\Component\Rest\RestController;
  */
 class PricingController extends RestController implements ClassResourceInterface
 {
+    /**
+     * Calculate pricing of an array of items
+     *
+     * @param Request $request
+     *
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
     public function postAction(Request $request)
     {
         try {
             $data = $request->request->all();
 
-            $this->getItemPrices($data['items'], $data['items']);
+            $locale = $this->getLocale($request);
 
-            $view = $this->view($data, 200);
+            $prices = $this->calculateItemPrices($data['items'], $data['currency'], $data['taxfree'], $locale);
+
+            $view = $this->view($prices['items'], 200);
 
         } catch (OrderDependencyNotFoundException $exc) {
             $exception = new EntityNotFoundException($exc->getEntityName(), $exc->getId());
@@ -41,17 +50,32 @@ class PricingController extends RestController implements ClassResourceInterface
         return $this->handleView($view);
     }
 
-    private function calculateItemPrices($itemsData, $currency, $taxfree)
+    private function calculateItemPrices($itemsData, $currency, $taxfree, $locale)
     {
         $calculator = $this->getItemPriceCalculator();
-        $prices = 0;
+        $totalPrice = 0;
+        $items = [];
 
         foreach ($itemsData as $itemData) {
-            $item = $this->getItemManager()->save($itemData);
-            $itemPrice = $calculator->calculate($item);
-            $prices += $itemPrice;
+            $useProductsPrice = false;
+            if (isset($itemData['useProductsPrice']) && $itemData['useProductsPrice'] == true) {
+                $useProductsPrice = $itemData['useProductsPrice'];
+            }
+
+            $item = $this->getItemManager()->save($itemData, $locale);
+            $itemPrice = $calculator->getItemPrice($item, $currency, $useProductsPrice);
+            $itemTotalPrice = $calculator->calculate($item, $currency, $useProductsPrice);
+            $item->setPrice($itemPrice);
+            $item->setTotalNetPrice($itemTotalPrice);
+
+            $items[] = $item;
+            $totalPrice += $itemPrice;
         }
 
+        return [
+            'total' => $totalPrice,
+            'items' => $items,
+        ];
     }
 
     /**

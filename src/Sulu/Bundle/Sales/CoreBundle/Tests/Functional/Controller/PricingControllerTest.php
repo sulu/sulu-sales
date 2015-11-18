@@ -8,18 +8,17 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Sulu\Bundle\Sales\OrderBundle\Tests\Functional\Controller;
+namespace Sulu\Bundle\Sales\CoreBundle\Tests\Functional\Controller;
 
-use Sulu\Bundle\TestBundle\Testing\SuluTestCase;
+use Sulu\Bundle\ProductBundle\Tests\Resources\ProductTestData;
+use Sulu\Bundle\Sales\CoreBundle\Tests\Resources\SuluSalesTestCase;
 
 /**
  * Testing Pricing controller.
  */
-class PricingControllerTest extends SuluTestCase
+class PricingControllerTest extends SuluSalesTestCase
 {
     protected $locale = 'en';
-
-    protected static $orderStatusEntityName = 'SuluSalesOrderBundle=>OrderStatus';
 
     /**
      * @var OrderDataSetup
@@ -31,36 +30,61 @@ class PricingControllerTest extends SuluTestCase
      */
     protected $em;
 
+    /**
+     * @var ProductTestData
+     */
+    protected $productData;
+
+    /**
+     * {@inheritdoc}
+     */
     public function setUp()
     {
         $this->em = $this->db('ORM')->getOm();
         $this->purgeDatabase();
         $this->setUpTestData();
-        $this->client = $this->createAuthenticatedClient();
         $this->em->flush();
+        $this->client = $this->createAuthenticatedClient();
     }
 
+    /**
+     * Setup test data.
+     */
     protected function setUpTestData()
     {
+        $this->productData = new ProductTestData($this->container);
     }
 
+    /**
+     * Simple test for pricing api.
+     */
     public function testSimplePricing()
     {
+        $itemData = [
+            $this->getItemSampleData(),
+        ];
+
         $client = $this->createAuthenticatedClient();
         $client->request(
             'POST', '/api/pricings', [
                 'taxfree' => false,
                 'currency' => 'EUR',
-                'items' => $this->getItemSampleData()
+                'items' => $itemData
             ]
         );
 
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $response = json_decode($client->getResponse()->getContent());
 
-        $this->assertEquals($this->data->order->getId(), $response->id);
+        $this->assertEquals($itemData[0]['price'], $response[0]->price);
+        $this->assertEquals($itemData[0]['price'] * $itemData[0]['quantity'], $response[0]->totalNetPrice);
     }
 
+    /**
+     * Returns sample data for item.
+     *
+     * @return array
+     */
     private function getItemSampleData()
     {
         return [
@@ -75,5 +99,15 @@ class PricingControllerTest extends SuluTestCase
                 'id' => 1,
             ],
         ];
+    }
+
+    /**
+     * Returns a random bool.
+     *
+     * @return bool
+     */
+    private function getRandomBool()
+    {
+        return 1 === rand(0,1);
     }
 }
