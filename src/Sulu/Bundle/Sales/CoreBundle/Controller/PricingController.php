@@ -63,7 +63,7 @@ class PricingController extends RestController implements ClassResourceInterface
             }
 
             $item = $this->getItemManager()->save($itemData, $locale);
-            $itemPrice = $calculator->getItemPrice($item, $currency, $useProductsPrice);
+            $itemPrice = $calculator->getSingleItemPrice($item, $currency, $useProductsPrice);
             $itemTotalPrice = $calculator->calculate($item, $currency, $useProductsPrice);
             $item->setPrice($itemPrice);
             $item->setTotalNetPrice($itemTotalPrice);
