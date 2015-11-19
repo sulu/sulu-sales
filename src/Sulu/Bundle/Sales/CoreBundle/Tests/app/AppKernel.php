@@ -7,10 +7,18 @@ class AppKernel extends SuluTestKernel
 {
     public function registerBundles()
     {
-        $bundles = parent::registerBundles();
-        $bundles[] = new \Sulu\Bundle\ProductBundle\SuluProductBundle();
-        $bundles[] = new \Sulu\Bundle\Sales\CoreBundle\SuluSalesCoreBundle();
-        return $bundles;
+        $allBundles = parent::registerBundles();
+        $bundles = [
+                new \Sulu\Bundle\ProductBundle\SuluProductBundle(),
+                new \Sulu\Bundle\Sales\CoreBundle\SuluSalesCoreBundle(),
+
+                new Sulu\Bundle\ContactExtensionBundle\SuluContactExtensionBundle(),
+
+                // test mails
+                new Symfony\Bundle\SwiftmailerBundle\SwiftmailerBundle(),
+            ];
+
+        return array_merge($allBundles, $bundles);
     }
 
     public function registerContainerConfiguration(LoaderInterface $loader)
