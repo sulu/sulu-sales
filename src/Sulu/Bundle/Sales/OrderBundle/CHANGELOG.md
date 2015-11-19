@@ -2,7 +2,7 @@
 
 ## unreleased:
 
-COREBUNDLE: Added PriceFormatter
+CoreBundle: Added PriceFormatter
 
 ### 2015-04-21
 

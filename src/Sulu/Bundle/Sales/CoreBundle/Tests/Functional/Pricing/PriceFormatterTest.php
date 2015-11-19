@@ -27,7 +27,9 @@ class PriceFormatterTest extends SuluTestCase
     {
         parent::setUp();
 
-        $this->priceFormatter = new PriceFormatter($this->getContainer()->getParameter('website_locale'), 2);
+        $defaultLocale = $this->getContainer()->getParameter('website_locale');
+        $defaultDigits = $this->getContainer()->getParameter('priceformatter_digits');
+        $this->priceFormatter = new PriceFormatter($defaultLocale, $defaultDigits);
     }
 
     /**
@@ -59,7 +61,7 @@ class PriceFormatterTest extends SuluTestCase
         // test defaultLocale with default amount of digits (see self::setUp)
         $formatted = $this->priceFormatter->format(123.45);
 
-        $this->assertEquals('123,45', $formatted, 'price format for defaultLocale does not match');
+        $this->assertEquals('123,45', $formatted, 'price format for default digits does not match');
     }
 
     /**

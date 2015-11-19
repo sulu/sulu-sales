@@ -40,6 +40,11 @@ class SuluSalesCoreExtension extends Extension
             $config['email_from']
         );
 
+        $container->setParameter(
+            'sulu_sales_core.priceformatter_digits',
+            $config['priceformatter_digits']
+        );
+
         $this->setParameters($container, 'sulu_sales_core.email_templates', $config['email_templates']);
     }
 

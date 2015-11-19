@@ -79,8 +79,6 @@ class PriceFormatter
             case self::CURRENCY_LOCATION_SUFFIX:
                 $formattedPrice = $formattedPrice . ' ' . $currency;
                 break;
-            default:
-                break;
         }
 
         return $formattedPrice;
@@ -92,7 +90,7 @@ class PriceFormatter
      *
      * @return NumberFormatter
      */
-    protected function getFormatter($locale = 'de-AT', $digits = 2)
+    protected function getFormatter($locale, $digits)
     {
         $formatter = new \NumberFormatter($locale, NumberFormatter::DECIMAL);
         $formatter->setAttribute(NumberFormatter::MIN_FRACTION_DIGITS, $digits);

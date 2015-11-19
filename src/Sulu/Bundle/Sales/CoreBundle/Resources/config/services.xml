@@ -115,7 +115,7 @@
 
         <service id="sulu_sales_core.pricing.formatter" class="%sulu_sales_core.pricing.formatter.class%">
             <argument>%website_locale%</argument>
-            <argument>2</argument>
+            <argument>%sulu_sales_core.priceformatter_digits%</argument>
         </service>
     </services>
 </container>
