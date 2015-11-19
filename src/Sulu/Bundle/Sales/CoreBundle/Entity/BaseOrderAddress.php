@@ -2,9 +2,8 @@
 
 namespace Sulu\Bundle\Sales\CoreBundle\Entity;
 
+use JMS\Serializer\Annotation\Exclude;
 use JMS\Serializer\Annotation\Groups;
-use JMS\Serializer\Annotation\SerializedName;
-use JMS\Serializer\Annotation\VirtualProperty;
 use Sulu\Bundle\ContactBundle\Entity\Address;
 
 abstract class BaseOrderAddress implements OrderAddressInterface
@@ -128,6 +127,7 @@ abstract class BaseOrderAddress implements OrderAddressInterface
 
     /**
      * @var \Sulu\Bundle\ContactBundle\Entity\Address
+     * @Exclude
      */
     private $contactAddress;
 
