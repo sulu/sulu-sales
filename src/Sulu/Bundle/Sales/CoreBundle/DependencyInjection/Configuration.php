@@ -28,7 +28,7 @@ class Configuration implements ConfigurationInterface
         $treeBuilder = new TreeBuilder();
         $treeBuilder->root('sulu_sales_core')
             ->children()
-                ->scalarNode('priceformatter_digits')->defaultValue(4)->end()
+                ->scalarNode('priceformatter_digits')->defaultValue(2)->end()
                 ->arrayNode('routes')
                     ->useAttributeAsKey('title')
                     ->prototype('array')
