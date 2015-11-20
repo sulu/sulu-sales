@@ -11,6 +11,7 @@
 namespace Sulu\Bundle\Sales\OrderBundle\Order;
 
 use Sulu\Bundle\Sales\CoreBundle\Item\ItemFactoryInterface;
+use Sulu\Bundle\Sales\CoreBundle\Pricing\PriceFormatter;
 use Sulu\Bundle\Sales\OrderBundle\Api\Order as ApiOrder;
 use Sulu\Bundle\Sales\OrderBundle\Entity\OrderInterface;
 use Sulu\Bundle\Sales\OrderBundle\Entity\Order;
@@ -20,12 +21,20 @@ class OrderFactory implements OrderFactoryInterface
     private $itemFactory;
 
     /**
+     * @var PriceFormatter
+     */
+    private $priceFormatter;
+
+    /**
      * @param ItemFactoryInterface $itemFactory
+     * @param PriceFormatter $priceFormatter
      */
     public function __construct(
-        ItemFactoryInterface $itemFactory
+        ItemFactoryInterface $itemFactory,
+        PriceFormatter $priceFormatter
     ) {
         $this->itemFactory = $itemFactory;
+        $this->priceFormatter = $priceFormatter;
     }
 
     /**
@@ -41,6 +50,6 @@ class OrderFactory implements OrderFactoryInterface
      */
     public function createApiEntity(OrderInterface $order, $locale)
     {
-        return new ApiOrder($order, $locale, $this->itemFactory);
+        return new ApiOrder($order, $locale, $this->itemFactory, $this->priceFormatter);
     }
 }

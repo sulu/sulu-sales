@@ -38,6 +38,7 @@
         <!--FACTORIES-->
         <service id="sulu_sales_core.item_factory" class="%sulu_sales_core.item_factory.class%">
             <argument type="service" id="sulu_product.product_factory"></argument>
+            <argument type="service" id="sulu_sales_core.pricing.formatter"/>
             <argument>%sulu_product.default_currency%</argument>
         </service>
 
