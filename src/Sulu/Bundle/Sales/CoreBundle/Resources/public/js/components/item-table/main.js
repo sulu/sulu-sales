@@ -398,6 +398,30 @@ define([
                 }
             }
         },
+        //
+        ///**
+        // * Sets the price input of a row.
+        // *
+        // * @param {Object} $row
+        // * @param {Number} price
+        // */
+        //setItemRowTotalPrice = function($row, price) {
+        //    // update input in dom
+        //    var $el = this.sandbox.dom.find(constants.over, $row);
+        //    this.sandbox.dom.val($el, this.sandbox.numberFormat(price, 'n'));
+        //},
+
+        /**
+         * Sets the price input of a row.
+         *
+         * @param {Object} $row
+         * @param {Number} price
+         */
+        setItemRowPriceInput = function($row, price) {
+            // update input in dom
+            var $el = this.sandbox.dom.find(constants.priceInput, $row);
+            this.sandbox.dom.val($el, this.sandbox.numberFormat(price, 'n'));
+        },
 
         /**
          * Returns an associative array of productIds and prices.
@@ -553,14 +577,18 @@ define([
             var rowId = getRowData.call(this, event).id;
             // update quantity
             this.items[rowId].quantity = this.sandbox.parseFloat(this.sandbox.dom.val(event.target));
-            refreshItemsData.call(this);
 
-            // update rows overall price
-            updateOverallPrice.call(this, rowId);
+            // update API
+            updateItemPrices.call(this, rowId).then(function() {
+                refreshItemsData.call(this);
 
-            // update overall price
-            updateGlobalPrice.call(this);
+                // update rows overall price
+                updateOverallPrice.call(this, rowId);
 
+                // update overall price
+                updateGlobalPrice.call(this);
+
+            }.bind(this));
             this.sandbox.emit(EVENT_CHANGED.call(this));
         },
 
@@ -698,15 +726,18 @@ define([
          */
         getOverallPriceString = function(item) {
             setItemDefaults(item);
-            return PriceCalcUtil.getTotalPrice(
-                this.sandbox,
-                item.price,
-                getCurrency.call(this, item),
-                item.discount,
-                item.quantity,
-                item.tax,
-                true
-            );
+
+            return item.totalNetPriceFormatted + ' ' + getCurrency.call(this, item);
+
+            //return PriceCalcUtil.getTotalPrice(
+            //    this.sandbox,
+            //    item.price,
+            //    getCurrency.call(this, item),
+            //    item.discount,
+            //    item.quantity,
+            //    item.tax,
+            //    true
+            //);
         },
 
         /**
@@ -716,6 +747,7 @@ define([
          */
         setItemDefaults = function(item) {
             item.price = item.price || 0;
+            item.totalPriceFormatted = item.totalPriceFormatted || 0;
             item.discount = item.discount || 0;
             item.quantity = item.quantity || 0;
             item.tax = item.tax || 0;
@@ -771,8 +803,12 @@ define([
                 .then(function(response) {
                     // set item to product
                     itemData = setItemByProduct.call(this, response);
-                    updateItemRow.call(this, rowId, itemData);
-                    updateItemPrice.call(this, rowId);
+                    $row = updateItemRow.call(this, rowId, itemData);
+                    // fetch prices
+                    updateItemPrices.call(this, rowId);
+                    // update ui
+                    setItemRowPriceInput.call(this, $row, itemData);
+                    updateOverallPrice.call(this, rowId);
                 }.bind(this))
                 .fail(function(request, message, error) {
                         this.sandbox.emit('sulu.labels.error.show',
@@ -789,8 +825,9 @@ define([
          *
          * @param int rowId
          */
-        updateItemPrice = function(rowId) {
+        updateItemPrices = function(rowId) {
             var item = this.items[rowId];
+            var isLoadedPromise = new this.sandbox.data.deferred();
 
             // load product price
             this.sandbox.util.save(urls.pricing, 'POST' , {
@@ -798,11 +835,15 @@ define([
                 taxfree: this.options.taxfree,
                 items: [item]
             }).then(function(response) {
-                // set item to product
-                //itemData = setItemByProduct.call(this, response);
-                //updateItemRow.call(this, rowId, itemData);
 
-                console.log(response);
+                // replace item with new values
+                this.items[rowId] = response[0];
+
+                //var priceApi = response[0];
+                //item.price = priceApi.price;
+                //item.totalNetPrice = priceApi.totalNetPrice;
+
+                isLoadedPromise.resolve();
             }.bind(this))
                 .fail(function(request, message, error) {
                     this.sandbox.emit('sulu.labels.warning.show',
@@ -811,7 +852,12 @@ define([
                         ''
                     );
                     this.sandbox.logger.error(request, message, error);
+
+                    isLoadedPromise.reject();
+
                 }.bind(this));
+
+            return isLoadedPromise;
         },
 
         /**
@@ -978,6 +1024,7 @@ define([
 
             rowTpl = this.sandbox.util.template(RowTpl, data);
             $row = this.sandbox.dom.createElement(rowTpl);
+
             return $row;
         },
 
