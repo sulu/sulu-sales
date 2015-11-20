@@ -138,23 +138,24 @@
 .global-price-container {
   padding-top: 15px;
   position: relative;
+  float: right;
 }
-/* line 156, ../scss/modules/item-table.scss */
+/* line 157, ../scss/modules/item-table.scss */
 .global-price-container .global-price-table {
   width: initial;
   float: right;
   margin-right: 31px;
   text-align: right;
 }
-/* line 162, ../scss/modules/item-table.scss */
+/* line 163, ../scss/modules/item-table.scss */
 .global-price-container .global-price-table td {
   padding: 0 20px 0 0;
 }
-/* line 166, ../scss/modules/item-table.scss */
+/* line 167, ../scss/modules/item-table.scss */
 .global-price-container .global-price-table tr {
   height: 30px;
 }
-/* line 168, ../scss/modules/item-table.scss */
+/* line 169, ../scss/modules/item-table.scss */
 .global-price-container .global-price-table tr:last-child {
   font-weight: bold;
   border-top: 1px solid #ccc;

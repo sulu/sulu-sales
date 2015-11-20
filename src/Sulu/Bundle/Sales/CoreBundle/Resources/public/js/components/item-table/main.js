@@ -265,7 +265,6 @@ define([
          * bind dom events
          */
         bindDomEvents = function() {
-
             // add new item
             this.sandbox.dom.on(this.$el, 'click', addNewItemClicked.bind(this), '.add-row');
             // remove row
@@ -417,10 +416,12 @@ define([
          * @param {Object} $row
          * @param {Number} price
          */
-        setItemRowPriceInput = function($row, price) {
+        setItemRowPriceInput = function(rowId) {
             // update input in dom
+
+            var item = this.items[rowId];
             var $el = this.sandbox.dom.find(constants.priceInput, $row);
-            this.sandbox.dom.val($el, this.sandbox.numberFormat(price, 'n'));
+            this.sandbox.dom.val($el, this.sandbox.numberFormat(item.price, 'n'));
         },
 
         /**
@@ -578,17 +579,8 @@ define([
             // update quantity
             this.items[rowId].quantity = this.sandbox.parseFloat(this.sandbox.dom.val(event.target));
 
-            // update API
-            updateItemPrices.call(this, rowId).then(function() {
-                refreshItemsData.call(this);
+            updateItemRowPrices.call(this, rowId);
 
-                // update rows overall price
-                updateOverallPrice.call(this, rowId);
-
-                // update overall price
-                updateGlobalPrice.call(this);
-
-            }.bind(this));
             this.sandbox.emit(EVENT_CHANGED.call(this));
         },
 
@@ -601,13 +593,8 @@ define([
             var rowId = getRowData.call(this, event).id;
             // update price
             this.items[rowId].price = this.sandbox.parseFloat(this.sandbox.dom.val(event.target));
-            refreshItemsData.call(this);
 
-            // update rows overall price
-            updateOverallPrice.call(this, rowId);
-
-            // update overall price
-            updateGlobalPrice.call(this);
+            updateItemRowPrices.call(this, rowId);
 
             this.sandbox.emit(EVENT_CHANGED.call(this));
         },
@@ -621,15 +608,34 @@ define([
             var rowId = getRowData.call(this, event).id;
             // update discount
             this.items[rowId].discount = this.sandbox.parseFloat(this.sandbox.dom.val(event.target));
-            refreshItemsData.call(this);
 
-            // update rows overall price
-            updateOverallPrice.call(this, rowId);
-
-            // update overall price
-            updateGlobalPrice.call(this);
+            updateItemRowPrices.call(this, rowId);
 
             this.sandbox.emit(EVENT_CHANGED.call(this));
+        },
+
+        /**
+         * Calls prices api for a specific row to calculate new prices.
+         *
+         * @param {String} rowId
+         *
+         * @returns {Object} Deferred
+         */
+        updateItemRowPrices = function(rowId) {
+            var isLoadedPromise = new this.sandbox.data.deferred();
+            // update API
+            fetchPricesForRow.call(this, rowId).then(function() {
+                // update rows overall price
+                updateOverallPrice.call(this, rowId);
+                // update global price
+                updateGlobalPrice.call(this);
+                // update items data in dom
+                refreshItemsData.call(this);
+
+                isLoadedPromise.resolve();
+            }.bind(this));
+
+            return isLoadedPromise;
         },
 
         /**
@@ -669,36 +675,42 @@ define([
             var items = this.getItems(), result, $table, i;
 
             if (!!items && items.length > 0 && !!items[0].price) {
-                result = PriceCalcUtil.getTotalPricesAndTaxes(this.sandbox, this.items);
+
+                var totalPrice = 0;
+                for (var i = -1, len = items.length; ++i < len;) {
+                    totalPrice += items[i].totalNetPrice;
+                }
+
+                //result = PriceCalcUtil.getTotalPricesAndTaxes(this.sandbox, this.items);
 
                 // visualize
                 $table = this.$find(constants.globalPriceTableClass);
                 this.sandbox.dom.empty($table);
 
-                if (!!result) {
+                if (!!totalPrice) {
                     // add net price
                     addPriceRow.call(
                         this,
                         $table,
                         this.sandbox.translate('salescore.item.net-price'),
-                        PriceCalcUtil.getFormattedAmountAndUnit(this.sandbox, result.netPrice, this.currency)
+                        PriceCalcUtil.getFormattedAmountAndUnit(this.sandbox, totalPrice, this.currency)
                     );
 
                     // add row for every tax group
-                    for (i in result.taxes) {
-                        addPriceRow.call(
-                            this,
-                            $table,
-                            this.sandbox.translate('salescore.item.vat') + '.(' + i + '%)',
-                            PriceCalcUtil.getFormattedAmountAndUnit(this.sandbox, result.taxes[i], this.currency)
-                        );
-                    }
+                    //for (i in result.taxes) {
+                    //    addPriceRow.call(
+                    //        this,
+                    //        $table,
+                    //        this.sandbox.translate('salescore.item.vat') + '.(' + i + '%)',
+                    //        PriceCalcUtil.getFormattedAmountAndUnit(this.sandbox, result.taxes[i], this.currency)
+                    //    );
+                    //}
 
                     addPriceRow.call(
                         this,
                         $table,
                         this.sandbox.translate('salescore.item.overall-price'),
-                        PriceCalcUtil.getFormattedAmountAndUnit(this.sandbox, result.grossPrice, this.currency)
+                        PriceCalcUtil.getFormattedAmountAndUnit(this.sandbox, totalPrice, this.currency)
                     );
                 }
 
@@ -805,10 +817,10 @@ define([
                     itemData = setItemByProduct.call(this, response);
                     $row = updateItemRow.call(this, rowId, itemData);
                     // fetch prices
-                    updateItemPrices.call(this, rowId);
-                    // update ui
-                    setItemRowPriceInput.call(this, $row, itemData);
-                    updateOverallPrice.call(this, rowId);
+                    updateItemRowPrices.call(this, rowId).then(function() {
+                        // update ui
+                        setItemRowPriceInput.call(this, rowId);
+                    }.bind(this));
                 }.bind(this))
                 .fail(function(request, message, error) {
                         this.sandbox.emit('sulu.labels.error.show',
@@ -825,7 +837,7 @@ define([
          *
          * @param int rowId
          */
-        updateItemPrices = function(rowId) {
+        fetchPricesForRow = function(rowId) {
             var item = this.items[rowId];
             var isLoadedPromise = new this.sandbox.data.deferred();
 
