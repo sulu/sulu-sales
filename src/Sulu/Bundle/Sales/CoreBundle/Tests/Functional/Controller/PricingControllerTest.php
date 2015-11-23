@@ -81,6 +81,38 @@ class PricingControllerTest extends SuluSalesTestCase
     }
 
     /**
+     * Simple test for pricing api.
+     */
+    public function testMultiplePricings()
+    {
+        $itemData = [
+            $this->getItemSampleData(),
+            $this->getItemSampleData(),
+            $this->getItemSampleData(),
+        ];
+
+        $client = $this->createAuthenticatedClient();
+        $client->request(
+            'POST', '/api/pricings', [
+                'taxfree' => false,
+                'currency' => 'EUR',
+                'items' => $itemData
+            ]
+        );
+
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        $response = json_decode($client->getResponse()->getContent());
+
+        foreach ($itemData as $index => $data) {
+            $this->assertEquals($itemData[$index]['price'], $response[$index]->price);
+            $this->assertEquals(
+                $itemData[$index]['price'] * $itemData[$index]['quantity'],
+                $response[$index]->totalNetPrice
+            );
+        }
+    }
+
+    /**
      * Returns sample data for item.
      *
      * @return array
@@ -93,7 +125,7 @@ class PricingControllerTest extends SuluSalesTestCase
             'quantity' => 2.0,
             'quantityUnit' => 'pc',
             'useProductsPrice' => false,
-            'price' => 7.75,
+            'price' => (float)(rand(1, 999) / 100),
             'discount' => 0,
             'product' => [
                 'id' => 1,

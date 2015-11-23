@@ -286,6 +286,10 @@ define([
             this.sandbox.dom.on(this.$el, 'change', discountChangedHandler.bind(this), constants.discountInput);
         },
 
+        getItemRowById = function(rowId) {
+            return this.sandbox.dom.find('#' + rowId, this.$list);
+        },
+
         /**
          * Set addresses of settings overlay.
          *
@@ -329,27 +333,47 @@ define([
         },
 
         /**
+         * Returns all rowIds of current table
+         *
+         * @returns {Array}
+         */
+        getAllItemRowIds = function() {
+            var rowIds = [];
+            for (var id in this.items) {
+                if (this.items.hasOwnProperty(id)) {
+                    rowIds.push(id);
+                }
+            }
+
+            return rowIds;
+        },
+
+        /**
          * Changes currency for item table.
          *
          * @param {String} currency
          */
         changeCurrency = function(currency) {
-            var ids,
+            var rowIds,
                 dfdLoadedProducts,
                 dfdLoaderStarted = new this.sandbox.data.deferred();
 
             this.currency = currency;
-            ids = getAllProductIds.call(this, this.items);
 
-            if (!!ids && ids.length > 0) {
+            // get all row-Ids
+            //rowIds = keys(this.items);
+            rowIds = getAllItemRowIds.call(this);
+
+            if (!!rowIds && rowIds.length > 0) {
                 startLoader.call(this, dfdLoaderStarted);
-                dfdLoadedProducts = fetchProductData.call(this, ids);
+
+                dfdLoadedProducts = fetchPricesForRow.call(this, rowIds);
 
                 // go on when loader is fully loaded and product data retrieved
                 // dfdLoadedProducts needs to be the first param
                 this.sandbox.dom.when(dfdLoadedProducts, dfdLoaderStarted)
                     .done(function(data) {
-                        updatePricesForEachProduct.call(this, data);
+                        updatePricesForEachProduct.call(this);
                         updateGlobalPrice.call(this);
                         stopLoader.call(this);
                     }.bind(this))
@@ -366,61 +390,30 @@ define([
         },
 
         /**
-         * Updates the price for every product and the total.
-         *
-         * @param {Object} data
+         * Updates the price and total for every item.
          */
-        updatePricesForEachProduct = function(data) {
-            var $el,
-                item,
-                prop,
-                prices = getArrayForProductPrices.call(this, data._embedded.products);
-
+        updatePricesForEachProduct = function() {
             // update price and input value
-            for (prop in this.items) {
-                if (this.items.hasOwnProperty(prop)) {
-                    item = this.items[prop];
-
-                    // get price
-                    if (!!prices[item.product.id] && !!prices[item.product.id][this.currency]) {
-                        item.price = prices[item.product.id][this.currency];
-                    } else {
-                        item.price = 0;
-                    }
-
-                    // update input in dom
-                    $el = this.sandbox.dom.find(constants.priceInput, this.sandbox.dom.find('#' + prop, this.$list));
-                    this.sandbox.dom.val($el, this.sandbox.numberFormat(item.price, 'n'));
+            for (var rowId in this.items) {
+                if (this.items.hasOwnProperty(rowId)) {
+                    // set item's input
+                    setItemRowPriceInput.call(this, rowId);
 
                     // update row total price
-                    updateOverallPrice.call(this, prop);
+                    updateOverallPrice.call(this, rowId);
                 }
             }
         },
-        //
-        ///**
-        // * Sets the price input of a row.
-        // *
-        // * @param {Object} $row
-        // * @param {Number} price
-        // */
-        //setItemRowTotalPrice = function($row, price) {
-        //    // update input in dom
-        //    var $el = this.sandbox.dom.find(constants.over, $row);
-        //    this.sandbox.dom.val($el, this.sandbox.numberFormat(price, 'n'));
-        //},
 
         /**
          * Sets the price input of a row.
          *
-         * @param {Object} $row
-         * @param {Number} price
+         * @param {String} rowId
          */
         setItemRowPriceInput = function(rowId) {
             // update input in dom
-
             var item = this.items[rowId];
-            var $el = this.sandbox.dom.find(constants.priceInput, $row);
+            var $el = this.sandbox.dom.find(constants.priceInput, getItemRowById.call(this, rowId));
             this.sandbox.dom.val($el, this.sandbox.numberFormat(item.price, 'n'));
         },
 
@@ -657,7 +650,7 @@ define([
         /**
          * Updates overall price.
          *
-         * @param rowId
+         * @param {String} rowId
          */
         updateOverallPrice = function(rowId) {
             var $row = this.$find('#' + rowId),
@@ -759,7 +752,7 @@ define([
          */
         setItemDefaults = function(item) {
             item.price = item.price || 0;
-            item.totalPriceFormatted = item.totalPriceFormatted || 0;
+            item.totalNetPriceFormatted = item.totalNetPriceFormatted || 0;
             item.discount = item.discount || 0;
             item.quantity = item.quantity || 0;
             item.tax = item.tax || 0;
@@ -818,7 +811,7 @@ define([
                     $row = updateItemRow.call(this, rowId, itemData);
                     // fetch prices
                     updateItemRowPrices.call(this, rowId).then(function() {
-                        // update ui
+                        // update price input
                         setItemRowPriceInput.call(this, rowId);
                     }.bind(this));
                 }.bind(this))
@@ -835,21 +828,32 @@ define([
         /**
          * Fetches price for a specific item.
          *
-         * @param int rowId
+         * @param {Array} rowId
          */
-        fetchPricesForRow = function(rowId) {
-            var item = this.items[rowId];
-            var isLoadedPromise = new this.sandbox.data.deferred();
+        fetchPricesForRow = function(rowIds) {
+            var isLoadedPromise = new this.sandbox.data.deferred(),
+                items = [];
+
+            // if single object convert to array
+            if (!this.sandbox.dom.isArray(rowIds)) {
+                rowIds = [rowIds];
+            }
+            // iterate through items
+            this.sandbox.util.foreach(rowIds, function(rowId) {
+                items.push(this.items[rowId]);
+            }.bind(this));
 
             // load product price
             this.sandbox.util.save(urls.pricing, 'POST' , {
                 currency: this.currency,
                 taxfree: this.options.taxfree,
-                items: [item]
+                items: items
             }).then(function(response) {
-
-                // replace item with new values
-                this.items[rowId] = response[0];
+                // map each result of response back to rowIds
+                for (var i = -1, len = response.length; ++i < len;) {
+                    var rowId = rowIds[i];
+                    this.items[rowId] = response[i];
+                }
 
                 //var priceApi = response[0];
                 //item.price = priceApi.price;
