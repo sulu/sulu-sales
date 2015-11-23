@@ -33,6 +33,12 @@ class PriceFormatter
      */
     protected $defaultDigits;
 
+    /**
+     * PriceFormatter constructor.
+     *
+     * @param $defaultLocale
+     * @param $defaultDigits
+     */
     public function __construct($defaultLocale, $defaultDigits)
     {
         $this->defaultLocale = $defaultLocale;
