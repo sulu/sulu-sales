@@ -259,6 +259,9 @@ define([
             this.sandbox.on(EVENT_SET_ADRESSES.call(this), setAddresses.bind(this));
             this.sandbox.on(EVENT_GET_DATA.call(this), getData.bind(this));
             this.sandbox.on(EVENT_RESET_ITEM_ADDRESSES.call(this), resetItemAddresses.bind(this));
+
+            // check if prices are locked/unlocked
+            //this.sandbox.on('husky.input.price')
         },
 
         /**
@@ -333,22 +336,6 @@ define([
         },
 
         /**
-         * Returns all rowIds of current table
-         *
-         * @returns {Array}
-         */
-        getAllItemRowIds = function() {
-            var rowIds = [];
-            for (var id in this.items) {
-                if (this.items.hasOwnProperty(id)) {
-                    rowIds.push(id);
-                }
-            }
-
-            return rowIds;
-        },
-
-        /**
          * Changes currency for item table.
          *
          * @param {String} currency
@@ -361,8 +348,7 @@ define([
             this.currency = currency;
 
             // get all row-Ids
-            //rowIds = keys(this.items);
-            rowIds = getAllItemRowIds.call(this);
+            rowIds = Object.keys(this.items);
 
             if (!!rowIds && rowIds.length > 0) {
                 startLoader.call(this, dfdLoaderStarted);
@@ -493,23 +479,6 @@ define([
             this.sandbox.dom.height(this.$loader, height);
             this.sandbox.dom.hide(this.$list);
             this.sandbox.dom.show(this.$loader);
-        },
-
-        /**
-         * Retrievs all product ids from all products currently in the table.
-         *
-         * @param {Array} items
-         *
-         * @returns {Array} of ids
-         */
-        getAllProductIds = function(items) {
-            var ids = [], el;
-            for (el in items) {
-                if (!!items[el].hasOwnProperty('product')) {
-                    ids.push(items[el].product.id);
-                }
-            }
-            return ids;
         },
 
         /**
