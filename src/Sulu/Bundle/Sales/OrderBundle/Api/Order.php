@@ -26,6 +26,7 @@ use Sulu\Bundle\Sales\CoreBundle\Core\SalesDocument;
 use Sulu\Bundle\Sales\CoreBundle\Entity\ItemInterface;
 use Sulu\Bundle\Sales\CoreBundle\Entity\OrderAddressInterface;
 use Sulu\Bundle\Sales\CoreBundle\Item\ItemFactoryInterface;
+use Sulu\Bundle\Sales\CoreBundle\Pricing\PriceFormatter;
 use Sulu\Bundle\Sales\OrderBundle\Api\OrderStatus as ApiOrderStatus;
 use Sulu\Bundle\Sales\OrderBundle\Entity\OrderInterface;
 use Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatus;
@@ -107,15 +108,22 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     private $workflows = array();
 
     /**
+     * @var PriceFormatter
+     */
+    private $priceFormatter;
+
+    /**
      * @param OrderInterface $order The order to wrap
      * @param string $locale The locale of this order
      * @param ItemFactoryInterface $itemFactory
+     * @param PriceFormatter $priceFormatter
      */
-    public function __construct(OrderInterface $order, $locale, $itemFactory)
+    public function __construct(OrderInterface $order, $locale, $itemFactory, PriceFormatter $priceFormatter)
     {
         $this->entity = $order;
         $this->locale = $locale;
         $this->itemFactory = $itemFactory;
+        $this->priceFormatter = $priceFormatter;
     }
 
     /**
@@ -909,13 +917,13 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
      * @SerializedName("totalNetPriceFormatted")
      * @Groups({"Default","cart"})
      *
+     * @param string $locale
+     *
      * @return string
      */
     public function getTotalNetPriceFormatted($locale = null)
     {
-        $formatter = $this->getFormatter($locale);
-
-        return $formatter->format((float)$this->entity->getTotalNetPrice());
+        return $this->priceFormatter->format((float)$this->entity->getTotalNetPrice(), null, $locale);
     }
 
     /**
@@ -923,13 +931,13 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
      * @SerializedName("deliveryCostFormatted")
      * @Groups({"Default","cart"})
      *
+     * @param string $locale
+     *
      * @return string
      */
     public function getDeliveryCostFormatted($locale = null)
     {
-        $formatter = $this->getFormatter($locale);
-
-        return $formatter->format((float)$this->entity->getDeliveryCost());
+        return $this->priceFormatter->format((float)$this->entity->getDeliveryCost(), null, $locale);
     }
 
     /**
@@ -1026,22 +1034,6 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     public function getPdfBaseUrl()
     {
         return self::$pdfBaseUrl;
-    }
-
-    /**
-     * @param $locale
-     *
-     * @return Formatter
-     */
-    private function getFormatter($locale)
-    {
-        $sysLocale = $locale ? $locale : 'de-AT';
-        $formatter = new \NumberFormatter($sysLocale, \NumberFormatter::DECIMAL);
-        $formatter->setAttribute(\NumberFormatter::MIN_FRACTION_DIGITS, 2);
-        $formatter->setAttribute(\NumberFormatter::MAX_FRACTION_DIGITS, 2);
-        $formatter->setAttribute(\NumberFormatter::DECIMAL_ALWAYS_SHOWN, 1);
-
-        return $formatter;
     }
 
     /**

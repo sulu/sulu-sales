@@ -14,6 +14,7 @@ use Sulu\Bundle\ProductBundle\Product\ProductFactoryInterface;
 use Sulu\Bundle\Sales\CoreBundle\Entity\ItemInterface;
 use Sulu\Bundle\Sales\CoreBundle\Entity\Item;
 use Sulu\Bundle\Sales\CoreBundle\Api\Item as ApiItem;
+use Sulu\Bundle\Sales\CoreBundle\Pricing\PriceFormatter;
 
 class ItemFactory implements ItemFactoryInterface
 {
@@ -28,15 +29,23 @@ class ItemFactory implements ItemFactoryInterface
     protected $productFactory;
 
     /**
+     * @var PriceFormatter
+     */
+    protected $priceFormatter;
+
+    /**
      * @param ProductFactoryInterface $productFactory
+     * @param PriceFormatter $priceFormatter
      * @param string $defaultCurrencyCode
      */
     public function __construct(
         $productFactory,
+        $priceFormatter,
         $defaultCurrencyCode
     ) {
         $this->productFactory = $productFactory;
         $this->defaultCurrencyCode = $defaultCurrencyCode;
+        $this->priceFormatter = $priceFormatter;
     }
 
     /**
@@ -55,7 +64,7 @@ class ItemFactory implements ItemFactoryInterface
         if (!$currency) {
             $currency = $this->defaultCurrencyCode;
         }
-        $apiItem = new ApiItem($item, $locale, $this->productFactory, $currency);
+        $apiItem = new ApiItem($item, $locale, $this->productFactory, $this->priceFormatter, $currency);
 
         return $apiItem;
     }
