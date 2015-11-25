@@ -29,3 +29,6 @@
 # Composer
 /composer.phar
 /composer.lock
+
+tests/app/cache/*
+tests/app/logs/*
