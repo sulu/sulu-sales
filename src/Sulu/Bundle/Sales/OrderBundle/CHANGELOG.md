@@ -2,6 +2,8 @@
 
 ## unreleased:
 
+CoreBundle: Added PriceFormatter
+
 ### 2015-04-21
 
 Refactoring and inheritance of order-bundle:

@@ -25,6 +25,7 @@
         <parameter key="sulu_sales_core.item_factory.class">Sulu\Bundle\Sales\CoreBundle\Item\ItemFactory</parameter>
         <parameter key="sulu_sales_core.email_manager.class">Sulu\Bundle\Sales\CoreBundle\Manager\EmailManager</parameter>
         <parameter key="sulu_sales_core.events.create_transition" type="constant">Sulu\Bundle\Sales\CoreBundle\Transition\TransitionEvents::CREATE_TRANSITION</parameter>
+        <parameter key="sulu_sales_core.pricing.formatter.class">Sulu\Bundle\Sales\CoreBundle\Pricing\PriceFormatter</parameter>
     </parameters>
 
     <services>
@@ -37,6 +38,7 @@
         <!--FACTORIES-->
         <service id="sulu_sales_core.item_factory" class="%sulu_sales_core.item_factory.class%">
             <argument type="service" id="sulu_product.product_factory"></argument>
+            <argument type="service" id="sulu_sales_core.pricing.formatter"/>
             <argument>%sulu_product.default_currency%</argument>
         </service>
 
@@ -110,6 +112,11 @@
         <service id="sulu_sales_core.widget.simple_contact" class="%sulu_sales_core.widgets.simple_contact.class%">
             <tag name="sulu.widget" alias="sulu-sales-core-simple-contact"/>
             <argument type="service" id="doctrine.orm.entity_manager"/>
+        </service>
+
+        <service id="sulu_sales_core.pricing.formatter" class="%sulu_sales_core.pricing.formatter.class%">
+            <argument>%website_locale%</argument>
+            <argument>%sulu_sales_core.priceformatter_digits%</argument>
         </service>
     </services>
 </container>

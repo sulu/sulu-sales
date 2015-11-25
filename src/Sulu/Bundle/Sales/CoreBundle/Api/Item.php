@@ -11,6 +11,7 @@ use JMS\Serializer\Annotation\Exclude;
 use Sulu\Bundle\ProductBundle\Product\ProductFactoryInterface;
 use Sulu\Bundle\ProductBundle\Api\ApiProductInterface;
 use Sulu\Bundle\Sales\CoreBundle\Entity\ItemAttributeInterface;
+use Sulu\Bundle\Sales\CoreBundle\Pricing\PriceFormatter;
 use Sulu\Component\Rest\ApiWrapper;
 use Sulu\Component\Security\Authentication\UserInterface;
 use Sulu\Bundle\ProductBundle\Api\Product;
@@ -67,21 +68,31 @@ class Item extends ApiWrapper implements
     protected $productFactory;
 
     /**
+     * @Exclude
+     *
+     * @var PriceFormatter
+     */
+    protected $priceFormatter;
+
+    /**
      * @param Entity $item The item to wrap
      * @param string $locale The locale of this item
      * @param ProductFactoryInterface $productFactory
+     * @param PriceFormatter $priceFormatter
      * @param string $currency
      */
     public function __construct(
         Entity $item,
         $locale,
         ProductFactoryInterface $productFactory,
+        PriceFormatter $priceFormatter,
         $currency = 'EUR'
     ) {
         $this->entity = $item;
         $this->locale = $locale;
         $this->currency = $currency;
         $this->productFactory = $productFactory;
+        $this->priceFormatter = $priceFormatter;
     }
 
     /**
@@ -403,9 +414,7 @@ class Item extends ApiWrapper implements
      */
     public function getPriceFormatted($locale = null)
     {
-        $formatter = $this->getFormatter($locale);
-
-        return $formatter->format((float)$this->entity->getPrice());
+        return $this->priceFormatter->format((float)$this->entity->getPrice(), null, $locale);
     }
 
     /**
@@ -437,9 +446,7 @@ class Item extends ApiWrapper implements
      */
     public function getUnitPriceFormatted($locale = null)
     {
-        $formatter = $this->getFormatter($locale);
-
-        return $formatter->format((float)$this->getUnitPrice());
+        return $this->priceFormatter->format((float)$this->getUnitPrice(), null, $locale);
     }
 
     /**
@@ -451,9 +458,7 @@ class Item extends ApiWrapper implements
      */
     public function getTotalNetPriceFormatted($locale = null)
     {
-        $formatter = $this->getFormatter($locale);
-
-        return $formatter->format((float)$this->entity->getTotalNetPrice());
+        return $this->priceFormatter->format((float)$this->entity->getTotalNetPrice(), null, $locale);
     }
 
     /**
@@ -781,21 +786,6 @@ class Item extends ApiWrapper implements
         }
 
         return null;
-    }
-
-    /**
-     * @param $locale
-     *
-     * @return Formatter
-     */
-    private function getFormatter($locale = 'de-AT')
-    {
-        $formatter = new \NumberFormatter($locale, \NumberFormatter::DECIMAL);
-        $formatter->setAttribute(\NumberFormatter::MIN_FRACTION_DIGITS, 2);
-        $formatter->setAttribute(\NumberFormatter::MAX_FRACTION_DIGITS, 2);
-        $formatter->setAttribute(\NumberFormatter::DECIMAL_ALWAYS_SHOWN, 1);
-
-        return $formatter;
     }
 
     /**
