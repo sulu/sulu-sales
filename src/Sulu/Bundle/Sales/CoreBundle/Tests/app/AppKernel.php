@@ -1,7 +1,7 @@
 <?php
 
-use Sulu\Bundle\TestBundle\Kernel\SuluTestKernel;
 use Symfony\Component\Config\Loader\LoaderInterface;
+use Sulu\Bundle\TestBundle\Kernel\SuluTestKernel;
 
 class AppKernel extends SuluTestKernel
 {
@@ -9,8 +9,8 @@ class AppKernel extends SuluTestKernel
     {
         $allBundles = parent::registerBundles();
         $bundles = [
-            new \Sulu\Bundle\ProductBundle\SuluProductBundle(),
-            new \Sulu\Bundle\Sales\CoreBundle\SuluSalesCoreBundle(),
+            new Sulu\Bundle\ProductBundle\SuluProductBundle(),
+            new Sulu\Bundle\Sales\CoreBundle\SuluSalesCoreBundle(),
 
             new Sulu\Bundle\ContactExtensionBundle\SuluContactExtensionBundle(),
 

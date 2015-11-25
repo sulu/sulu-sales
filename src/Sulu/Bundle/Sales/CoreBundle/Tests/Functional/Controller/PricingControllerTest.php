@@ -132,14 +132,4 @@ class PricingControllerTest extends SuluSalesTestCase
             ],
         ];
     }
-
-    /**
-     * Returns a random bool.
-     *
-     * @return bool
-     */
-    private function getRandomBool()
-    {
-        return 1 === rand(0,1);
-    }
 }

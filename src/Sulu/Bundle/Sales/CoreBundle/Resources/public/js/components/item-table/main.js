@@ -259,9 +259,6 @@ define([
             this.sandbox.on(EVENT_SET_ADRESSES.call(this), setAddresses.bind(this));
             this.sandbox.on(EVENT_GET_DATA.call(this), getData.bind(this));
             this.sandbox.on(EVENT_RESET_ITEM_ADDRESSES.call(this), resetItemAddresses.bind(this));
-
-            // check if prices are locked/unlocked
-            //this.sandbox.on('husky.input.price')
         },
 
         /**
@@ -400,40 +397,7 @@ define([
             // update input in dom
             var item = this.items[rowId];
             var $el = this.sandbox.dom.find(constants.priceInput, getItemRowById.call(this, rowId));
-            this.sandbox.dom.val($el, this.sandbox.numberFormat(item.price, 'n'));
-        },
-
-        /**
-         * Returns an associative array of productIds and prices.
-         *
-         * @param {Array} products
-         *
-         * @returns {Array} associative array of productsIds/prices
-         */
-        getArrayForProductPrices = function(products) {
-            var data = {};
-            this.sandbox.util.foreach(products, function(value) {
-                data[value.id] = {};
-                this.sandbox.util.foreach(value.prices, function(price) {
-                    data[value.id][price.currency.code] = price.price || 0;
-                }.bind(this));
-            }.bind(this));
-
-            return data;
-        },
-
-        /**
-         * Loads product data.
-         *
-         * @param {Array} ids
-         */
-        fetchProductData = function(ids) {
-            var url = this.sandbox.uritemplate.parse(urls.products).expand({
-                filter: {
-                    'ids': ids.join(',')
-                }
-            });
-            return this.sandbox.util.load(url);
+            this.sandbox.dom.val($el, item.priceFormatted);
         },
 
         /**
@@ -658,7 +622,8 @@ define([
                         PriceCalcUtil.getFormattedAmountAndUnit(this.sandbox, totalPrice, this.currency)
                     );
 
-                    // add row for every tax group
+                    // TODO: uncomment when taxes are implemented
+                    //// add row for every tax group
                     //for (i in result.taxes) {
                     //    addPriceRow.call(
                     //        this,
@@ -702,16 +667,6 @@ define([
             setItemDefaults(item);
 
             return item.totalNetPriceFormatted + ' ' + getCurrency.call(this, item);
-
-            //return PriceCalcUtil.getTotalPrice(
-            //    this.sandbox,
-            //    item.price,
-            //    getCurrency.call(this, item),
-            //    item.discount,
-            //    item.quantity,
-            //    item.tax,
-            //    true
-            //);
         },
 
         /**
@@ -721,7 +676,9 @@ define([
          */
         setItemDefaults = function(item) {
             item.price = item.price || 0;
+            item.priceFormatted = item.priceFormatted || 0;
             item.totalNetPriceFormatted = item.totalNetPriceFormatted || 0;
+            item.totalNetPrice = item.totalNetPrice || 0;
             item.discount = item.discount || 0;
             item.quantity = item.quantity || 0;
             item.tax = item.tax || 0;
@@ -823,10 +780,6 @@ define([
                     var rowId = rowIds[i];
                     this.items[rowId] = response[i];
                 }
-
-                //var priceApi = response[0];
-                //item.price = priceApi.price;
-                //item.totalNetPrice = priceApi.totalNetPrice;
 
                 isLoadedPromise.resolve();
             }.bind(this))
