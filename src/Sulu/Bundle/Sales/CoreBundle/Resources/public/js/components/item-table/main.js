@@ -607,8 +607,6 @@ define([
                     totalPrice += items[i].totalNetPrice;
                 }
 
-                //result = PriceCalcUtil.getTotalPricesAndTaxes(this.sandbox, this.items);
-
                 // visualize
                 $table = this.$find(constants.globalPriceTableClass);
                 this.sandbox.dom.empty($table);
@@ -623,6 +621,7 @@ define([
                     );
 
                     // TODO: uncomment when taxes are implemented
+                    //result = PriceCalcUtil.getTotalPricesAndTaxes(this.sandbox, this.items);
                     //// add row for every tax group
                     //for (i in result.taxes) {
                     //    addPriceRow.call(
