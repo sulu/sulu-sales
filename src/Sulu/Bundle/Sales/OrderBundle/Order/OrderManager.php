@@ -925,6 +925,26 @@ class OrderManager
      */
     private function initializeFieldDescriptors($locale)
     {
+        $deliveryAddressJoin = array(
+            self::$orderAddressEntityName => new DoctrineJoinDescriptor(
+                static::$orderAddressEntityName,
+                static::$orderEntityName . '.deliveryAddress'
+            )
+        );
+        $invoiceAddressJoin = array(
+            self::$orderAddressEntityName . 'invoice' => new DoctrineJoinDescriptor(
+                static::$orderAddressEntityName,
+                static::$orderEntityName . '.invoiceAddress'
+            )
+        );
+
+        $contactJoin = array(
+            static::$orderAddressEntityName => new DoctrineJoinDescriptor(
+                static::$orderAddressEntityName,
+                static::$orderEntityName . '.invoiceAddress'
+            )
+        );
+
         $this->fieldDescriptors['id'] = new DoctrineFieldDescriptor(
             'id',
             'id',
@@ -935,6 +955,7 @@ class OrderManager
             false,
             'string'
         );
+
         $this->fieldDescriptors['number'] = new DoctrineFieldDescriptor(
             'number',
             'number',
@@ -947,13 +968,6 @@ class OrderManager
         );
 
         // TODO: get customer from order-address
-
-        $contactJoin = array(
-            static::$orderAddressEntityName => new DoctrineJoinDescriptor(
-                static::$orderAddressEntityName,
-                static::$orderEntityName . '.invoiceAddress'
-            )
-        );
 
         $this->fieldDescriptors['account'] = new DoctrineConcatenationFieldDescriptor(
             array(
@@ -1045,15 +1059,136 @@ class OrderManager
             'string'
         );
 
+        $this->fieldDescriptors['orderDate'] = new DoctrineFieldDescriptor(
+            'orderDate',
+            'orderDate',
+            static::$orderEntityName,
+            'salesorder.orders.orderDate',
+            array(),
+            false,
+            false,
+            'date'
+        );
+
         $this->fieldDescriptors['created'] = new DoctrineFieldDescriptor(
             'created',
             'created',
             static::$orderEntityName,
             'public.created',
             array(),
-            false,
+            true,
             false,
             'date'
+        );
+
+        $this->fieldDescriptors['changed'] = new DoctrineFieldDescriptor(
+            'changed',
+            'changed',
+            static::$orderEntityName,
+            'public.changed',
+            array(),
+            true,
+            false,
+            'date'
+        );
+
+        $this->fieldDescriptors['deliveryDate'] = new DoctrineFieldDescriptor(
+            'desiredDeliveryDate',
+            'deliveryDate',
+            static::$orderEntityName,
+            'salescore.shipping.date',
+            array(),
+            true,
+            false,
+            'date'
+        );
+
+        $this->fieldDescriptors['deliveryAddressZip'] = new DoctrineFieldDescriptor(
+            'zip',
+            'deliveryAddressZip',
+            static::$orderAddressEntityName,
+            'salescore.delivery-address.zip',
+            $deliveryAddressJoin,
+            true,
+            false,
+            'string'
+        );
+
+        $this->fieldDescriptors['deliveryAddressCity'] = new DoctrineFieldDescriptor(
+            'city',
+            'deliveryAddressCity',
+            static::$orderAddressEntityName,
+            'salescore.delivery-address.city',
+            $deliveryAddressJoin,
+            true,
+            false,
+            'string'
+        );
+
+        $this->fieldDescriptors['deliveryAddressCountry'] = new DoctrineFieldDescriptor(
+            'country',
+            'deliveryAddressCountry',
+            static::$orderAddressEntityName,
+            'salescore.delivery-address.country',
+            $deliveryAddressJoin,
+            true,
+            false,
+            'string'
+        );
+
+        $this->fieldDescriptors['invoiceAddressZip'] = new DoctrineFieldDescriptor(
+            'zip',
+            'invoiceAddressZip',
+            static::$orderAddressEntityName . 'invoice',
+            'salescore.invoice-address.zip',
+            $invoiceAddressJoin,
+            true,
+            false,
+            'string'
+        );
+
+        $this->fieldDescriptors['invoiceAddressCity'] = new DoctrineFieldDescriptor(
+            'city',
+            'invoiceAddressCity',
+            static::$orderAddressEntityName . 'invoice',
+            'salescore.invoice-address.city',
+            $invoiceAddressJoin,
+            true,
+            false,
+            'string'
+        );
+
+        $this->fieldDescriptors['invoiceAddressCountry'] = new DoctrineFieldDescriptor(
+            'country',
+            'invoiceAddressCountry',
+            static::$orderAddressEntityName . 'invoice',
+            'salescore.invoice-address.country',
+            $invoiceAddressJoin,
+            true,
+            false,
+            'string'
+        );
+
+        $this->fieldDescriptors['termsOfDelivery'] = new DoctrineFieldDescriptor(
+            'termsOfDeliveryContent',
+            'termsOfDelivery',
+            static::$orderEntityName,
+            'contact.termsOfDelivery',
+            [],
+            true,
+            false,
+            'string'
+        );
+
+        $this->fieldDescriptors['termsOfPayment'] = new DoctrineFieldDescriptor(
+            'termsOfPaymentContent',
+            'termsOfPayment',
+            static::$orderEntityName,
+            'contact.termsOfPayment',
+            [],
+            true,
+            false,
+            'string'
         );
 
         $contactJoin = array(
