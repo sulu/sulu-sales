@@ -226,7 +226,7 @@
                 <source>salescore.delivery-address.country</source>
                 <target>Land Lieferung</target>
             </trans-unit>
-            <trans-unit id="19 resname="salescore.invoice-address.zip">
+            <trans-unit id="19" resname="salescore.invoice-address.zip">
                 <source>salescore.invoice-address.zip</source>
                 <target>Postleitzahl Rechnung</target>
             </trans-unit>
