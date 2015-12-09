@@ -209,7 +209,6 @@ class OrderDataSetup
         $this->account->setName('Company');
         $this->account->setType(Account::TYPE_BASIC);
         $this->account->setUid('uid-123');
-        $this->account->setDisabled(0);
         $this->account->setMainEmail('test@test.com');
 
         $this->account2 = clone($this->account);
