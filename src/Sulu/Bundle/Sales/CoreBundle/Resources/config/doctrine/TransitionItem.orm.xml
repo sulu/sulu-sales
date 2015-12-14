@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+    <entity name="Sulu\Bundle\Sales\CoreBundle\Entity\TransitionItem" table="sc_transition_items"
+            repository-class="Sulu\Bundle\Sales\CoreBundle\Entity\TransitionItemRepository">
+        <id name="id" type="integer" column="id">
+            <generator strategy="AUTO"/>
+        </id>
+        <field name="item" type="integer" nullable="false"/>
+        <field name="itemCount" type="integer" nullable="false"/>
+
+        <many-to-one field="transition" target-entity="Sulu\Bundle\Sales\CoreBundle\Entity\Transition">
+            <join-columns>
+                <join-column name="idTransitions" referenced-column-name="id" on-delete="CASCADE" nullable="true"/>
+            </join-columns>
+        </many-to-one>
+    </entity>
+</doctrine-mapping>
