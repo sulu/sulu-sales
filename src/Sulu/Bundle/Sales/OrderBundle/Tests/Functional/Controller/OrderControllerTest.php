@@ -277,6 +277,7 @@ class OrderControllerTest extends OrderTestBase
 
         $client->request('POST', '/api/orders', $data);
         $response = json_decode($client->getResponse()->getContent());
+        $this->assertEquals(200, $client->getResponse()->getStatusCode(), $response);
 
         $client->request('GET', '/api/orders/' . $response->id);
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
