@@ -143,20 +143,6 @@ class OrderController extends RestController implements ClassResourceInterface, 
      */
     public function getAction(Request $request, $id)
     {
-/*
-        $dep = $this->get('sulu_sales_core.dependency_manager');
-
-        var_dump($dep->getParametersForAlias('inquiry'));
-        var_dump($dep->getParametersForAlias('demand'));
-        var_dump($dep->getParametersForAlias('order'));
-
-        $resolver = $this->get('sulu_sales_core.transition_resolver');
-
-        $transition = $resolver->getTransitions('massivepurchaseorder', 95);
-
-        dump($transition);
-        exit;
-*/
         $locale = $this->getLocale($request);
         $view = $this->responseGetById(
             $id,
@@ -289,7 +275,7 @@ class OrderController extends RestController implements ClassResourceInterface, 
      * Delete an order with the given id.
      *
      * @param \Symfony\Component\HttpFoundation\Request $request
-     * @param integer $id orderid
+     * @param int $id
      * @return \Symfony\Component\HttpFoundation\Response
      */
     public function deleteAction(Request $request, $id)

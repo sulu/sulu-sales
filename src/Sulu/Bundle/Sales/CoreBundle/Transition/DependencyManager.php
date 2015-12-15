@@ -10,7 +10,7 @@ class DependencyManager
     protected $classMap = [];
 
     /**
-     * @param $entity
+     * @param mixed $entity
      * @param array $attributes
      */
     public function addMapping($entity, $attributes)

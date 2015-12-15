@@ -49,7 +49,9 @@ class TransitionResolver
      * @param int $id
      * @param string $hydrationMode
      *
-     * @return array[]
+     * @throws EntityNotFoundException
+     *
+     * @return array
      */
     public function getTransitions($alias, $id, $hydrationMode = self::HYDRATION_MODE_OBJECTS)
     {
@@ -93,12 +95,18 @@ class TransitionResolver
      * @param int $id
      * @param string $hydrationMode
      *
+     * @throws EntityNotFoundException
+     *
      * @return TransitionResult
      */
     protected function getCurrentTransition($alias, $id, $hydrationMode = self::HYDRATION_MODE_OBJECTS)
     {
         /** @var Transition $transition */
         $transition = $this->transitionManager->findOneByDestination($alias, $id);
+
+        if ($transition === null) {
+            throw new EntityNotFoundException($alias, $id);
+        }
 
         $transitionResult = $this->createTransitionResult($alias, $id, $hydrationMode);
 
