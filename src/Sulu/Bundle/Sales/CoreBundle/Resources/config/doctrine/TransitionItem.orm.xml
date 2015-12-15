@@ -7,7 +7,7 @@
         <id name="id" type="integer" column="id">
             <generator strategy="AUTO"/>
         </id>
-        <field name="item" type="integer" nullable="false"/>
+        <field name="item" column="idItems" type="integer" nullable="false"/>
         <field name="itemCount" type="integer" nullable="false"/>
 
         <many-to-one field="transition" target-entity="Sulu\Bundle\Sales\CoreBundle\Entity\Transition">
