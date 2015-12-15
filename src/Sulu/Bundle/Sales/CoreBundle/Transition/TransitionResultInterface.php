@@ -7,7 +7,7 @@ use Sulu\Bundle\Sales\CoreBundle\Entity\Transition;
 interface TransitionResultInterface
 {
     /**
-     * @return integer
+     * @return int
      */
     public function getId();
 

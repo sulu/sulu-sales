@@ -7,7 +7,7 @@ use Doctrine\Common\Collections\Collection;
 interface TransitionInterface
 {
     /**
-     * @return integer
+     * @return int
      */
     public function getId();
 
@@ -37,7 +37,7 @@ interface TransitionInterface
     public function getItems();
 
     /**
-     * @param $item
+     * @param TransitionItem $item
      *
      * @return self
      */

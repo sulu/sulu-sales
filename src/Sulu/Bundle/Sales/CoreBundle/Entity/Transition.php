@@ -157,7 +157,7 @@ class Transition implements TransitionInterface
     }
 
     /**
-     * @param $item
+     * @param TransitionItem $item
      *
      * @return self
      */

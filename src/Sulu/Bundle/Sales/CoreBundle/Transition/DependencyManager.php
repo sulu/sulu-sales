@@ -21,7 +21,7 @@ class DependencyManager
     /**
      * @param string $alias
      *
-     * @return array|null
+     * @return mixed
      */
     public function getParametersForAlias($alias)
     {

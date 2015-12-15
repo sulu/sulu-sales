@@ -21,64 +21,64 @@ class TransitionManager
     }
 
     /**
-     * @param string $destinationClass
+     * @param string $destinationAlias
      * @param int $destinationId
      *
      * @return Transition[]
      */
-    public function findByDestination($destinationClass, $destinationId)
+    public function findByDestination($destinationAlias, $destinationId)
     {
         return $this->transitionRepository->findBy(
             [
-                'destination' => $destinationClass,
+                'destination' => $destinationAlias,
                 'destinationId' => $destinationId
             ]
         );
     }
 
     /**
-     * @param string $sourceClass
+     * @param string $sourceAlias
      * @param int $sourceId
      *
      * @return Transition[]
      */
-    public function findBySource($sourceClass, $sourceId)
+    public function findBySource($sourceAlias, $sourceId)
     {
         return $this->transitionRepository->findBy(
             [
-                'source' => $sourceClass,
+                'source' => $sourceAlias,
                 'sourceId' => $sourceId
             ]
         );
     }
 
     /**
-     * @param string $destinationClass
+     * @param string $destinationAlias
      * @param int $destinationId
      *
      * @return Transition
      */
-    public function findOneByDestination($destinationClass, $destinationId)
+    public function findOneByDestination($destinationAlias, $destinationId)
     {
         return $this->transitionRepository->findOneBy(
             [
-                'destination' => $destinationClass,
+                'destination' => $destinationAlias,
                 'destinationId' => $destinationId
             ]
         );
     }
 
     /**
-     * @param string $sourceClass
+     * @param string $sourceAlias
      * @param int $sourceId
      *
      * @return Transition
      */
-    public function findOneBySource($sourceClass, $sourceId)
+    public function findOneBySource($sourceAlias, $sourceId)
     {
         return $this->transitionRepository->findOneBy(
             [
-                'source' => $sourceClass,
+                'source' => $sourceAlias,
                 'sourceId' => $sourceId
             ]
         );

@@ -3,6 +3,7 @@
 namespace Sulu\Bundle\Sales\CoreBundle\Transition;
 
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\ORM\EntityRepository;
 use Sulu\Bundle\Sales\CoreBundle\Entity\Transition;
 use Sulu\Bundle\Sales\CoreBundle\Entity\TransitionItem;
@@ -42,6 +43,8 @@ class TransitionResolver
     }
 
     /**
+     * Returns the current, all previous and following transitions.
+     *
      * @param string $alias
      * @param int $id
      * @param string $hydrationMode
@@ -51,6 +54,10 @@ class TransitionResolver
     public function getTransitions($alias, $id, $hydrationMode = self::HYDRATION_MODE_OBJECTS)
     {
         $current = $this->getCurrentTransition($alias, $id, $hydrationMode);
+
+        if ($current === null) {
+            throw new EntityNotFoundException($alias, $id);
+        }
         $currentTransition = $current->getTransition();
 
         $allTransitions = [
@@ -114,7 +121,7 @@ class TransitionResolver
         $transitionResults = [];
         $transition = $this->transitionManager->findOneByDestination($alias, $id);
 
-        if ($transition != null) {
+        if ($transition !== null) {
             $transitionResult = $this->createTransitionResult(
                 $transition->getDestination(),
                 $transition->getDestinationId(),
@@ -140,7 +147,6 @@ class TransitionResolver
             $firstTransitionResult = $this->createTransitionResult($currentAlias, $currentId, $hydrationMode);
 
             $transitionResults[] = $firstTransitionResult;
-
         }
         $transitionResults = array_reverse($transitionResults);
 
@@ -148,9 +154,9 @@ class TransitionResolver
     }
 
     /**
-     * @param $alias
-     * @param $id
-     * @param $hydrationMode
+     * @param string $alias
+     * @param int $id
+     * @param string $hydrationMode
      *
      * @return TransitionResult
      */
