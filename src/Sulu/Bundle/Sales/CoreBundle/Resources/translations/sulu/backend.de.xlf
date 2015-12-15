@@ -214,6 +214,30 @@
                 <source>salescore.create-transition</source>
                 <target>Neuen Folgebeleg erstellen</target>
             </trans-unit>
+            <trans-unit id="16" resname="salescore.delivery-address.zip">
+                <source>salescore.delivery-address.zip</source>
+                <target>Postleitzahl Lieferung</target>
+            </trans-unit>
+            <trans-unit id="17" resname="salescore.delivery-address.city">
+                <source>salescore.delivery-address.city</source>
+                <target>Stadt Lieferung</target>
+            </trans-unit>
+            <trans-unit id="18" resname="salescore.delivery-address.country">
+                <source>salescore.delivery-address.country</source>
+                <target>Land Lieferung</target>
+            </trans-unit>
+            <trans-unit id="19" resname="salescore.invoice-address.zip">
+                <source>salescore.invoice-address.zip</source>
+                <target>Postleitzahl Rechnung</target>
+            </trans-unit>
+            <trans-unit id="20" resname="salescore.invoice-address.city">
+                <source>salescore.invoice-address.city</source>
+                <target>Stadt Rechnung</target>
+            </trans-unit>
+            <trans-unit id="21" resname="salescore.invoice-address.country">
+                <source>salescore.invoice-address.country</source>
+                <target>Land Rechnung</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>
