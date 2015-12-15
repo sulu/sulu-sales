@@ -143,7 +143,7 @@ class OrderController extends RestController implements ClassResourceInterface, 
      */
     public function getAction(Request $request, $id)
     {
-
+/*
         $dep = $this->get('sulu_sales_core.dependency_manager');
 
         var_dump($dep->getParametersForAlias('inquiry'));
@@ -152,11 +152,11 @@ class OrderController extends RestController implements ClassResourceInterface, 
 
         $resolver = $this->get('sulu_sales_core.transition_resolver');
 
-        $transition = $resolver->getTransitions('order', 79);
+        $transition = $resolver->getTransitions('massivepurchaseorder', 95);
 
         dump($transition);
         exit;
-
+*/
         $locale = $this->getLocale($request);
         $view = $this->responseGetById(
             $id,
