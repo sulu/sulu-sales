@@ -24,5 +24,4 @@ class AddTransitionDependencyManagerCompilerPass implements CompilerPassInterfac
             $dependencyManager->addMethodCall('addMapping', [$entity, $attributes[0]]);
         }
     }
-
 }
