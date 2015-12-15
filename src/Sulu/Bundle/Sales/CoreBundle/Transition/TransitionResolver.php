@@ -63,10 +63,10 @@ class TransitionResolver
         $currentTransition = $current->getTransition();
 
         $allTransitions = [
-            'previous' => $this->getPreviousTransitions(
+            'previous' => array_reverse($this->getPreviousTransitions(
                 $currentTransition->getSource(),
                 $currentTransition->getSourceId(),
-                $hydrationMode
+                $hydrationMode)
             ),
             'current' => $current,
             'following' => $this->getFollowingTransitions(
@@ -110,7 +110,8 @@ class TransitionResolver
 
         $transitionResult = $this->createTransitionResult($alias, $id, $hydrationMode);
 
-        $transitionResult->setItems($transition->getItems()->toArray());
+        // TODO add items
+//        $transitionResult->setItems($transition->getItems()->toArray());
         $transitionResult->setId($transition->getId());
         $transitionResult->setTransition($transition);
 
@@ -136,7 +137,8 @@ class TransitionResolver
                 $hydrationMode
             );
 
-            $transitionResult->setItems($transition->getItems()->toArray());
+            // TODO add items
+//            $transitionResult->setItems($transition->getItems()->toArray());
             $transitionResult->setId($transition->getId());
             $transitionResult->setTransition($transition);
 
@@ -146,19 +148,56 @@ class TransitionResolver
             $currentId = $transition->getSourceId();
 
             // recursive call to get all previous of previous....
-            while ($previousTransitions = $this->getPreviousTransitions($currentAlias, $currentId, $hydrationMode)) {
-                array_merge($transitionResults, $previousTransitions);
-                $currentAlias = $previousTransitions[0]->getTransition()->getSource();
-                $currentId = $previousTransitions[0]->getTransition()->getSourceId();
+            while ($previousTransition = $this->getNextPreviousTransition($currentAlias, $currentId, $hydrationMode)) {
+                $transitionResults[] = $previousTransition;
+                $currentAlias = $previousTransition->getTransition()->getSource();
+                $currentId = $previousTransition->getTransition()->getSourceId();
             }
 
             $firstTransitionResult = $this->createTransitionResult($currentAlias, $currentId, $hydrationMode);
+            $transitionResults[] = $firstTransitionResult;
+        } else {
+            // no previous found - use the first source
+            $transition = $this->transitionManager->findOneBySource($alias, $id);
 
+            $firstTransitionResult = $this->createTransitionResult(
+                $transition->getSource(),
+                $transition->getSourceId(),
+                $hydrationMode
+            );
             $transitionResults[] = $firstTransitionResult;
         }
-        $transitionResults = array_reverse($transitionResults);
 
         return $transitionResults;
+    }
+
+    /**
+     * @param string $destination
+     * @param int $destinationId
+     * @param string $hydrationMode
+     *
+     * @return null|TransitionResult
+     */
+    protected function getNextPreviousTransition($destination, $destinationId, $hydrationMode)
+    {
+        $transition = $this->transitionManager->findOneByDestination($destination, $destinationId);
+
+        if ($transition !== null) {
+            $transitionResult = $this->createTransitionResult(
+                $transition->getDestination(),
+                $transition->getDestinationId(),
+                $hydrationMode
+            );
+
+            // TODO add items
+//            $transitionResult->setItems($transition->getItems()->toArray());
+            $transitionResult->setId($transition->getId());
+            $transitionResult->setTransition($transition);
+
+            return $transitionResult;
+        }
+
+        return null;
     }
 
     /**
@@ -214,7 +253,8 @@ class TransitionResolver
                 $hydrationMode
             );
 
-            $transitionResult->setItems($transition->getItems()->toArray());
+            // TODO add items
+//            $transitionResult->setItems($transition->getItems()->toArray());
             $transitionResult->setId($transition->getId());
             $transitionResult->setTransition($transition);
 
@@ -224,14 +264,43 @@ class TransitionResolver
             $currentId = $transition->getDestinationId();
 
             // recursive call to get all previous of previous....
-            while ($previousTransitions = $this->getFollowingTransitions($currentAlias, $currentId, $hydrationMode)) {
-                array_merge($transitionResults, $previousTransitions);
-                $currentAlias = $previousTransitions[0]->getTransition()->getDestination();
-                $currentId = $previousTransitions[0]->getTransition()->getDestinationId();
+            while ($nextTransition = $this->getNextFollowingTransition($currentAlias, $currentId, $hydrationMode)) {
+                $transitionResults[] = $nextTransition;
+                $currentAlias = $nextTransition->getTransition()->getDestination();
+                $currentId = $nextTransition->getTransition()->getDestinationId();
             }
         }
 
         return $transitionResults;
+    }
+
+    /**
+     * @param string $source
+     * @param int $sourceId
+     * @param string $hydrationMode
+     *
+     * @return null|TransitionResult
+     */
+    protected function getNextFollowingTransition($source, $sourceId, $hydrationMode)
+    {
+        $transition = $this->transitionManager->findOneBySource($source, $sourceId);
+
+        if ($transition !== null) {
+            $transitionResult = $this->createTransitionResult(
+                $transition->getDestination(),
+                $transition->getDestinationId(),
+                $hydrationMode
+            );
+
+            // TODO add items
+//            $transitionResult->setItems($transition->getItems()->toArray());
+            $transitionResult->setId($transition->getId());
+            $transitionResult->setTransition($transition);
+
+            return $transitionResult;
+        }
+
+        return null;
     }
 
     /**
