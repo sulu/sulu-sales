@@ -466,7 +466,7 @@ class OrderManager
         // get desired status
         $typeEntity = $this->orderTypeRepository->find($typeId);
         if (!$typeEntity) {
-            throw new EntityNotFoundException($typeEntity, $typeId);
+            throw new EntityNotFoundException($this->orderTypeRepository->getClassName(), $typeId);
         }
 
         return $typeEntity;
