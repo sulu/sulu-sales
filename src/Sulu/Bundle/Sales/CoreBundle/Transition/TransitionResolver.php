@@ -172,6 +172,8 @@ class TransitionResolver
     }
 
     /**
+     * Returns previous of previous Transition.
+     *
      * @param string $destination
      * @param int $destinationId
      * @param string $hydrationMode
@@ -235,6 +237,8 @@ class TransitionResolver
     }
 
     /**
+     * Returns next following Transition.
+     *
      * @param string $alias
      * @param int $id
      * @param string $hydrationMode
