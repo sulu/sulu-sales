@@ -182,8 +182,12 @@ class TransitionResolver
             $entityRepository = $this->entityManager->getRepository($parameters['class']);
             $entity = $entityRepository->find($id);
 
-            $number = $entity->getNumber();
-            $created = $entity->getCreated();
+            if (method_exists($entity, 'getNumber')) {
+                $number = $entity->getNumber();
+            }
+            if (method_exists($entity, 'getCreated')) {
+                $created = $entity->getCreated();
+            }
         }
         $transitionResult->setNumber($number);
         $transitionResult->setCreated($created);
