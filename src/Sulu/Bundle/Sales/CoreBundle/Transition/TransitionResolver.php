@@ -135,8 +135,6 @@ class TransitionResolver
 
         $transitionResult = $this->createTransitionResult($alias, $id, $hydrationMode);
 
-        // TODO add items
-//        $transitionResult->setItems($transition->getItems()->toArray());
         $transitionResult->setId($transition->getId());
         $transitionResult->setTransition($transition);
 
@@ -162,8 +160,6 @@ class TransitionResolver
                 $hydrationMode
             );
 
-            // TODO add items
-//            $transitionResult->setItems($transition->getItems()->toArray());
             $transitionResult->setId($transition->getId());
             $transitionResult->setTransition($transition);
 
@@ -216,8 +212,6 @@ class TransitionResolver
                 $hydrationMode
             );
 
-            // TODO add items
-//            $transitionResult->setItems($transition->getItems()->toArray());
             $transitionResult->setId($transition->getId());
             $transitionResult->setTransition($transition);
 
@@ -282,8 +276,6 @@ class TransitionResolver
                 $hydrationMode
             );
 
-            // TODO add items
-//            $transitionResult->setItems($transition->getItems()->toArray());
             $transitionResult->setId($transition->getId());
             $transitionResult->setTransition($transition);
 
@@ -321,8 +313,6 @@ class TransitionResolver
                 $hydrationMode
             );
 
-            // TODO add items
-//            $transitionResult->setItems($transition->getItems()->toArray());
             $transitionResult->setId($transition->getId());
             $transitionResult->setTransition($transition);
 
