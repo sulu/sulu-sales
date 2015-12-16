@@ -343,5 +343,8 @@ class TransitionResolver
             $pdf = str_replace(':id', $id, $parameters['pdf']);
             $transitionResult->setPdfUrl($pdf);
         }
+        if (isset($parameters['translationKey'])) {
+            $transitionResult->setTranslationkey($parameters['translationKey']);
+        }
     }
 }

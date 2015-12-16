@@ -11,7 +11,6 @@
 namespace Sulu\Bundle\Sales\CoreBundle\Widgets;
 
 use DateTime;
-use Sulu\Bundle\AdminBundle\Widgets\WidgetException;
 use Sulu\Bundle\AdminBundle\Widgets\WidgetInterface;
 
 /**
@@ -35,26 +34,26 @@ abstract class FlowOfDocuments implements WidgetInterface
     }
 
     /**
-     * Creates and adds an entry to the exisiting entries
+     * Creates and adds an entry to the existing entries
      *
-     * @param String|Number $id
-     * @param String $number
-     * @param String $type
+     * @param int $id
+     * @param string $number
+     * @param string $icon
      * @param DateTime $date
-     * @param String $route
-     * @param String $pdfUrl
-     * @param String $translationKey
+     * @param string $route
+     * @param string $pdfUrl
+     * @param string $translationKey
      */
-    protected function addEntry($id, $number, $type, DateTime $date, $route, $pdfUrl, $translationKey = '')
+    protected function addEntry($id, $number, $icon, DateTime $date, $route, $pdfUrl, $translationKey = '')
     {
         $this->entries[] = array(
             'id' => $id,
             'number' => $number,
-            'type' => $type,
+            'icon' => $icon,
             'date' => $date,
             'route' => $route,
             'pdfUrl' => $pdfUrl,
-            'translationKey' => $translationKey
+            'translationKey' => $translationKey,
         );
     }
 

@@ -427,6 +427,9 @@ class Item extends ApiWrapper implements
     public function getUnitPrice()
     {
         $product = $this->getProduct();
+        if ($product === null) {
+            return null;
+        }
         $orderContentRatio = $product->getOrderContentRatio();
         $price = $this->getPrice();
 

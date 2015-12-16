@@ -974,9 +974,10 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
         return array(
             'number' => $this->getNumber(),
             'data' => $this->getOrderDate(),
-            'type' => 'order',
+            'icon' => 'fa-shopping-cart',
             'id' => $this->getId(),
             'pdfBaseUrl' => $this->getPdfBaseUrl(),
+            'translationkey' => 'salesorder.order'
         );
     }
 

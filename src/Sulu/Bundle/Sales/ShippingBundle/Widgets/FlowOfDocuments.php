@@ -13,10 +13,7 @@ namespace Sulu\Bundle\Sales\ShippingBundle\Widgets;
 use DateTime;
 use Sulu\Bundle\AdminBundle\Widgets\WidgetException;
 use Sulu\Bundle\AdminBundle\Widgets\WidgetParameterException;
-use Sulu\Bundle\Sales\CoreBundle\Core\SalesDocument;
-use Sulu\Bundle\Sales\CoreBundle\SalesDependency\SalesDependencyClassInterface;
 use Sulu\Bundle\Sales\CoreBundle\Widgets\FlowOfDocuments as FlowOfDocumentsBase;
-use Sulu\Bundle\Sales\OrderBundle\Api\Order;
 use Sulu\Bundle\Sales\ShippingBundle\Api\Shipping;
 
 class FlowOfDocuments extends FlowOfDocumentsBase
@@ -71,10 +68,11 @@ class FlowOfDocuments extends FlowOfDocumentsBase
         parent::addEntry(
             $options['orderId'],
             $options['orderNumber'],
-            'order',
+            'fa-shopping-cart',
             new DateTime($options['orderDate']),
             parent::getRoute($options['orderId'], 'order', 'details'),
-            parent::getRoute($options['orderId'], 'order', 'pdf')
+            parent::getRoute($options['orderId'], 'order', 'pdf'),
+            'salesorder.order'
         );
     }
 
@@ -89,10 +87,11 @@ class FlowOfDocuments extends FlowOfDocumentsBase
         parent::addEntry(
             $options['id'],
             $options['number'],
-            'shipping',
+            'fa-truck',
             new DateTime($options['date']),
             parent::getRoute($options['id'], 'shipping', 'details'),
-            Shipping::$pdfBaseUrl
+            Shipping::$pdfBaseUrl,
+            'salesshipping.shipping'
         );
     }
 

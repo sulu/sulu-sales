@@ -77,10 +77,11 @@ class FlowOfDocuments extends FlowOfDocumentsBase
         parent::addEntry(
             $options['orderId'],
             $options['orderNumber'],
-            'order',
+            'fa-shopping-cart',
             new DateTime($options['orderDate']),
             parent::getRoute($options['orderId'], 'order', 'details'),
-            parent::getRoute($options['orderId'], 'order', 'pdf')
+            parent::getRoute($options['orderId'], 'order', 'pdf'),
+            'salesorder.order'
         );
     }
 
@@ -100,10 +101,11 @@ class FlowOfDocuments extends FlowOfDocumentsBase
                 parent::addEntry(
                     $data['id'],
                     $data['number'],
-                    $data['type'],
+                    $data['icon'],
                     $data['date'],
                     parent::getRoute($data['id'], $data['type'], 'details'),
-                    $data['pdfBaseUrl']
+                    $data['pdfBaseUrl'],
+                    $data['translationKey']
                 );
             }
         }

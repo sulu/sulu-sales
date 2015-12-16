@@ -66,4 +66,16 @@ interface TransitionResultInterface
      * @return Transition
      */
     public function getTransition();
+
+    /**
+     * @param $translationkey
+     *
+     * @return self
+     */
+    public function setTranslationkey($translationkey);
+
+    /**
+     * @return string
+     */
+    public function getTranslationkey();
 }
