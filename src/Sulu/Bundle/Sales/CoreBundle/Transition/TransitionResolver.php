@@ -102,6 +102,10 @@ class TransitionResolver
                 $itemRepository = $this->entityManager->getRepository($item->getItemClass());
                 $resolvedItem = $itemRepository->find($item->getItemId());
 
+                if ($resolvedItem === null) {
+                    continue;
+                }
+
                 $resolvedItems[$index]['item'] = $resolvedItem;
             }
             $resolvedItems[$index]['itemId'] = $item->getItemId();
