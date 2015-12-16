@@ -21,6 +21,16 @@ class TransitionManager
     }
 
     /**
+     * @param $transitionId
+     *
+     * @return null|Transition
+     */
+    public function findById($transitionId)
+    {
+        return $this->transitionRepository->find($transitionId);
+    }
+
+    /**
      * @param string $destinationAlias
      * @param int $destinationId
      *

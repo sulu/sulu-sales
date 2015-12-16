@@ -81,13 +81,34 @@ class TransitionResolver
 
     /**
      * @param int $transitionId
+     * @param bool $fullObject
      *
-     * @return TransitionItem[]
+     * @throws EntityNotFoundException
+     *
+     * @return array
      */
-    public function getTransitionItems($transitionId)
+    public function resolveTransitionItems($transitionId, $fullObject = false)
     {
-        // TODO
-        return null;
+        $transition = $this->transitionManager->findById($transitionId);
+
+        if ($transition === null) {
+            throw new EntityNotFoundException(Transition::class, $transitionId);
+        }
+        $resolvedItems = [];
+
+        /** @var TransitionItem $item */
+        foreach ($transition->getItems() as $index => $item) {
+            if ($fullObject) {
+                $itemRepository = $this->entityManager->getRepository($item->getItemClass());
+                $resolvedItem = $itemRepository->find($item->getItemId());
+
+                $resolvedItems[$index]['item'] = $resolvedItem;
+            }
+            $resolvedItems[$index]['itemId'] = $item->getItemId();
+            $resolvedItems[$index]['quantity'] = $item->getItemCount();
+        }
+
+        return $resolvedItems;
     }
 
     /**
