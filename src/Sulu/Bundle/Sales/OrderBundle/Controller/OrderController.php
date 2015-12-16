@@ -275,7 +275,7 @@ class OrderController extends RestController implements ClassResourceInterface, 
      * Delete an order with the given id.
      *
      * @param \Symfony\Component\HttpFoundation\Request $request
-     * @param integer $id orderid
+     * @param int $id
      * @return \Symfony\Component\HttpFoundation\Response
      */
     public function deleteAction(Request $request, $id)

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xmlns:gedmo="http://gediminasm.org/schemas/orm/doctrine-extensions-mapping"
+                  xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+    <entity name="Sulu\Bundle\Sales\CoreBundle\Entity\Transition" table="sc_transitions"
+            repository-class="Sulu\Bundle\Sales\CoreBundle\Entity\TransitionRepository">
+        <id name="id" type="integer" column="id">
+            <generator strategy="AUTO"/>
+        </id>
+        <field name="source" type="string" column="source" length="255" nullable="false"/>
+        <field name="sourceId" type="integer" column="sourceId" nullable="false"/>
+        <field name="destination" type="string" column="destination" length="255" nullable="false"/>
+        <field name="destinationId" type="integer" column="destinationId" nullable="false"/>
+
+        <one-to-many field="items" target-entity="Sulu\Bundle\Sales\CoreBundle\Entity\TransitionItem" mapped-by="transition"/>
+    </entity>
+</doctrine-mapping>
