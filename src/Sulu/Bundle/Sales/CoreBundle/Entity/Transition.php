@@ -2,6 +2,7 @@
 
 namespace Sulu\Bundle\Sales\CoreBundle\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 
 class Transition implements TransitionInterface
@@ -35,6 +36,11 @@ class Transition implements TransitionInterface
      * @var Collection
      */
     protected $items;
+
+    public function __construct()
+    {
+        $this->items = new ArrayCollection();
+    }
 
     /**
      * @return int

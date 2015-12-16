@@ -15,9 +15,14 @@ class TransitionItem
     protected $transition;
 
     /**
-     * @var ItemInterface
+     * @var int
      */
-    protected $item;
+    protected $itemId;
+
+    /**
+     * @var string
+     */
+    protected $itemClass;
 
     /**
      * @var int
@@ -65,21 +70,41 @@ class TransitionItem
     }
 
     /**
-     * @return ItemInterface
+     * @return int
      */
-    public function getItem()
+    public function getItemId()
     {
-        return $this->item;
+        return $this->itemId;
     }
 
     /**
-     * @param ItemInterface $item
+     * @param int $itemId
      *
      * @return self
      */
-    public function setItem($item)
+    public function setItemId($itemId)
     {
-        $this->item = $item;
+        $this->itemId = $itemId;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getItemClass()
+    {
+        return $this->itemClass;
+    }
+
+    /**
+     * @param string $itemClass
+     *
+     * @return self
+     */
+    public function setItemClass($itemClass)
+    {
+        $this->itemClass = $itemClass;
 
         return $this;
     }
