@@ -19,7 +19,7 @@ use Sulu\Bundle\ProductBundle\Entity\Status;
 use Sulu\Bundle\ProductBundle\Product\Exception\ProductNotFoundException;
 use Sulu\Bundle\ProductBundle\Product\Exception\ProductNotActiveException;
 use Sulu\Bundle\Sales\CoreBundle\Entity\ItemInterface;
-use Sulu\Bundle\Sales\CoreBundle\Pricing\GroupedItemsPriceCalculatorInterface;
+use Sulu\Bundle\PricingBundle\Pricing\GroupedItemsPriceCalculatorInterface;
 use Sulu\Bundle\Sales\CoreBundle\Manager\BaseSalesManager;
 use Sulu\Bundle\Sales\CoreBundle\Manager\OrderAddressManager;
 use Sulu\Bundle\Sales\OrderBundle\Cart\Exception\CartSubmissionException;
