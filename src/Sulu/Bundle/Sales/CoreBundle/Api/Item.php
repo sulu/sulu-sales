@@ -194,7 +194,7 @@ class Item extends ApiWrapper implements
      *
      * @return Item
      */
-    public function setDeliveryDate(DateTime $deliveryDate)
+    public function setDeliveryDate(DateTime $deliveryDate = null)
     {
         $this->entity->setDeliveryDate($deliveryDate);
 

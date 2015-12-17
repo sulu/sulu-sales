@@ -107,8 +107,7 @@ class ItemManager
         OrderAddressManager $orderAddressManager,
         ItemFactoryInterface $itemFactory,
         $orderAddressEntity
-    )
-    {
+    ) {
         $this->em = $em;
         $this->itemRepository = $itemRepository;
         $this->userRepository = $userRepository;
@@ -173,7 +172,7 @@ class ItemManager
         $this->setDate(
             $data,
             'deliveryDate',
-            $item->getDeliveryDate(),
+            null,
             array($item, 'setDeliveryDate')
         );
 
@@ -315,9 +314,9 @@ class ItemManager
 
         if ($item) {
             return $this->itemFactory->createApiEntity($item, $locale);
-        } else {
-            return null;
         }
+
+        return null;
     }
 
     /**
@@ -372,8 +371,12 @@ class ItemManager
      * @throws ItemDependencyNotFoundException
      * @throws ItemException
      */
-    protected function setItemDeliveryAddress($addressData, ApiItemInterface $item, Contact $contact = null, AccountInterface $account = null)
-    {
+    protected function setItemDeliveryAddress(
+        $addressData,
+        ApiItemInterface $item,
+        Contact $contact = null,
+        AccountInterface $account = null
+    ) {
         if ($item->getId() !== null || $item->getDeliveryAddress() === null) {
             // create delivery address
             $deliveryAddress = new $this->orderAddressEntity();
@@ -656,11 +659,13 @@ class ItemManager
      */
     protected function setDate($data, $key, $currentDate, callable $setCallback)
     {
-        if (($date = $this->getProperty($data, $key, $currentDate)) !== null) {
+        $date = $this->getProperty($data, $key, $currentDate);
+        if ($date !== null) {
             if (is_string($date)) {
                 $date = new DateTime($data[$key]);
             }
-            call_user_func($setCallback, $date);
         }
+
+        call_user_func($setCallback, $date);
     }
 }
