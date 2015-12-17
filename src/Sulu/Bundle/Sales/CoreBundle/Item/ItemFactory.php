@@ -14,7 +14,7 @@ use Sulu\Bundle\ProductBundle\Product\ProductFactoryInterface;
 use Sulu\Bundle\Sales\CoreBundle\Entity\ItemInterface;
 use Sulu\Bundle\Sales\CoreBundle\Entity\Item;
 use Sulu\Bundle\Sales\CoreBundle\Api\Item as ApiItem;
-use Sulu\Bundle\Sales\CoreBundle\Pricing\PriceFormatter;
+use Sulu\Bundle\PricingBundle\Pricing\PriceFormatter;
 
 class ItemFactory implements ItemFactoryInterface
 {
