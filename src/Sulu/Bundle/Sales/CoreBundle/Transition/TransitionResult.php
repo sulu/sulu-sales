@@ -47,6 +47,11 @@ class TransitionResult implements TransitionResultInterface
     protected $transition;
 
     /**
+     * @var string
+     */
+    protected $translationkey = '';
+
+    /**
      * @return int
      */
     public function getId()
@@ -202,6 +207,26 @@ class TransitionResult implements TransitionResultInterface
     public function setTransition($transition)
     {
         $this->transition = $transition;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTranslationkey()
+    {
+        return $this->translationkey;
+    }
+
+    /**
+     * @param string $translationkey
+     *
+     * @return self
+     */
+    public function setTranslationkey($translationkey)
+    {
+        $this->translationkey = $translationkey;
 
         return $this;
     }

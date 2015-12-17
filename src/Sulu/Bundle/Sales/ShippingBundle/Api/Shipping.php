@@ -8,6 +8,7 @@ use JMS\Serializer\Annotation\VirtualProperty;
 use Hateoas\Configuration\Annotation\Relation;
 use JMS\Serializer\Annotation\SerializedName;
 use JMS\Serializer\Annotation\Exclude;
+use Sulu\Bundle\Sales\CoreBundle\Pricing\PriceFormatter;
 use Sulu\Component\Rest\ApiWrapper;
 use Sulu\Component\Security\Authentication\UserInterface;
 use Sulu\Bundle\ProductBundle\Product\ProductFactory;
@@ -44,15 +45,26 @@ class Shipping extends ApiWrapper implements SalesDocument
     private $itemFactory;
 
     /**
+     * @var PriceFormatter
+     */
+    private $priceFormatter;
+
+    /**
      * @param ShippingEntity $shipping The shipping to wrap
      * @param string $locale The locale of this shipping
      * @param ItemFactoryInterface $itemFactory
+     * @param PriceFormatter $priceFormatter
      */
-    public function __construct(ShippingEntity $shipping, $locale, ItemFactoryInterface $itemFactory)
-    {
+    public function __construct(
+        ShippingEntity $shipping,
+        $locale,
+        ItemFactoryInterface $itemFactory,
+        PriceFormatter $priceFormatter
+    ) {
         $this->entity = $shipping;
         $this->locale = $locale;
         $this->itemFactory = $itemFactory;
+        $this->priceFormatter = $priceFormatter;
     }
 
     /**
@@ -555,7 +567,7 @@ class Shipping extends ApiWrapper implements SalesDocument
      * @VirtualProperty
      * @SerializedName("items")
      *
-     * @return Array
+     * @return array
      */
     public function getItems()
     {
@@ -650,10 +662,10 @@ class Shipping extends ApiWrapper implements SalesDocument
      */
     public function getOrder()
     {
-        $productFactory = new ProductFactory();
-        $itemFactory = new ItemFactory($productFactory, 'EUR');
+        $productFactory = new ProductFactory(null, $this->priceFormatter);
+        $itemFactory = new ItemFactory($productFactory, $this->priceFormatter, 'EUR');
 
-        return new ApiOrder($this->entity->getOrder(), $this->locale, $itemFactory);
+        return new ApiOrder($this->entity->getOrder(), $this->locale, $itemFactory, $this->priceFormatter);
     }
 
     /**

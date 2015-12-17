@@ -33,6 +33,7 @@
         <!--FACTORIES-->
         <service id="sulu_sales_shipping.shipping_factory" class="%sulu_sales_shipping.shipping_factory.class%">
             <argument type="service" id="sulu_sales_core.item_factory" />
+            <argument type="service" id="sulu_sales_core.pricing.formatter"/>
         </service>
 
         <!--REPOSITORIES-->

@@ -137,22 +137,19 @@ define([], function() {
             switch (definition.type) {
                 case 'icon':
                     value = data[definition.property];
-                    cssClass = getCssClassForValue.call(this, value);
+                    cssClass = !!data.icon ? data.icon : '';
                     $td = this.sandbox.dom.createElement('<td class="icon-cell"><span class="fa ' + cssClass + ' icon"></span></td>');
                     break;
                 case 'download':
-                    if (data.type === 'order' && !!data.pdfUrl) {
+                    if (!!data.pdfUrl) {
                         downloadIcon = '<span class="fa fa-file-pdf-o icon pdf-download"></span>';
                     }
                     $td = this.sandbox.dom.createElement('<td class="icon-cell">' + downloadIcon + '</td>');
                     break;
                 case 'number':
-                    if (!!data[definition.prefixProperty]) {
-                        type = !!data.translationKey ? data.translationKey : data[definition.prefixProperty];
-                        prefix = getPrefixForType.call(this, type) + ' ';
-                    }
+                    prefix = this.sandbox.translate(data.translationKey);
                     if (!!definition.prefix) {
-                        prefix += definition.prefix;
+                        prefix += ' ' + definition.prefix;
                     }
                     value = data[definition.property];
                     $td = this.sandbox.dom.createElement('<td>' + prefix + value + '</td>');
@@ -169,24 +166,6 @@ define([], function() {
             }
 
             this.sandbox.dom.append($row, $td);
-        },
-
-        /**
-         * Returns a translated key for a type
-         * @param type
-         * @returns {String}
-         */
-        getPrefixForType = function(type) {
-            switch (type) {
-                case 'order':
-                    return this.sandbox.translate('salescore.order');
-                case 'shipping':
-                    return this.sandbox.translate('salescore.shipping');
-                case 'invoice':
-                    return this.sandbox.translate('salescore.invoice');
-                default:
-                    return this.sandbox.translate(type);
-            }
         },
 
         bindDomEvents = function() {
@@ -206,25 +185,6 @@ define([], function() {
 
                 window.open('/'+url, 'Download');
             }.bind(this), '.pdf-download');
-        },
-
-        /**
-         * Returns css icon class for a type
-         * @param type
-         * @returns {String}
-         */
-        getCssClassForValue = function(type) {
-            switch (type) {
-                case 'order':
-                    return 'fa-shopping-cart';
-                case 'shipping':
-                    return 'fa-truck';
-                case 'invoice':
-                    return 'fa-money';
-                default:
-                    this.sandbox.logger.warn('flow-of-documents: No icon-definition found!');
-                    return '';
-            }
         };
 
     return {
