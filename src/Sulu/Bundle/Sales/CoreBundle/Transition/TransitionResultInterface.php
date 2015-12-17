@@ -78,4 +78,16 @@ interface TransitionResultInterface
      * @return string
      */
     public function getTranslationkey();
+
+    /**
+     * @return int
+     */
+    public function getDestinationId();
+
+    /**
+     * @param int $destinationId
+     *
+     * @return self
+     */
+    public function setDestinationId($destinationId);
 }
