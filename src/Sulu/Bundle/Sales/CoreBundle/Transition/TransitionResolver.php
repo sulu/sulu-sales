@@ -232,6 +232,7 @@ class TransitionResolver
     {
         $parameters = $this->dependencyManager->getParametersForAlias($alias);
         $transitionResult = new TransitionResult();
+        $transitionResult->setDestinationId($id);
 
         $this->setParameters($transitionResult, $parameters, $id);
 

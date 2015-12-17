@@ -12,6 +12,11 @@ class TransitionResult implements TransitionResultInterface
     protected $id;
 
     /**
+     * @var int
+     */
+    protected $destinationId;
+
+    /**
      * @var array
      */
     protected $items;
@@ -227,6 +232,26 @@ class TransitionResult implements TransitionResultInterface
     public function setTranslationkey($translationkey)
     {
         $this->translationkey = $translationkey;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getDestinationId()
+    {
+        return $this->destinationId;
+    }
+
+    /**
+     * @param int $destinationId
+     *
+     * @return self
+     */
+    public function setDestinationId($destinationId)
+    {
+        $this->destinationId = $destinationId;
 
         return $this;
     }
