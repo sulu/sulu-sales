@@ -8,7 +8,7 @@ use JMS\Serializer\Annotation\VirtualProperty;
 use Hateoas\Configuration\Annotation\Relation;
 use JMS\Serializer\Annotation\SerializedName;
 use JMS\Serializer\Annotation\Exclude;
-use Sulu\Bundle\Sales\CoreBundle\Pricing\PriceFormatter;
+use Sulu\Bundle\PricingBundle\Pricing\PriceFormatter;
 use Sulu\Component\Rest\ApiWrapper;
 use Sulu\Component\Security\Authentication\UserInterface;
 use Sulu\Bundle\ProductBundle\Product\ProductFactory;

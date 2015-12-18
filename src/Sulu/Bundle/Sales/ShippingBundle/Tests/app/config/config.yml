@@ -12,3 +12,4 @@ doctrine:
             Sulu\Bundle\ContactBundle\Entity\AccountInterface: Sulu\Bundle\ContactExtensionBundle\Entity\Account
 parameters:
     mailer_from: test@test.com
+    website_locale: en

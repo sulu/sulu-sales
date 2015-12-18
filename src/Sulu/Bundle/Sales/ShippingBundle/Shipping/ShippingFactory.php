@@ -11,7 +11,7 @@
 namespace Sulu\Bundle\Sales\ShippingBundle\Shipping;
 
 use Sulu\Bundle\Sales\CoreBundle\Item\ItemFactoryInterface;
-use Sulu\Bundle\Sales\CoreBundle\Pricing\PriceFormatter;
+use Sulu\Bundle\PricingBundle\Pricing\PriceFormatter;
 use Sulu\Bundle\Sales\ShippingBundle\Api\Shipping as ApiShipping;
 use Sulu\Bundle\Sales\ShippingBundle\Entity\Shipping;
 
