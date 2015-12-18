@@ -14,6 +14,8 @@ class AppKernel extends SuluTestKernel
             new Sulu\Bundle\Sales\OrderBundle\SuluSalesOrderBundle(),
             new Sulu\Bundle\Sales\ShippingBundle\SuluSalesShippingBundle(),
 
+            new \Sulu\Bundle\PricingBundle\SuluPricingBundle(),
+
             new Sulu\Bundle\ContactExtensionBundle\SuluContactExtensionBundle(),
             // test mails
             new Symfony\Bundle\SwiftmailerBundle\SwiftmailerBundle(),

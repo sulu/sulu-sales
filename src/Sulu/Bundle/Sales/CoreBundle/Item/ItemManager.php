@@ -30,7 +30,7 @@ use Sulu\Bundle\Sales\CoreBundle\Item\Exception\ItemException;
 use Sulu\Bundle\Sales\CoreBundle\Item\Exception\ItemNotFoundException;
 use Sulu\Bundle\Sales\CoreBundle\Item\Exception\MissingItemAttributeException;
 use Sulu\Bundle\Sales\CoreBundle\Manager\OrderAddressManager;
-use Sulu\Bundle\Sales\CoreBundle\Pricing\ItemPriceCalculator;
+use Sulu\Bundle\PricingBundle\Pricing\ItemPriceCalculator;
 use Sulu\Component\Persistence\RelationTrait;
 use Sulu\Component\Security\Authentication\UserRepositoryInterface;
 

@@ -13,6 +13,7 @@ class AppKernel extends SuluTestKernel
                 new \Sulu\Bundle\Sales\CoreBundle\SuluSalesCoreBundle(),
 
                 new Sulu\Bundle\ContactExtensionBundle\SuluContactExtensionBundle(),
+                new \Sulu\Bundle\PricingBundle\SuluPricingBundle(),
 
                 // test mails
                 new Symfony\Bundle\SwiftmailerBundle\SwiftmailerBundle(),

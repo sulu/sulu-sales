@@ -1,14 +1,3 @@
-
-sulu_sales_core_api:
-    type: rest
-    resource: "@SuluSalesCoreBundle/Resources/config/routing_api.xml"
-    prefix: /api
-
-sulu_sales_core_api:
-    type: rest
-    resource: "@SuluSalesCoreBundle/Resources/config/routing_api.xml"
-    prefix: /api
-
 sulu_product_api:
     type: rest
     resource: "@SuluProductBundle/Resources/config/routing_api.yml"

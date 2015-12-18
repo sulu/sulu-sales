@@ -14,8 +14,6 @@
         <parameter key="sulu_sales_core.widgets.multiple_accounts.class">Sulu\Bundle\Sales\CoreBundle\Widgets\MultipleAccounts</parameter>
         <parameter key="sulu_sales_core.widgets.suppliers.class">Sulu\Bundle\Sales\CoreBundle\Widgets\SuppliersWidget</parameter>
         <parameter key="sulu_sales_core.widgets.customers.class">Sulu\Bundle\Sales\CoreBundle\Widgets\CustomersWidget</parameter>
-        <parameter key="sulu_sales_core.grouped_price_calculator.class">Sulu\Bundle\Sales\CoreBundle\Pricing\GroupedItemsPriceCalculator</parameter>
-        <parameter key="sulu_sales_core.item_price_calculator.class">Sulu\Bundle\Sales\CoreBundle\Pricing\ItemPriceCalculator</parameter>
         <parameter key="sulu_sales_core.order_address_manager.class">Sulu\Bundle\Sales\CoreBundle\Manager\OrderAddressManager</parameter>
         <parameter key="sulu_sales_core.item_entity">Sulu\Bundle\Sales\CoreBundle\Entity\Item</parameter>
         <parameter key="sulu_sales_core.order_address_entity">Sulu\Bundle\Sales\CoreBundle\Entity\OrderAddress</parameter>
@@ -24,7 +22,6 @@
         <parameter key="sulu_sales_core.item_factory.class">Sulu\Bundle\Sales\CoreBundle\Item\ItemFactory</parameter>
         <parameter key="sulu_sales_core.email_manager.class">Sulu\Bundle\Sales\CoreBundle\Manager\EmailManager</parameter>
         <parameter key="sulu_sales_core.events.create_transition" type="constant">Sulu\Bundle\Sales\CoreBundle\Transition\TransitionEvents::CREATE_TRANSITION</parameter>
-        <parameter key="sulu_sales_core.pricing.formatter.class">Sulu\Bundle\Sales\CoreBundle\Pricing\PriceFormatter</parameter>
         <parameter key="sulu_sales_core.transition_repository.class">Sulu\Bundle\Sales\CoreBundle\Entity\TransitionRepository</parameter>
         <parameter key="sulu_sales_core.transition_entity.class">Sulu\Bundle\Sales\CoreBundle\Entity\Transition</parameter>
         <parameter key="sulu_sales_core.transition_item_repository.class">Sulu\Bundle\Sales\CoreBundle\Entity\TransitionItemRepository</parameter>
@@ -44,7 +41,7 @@
         <!--FACTORIES-->
         <service id="sulu_sales_core.item_factory" class="%sulu_sales_core.item_factory.class%">
             <argument type="service" id="sulu_product.product_factory"/>
-            <argument type="service" id="sulu_sales_core.pricing.formatter"/>
+            <argument type="service" id="sulu_pricing.formatter"/>
             <argument>%sulu_product.default_currency%</argument>
         </service>
 
@@ -52,11 +49,6 @@
         <service id="sulu_sales_core.order_address_manager" class="%sulu_sales_core.order_address_manager.class%">
             <argument type="service" id="doctrine.orm.entity_manager" />
             <argument type="service" id="sulu_sales_core.order_address_repository" />
-        </service>
-
-        <service id="sulu_sales_core.item_price_calculator" class="%sulu_sales_core.item_price_calculator.class%">
-            <argument type="service" id="sulu_product.price_manager"/>
-            <argument>%sulu_product.default_currency%</argument>
         </service>
 
         <service id="sulu_sales_core.email_manager" class="%sulu_sales_core.email_manager.class%">
@@ -67,17 +59,13 @@
             <argument>%sulu_sales_core.email_templates.footer_txt%</argument>
         </service>
 
-        <service id="sulu_sales_core.grouped_price_calculator" class="%sulu_sales_core.grouped_price_calculator.class%">
-            <argument type="service" id="sulu_sales_core.item_price_calculator"/>
-        </service>
-
         <service id="sulu_sales_core.item_manager" class="%sulu_sales_core.item_manager.class%">
             <argument type="service" id="doctrine.orm.entity_manager" />
             <argument type="service" id="sulu_sales_core.item_repository" />
             <argument type="service" id="sulu_security.user_repository" />
             <argument type="service" id="sulu_product.product_repository" />
             <argument type="service" id="sulu_product.price_manager" />
-            <argument type="service" id="sulu_sales_core.item_price_calculator" />
+            <argument type="service" id="sulu_pricing.item_price_calculator" />
             <argument type="service" id="sulu_sales_core.order_address_manager" />
             <argument type="service" id="sulu_sales_core.item_factory" />
             <argument>%sulu_sales_core.order_address_entity%</argument>
@@ -139,11 +127,6 @@
         <service id="sulu_sales_core.widget.simple_contact" class="%sulu_sales_core.widgets.simple_contact.class%">
             <tag name="sulu.widget" alias="sulu-sales-core-simple-contact"/>
             <argument type="service" id="doctrine.orm.entity_manager"/>
-        </service>
-
-        <service id="sulu_sales_core.pricing.formatter" class="%sulu_sales_core.pricing.formatter.class%">
-            <argument>%website_locale%</argument>
-            <argument>%sulu_sales_core.priceformatter_digits%</argument>
         </service>
     </services>
 </container>

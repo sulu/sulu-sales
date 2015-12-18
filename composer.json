@@ -23,6 +23,7 @@
 
         "sulu/sulu": "1.1.*@dev",
         "sulu/product-bundle": "~0.1",
+        "sulu/pricing-bundle": "~0.1",
         "massive/pdf-bundle": "~0.1",
         "sulu/contact-extension-bundle": "~0.2"
     },

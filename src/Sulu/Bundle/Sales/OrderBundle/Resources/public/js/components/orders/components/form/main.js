@@ -14,7 +14,7 @@ define([
     'sulusalescore/util/helper',
     'sulucontact/models/account',
     'config',
-    'widget-groups',
+    'widget-groups'
 ], function(Sidebar, OrderStatus, HeaderUtil, CoreHelper, Account, Config, WidgetGroups) {
 
     'use strict';

@@ -26,7 +26,7 @@ use Sulu\Bundle\Sales\CoreBundle\Core\SalesDocument;
 use Sulu\Bundle\Sales\CoreBundle\Entity\ItemInterface;
 use Sulu\Bundle\Sales\CoreBundle\Entity\OrderAddressInterface;
 use Sulu\Bundle\Sales\CoreBundle\Item\ItemFactoryInterface;
-use Sulu\Bundle\Sales\CoreBundle\Pricing\PriceFormatter;
+use Sulu\Bundle\PricingBundle\Pricing\PriceFormatter;
 use Sulu\Bundle\Sales\OrderBundle\Api\OrderStatus as ApiOrderStatus;
 use Sulu\Bundle\Sales\OrderBundle\Entity\OrderInterface;
 use Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatus;
