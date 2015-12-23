@@ -734,9 +734,11 @@ class Shipping extends ApiWrapper implements SalesDocument
         return array(
             'number' => $this->getNumber(),
             'type' => 'shipping',
+            'icon' => 'fa-truck',
             'date' => $this->getExpectedDeliveryDate(),
             'id' => $this->getId(),
-            'pdfBaseUrl' => $this->getPdfBaseUrl()
+            'pdfBaseUrl' => null,
+            'translationKey' => 'salescore.shipping',
         );
     }
 

@@ -99,13 +99,13 @@ class FlowOfDocuments extends FlowOfDocumentsBase
             foreach ($documents as $document) {
                 $data = $document->getSalesDocumentData();
                 parent::addEntry(
-                    $data['id'],
-                    $data['number'],
-                    $data['icon'],
-                    $data['date'],
+                    $this->getProperty($data, 'id'),
+                    $this->getProperty($data, 'number'),
+                    $this->getProperty($data, 'icon'),
+                    $this->getProperty($data, 'date'),
                     parent::getRoute($data['id'], $data['type'], 'details'),
-                    $data['pdfBaseUrl'],
-                    $data['translationKey']
+                    $this->getProperty($data, 'pdfBaseUrl'),
+                    $this->getProperty($data, 'translationKey')
                 );
             }
         }
@@ -150,5 +150,23 @@ class FlowOfDocuments extends FlowOfDocumentsBase
             $this->widgetName,
             $attribute
         );
+    }
+
+    /**
+     * Returns value from array if key exists, else returns default
+     *
+     * @param array $array
+     * @param string $key
+     * @param mixed $default
+     *
+     * @return mixed
+     */
+    public function getProperty($array, $key, $default = null)
+    {
+        if (isset($array[$key])) {
+            return $array[$key];
+        }
+
+        return $default;
     }
 }
