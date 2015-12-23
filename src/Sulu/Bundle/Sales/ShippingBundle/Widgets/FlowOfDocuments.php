@@ -22,7 +22,7 @@ class FlowOfDocuments extends FlowOfDocumentsBase
 
     protected $widgetName = 'ShippingFlowOfDocuments';
 
-    function __construct(array $routes)
+    public function __construct(array $routes)
     {
         $this->routes = $routes;
     }
@@ -41,26 +41,26 @@ class FlowOfDocuments extends FlowOfDocumentsBase
      * returns data to render template
      *
      * @param array $options
+     *
      * @throws WidgetException
      * @return array
      */
     public function getData($options)
     {
-        if ($this->checkRequiredParameters($options)) {
-            $this->getOrderData($options);
-            $this->getShipppingData($options);
-            parent::orderDataByDate(false);
+        $this->checkRequiredParameters($options);
 
-            return parent::serializeData();
-        } else {
-            throw new WidgetException('No params found!', $this->getName());
-        }
+        $this->getOrderData($options);
+        $this->getShipppingData($options);
+        parent::orderDataByDate(false);
+
+        return parent::serializeData();
     }
 
     /**
      * Retrieves order data
      *
      * @param $options
+     *
      * @throws \Sulu\Bundle\AdminBundle\Widgets\WidgetParameterException
      */
     protected function getOrderData($options)
@@ -80,6 +80,7 @@ class FlowOfDocuments extends FlowOfDocumentsBase
      * Retrieves order data
      *
      * @param $options
+     *
      * @throws \Sulu\Bundle\AdminBundle\Widgets\WidgetParameterException
      */
     protected function getShipppingData($options)
@@ -90,61 +91,37 @@ class FlowOfDocuments extends FlowOfDocumentsBase
             'fa-truck',
             new DateTime($options['date']),
             parent::getRoute($options['id'], 'shipping', 'details'),
-            Shipping::$pdfBaseUrl,
+            null,
             'salesshipping.shipping'
         );
     }
 
     /**
      * @param $options
+     *
+     * @throws WidgetException
+     * @throws WidgetParameterException
+     *
      * @return bool
-     * @throws \Sulu\Bundle\AdminBundle\Widgets\WidgetParameterException
      */
-    function checkRequiredParameters($options)
+    protected function checkRequiredParameters($options)
     {
-        $attribute = "";
-        if (!empty($options)) {
-
-            if (empty($options['orderNumber'])) {
-                $attribute = 'orderNumber';
-            }
-
-            if (empty($options['orderDate'])) {
-                $attribute = 'orderDate';
-            }
-
-            if (empty($options['orderId'])) {
-                $attribute = 'orderId';
-            }
-
-            if (empty($options['locale'])) {
-                $attribute = 'locale';
-            }
-
-            if(empty($options['id'])){
-                $attribute = 'id';
-            }
-
-            if(empty($options['date'])){
-                $attribute = 'date';
-            }
-
-            if(empty($options['number'])){
-                $attribute = 'number';
-            }
-
-            if (empty($attribute)) {
-                return true;
-            }
-
-        } else {
-            return false;
+        if (empty($options)) {
+            throw new WidgetException('No params found!', $this->getName());
         }
 
-        throw new WidgetParameterException(
-            'Required parameter ' . $attribute . ' not found or invalid!',
-            $this->widgetName,
-            $attribute
-        );
+        $requiredParameters = ['orderNumber', 'orderDate', 'orderId', 'locale', 'id', 'date', 'number'];
+
+        // check if all required params are set
+        foreach ($requiredParameters as $parameter) {
+            if (empty($options[$parameter])) {
+                throw new WidgetParameterException(
+                    'Required parameter ' . $parameter . ' not found or invalid!',
+                    $this->widgetName,
+                    $parameter
+                );
+            }
+        }
+        return true;
     }
 }
