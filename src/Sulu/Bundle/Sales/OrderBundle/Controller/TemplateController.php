@@ -5,6 +5,7 @@ namespace Sulu\Bundle\Sales\OrderBundle\Controller;
 use Sulu\Bundle\ContactExtensionBundle\Entity\Account;
 use Sulu\Bundle\ProductBundle\Api\Currency;
 use Sulu\Bundle\Sales\OrderBundle\Api\OrderStatus;
+use Sulu\Bundle\SecurityBundle\Entity\UserRepository;
 use Sulu\Component\Rest\RestController;
 
 class TemplateController extends RestController
@@ -50,8 +51,9 @@ class TemplateController extends RestController
      */
     public function getSystemUserArray()
     {
+        /** @var UserRepository $repo */
         $repo = $this->get('sulu_security.user_repository');
-        $users = $repo->getUserInSystem();
+        $users = $repo->getUserInSystem(['contact.firstName' => 'ASC', 'contact.lastName' => 'ASC']);
         $contacts = [];
 
         foreach ($users as $user) {
