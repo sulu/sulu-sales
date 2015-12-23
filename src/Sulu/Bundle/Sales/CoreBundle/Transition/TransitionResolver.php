@@ -60,21 +60,26 @@ class TransitionResolver
         if ($current === null) {
             throw new EntityNotFoundException($alias, $id);
         }
+
         $currentTransition = $current->getTransition();
 
-        $allTransitions = [
-            'previous' => array_reverse($this->getPreviousTransitions(
-                $currentTransition->getSource(),
-                $currentTransition->getSourceId(),
-                $hydrationMode)
-            ),
-            'current' => $current,
-            'following' => $this->getFollowingTransitions(
+        $allTransitions['current'] = $current;
+
+        if ($currentTransition) {
+            $allTransitions['previous'] = array_reverse(
+                $this->getPreviousTransitions(
+                    $currentTransition->getSource(),
+                    $currentTransition->getSourceId(),
+                    $hydrationMode
+                )
+            );
+
+            $allTransitions['following'] = $this->getFollowingTransitions(
                 $currentTransition->getDestination(),
                 $currentTransition->getDestinationId(),
                 $hydrationMode
-            )
-        ];
+            );
+        }
 
         return $allTransitions;
     }
@@ -126,17 +131,15 @@ class TransitionResolver
      */
     protected function getCurrentTransition($alias, $id, $hydrationMode = self::HYDRATION_MODE_OBJECTS)
     {
+        $transitionResult = $this->createTransitionResult($alias, $id, $hydrationMode);
+
         /** @var Transition $transition */
         $transition = $this->transitionManager->findOneByDestination($alias, $id);
 
-        if ($transition === null) {
-            throw new EntityNotFoundException($alias, $id);
+        if ($transition !== null) {
+            $transitionResult->setTransition($transition);
+            $transitionResult->setId($transition->getId());
         }
-
-        $transitionResult = $this->createTransitionResult($alias, $id, $hydrationMode);
-
-        $transitionResult->setId($transition->getId());
-        $transitionResult->setTransition($transition);
 
         return $transitionResult;
     }
