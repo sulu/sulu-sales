@@ -33,7 +33,8 @@ use Sulu\Bundle\Sales\CoreBundle\Manager\OrderAddressManager;
 use Sulu\Bundle\PricingBundle\Pricing\ItemPriceCalculator;
 use Sulu\Component\Persistence\RelationTrait;
 use Sulu\Component\Security\Authentication\UserRepositoryInterface;
-
+use Sulu\Bundle\ProductBundle\Entity\TaxClass;
+use Sulu\Bundle\ProductBundle\Entity\CountryTaxRepository;
 
 class ItemManager
 {
@@ -77,6 +78,11 @@ class ItemManager
     protected $orderAddressManager;
 
     /**
+     * @var CountryTaxRepository
+     */
+    protected $countryTaxRepository;
+
+    /**
      * @var string
      */
     protected $orderAddressEntity;
@@ -87,6 +93,11 @@ class ItemManager
     protected $itemFactory;
 
     /**
+     * @var string
+     */
+    protected $shopLocation;
+
+    /**
      * @param ObjectManager $em
      * @param EntityRepository|ItemRepository $itemRepository
      * @param UserRepositoryInterface $userRepository
@@ -94,8 +105,10 @@ class ItemManager
      * @param ProductPriceManagerInterface $productPriceManager
      * @param ItemPriceCalculator $itemPriceCalculator
      * @param OrderAddressManager $orderAddressManager
+     * @param CountryTaxRepository $countryTaxRepository
      * @param ItemFactoryInterface $itemFactory
      * @param string $orderAddressEntity
+     * @param string $shopLocation
      */
     public function __construct(
         ObjectManager $em,
@@ -105,8 +118,10 @@ class ItemManager
         ProductPriceManagerInterface $productPriceManager,
         ItemPriceCalculator $itemPriceCalculator,
         OrderAddressManager $orderAddressManager,
+        CountryTaxRepository $countryTaxRepository,
         ItemFactoryInterface $itemFactory,
-        $orderAddressEntity
+        $orderAddressEntity,
+        $shopLocation
     ) {
         $this->em = $em;
         $this->itemRepository = $itemRepository;
@@ -115,8 +130,10 @@ class ItemManager
         $this->productPriceManager = $productPriceManager;
         $this->itemPriceCalculator = $itemPriceCalculator;
         $this->orderAddressManager = $orderAddressManager;
+        $this->countryTaxRepository = $countryTaxRepository;
         $this->itemFactory = $itemFactory;
         $this->orderAddressEntity = $orderAddressEntity;
+        $this->shopLocation = $shopLocation;
     }
 
     /**
@@ -544,8 +561,9 @@ class ItemManager
             $item->setQuantityUnit($product->getOrderUnit()->getTranslation($locale)->getName());
         }
 
-        // TODO: get tax from product https://github.com/massiveart/POOL-ALPIN/issues/1224
-        $item->setTax(0);
+        $taxClass = $product->getTaxClass();
+        $tax = $this->retrieveTaxForClass($taxClass);
+        $item->setTax($tax);
 
         return $product;
     }
@@ -566,6 +584,28 @@ class ItemManager
             $item->setSupplier(null);
             $item->setSupplierName('');
         }
+    }
+
+    /**
+     * Retrieves the tax depending on the current class and configured
+     * shop location.
+     *
+     * @param TaxClass $taxClass
+     *
+     * @return float
+     */
+    private function retrieveTaxForClass(TaxClass $taxClass)
+    {
+        $locale = $this->shopLocation;
+        $countryTax = $this->countryTaxRepository->findByLocaleAndTaxClassId($locale, $taxClass->getId());
+        if (!$countryTax && $taxClass->getId() != TaxClass::STANDARD_TAX_RATE) {
+            $countryTax = $this->countryTaxRepository->findByLocaleAndTaxClassId($locale, TaxClass::STANDARD_TAX_RATE);
+            if (!$countryTax) {
+                return 0;
+            }
+        }
+
+        return $countryTax->getTax();
     }
 
     /**
