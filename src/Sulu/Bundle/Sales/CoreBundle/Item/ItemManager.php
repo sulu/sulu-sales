@@ -562,8 +562,12 @@ class ItemManager
         }
 
         $taxClass = $product->getTaxClass();
-        $tax = $this->retrieveTaxForClass($taxClass);
-        $item->setTax($tax);
+        if ($taxClass) {
+            $tax = $this->retrieveTaxForClass($taxClass);
+            $item->setTax($tax);
+        } else {
+            $item->setTax(0);
+        }
 
         return $product;
     }
