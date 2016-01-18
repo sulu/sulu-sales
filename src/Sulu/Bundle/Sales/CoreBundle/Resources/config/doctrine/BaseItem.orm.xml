@@ -14,7 +14,11 @@
         <field name="useProductsPrice" type="boolean" column="useProductsPrice"/>
         <field name="tax" type="float" column="tax"/>
         <field name="price" type="float" column="price" nullable="true"/>
-        <field name="discount" type="float" column="discount" nullable="true"/>
+        <field name="discount" type="float" column="discount" nullable="false">
+            <options>
+                <option name="default">0</option>
+            </options>
+        </field>
         <field name="description" type="text" column="description" nullable="true"/>
         <field name="weight" type="float" column="weight" nullable="true"/>
         <field name="width" type="float" column="width" nullable="true"/>

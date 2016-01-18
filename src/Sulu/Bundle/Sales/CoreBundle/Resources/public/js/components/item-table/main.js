@@ -622,16 +622,17 @@ define([
                         PriceCalcUtil.getFormattedAmountAndUnit(this.sandbox, totalNetPrice, this.currency)
                     );
 
-                    // TODO: uncomment when taxes are implemented
                     result = PriceCalcUtil.getTotalPricesAndTaxes(this.sandbox, this.items);
-                    // add row for every tax group
-                    for (i in result.taxes) {
-                       addPriceRow.call(
-                           this,
-                           $table,
-                           this.sandbox.translate('salescore.item.vat') + '.(' + i + '%)',
-                           PriceCalcUtil.getFormattedAmountAndUnit(this.sandbox, result.taxes[i], this.currency)
-                       );
+                    if (result.taxes) {
+                        // add row for every tax group
+                        for (i in result.taxes) {
+                           addPriceRow.call(
+                               this,
+                               $table,
+                               this.sandbox.translate('salescore.item.vat') + '.(' + i + '%)',
+                               PriceCalcUtil.getFormattedAmountAndUnit(this.sandbox, result.taxes[i], this.currency)
+                           );
+                        }
                     }
 
                     addPriceRow.call(
