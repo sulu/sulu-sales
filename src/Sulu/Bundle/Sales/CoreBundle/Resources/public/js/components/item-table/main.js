@@ -602,35 +602,37 @@ define([
 
             if (!!items && items.length > 0 && !!items[0].price) {
 
+                var totalNetPrice = 0;
                 var totalPrice = 0;
                 for (var i = -1, len = items.length; ++i < len;) {
-                    totalPrice += items[i].totalNetPrice;
+                    totalNetPrice += items[i].totalNetPrice;
+                    totalPrice += items[i].tax / 100.0 * items[i].totalNetPrice + items[i].totalNetPrice;;
                 }
 
                 // visualize
                 $table = this.$find(constants.globalPriceTableClass);
                 this.sandbox.dom.empty($table);
 
-                if (!!totalPrice) {
+                if (!!totalNetPrice) {
                     // add net price
                     addPriceRow.call(
                         this,
                         $table,
                         this.sandbox.translate('salescore.item.net-price'),
-                        PriceCalcUtil.getFormattedAmountAndUnit(this.sandbox, totalPrice, this.currency)
+                        PriceCalcUtil.getFormattedAmountAndUnit(this.sandbox, totalNetPrice, this.currency)
                     );
 
                     // TODO: uncomment when taxes are implemented
-                    //result = PriceCalcUtil.getTotalPricesAndTaxes(this.sandbox, this.items);
-                    //// add row for every tax group
-                    //for (i in result.taxes) {
-                    //    addPriceRow.call(
-                    //        this,
-                    //        $table,
-                    //        this.sandbox.translate('salescore.item.vat') + '.(' + i + '%)',
-                    //        PriceCalcUtil.getFormattedAmountAndUnit(this.sandbox, result.taxes[i], this.currency)
-                    //    );
-                    //}
+                    result = PriceCalcUtil.getTotalPricesAndTaxes(this.sandbox, this.items);
+                    // add row for every tax group
+                    for (i in result.taxes) {
+                       addPriceRow.call(
+                           this,
+                           $table,
+                           this.sandbox.translate('salescore.item.vat') + '.(' + i + '%)',
+                           PriceCalcUtil.getFormattedAmountAndUnit(this.sandbox, result.taxes[i], this.currency)
+                       );
+                    }
 
                     addPriceRow.call(
                         this,
@@ -775,9 +777,9 @@ define([
                 items: items
             }).then(function(response) {
                 // map each result of response back to rowIds
-                for (var i = -1, len = response.length; ++i < len;) {
+                for (var i = -1, len = response.items.length; ++i < len;) {
                     var rowId = rowIds[i];
-                    this.items[rowId] = response[i];
+                    this.items[rowId] = response.items[i];
                 }
 
                 isLoadedPromise.resolve();
@@ -1153,7 +1155,7 @@ define([
                 discount: null,
                 numberFormat: this.sandbox.numberFormat
             }, data);
-            
+
             if (!data.hasOwnProperty(this.options.addressKey) || !data[this.options.addressKey]) {
                 data[this.options.addressKey] = {id: null};
             }
@@ -1193,10 +1195,10 @@ define([
                             this.items[rowId].quantity = this.sandbox.parseFloat(
                                 this.sandbox.dom.val(constants.overlayClassSelector + ' *[data-mapper-property="quantity"]')
                             );
-                            this.items[rowId].price = this.sandbox.parseFloat( 
+                            this.items[rowId].price = this.sandbox.parseFloat(
                                 this.sandbox.dom.val(constants.overlayClassSelector + ' *[data-mapper-property="price"]')
                             );
-                            this.items[rowId].discount = this.sandbox.parseFloat( 
+                            this.items[rowId].discount = this.sandbox.parseFloat(
                                 this.sandbox.dom.val(constants.overlayClassSelector + ' *[data-mapper-property="discount"]')
                             );
 

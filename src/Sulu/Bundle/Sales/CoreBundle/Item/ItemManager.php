@@ -598,7 +598,7 @@ class ItemManager
     {
         $locale = $this->shopLocation;
         $countryTax = $this->countryTaxRepository->findByLocaleAndTaxClassId($locale, $taxClass->getId());
-        if (!$countryTax && $taxClass->getId() != TaxClass::STANDARD_TAX_RATE) {
+        if (!$countryTax) {
             $countryTax = $this->countryTaxRepository->findByLocaleAndTaxClassId($locale, TaxClass::STANDARD_TAX_RATE);
             if (!$countryTax) {
                 return 0;
