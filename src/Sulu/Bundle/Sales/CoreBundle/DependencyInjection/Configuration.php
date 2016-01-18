@@ -48,6 +48,7 @@ class Configuration implements ConfigurationInterface
                     ->end()
                 ->end()
                 ->scalarNode('email_from')->defaultValue('')->end()
+                ->scalarNode('shop_location')->defaultValue('')->end()
             ->end()
         ;
 

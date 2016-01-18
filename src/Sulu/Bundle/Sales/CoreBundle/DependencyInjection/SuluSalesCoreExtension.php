@@ -41,6 +41,11 @@ class SuluSalesCoreExtension extends Extension
         );
 
         $container->setParameter(
+            'sulu_sales_core.shop_location',
+            $config['shop_location']
+        );
+
+        $container->setParameter(
             'sulu_sales_core.priceformatter_digits',
             $config['priceformatter_digits']
         );

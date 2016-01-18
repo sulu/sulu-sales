@@ -67,8 +67,10 @@
             <argument type="service" id="sulu_product.price_manager" />
             <argument type="service" id="sulu_pricing.item_price_calculator" />
             <argument type="service" id="sulu_sales_core.order_address_manager" />
+            <argument type="service" id="sulu_product.country_tax_repository" />
             <argument type="service" id="sulu_sales_core.item_factory" />
             <argument>%sulu_sales_core.order_address_entity%</argument>
+            <argument>%sulu_sales_core.shop_location%</argument>
         </service>
 
         <service id="sulu_sales_core.transition_manager" class="%sulu_sales_core.transition_manager.class%">
