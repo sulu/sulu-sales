@@ -779,7 +779,7 @@ define([
                 // map each result of response back to rowIds
                 for (var i = -1, len = response.items.length; ++i < len;) {
                     var rowId = rowIds[i];
-                    this.items[rowId] = response.items[i];
+                    this.sandbox.util.extend(this.items[rowId], response.items[i]);
                 }
 
                 isLoadedPromise.resolve();
