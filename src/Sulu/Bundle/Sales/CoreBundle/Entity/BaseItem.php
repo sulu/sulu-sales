@@ -66,7 +66,7 @@ abstract class BaseItem implements ItemInterface
     /**
      * @var float
      */
-    private $discount;
+    private $discount = 0;
 
     /**
      * @var string
