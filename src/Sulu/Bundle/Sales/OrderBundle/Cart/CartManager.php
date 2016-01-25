@@ -374,7 +374,7 @@ class CartManager extends BaseSalesManager
         /** @var \Sulu\Bundle\Sales\CoreBundle\Entity\ItemInterface $item */
         foreach ($cart->getItems() as $item) {
             if (!$item->getProduct() ||
-                !$item->getProduct()->isValidShopProduct()
+                !$item->getProduct()->isValidShopProduct($this->defaultCurrency)
             ) {
                 $containsInvalidProducts = true;
                 $cart->removeItem($item);
