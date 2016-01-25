@@ -139,6 +139,15 @@ define([
             }, this);
         },
 
+        bindDomEvents = function() {
+            this.sandbox.dom.on(this.$el, 'click', onTaxfreeClicked.bind(this), '#tax-free');
+        },
+
+        onTaxfreeClicked = function(event) {
+            var taxfree = $(event.currentTarget).is(':checked');
+            this.sandbox.emit('sulu.item-table.' + constants.itemTableInstanceName + '.update-price', taxfree);
+        },
+
         /**
          * set saved
          * @param {Bool} saved Defines if saved state should be shown
@@ -451,6 +460,7 @@ define([
 
             // bind events
             bindCustomEvents.call(this);
+            bindDomEvents.call(this);
             HeaderUtil.initialize.call(this);
 
             // set header
@@ -502,7 +512,8 @@ define([
                         el: constants.itemTableSelector,
                         settings: {
                             columns: ['addresses', 'description', 'quantity', 'single-price', 'delivery-date', 'cost-center', 'discount', 'tax-rate']
-                        }
+                        },
+                        taxfree: this.options.data.taxfree
                     }
                 },
                 {

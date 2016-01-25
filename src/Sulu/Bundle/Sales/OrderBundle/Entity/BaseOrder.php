@@ -33,7 +33,7 @@ abstract class BaseOrder implements OrderInterface
     /**
      * @var boolean
      */
-    protected $taxfree;
+    protected $taxfree = false;
 
     /**
      * @var string

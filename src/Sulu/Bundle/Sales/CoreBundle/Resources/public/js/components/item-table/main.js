@@ -41,7 +41,6 @@ define([
 
     'use strict';
 
-    // TODO: implement taxfree
     // TODO: order-address handling: set contact-data as well
 
     var defaults = {
@@ -96,7 +95,7 @@ define([
             overlayClassSelector: '.settings-overlay',
             autocompleteLimit: 20
         },
-        
+
         translations = {
             defaultAddress: 'salescore.use-main-delivery-address'
         },
@@ -192,6 +191,15 @@ define([
          *
          * @event sulu.item-table[.INSTANCENAME].change-currency
          */
+        EVENT_UPDATE_PRICE = function() {
+            return getEventName.call(this, 'update-price');
+        },
+
+        /**
+         * Changes the currency and selects related price if available.
+         *
+         * @event sulu.item-table[.INSTANCENAME].change-currency
+         */
         EVENT_CHANGE_CURRENCY = function() {
             return getEventName.call(this, 'change-currency');
         },
@@ -259,6 +267,15 @@ define([
             this.sandbox.on(EVENT_SET_ADRESSES.call(this), setAddresses.bind(this));
             this.sandbox.on(EVENT_GET_DATA.call(this), getData.bind(this));
             this.sandbox.on(EVENT_RESET_ITEM_ADDRESSES.call(this), resetItemAddresses.bind(this));
+            this.sandbox.on(EVENT_UPDATE_PRICE.call(this), updatePriceEventTriggered.bind(this));
+        },
+
+        /**
+         * Updates the global price when price event was triggered.
+         */
+        updatePriceEventTriggered = function(taxfree) {
+            this.options.taxfree = taxfree;
+            updateGlobalPrice.call(this);
         },
 
         /**
@@ -270,7 +287,6 @@ define([
             // remove row
             this.sandbox.dom.on(this.$el, 'click', removeRowClicked.bind(this), '.remove-row');
 
-            //
             this.sandbox.dom.on(this.$el, 'click', rowClicked.bind(this), '.item-table-row');
             // add new item
             this.sandbox.dom.on(this.$el, 'click', rowCellClicked.bind(this), '.item-table-row td');
@@ -319,10 +335,10 @@ define([
          */
         resetItemAddresses = function(address) {
             var i, item;
-            
+
             // reset default address
             setDefaultData.call(this, 'address', address);
-            
+
             // reset addresses of all items
             for (i in this.items) {
                 if (this.items.hasOwnProperty(i)) {
@@ -622,27 +638,28 @@ define([
                         PriceCalcUtil.getFormattedAmountAndUnit(this.sandbox, totalNetPrice, this.currency)
                     );
 
-                    result = PriceCalcUtil.getTotalPricesAndTaxes(this.sandbox, this.items);
-                    if (result.taxes) {
-                        // add row for every tax group
-                        for (i in result.taxes) {
-                           addPriceRow.call(
-                               this,
-                               $table,
-                               this.sandbox.translate('salescore.item.vat') + '.(' + i + '%)',
-                               PriceCalcUtil.getFormattedAmountAndUnit(this.sandbox, result.taxes[i], this.currency)
-                           );
+                    if (!this.options.taxfree) {
+                        result = PriceCalcUtil.getTotalPricesAndTaxes(this.sandbox, this.items);
+                        if (result.taxes) {
+                            // add row for every tax group
+                            for (i in result.taxes) {
+                            addPriceRow.call(
+                                this,
+                                $table,
+                                this.sandbox.translate('salescore.item.vat') + '.(' + i + '%)',
+                                PriceCalcUtil.getFormattedAmountAndUnit(this.sandbox, result.taxes[i], this.currency)
+                            );
+                            }
                         }
+
+                        addPriceRow.call(
+                            this,
+                            $table,
+                            this.sandbox.translate('salescore.item.overall-price'),
+                            PriceCalcUtil.getFormattedAmountAndUnit(this.sandbox, totalPrice, this.currency)
+                        );
                     }
-
-                    addPriceRow.call(
-                        this,
-                        $table,
-                        this.sandbox.translate('salescore.item.overall-price'),
-                        PriceCalcUtil.getFormattedAmountAndUnit(this.sandbox, totalPrice, this.currency)
-                    );
                 }
-
             }
         },
 

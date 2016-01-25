@@ -168,7 +168,9 @@ $rowPadding : 0 20px 0 0;
             height: 30px;
             &:last-child {
                 font-weight: bold;
-                border-top: 1px solid #ccc;;
+                &:not(:first-child) {
+                    border-top: 1px solid #ccc
+                }
             }
         }
     }
