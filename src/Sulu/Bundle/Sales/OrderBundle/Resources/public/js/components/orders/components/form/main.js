@@ -143,6 +143,9 @@ define([
             this.sandbox.dom.on(this.$el, 'click', onTaxfreeClicked.bind(this), '#tax-free');
         },
 
+        /**
+         * @param {event} gets called when checkbox is triggered
+         */
         onTaxfreeClicked = function(event) {
             var taxfree = $(event.currentTarget).is(':checked');
             this.sandbox.emit('sulu.item-table.' + constants.itemTableInstanceName + '.update-price', taxfree);

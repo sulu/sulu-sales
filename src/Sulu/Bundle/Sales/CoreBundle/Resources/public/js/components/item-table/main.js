@@ -189,7 +189,7 @@ define([
         /**
          * Changes the currency and selects related price if available.
          *
-         * @event sulu.item-table[.INSTANCENAME].change-currency
+         * @event sulu.item-table[.INSTANCENAME].update-price
          */
         EVENT_UPDATE_PRICE = function() {
             return getEventName.call(this, 'update-price');
@@ -643,12 +643,12 @@ define([
                         if (result.taxes) {
                             // add row for every tax group
                             for (i in result.taxes) {
-                            addPriceRow.call(
-                                this,
-                                $table,
-                                this.sandbox.translate('salescore.item.vat') + '.(' + i + '%)',
-                                PriceCalcUtil.getFormattedAmountAndUnit(this.sandbox, result.taxes[i], this.currency)
-                            );
+                                addPriceRow.call(
+                                    this,
+                                    $table,
+                                    this.sandbox.translate('salescore.item.vat') + '.(' + i + '%)',
+                                    PriceCalcUtil.getFormattedAmountAndUnit(this.sandbox, result.taxes[i], this.currency)
+                                );
                             }
                         }
 
