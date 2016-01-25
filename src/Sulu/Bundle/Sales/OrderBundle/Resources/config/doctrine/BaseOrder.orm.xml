@@ -10,7 +10,11 @@
         <field name="number" type="string" column="number" length="255" nullable="true"/>
         <field name="orderNumber" type="string" column="orderNumber" nullable="true"/>
         <field name="currencyCode" type="string" column="currency" length="255" nullable="true"/>
-        <field name="taxfree" type="boolean" column="taxfree" nullable="true"></field>
+        <field name="taxfree" type="boolean" column="taxfree" nullable="false">
+            <options>
+                <option name="default">0</option>
+            </options>
+        </field>
         <field name="totalNetPrice" type="float" column="totalNetPrice" nullable="true"></field>
 
         <field name="costCentre" type="string" column="costCentre" nullable="true"/>
