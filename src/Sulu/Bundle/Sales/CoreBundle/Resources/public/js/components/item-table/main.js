@@ -646,7 +646,7 @@ define([
                                 addPriceRow.call(
                                     this,
                                     $table,
-                                    this.sandbox.translate('salescore.item.vat') + '.(' + i + '%)',
+                                    this.sandbox.translate('salescore.item.vat') + '. (' + i + '%)',
                                     PriceCalcUtil.getFormattedAmountAndUnit(this.sandbox, result.taxes[i], this.currency)
                                 );
                             }
