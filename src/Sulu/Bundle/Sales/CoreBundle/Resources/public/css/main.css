@@ -158,6 +158,9 @@
 /* line 169, ../scss/modules/item-table.scss */
 .global-price-container .global-price-table tr:last-child {
   font-weight: bold;
+}
+/* line 171, ../scss/modules/item-table.scss */
+.global-price-container .global-price-table tr:last-child:not(:first-child) {
   border-top: 1px solid #ccc;
 }
 
