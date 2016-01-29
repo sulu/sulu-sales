@@ -577,6 +577,7 @@ define([
                 this.sandbox.dom.on(form, 'change', changeHandler.bind(this),
                     '.changeListener select, ' +
                     '.changeListener input, ' +
+                    '.changeListener .pickdate, ' +
                     '.changeListener .husky-select, ' +
                     '.changeListener textarea');
 
