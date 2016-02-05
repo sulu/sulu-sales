@@ -279,29 +279,43 @@ define([
         },
 
         /**
-         * bind dom events
+         * Bind dom events.
          */
         bindDomEvents = function() {
-            // add new item
-            this.sandbox.dom.on(this.$el, 'click', addNewItemClicked.bind(this), '.add-row');
-            // remove row
+            // Add new item
+            this.sandbox.dom.on(this.$el, 'click', addSearchItemClicked.bind(this), '.add-row');
+
+            // Add new independent item row (without product relation).
+            this.sandbox.dom.on(this.$el, 'click', addNewIndependentItemClicked.bind(this), '.add-independent');
+
+            // Remove item row
             this.sandbox.dom.on(this.$el, 'click', removeRowClicked.bind(this), '.remove-row');
 
+            // Item row has been clicked
             this.sandbox.dom.on(this.$el, 'click', rowClicked.bind(this), '.item-table-row');
-            // add new item
+
+            // Add new item
             this.sandbox.dom.on(this.$el, 'click', rowCellClicked.bind(this), '.item-table-row td');
 
+            // Item data was changed
             this.sandbox.dom.on(this.$el, 'data-changed', function(event) {
                 var items = event.items || [];
                 rerenderItems.call(this, items);
             }.bind(this));
 
-            // input field listeners
+            // Input field listeners (change)
             this.sandbox.dom.on(this.$el, 'change', quantityChangedHandler.bind(this), constants.quantityInput);
             this.sandbox.dom.on(this.$el, 'change', priceChangedHandler.bind(this), constants.priceInput);
             this.sandbox.dom.on(this.$el, 'change', discountChangedHandler.bind(this), constants.discountInput);
         },
 
+        /**
+         * Returns item row by its id.
+         *
+         * @param {String} rowId
+         *
+         * @returns {Object}
+         */
         getItemRowById = function(rowId) {
             return this.sandbox.dom.find('#' + rowId, this.$list);
         },
@@ -793,7 +807,8 @@ define([
                 currency: this.currency,
                 taxfree: this.options.taxfree,
                 items: items
-            }).then(function(response) {
+            })
+            .then(function(response) {
                 // map each result of response back to rowIds
                 for (var i = -1, len = response.items.length; ++i < len;) {
                     var rowId = rowIds[i];
@@ -802,17 +817,17 @@ define([
 
                 isLoadedPromise.resolve();
             }.bind(this))
-                .fail(function(request, message, error) {
-                    this.sandbox.emit('sulu.labels.warning.show',
-                        this.sandbox.translate('salescore.item-table.'),
-                        'labels.error',
-                        ''
-                    );
-                    this.sandbox.logger.error(request, message, error);
+            .fail(function(request, message, error) {
+                this.sandbox.emit('sulu.labels.error.show',
+                    this.sandbox.translate('salescore.item-table.error.price-update'),
+                    'labels.error',
+                    ''
+                );
+                this.sandbox.logger.error(request, message, error);
 
-                    isLoadedPromise.reject();
+                isLoadedPromise.reject();
 
-                }.bind(this));
+            }.bind(this));
 
             return isLoadedPromise;
         },
@@ -904,13 +919,23 @@ define([
         },
 
         /**
-         *  DOM-EVENT listener: add a new row.
+         * DOM-EVENT listener: add a new row.
          *
-         *  @param {Object} event
+         * @param {Object} event
          */
-        addNewItemClicked = function(event) {
+        addSearchItemClicked = function(event) {
             event.preventDefault();
-            addNewItemRow.call(this);
+            addSearchItemRow.call(this);
+        },
+
+        /**
+         * DOM-EVENT listener: add a new row.
+         *
+         * @param {Object} event
+         */
+        addNewIndependentItemClicked = function(event) {
+            event.preventDefault();
+            initSettingsOverlay.call(this, rowDefaults, this.options.settings, null, true);
         },
 
         /**
@@ -1064,9 +1089,9 @@ define([
         },
 
         /**
-         * Adds a new item.
+         * Adds a new item which is used for searching products.
          */
-        addNewItemRow = function() {
+        addSearchItemRow = function() {
             var $row,
                 data = {
                     rowClass: 'new'
@@ -1096,14 +1121,23 @@ define([
             for (i = -1, length = items.length; ++i < length;) {
                 item = items[i];
 
+                // Create row in dom.
                 $row = addItemRow.call(this, items[i]);
-
-                // add to items array
-                rowId = this.sandbox.dom.attr($row, 'id');
-                this.items[rowId] = item;
+                // Add to items array.
+                addItemDataEntryByObject.call(this, $row, item);
             }
-            // refresh items data attribute
+            // Refresh items data attribute.
             refreshItemsData.call(this);
+        },
+
+        /**
+         * Adds new itemdata to this.items based on dom object
+         *
+         * @param $row
+         */
+        addItemDataEntryByObject = function($row, itemData) {
+            var rowId = this.sandbox.dom.attr($row, 'id');
+            this.items[rowId] = itemData;
         },
 
         /**
@@ -1149,8 +1183,9 @@ define([
          * @param {Object} data
          * @param {Object} settings
          * @param {String} rowId
+         * @param {Bool} createNewItem Defines if settings overlay is used for creating a new row.
          */
-        initSettingsOverlay = function(data, settings, rowId) {
+        initSettingsOverlay = function(data, settings, rowId, createNewItem) {
             var $overlay, $content, title, subTitle,
                 defaultAddressLabel = this.sandbox.translate(translations.defaultAddress);
 
@@ -1163,26 +1198,27 @@ define([
                 defaultAddressLabel = this.sandbox.sulu.createAddressString(data[this.options.addressKey]);
             }
 
-            data = this.sandbox.util.extend({
-                settings: settings,
-                defaultAddressLabel: defaultAddressLabel,
-                createAddressString: this.sandbox.sulu.createAddressString,
-                translate: this.sandbox.translate,
-                deliveryDate: null,
+            var templateData = this.sandbox.util.extend({
                 costCenter: null,
+                createAddressString: this.sandbox.sulu.createAddressString,
+                createNewItem: createNewItem,
+                defaultAddressLabel: defaultAddressLabel,
                 discount: null,
-                numberFormat: this.sandbox.numberFormat
+                deliveryDate: null,
+                numberFormat: this.sandbox.numberFormat,
+                settings: settings,
+                translate: this.sandbox.translate
             }, data);
 
-            if (!data.hasOwnProperty(this.options.addressKey) || !data[this.options.addressKey]) {
-                data[this.options.addressKey] = {id: null};
+            if (!templateData.hasOwnProperty(this.options.addressKey) || !templateData[this.options.addressKey]) {
+                templateData[this.options.addressKey] = {id: null};
             }
 
             // prevent multiple initialization of the overlay
             this.sandbox.stop(this.sandbox.dom.find(constants.overlayClassSelector, this.$el));
             this.sandbox.dom.remove(this.sandbox.dom.find(constants.overlayClassSelector, this.$el));
 
-            $content = this.sandbox.util.template(Overlay, data);
+            $content = this.sandbox.util.template(Overlay, templateData);
             $overlay = this.sandbox.dom.createElement('<div class="' + constants.overlayClass + '"></div>');
             this.sandbox.dom.append(this.$el, $overlay);
 
@@ -1190,6 +1226,19 @@ define([
             subTitle = '#' + data.number;
             if (data.supplierName && data.supplierName !== '') {
                 subTitle += '<br/>' + data.supplierName;
+            }
+
+            // When creating a new item with overlay.
+            if (createNewItem) {
+                title = this.sandbox.translate('salescore.create-new-item');
+                subTitle = null;
+
+                // TODO: ADD VALIDATION!
+                // TODO: FETCH TAX CLASSES
+                // TODO: FETCH
+
+
+
             }
 
             this.sandbox.start([
@@ -1204,35 +1253,7 @@ define([
                         removeOnClose: false,
                         skin: 'wide',
                         data: $content,
-                        okCallback: function() {
-                            var deliveryAddress = this.sandbox.dom.val(constants.overlayClassSelector + ' *[data-mapper-property="deliveryAddress"]'),
-                                deliveryDate = this.sandbox.dom.val(constants.overlayClassSelector + ' *[data-mapper-property="deliveryDate"] input'),
-                                costCenter = this.sandbox.dom.val(constants.overlayClassSelector + ' *[data-mapper-property="costCenter"]');
-
-                            this.items[rowId].description = this.sandbox.dom.val(constants.overlayClassSelector + ' *[data-mapper-property="description"]');
-                            this.items[rowId].quantity = this.sandbox.parseFloat(
-                                this.sandbox.dom.val(constants.overlayClassSelector + ' *[data-mapper-property="quantity"]')
-                            );
-                            this.items[rowId].price = this.sandbox.parseFloat(
-                                this.sandbox.dom.val(constants.overlayClassSelector + ' *[data-mapper-property="price"]')
-                            );
-                            this.items[rowId].discount = this.sandbox.parseFloat(
-                                this.sandbox.dom.val(constants.overlayClassSelector + ' *[data-mapper-property="discount"]')
-                            );
-
-                            // set address
-                            if (deliveryAddress !== '-1') {
-                                // TODO: set whole order-address (contact-data as well)
-                                this.items[rowId][this.options.addressKey] = getAddressById.call(this, deliveryAddress);
-                                //delete this.items[rowId][this.options.addressKey].id; // delete reference to contact-address
-                            }
-                            this.items[rowId].deliveryDate = deliveryDate !== '' ? deliveryDate : null;
-                            this.items[rowId].costCenter = costCenter !== '' ? costCenter : null;
-
-                            updateItemRow.call(this, rowId, this.items[rowId]);
-                            updateGlobalPrice.call(this, rowId);
-                            refreshItemsData.call(this);
-                        }.bind(this)
+                        okCallback: saveSettingsOverlayClicked.bind(this, rowId)
                     }
                 },
                 {
@@ -1245,6 +1266,72 @@ define([
                     }
                 }
             ]);
+        },
+
+        /**
+         * Gets called when settings overlay's save button is clicked.
+         *
+         * @param {String} rowId
+         */
+        saveSettingsOverlayClicked = function(rowId) {
+            var data = retrieveDataFromSettingsOverlay.call(this);
+
+            if (!!rowId) {
+                this.sandbox.util.extend({}, this.items[rowId], data);
+                updateItemRow.call(this, rowId, this.items[rowId]);
+                updateGlobalPrice.call(this, rowId);
+                refreshItemsData.call(this);
+            } else {
+                var $row = addItemRow.call(this, data);
+                addItemDataEntryByObject.call(this, $row, data);
+            }
+        },
+
+        /**
+         * Retrieves all data from settings overlay.
+         *
+         * @Returns {Object}
+         */
+        retrieveDataFromSettingsOverlay = function() {
+            var data = {};
+
+            var deliveryAddress = this.sandbox.dom.val(
+                constants.overlayClassSelector + ' *[data-mapper-property="deliveryAddress"]'
+            );
+            var deliveryDate = this.sandbox.dom.val(
+                constants.overlayClassSelector + ' *[data-mapper-property="deliveryDate"] input'
+            );
+            var costCenter = this.sandbox.dom.val(
+                constants.overlayClassSelector + ' *[data-mapper-property="costCenter"]'
+            );
+
+            var name = this.sandbox.dom.val(constants.overlayClassSelector + ' *[data-mapper-property="name"]');
+            if (!!name) {
+                data.name = name;
+            }
+
+            data.description = this.sandbox.dom.val(
+                constants.overlayClassSelector + ' *[data-mapper-property="description"]'
+            );
+            data.quantity = this.sandbox.parseFloat(
+                this.sandbox.dom.val(constants.overlayClassSelector + ' *[data-mapper-property="quantity"]')
+            );
+            data.price = this.sandbox.parseFloat(
+                this.sandbox.dom.val(constants.overlayClassSelector + ' *[data-mapper-property="price"]')
+            );
+
+            data.discount = this.sandbox.parseFloat(
+                this.sandbox.dom.val(constants.overlayClassSelector + ' *[data-mapper-property="discount"]')
+            );
+
+            // Set address
+            if (deliveryAddress !== '-1') {
+                data[this.options.addressKey] = getAddressById.call(this, deliveryAddress);
+            }
+            data.deliveryDate = deliveryDate !== '' ? deliveryDate : null;
+            data.costCenter = costCenter !== '' ? costCenter : null;
+
+            return data;
         },
 
         /**

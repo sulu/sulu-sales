@@ -238,6 +238,18 @@
                 <source>salescore.invoice-address.country</source>
                 <target>Country Invoice</target>
             </trans-unit>
+            <trans-unit id="22" resname="salescore.create-new-item">
+                <source>salescore.create-new-item</source>
+                <target>Create a new item</target>
+            </trans-unit>
+            <trans-unit id="23" resname="salescore.item.name">
+                <source>salescore.item.name</source>
+                <target>Title</target>
+            </trans-unit>
+            <trans-unit id="24" resname="salescore.item-table.error.price-update">
+                <source>salescore.item-table.error.price-update</source>
+                <target>An error occured while calculating the items price. Please check your input.</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>
