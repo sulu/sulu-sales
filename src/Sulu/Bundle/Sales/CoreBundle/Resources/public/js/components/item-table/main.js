@@ -23,12 +23,30 @@
  * @param {Object} [options.columnCallbacks] if a specific column is clicked (as name) a callback can be defined
  *                 by provide key with a function
  * @param {Object} [options.rowCallback] Is called, when a row is clicked. Passes rowId and rowData
- * @param {Object} [options.settings] Configuration Object for displaying Options overlay
+ * @param {Object} [options.settings] Configuration Object for displaying settings overlay
+ * @param {Object} [options.settings.columns] Columns to be shown in settings overlay
+ * @param {Object} [options.settings.addresses] All addresses that can be assigned to a item.
+ * @param {Object} [options.settings.taxClasses] All tax classes that can be set to a item.
+ * @param {Object} [options.settings.units] All units that can be assigned to an item.
  * @param {Object} [options.urlFilter] Object containing key value pairs to extend the url
  * @param {String} [options.addressKey] Defines how to access address value over api
  * @param {Bool}   [options.allowDuplicatedProducts] Defines if a product can be added multiple times to items list
  * @param {Bool}   [options.showItemCount] Defines if the column which shows the item count should be displayed.
  * @param {Bool}   [options.taxfree] Defines if table should contain taxes
+ * @param {Bool}   [options.allowIndependentItems] Defines an independent item can be created
+ *                 (without product assignment).
+ *
+ * ==============================================
+ * Necessary data for creating a settings overlay
+ * ==============================================
+ *
+ * - All of de data defined in options.settings must be provided
+ * - Call set-addresses when changing an account
+ *
+ * For creating independent items
+ * ------------------------------
+ * - TODO
+ *
  */
 define([
     'text!sulusalescore/components/item-table/item.form.html',
@@ -46,6 +64,7 @@ define([
     var defaults = {
             addressKey: 'deliveryAddress',
             allowDuplicatedProducts: true,
+            allowIndependentItems: false,
             columnCallbacks: {},
             columns: [
                 'name',
@@ -138,7 +157,7 @@ define([
                 ].join('');
             },
             loader: function(classes) {
-                return '<div style="display:hidden" class="grid-row ' + classes + '"></div>';
+                return '<div style="display:none" class="grid-row ' + classes + '"></div>';
             }
         },
 
@@ -833,18 +852,14 @@ define([
         },
 
         /**
-         * Checks if a product is not an unallowed duplicate.
+         * Checks if a product is a forbidden duplicate.
          *
          * @param {String|Int} productId
          *
-         * @returns {Bool}
+         * @returns {Boolean}
          */
         productIsForbiddenDuplicate = function(productId) {
-            if (!this.options.allowDuplicatedProducts && this.addedProductIds.indexOf(productId) !== -1) {
-                return true;
-            }
-
-            return false;
+            return !this.options.allowDuplicatedProducts && this.addedProductIds.indexOf(productId) !== -1;
         },
 
         /**
@@ -935,7 +950,7 @@ define([
          */
         addNewIndependentItemClicked = function(event) {
             event.preventDefault();
-            initSettingsOverlay.call(this, rowDefaults, this.options.settings, null, true);
+            initSettingsOverlay.call(this, rowDefaults, this.options.settings);
         },
 
         /**
@@ -1011,6 +1026,29 @@ define([
         },
 
         /**
+         * Creates a new item row and fills it with given data.
+         * and adds item data to this.items.
+         *
+         * @param {Object} itemData
+         * @param {Bool} shouldUpdatePrices
+         *
+         * @param {Object} $row
+         */
+        createNewItemRowWithData = function(itemData, shouldUpdatePrices)
+        {
+            // Create row in dom.
+            var $row = addItemRow.call(this, itemData);
+            // Add to items array.
+            var rowId = addItemDataEntryByObject.call(this, $row, itemData);
+
+            if (!!shouldUpdatePrices) {
+                updateItemRowPrices.call(this, rowId);
+            }
+
+            return $row;
+        },
+
+        /**
          * Adds an existing item to the list.
          *
          * @param {Object} itemData
@@ -1029,6 +1067,7 @@ define([
             $row = createItemRow.call(this, itemData);
             this.$lastAddedRow = $row;
             this.sandbox.dom.append(this.$find(constants.listClass), $row);
+
             return $row;
         },
 
@@ -1117,14 +1156,9 @@ define([
          * @param {Array} items
          */
         renderItems = function(items) {
-            var i, length, item, $row, rowId;
+            var i, length, $row;
             for (i = -1, length = items.length; ++i < length;) {
-                item = items[i];
-
-                // Create row in dom.
-                $row = addItemRow.call(this, items[i]);
-                // Add to items array.
-                addItemDataEntryByObject.call(this, $row, item);
+                createNewItemRowWithData.call(this, items[i]);
             }
             // Refresh items data attribute.
             refreshItemsData.call(this);
@@ -1133,11 +1167,15 @@ define([
         /**
          * Adds new itemdata to this.items based on dom object
          *
-         * @param $row
+         * @param {Object} $row
+         *
+         * @returns {String} rowId
          */
         addItemDataEntryByObject = function($row, itemData) {
             var rowId = this.sandbox.dom.attr($row, 'id');
             this.items[rowId] = itemData;
+
+            return rowId;
         },
 
         /**
@@ -1183,11 +1221,11 @@ define([
          * @param {Object} data
          * @param {Object} settings
          * @param {String} rowId
-         * @param {Bool} createNewItem Defines if settings overlay is used for creating a new row.
          */
-        initSettingsOverlay = function(data, settings, rowId, createNewItem) {
+        initSettingsOverlay = function(data, settings, rowId) {
             var $overlay, $content, title, subTitle,
-                defaultAddressLabel = this.sandbox.translate(translations.defaultAddress);
+                defaultAddressLabel = this.sandbox.translate(translations.defaultAddress),
+                createNewItem = !rowId;
 
             settings = this.sandbox.util.extend({
                 columns: [],
@@ -1282,15 +1320,14 @@ define([
                 updateGlobalPrice.call(this, rowId);
                 refreshItemsData.call(this);
             } else {
-                var $row = addItemRow.call(this, data);
-                addItemDataEntryByObject.call(this, $row, data);
+                createNewItemRowWithData.call(this, data, true);
             }
         },
 
         /**
          * Retrieves all data from settings overlay.
          *
-         * @Returns {Object}
+         * @returns {Object}
          */
         retrieveDataFromSettingsOverlay = function() {
             var data = {};
@@ -1382,6 +1419,8 @@ define([
 
             this.selectorFormId = '#'+ this.options.formId;
 
+            this.checkOptions();
+
             // variables
             this.items = {};
             this.rowCount = 0;
@@ -1414,7 +1453,8 @@ define([
                     isEditable: this.options.isEditable,
                     displayToolbars: this.options.displayToolbars,
                     columns: this.options.columns,
-                    showItemCount: this.options.showItemCount
+                    showItemCount: this.options.showItemCount,
+                    allowIndependentItems: this.options.allowIndependentItems
                 }
             );
 
@@ -1435,6 +1475,27 @@ define([
             updateGlobalPrice.call(this);
 
             this.sandbox.emit(EVENT_INITIALIZED.call(this));
+        },
+
+        /**
+         * Function checks if all necessary options are set and if they are consistent.
+         */
+        checkOptions: function() {
+            var requiredsettings = ['taxClasses', 'units'];
+
+            // Check options set for settings overlay.
+            if (this.options.allowIndependentItems) {
+                var errorMessage = 'Independent items cannot be added: ';
+                if (this.options.settings == false) {
+                    throw errorMessage + 'options.settings not given!';
+                }
+                for (var i = 0; i < requiredsettings.length; i++) {
+                    var requiredSetting = requiredsettings[i]
+                    if (!this.options.settings.hasOwnProperty(requiredSetting)) {
+                        throw errorMessage + 'options.settings.'+ requiredSetting +' not given!';
+                    }
+                }
+            }
         },
 
         /**

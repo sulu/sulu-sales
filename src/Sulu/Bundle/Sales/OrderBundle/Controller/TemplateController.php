@@ -2,6 +2,8 @@
 
 namespace Sulu\Bundle\Sales\OrderBundle\Controller;
 
+use Sulu\Bundle\ProductBundle\Entity\TaxClass;
+use Symfony\Component\HttpFoundation\Response;
 use Sulu\Bundle\ContactExtensionBundle\Entity\Account;
 use Sulu\Bundle\ProductBundle\Api\Currency;
 use Sulu\Bundle\Sales\OrderBundle\Api\OrderStatus;
@@ -14,8 +16,9 @@ class TemplateController extends RestController
     protected static $orderStatusEntityName = 'SuluSalesOrderBundle:OrderStatus';
 
     /**
-     * Returns Template for list
-     * @return \Symfony\Component\HttpFoundation\Response
+     * Returns Template for list.
+     *
+     * @return Response
      */
     public function orderListAction()
     {
@@ -25,11 +28,14 @@ class TemplateController extends RestController
     }
 
     /**
-     * Returns Template for list
-     * @return \Symfony\Component\HttpFoundation\Response
+     * Returns Template for list.
+     *
+     * @return Response
      */
     public function orderFormAction()
     {
+        $locale = $this->getUser()->getLocale();
+
         return $this->render(
             'SuluSalesOrderBundle:Template:order.form.html.twig',
             array(
@@ -38,14 +44,17 @@ class TemplateController extends RestController
                 'termsOfPayment' => $this->getTermsArray(self::$termsOfPaymentEntityName),
                 'termsOfDelivery' => $this->getTermsArray(self::$termsOfDeliveryEntityName),
                 'orderStatus' => $this->getOrderStatus(),
-                'currencies' => $this->getCurrencies($this->getUser()->getLocale()),
+                'currencies' => $this->getCurrencies($locale),
                 'customerId' => Account::TYPE_CUSTOMER,
+                'taxClasses' => $this->getTaxClasses($locale),
+                'units' => $this->getProductUnits($locale),
             )
         );
     }
 
     /**
-     * returns all sulu system users
+     * Returns all sulu system users.
+     *
      * @return array
      */
     public function getSystemUserArray()
@@ -65,8 +74,10 @@ class TemplateController extends RestController
     }
 
     /**
-     * returns Terms Of Payment / Delivery
-     * @param $entityName
+     * Returns Terms Of Payment / Delivery.
+     *
+     * @param string $entityName
+     *
      * @return array
      */
     public function getTermsArray($entityName)
@@ -84,7 +95,8 @@ class TemplateController extends RestController
     }
 
     /**
-     * returns array of order statuses
+     * Returns array of order statuses.
+     *
      * @return array
      */
     public function getOrderStatus()
@@ -104,15 +116,16 @@ class TemplateController extends RestController
     }
 
     /**
-     * Returns currencies
+     * Returns all currencies.
      *
-     * @param $language
+     * @param string $locale
+     *
      * @return array
      */
-    private function getCurrencies($language)
+    private function getCurrencies($locale)
     {
         /** @var Currency[] $currencies */
-        $currencies = $this->get('sulu_product.currency_manager')->findAll($language);
+        $currencies = $this->get('sulu_product.currency_manager')->findAll($locale);
 
         $currencyValues = array();
 
@@ -125,5 +138,53 @@ class TemplateController extends RestController
         }
 
         return $currencyValues;
+    }
+
+    /**
+     * Returns all tax classes.
+     *
+     * @param string $locale
+     *
+     * @return array
+     */
+    private function getTaxClasses($locale)
+    {
+        /** @var TaxClass[] $taxClasses */
+        $taxClasses = $this->get('sulu_product.tax_class_repository')->findAll();
+
+        $result = [];
+
+        foreach ($taxClasses as $taxClass) {
+            $result[] = [
+                'id' => $taxClass->getId(),
+                'name' => $taxClass->getTranslation($locale),
+            ];
+        }
+
+        return $result;
+    }
+
+    /**
+     * Returns all product units.
+     *
+     * @param string $locale
+     *
+     * @return array
+     */
+    private function getProductUnits($locale)
+    {
+        /** @var TaxClass[] $taxClasses */
+        $productUnits = $this->get('sulu_product.unit_repository')->findAll();
+
+        $result = [];
+
+        foreach ($productUnits as $productUnit) {
+            $result[] = [
+                'id' => $productUnit->getId(),
+                'name' => $productUnit->getTranslation($locale),
+            ];
+        }
+
+        return $result;
     }
 }

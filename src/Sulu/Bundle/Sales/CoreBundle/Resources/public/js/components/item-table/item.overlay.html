@@ -47,10 +47,22 @@
             </div>
         </div>
         <div class="grid-col-3">
-            <div class="form-group-vertical">
-                <label><%= translate('salescore.item.unit') %></label>
-                <span><%= quantityUnit %></span>
-            </div>
+            <% if (!!createNewItem) { %>
+                <select class="address form-element" data-type="select" data-mapper-property="deliveryAddress">
+                    <option value="-1"><%= defaultAddressLabel %></option>
+                    <% _.each(settings.addresses, function(address) { %>
+                    <option value="<%=address.id%>"
+                    <% if (address.id == deliveryAddress.id){%> selected="selected"<%}%> >
+                    <%= createAddressString(address) %>
+                    </option>
+                    <% }); %>
+                </select>
+            <% } else { %>
+                <div class="form-group-vertical">
+                    <label><%= translate('salescore.item.unit') %></label>
+                    <span><%= quantityUnit %></span>
+                </div>
+            <% } %>
         </div>
         <% } %>
         <% if (settings.columns.indexOf('single-price') > -1) { %>

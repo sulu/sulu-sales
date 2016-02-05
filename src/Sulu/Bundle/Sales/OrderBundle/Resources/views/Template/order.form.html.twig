@@ -269,8 +269,10 @@
 {% block data %}
     <script type="text/javascript">
         (function() {
-            App.emit('sulu.salesorder.set-order-status', {{ orderStatus |json_encode()|raw }});
-            App.emit('sulu.salesorder.set-currencies', {{  currencies |json_encode()|raw }});
+            App.emit('sulu.salesorder.set-options-data', 'orderStatuses', {{ orderStatus |json_encode()|raw }});
+            App.emit('sulu.salesorder.set-options-data', 'currencies', {{ currencies|json_encode()|raw }});
+            App.emit('sulu.salesorder.set-options-data', 'taxClasses', {{ taxClasses|json_encode()|raw }});
+            App.emit('sulu.salesorder.set-options-data', 'units', {{ units|json_encode()|raw }});
             App.emit('sulu.salesorder.set-customer-id', {{ customerId }});
         })();
     </script>
