@@ -2,8 +2,9 @@
 
 namespace Sulu\Bundle\Sales\OrderBundle\Controller;
 
-use Sulu\Bundle\ProductBundle\Entity\TaxClass;
 use Symfony\Component\HttpFoundation\Response;
+use Sulu\Bundle\ProductBundle\Entity\TaxClass;
+use Sulu\Bundle\ProductBundle\Entity\Unit;
 use Sulu\Bundle\ContactExtensionBundle\Entity\Account;
 use Sulu\Bundle\ProductBundle\Api\Currency;
 use Sulu\Bundle\Sales\OrderBundle\Api\OrderStatus;
@@ -149,6 +150,7 @@ class TemplateController extends RestController
      */
     private function getTaxClasses($locale)
     {
+        $itemManager = $this->get('sulu_sales_core.item_manager');
         /** @var TaxClass[] $taxClasses */
         $taxClasses = $this->get('sulu_product.tax_class_repository')->findAll();
 
@@ -157,7 +159,8 @@ class TemplateController extends RestController
         foreach ($taxClasses as $taxClass) {
             $result[] = [
                 'id' => $taxClass->getId(),
-                'name' => $taxClass->getTranslation($locale),
+                'name' => $taxClass->getTranslation($locale)->getName(),
+                'tax' => $itemManager->retrieveTaxForClass($taxClass)
             ];
         }
 
@@ -173,7 +176,7 @@ class TemplateController extends RestController
      */
     private function getProductUnits($locale)
     {
-        /** @var TaxClass[] $taxClasses */
+        /** @var Unit[] $productUnits */
         $productUnits = $this->get('sulu_product.unit_repository')->findAll();
 
         $result = [];
@@ -181,7 +184,7 @@ class TemplateController extends RestController
         foreach ($productUnits as $productUnit) {
             $result[] = [
                 'id' => $productUnit->getId(),
-                'name' => $productUnit->getTranslation($locale),
+                'name' => $productUnit->getTranslation($locale)->getName(),
             ];
         }
 

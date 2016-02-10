@@ -378,6 +378,28 @@ class ItemManager
     }
 
     /**
+     * Retrieves the tax depending on the current class and configured
+     * shop location.
+     *
+     * @param TaxClass $taxClass
+     *
+     * @return float
+     */
+    public function retrieveTaxForClass(TaxClass $taxClass)
+    {
+        $locale = $this->shopLocation;
+        $countryTax = $this->countryTaxRepository->findByLocaleAndTaxClassId($locale, $taxClass->getId());
+        if (!$countryTax) {
+            $countryTax = $this->countryTaxRepository->findByLocaleAndTaxClassId($locale, TaxClass::STANDARD_TAX_RATE);
+            if (!$countryTax) {
+                return 0;
+            }
+        }
+
+        return $countryTax->getTax();
+    }
+
+    /**
      * Sets delivery address for an item
      *
      * @param array|int $addressData
@@ -588,28 +610,6 @@ class ItemManager
             $item->setSupplier(null);
             $item->setSupplierName('');
         }
-    }
-
-    /**
-     * Retrieves the tax depending on the current class and configured
-     * shop location.
-     *
-     * @param TaxClass $taxClass
-     *
-     * @return float
-     */
-    private function retrieveTaxForClass(TaxClass $taxClass)
-    {
-        $locale = $this->shopLocation;
-        $countryTax = $this->countryTaxRepository->findByLocaleAndTaxClassId($locale, $taxClass->getId());
-        if (!$countryTax) {
-            $countryTax = $this->countryTaxRepository->findByLocaleAndTaxClassId($locale, TaxClass::STANDARD_TAX_RATE);
-            if (!$countryTax) {
-                return 0;
-            }
-        }
-
-        return $countryTax->getTax();
     }
 
     /**

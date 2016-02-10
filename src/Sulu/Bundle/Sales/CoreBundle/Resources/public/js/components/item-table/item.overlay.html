@@ -1,10 +1,10 @@
 <form class="settings-overlay">
-    <% if (!!createNewItem) { %>
+    <% if (!!isIndependent) { %>
     <div class="grid-row">
         <div class="grid-col-12">
             <div class="form-group-vertical">
                 <label><%= translate('salescore.item.title') %></label>
-                <input class="form-element" type="text" data-mapper-property="name">
+                <input class="form-element" type="text" data-mapper-property="name" value="<%= name %>">
             </div>
         </div>
     </div>
@@ -47,22 +47,21 @@
             </div>
         </div>
         <div class="grid-col-3">
-            <% if (!!createNewItem) { %>
-                <select class="address form-element" data-type="select" data-mapper-property="deliveryAddress">
-                    <option value="-1"><%= defaultAddressLabel %></option>
-                    <% _.each(settings.addresses, function(address) { %>
-                    <option value="<%=address.id%>"
-                    <% if (address.id == deliveryAddress.id){%> selected="selected"<%}%> >
-                    <%= createAddressString(address) %>
-                    </option>
-                    <% }); %>
-                </select>
-            <% } else { %>
-                <div class="form-group-vertical">
-                    <label><%= translate('salescore.item.unit') %></label>
+            <div class="form-group-vertical">
+                <label><%= translate('salescore.item.unit') %></label>
+                <% if (!!isIndependent) { %>
+                    <select class="form-element" data-type="select" data-mapper-property="quantityUnit">
+                        <% _.each(settings.units, function(unit) { %>
+                            <option value="<%= unit.name %>"
+                            <% if (unit.name === quantityUnit) print(selected="selected") %>>
+                                <%= unit.name %>
+                            </option>
+                        <% }); %>
+                    </select>
+                <% } else { %>
                     <span><%= quantityUnit %></span>
-                </div>
-            <% } %>
+                <% } %>
+            </div>
         </div>
         <% } %>
         <% if (settings.columns.indexOf('single-price') > -1) { %>
@@ -109,13 +108,28 @@
             </div>
         </div>
         <% } %>
-        <% if (settings.columns.indexOf('tax-rate') > -1) { %>
-        <div class="grid-col-6">
-            <div class="form-group-vertical">
-                <label><%= translate('salescore.item.tax-rate') %></label>
-                <span><%= tax %></span>
+
+        <% if (!!isIndependent) { %>
+            <div class="grid-col-6">
+                <div class="form-group-vertical">
+                    <label><%= translate('salescore.item.tax-rate') %></label>
+                    <select class="form-element" data-type="select" data-mapper-property="tax">
+                        <% _.each(settings.taxClasses, function(taxClass) { %>
+                            <option value="<%= taxClass.tax %>"
+                            <% if (taxClass.tax == tax) print(selected="selected") %>>
+                                <%= taxClass.name %> <%= taxClass.tax %> %
+                            </option>
+                        <% }); %>
+                    </select>
+                </div>
             </div>
-        </div>
+        <% } else if (settings.columns.indexOf('tax-rate') > -1) { %>
+            <div class="grid-col-6">
+                <div class="form-group-vertical">
+                    <label><%= translate('salescore.item.tax-rate') %></label>
+                    <span><%= tax %></span>
+                </div>
+            </div>
         <% } %>
     </div>
     <% } %>
