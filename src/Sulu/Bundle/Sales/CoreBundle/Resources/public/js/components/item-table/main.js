@@ -112,6 +112,7 @@ define([
             loaderSelector: '.item-table-loader',
             loaderClass: 'item-table-loader',
             overlayClassSelector: '.settings-overlay',
+            settingsOverlayId: '#settings-overlay',
             autocompleteLimit: 20
         },
 
@@ -1243,7 +1244,7 @@ define([
             }
 
             var templateData = this.sandbox.util.extend({
-                costCenter: null,
+                costCentre: null,
                 createAddressString: this.sandbox.sulu.createAddressString,
                 isIndependent: isIndependent,
                 defaultAddressLabel: defaultAddressLabel,
@@ -1258,7 +1259,7 @@ define([
                 templateData[this.options.addressKey] = {id: null};
             }
 
-            // prevent multiple initialization of the overlay
+            // Prevent multiple initialization of the overlay.
             this.sandbox.stop(this.sandbox.dom.find(constants.overlayClassSelector, this.$el));
             this.sandbox.dom.remove(this.sandbox.dom.find(constants.overlayClassSelector, this.$el));
 
@@ -1278,8 +1279,12 @@ define([
             // When creating a new item with overlay.
             if (createNewItem) {
                 title = this.sandbox.translate('salescore.create-new-item');
-                // TODO: ADD VALIDATION!
             }
+
+            // Create form for validation once overlay is rendered.
+            this.sandbox.once('husky.overlay.settings.opened', function() {
+                this.sandbox.form.create(constants.settingsOverlayId);
+            }.bind(this));
 
             this.sandbox.start([
                 {
@@ -1316,10 +1321,17 @@ define([
         saveSettingsOverlayClicked = function(rowId) {
             var data = retrieveDataFromSettingsOverlay.call(this);
 
+            // validate form
+            var isValid = this.sandbox.form.validate(constants.settingsOverlayId);
+
+            if (!isValid) {
+                return false;
+            }
+
             if (!!rowId) {
                 this.items[rowId] = this.sandbox.util.extend({}, this.items[rowId], data);
                 updateItemRow.call(this, rowId, this.items[rowId]);
-                updateItemRowPrices.call(this);
+                updateItemRowPrices.call(this, rowId);
                 updateGlobalPrice.call(this, rowId);
                 refreshItemsData.call(this);
             } else {
@@ -1341,7 +1353,7 @@ define([
             var deliveryDate = this.sandbox.dom.val(
                 constants.overlayClassSelector + ' *[data-mapper-property="deliveryDate"] input'
             );
-            var costCenter = getDataMapperPropertyValFromOverlay.call(this, 'costCenter');
+            var costCentre = getDataMapperPropertyValFromOverlay.call(this, 'costCentre');
 
             var name = getDataMapperPropertyValFromOverlay.call(this, 'name');
             if (!!name) {
@@ -1358,17 +1370,19 @@ define([
                 data.tax = tax;
             }
 
+            var discount = getDataMapperPropertyValFromOverlay.call(this, 'discount') || '0';
+            data.discount = this.sandbox.parseFloat(discount);
+
             data.description = getDataMapperPropertyValFromOverlay.call(this, 'description');
             data.quantity = this.sandbox.parseFloat(getDataMapperPropertyValFromOverlay.call(this, 'quantity'));
             data.price = this.sandbox.parseFloat(getDataMapperPropertyValFromOverlay.call(this, 'price'));
-            data.discount = this.sandbox.parseFloat(getDataMapperPropertyValFromOverlay.call(this, 'discount'));
 
             // Set address
             if (deliveryAddress !== '-1') {
                 data[this.options.addressKey] = getAddressById.call(this, deliveryAddress);
             }
             data.deliveryDate = deliveryDate !== '' ? deliveryDate : null;
-            data.costCenter = costCenter !== '' ? costCenter : null;
+            data.costCentre = costCentre !== '' ? costCentre : null;
 
             return data;
         },

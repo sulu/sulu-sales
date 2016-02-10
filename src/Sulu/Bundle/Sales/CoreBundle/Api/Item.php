@@ -890,4 +890,29 @@ class Item extends ApiWrapper implements
         $this->priceChangeFrom = $from;
         $this->priceChangeTo = $to;
     }
+
+    /**
+     * @VirtualProperty
+     * @SerializedName("costCentre")
+     * @Groups({"Default","cart"})
+     *
+     * @return string
+     */
+    public function getCostCentre()
+    {
+        return $this->entity->getCostCentre();
+    }
+
+    /**
+     * @param string $costCentre
+     *
+     * @return self
+     */
+    public function setCostCentre($costCentre)
+    {
+        $this->entity->setCostCentre($costCentre);
+
+        return $this;
+    }
+
 }

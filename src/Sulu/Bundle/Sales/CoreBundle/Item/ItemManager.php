@@ -158,8 +158,13 @@ class ItemManager
      *
      * @return ApiItemInterface|null
      */
-    public function save(array $data, $locale, $userId = null, $item = null, $itemStatusId = null)
-    {
+    public function save(
+        array $data,
+        $locale,
+        $userId = null,
+        $item = null,
+        $itemStatusId = null
+    ) {
         $itemEntity = $this->itemFactory->createEntity();
         $isNewItem = !$item;
 
@@ -184,13 +189,13 @@ class ItemManager
         }
 
         // set item data
-        $item->setQuantity($this->getProperty($data, 'quantity', null));
+        $item->setQuantity($this->getProperty($data, 'quantity'));
         $item->setUseProductsPrice($this->getProperty($data, 'useProductsPrice', true));
         $this->setDate(
             $data,
             'deliveryDate',
             null,
-            array($item, 'setDeliveryDate')
+            [$item, 'setDeliveryDate']
         );
 
         // terms of delivery
@@ -209,7 +214,6 @@ class ItemManager
                 $item->setUseProductsPrice(false);
             }
             $item->setName($this->getProperty($data, 'name', $item->getName()));
-            // TODO: set supplier based on if its a string  or object (fetch account and set it to setSupplier)
             $item->setTax($this->getProperty($data, 'tax', $item->getTax()));
             $item->setNumber($this->getProperty($data, 'number', $item->getNumber()));
             $item->setDescription($this->getProperty($data, 'description', $item->getDescription()));
@@ -224,6 +228,8 @@ class ItemManager
         $this->updatePrices($item, $data);
 
         $item->setDiscount($this->getProperty($data, 'discount', $item->getDiscount()));
+
+        $item->setCostCentre($this->getProperty($data, 'costCentre'));
 
         // set delivery-address for item
         if (isset($data['deliveryAddress'])) {

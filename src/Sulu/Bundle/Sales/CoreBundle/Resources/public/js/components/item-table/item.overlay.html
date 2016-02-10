@@ -1,10 +1,14 @@
-<form class="settings-overlay">
+<form id="settings-overlay" class="settings-overlay">
     <% if (!!isIndependent) { %>
     <div class="grid-row">
         <div class="grid-col-12">
             <div class="form-group-vertical">
                 <label><%= translate('salescore.item.title') %></label>
-                <input class="form-element" type="text" data-mapper-property="name" value="<%= name %>">
+                <input class="form-element"
+                       data-validation-required="true"
+                       type="text"
+                       data-mapper-property="name"
+                       value="<%= name %>">
             </div>
         </div>
     </div>
@@ -43,7 +47,12 @@
         <div class="grid-col-3">
             <div class="form-group-vertical">
                 <label><%= translate('salescore.item.quantity') %></label>
-                <input class="form-element" type="text" data-mapper-property="quantity" value="<%= numberFormat(quantity) %>"/>
+                <input class="form-element"
+                       type="text"
+                       data-type="decimal"
+                       data-mapper-property="quantity"
+                       data-validation-required="true"
+                       value="<%= numberFormat(quantity) %>"/>
             </div>
         </div>
         <div class="grid-col-3">
@@ -68,7 +77,12 @@
         <div class="grid-col-6">
             <div class="form-group-vertical">
                 <label><%= translate('salescore.item.price') %></label>
-                <input class="form-element" type="text" data-mapper-property="price" value="<%= numberFormat(price) %>"/>
+                <input class="form-element"
+                       type="text"
+                       data-mapper-property="price"
+                       data-type="decimal"
+                       data-validation-required="true"
+                       value="<%= numberFormat(price) %>"/>
             </div>
         </div>
         <% } %>
@@ -92,7 +106,7 @@
         <div class="grid-col-6">
             <div class="form-group-vertical">
                 <label><%= translate('salesorder.orders.costCentre') %></label>
-                <input class="form-element" type="text" data-mapper-property="costCenter" value="<%= costCenter %>"/>
+                <input class="form-element" type="text" data-mapper-property="costCentre" value="<%= costCentre %>"/>
             </div>
         </div>
         <% } %>
@@ -104,7 +118,11 @@
         <div class="grid-col-6">
             <div class="form-group-vertical">
                 <label><%= translate('salescore.item.discount') %></label>
-                <input class="form-element" type="text" data-mapper-property="discount" value="<%= numberFormat(discount) %>"/>
+                <input class="form-element"
+                       type="text"
+                       data-type="decimal"
+                       data-mapper-property="discount"
+                       value="<%= numberFormat(discount) %>"/>
             </div>
         </div>
         <% } %>
