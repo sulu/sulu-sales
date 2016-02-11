@@ -2,6 +2,11 @@
 <% if (displayToolbars == false) { %>
 <%      displayClass =  'hide-toolbars'; %>
 <% } %>
+<% var disabled = '';
+if (isEditable == 'false' || isEditable == false) {
+disabled =  'disabled';
+}
+%>
 <div id="<%= formId %>" class="item-table-list-form<% if (isEditable == 'false' || isEditable == false) {print(' disabled');} %> <%= displayClass %>">
     <div class="item-table-container">
         <table class="item-table-list"></table>
@@ -26,7 +31,7 @@
                 data-type="decimal"
                 data-validation-min="0.0"
                 data-validation-max="999999999"
-        />
+        <%= disabled %>/>
     </div>
     <% } %>
     <% if (columns.indexOf('totalPrice') > -1) { %>

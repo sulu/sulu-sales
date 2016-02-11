@@ -135,51 +135,56 @@
 }
 
 /* line 151, ../scss/modules/item-table.scss */
+.disabled .delivery-cost {
+  padding-right: 20px;
+}
+
+/* line 155, ../scss/modules/item-table.scss */
 .delivery-cost {
   text-align: right;
   min-width: 100px;
   padding-right: 50px;
 }
-/* line 156, ../scss/modules/item-table.scss */
+/* line 160, ../scss/modules/item-table.scss */
 .delivery-cost label {
   display: inline;
   margin-right: 13px;
 }
-/* line 161, ../scss/modules/item-table.scss */
+/* line 165, ../scss/modules/item-table.scss */
 .delivery-cost input {
   text-align: right;
 }
-/* line 165, ../scss/modules/item-table.scss */
+/* line 169, ../scss/modules/item-table.scss */
 .delivery-cost .form-element {
   width: 72px;
 }
 
-/* line 171, ../scss/modules/item-table.scss */
+/* line 175, ../scss/modules/item-table.scss */
 .global-price-container {
   padding-top: 15px;
   position: relative;
   float: right;
 }
-/* line 176, ../scss/modules/item-table.scss */
+/* line 180, ../scss/modules/item-table.scss */
 .global-price-container .global-price-table {
   width: initial;
   float: right;
   margin-right: 31px;
   text-align: right;
 }
-/* line 182, ../scss/modules/item-table.scss */
+/* line 186, ../scss/modules/item-table.scss */
 .global-price-container .global-price-table td {
   padding: 0 20px 0 0;
 }
-/* line 186, ../scss/modules/item-table.scss */
+/* line 190, ../scss/modules/item-table.scss */
 .global-price-container .global-price-table tr {
   height: 30px;
 }
-/* line 188, ../scss/modules/item-table.scss */
+/* line 192, ../scss/modules/item-table.scss */
 .global-price-container .global-price-table tr:last-child {
   font-weight: bold;
 }
-/* line 190, ../scss/modules/item-table.scss */
+/* line 194, ../scss/modules/item-table.scss */
 .global-price-container .global-price-table tr:last-child:not(:first-child) {
   border-top: 1px solid #ccc;
 }
