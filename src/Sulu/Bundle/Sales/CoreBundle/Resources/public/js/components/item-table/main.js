@@ -11,27 +11,27 @@
  * @class item-table@sulusalescore
  * @constructor
  *
- * @param {Object} [options] Configuration object
- * @param {Array}  [options.data] Array of data [string, object]
- * @param {Bool}   [options.isEditable] Defines if component is editable
- * @param {Bool}   [options.displayToolbars] Defines if toolbars should be shown, when component is editable.
- *                  If false, no rows can be added or deleted.
- * @param {Array}  [options.columns] Defines which columns should be shown. Array of strings
- * @param {Bool}   [options.hasNestedItems] this is used, when data array is merged (must be an object
- *                 containing an attribute called 'item'
- * @param {Array}  [options.defaultData] can be used to pass extra default parameters to an item
- * @param {Object} [options.columnCallbacks] if a specific column is clicked (as name) a callback can be defined
- *                 by provide key with a function
- * @param {Object} [options.rowCallback] Is called, when a row is clicked. Passes rowId and rowData
- * @param {Object} [options.settings] Configuration Object for displaying Options overlay
- * @param {Object} [options.urlFilter] Object containing key value pairs to extend the url
- * @param {String} [options.addressKey] Defines how to access address value over api
- * @param {Bool}   [options.allowDuplicatedProducts] Defines if a product can be added multiple times to items list
- * @param {Bool}   [options.showItemCount] Defines if the column which shows the item count should be displayed.
- * @param {Bool}   [options.taxfree] Defines if table should contain taxes
- * @param {Number} [options.deliveryCost] The delivery cost
- * @param {Bool}   [options.enableDeliveryCost] Defines if the delivery cost field is enabled or not
- * @param {function}   [options.deliveryCostChangedCallback] Function called when delivery cost changes
+ * @param {Object}     [options] Configuration object
+ * @param {Array}      [options.data] Array of data [string, object]
+ * @param {Bool}       [options.isEditable] Defines if component is editable
+ * @param {Bool}       [options.displayToolbars] Defines if toolbars should be shown, when component is editable.
+ *                      If false, no rows can be added or deleted.
+ * @param {Array}      [options.columns] Defines which columns should be shown. Array of strings
+ * @param {Bool}       [options.hasNestedItems] this is used, when data array is merged (must be an object
+ *                     containing an attribute called 'item'
+ * @param {Array}      [options.defaultData] can be used to pass extra default parameters to an item
+ * @param {Object}     [options.columnCallbacks] if a specific column is clicked (as name) a callback can be defined
+ *                     by provide key with a function
+ * @param {Object}     [options.rowCallback] Is called, when a row is clicked. Passes rowId and rowData
+ * @param {Object}     [options.settings] Configuration Object for displaying Options overlay
+ * @param {Object}     [options.urlFilter] Object containing key value pairs to extend the url
+ * @param {String}     [options.addressKey] Defines how to access address value over api
+ * @param {Bool}       [options.allowDuplicatedProducts] Defines if a product can be added multiple times to items list
+ * @param {Bool}       [options.showItemCount] Defines if the column which shows the item count should be displayed.
+ * @param {Bool}       [options.taxfree] Defines if table should contain taxes
+ * @param {Number}     [options.deliveryCost] The delivery cost
+ * @param {Bool}       [options.enableDeliveryCost] Defines if the delivery cost field is enabled or not
+ * @param {Function}   [options.deliveryCostChangedCallback] Function called when delivery cost changes
  */
 define([
     'text!sulusalescore/components/item-table/item.form.html',
@@ -73,7 +73,7 @@ define([
             taxfree: false,
             deliveryCost: 0,
             enableDeliveryCost: false,
-            deliveryCostChangedCallback: null,
+            deliveryCostChangedCallback: null
         },
 
         urls = {
@@ -307,17 +307,24 @@ define([
             this.sandbox.dom.on(this.$el, 'change', priceChangedHandler.bind(this), constants.priceInput);
             this.sandbox.dom.on(this.$el, 'change', discountChangedHandler.bind(this), constants.discountInput);
 
+            // Listen to focus out of delivery cost input field.
             if (this.options.enableDeliveryCost === true) {
-                // Listen to focus out of delivery cost input field.
-                this.sandbox.dom.on('#item-table-form', 'focusout', function(event) {
-                    var deliveryCost = this.sandbox.parseFloat($('#delivery-cost').val());
-                    // Reformat the input.
-                    $('#delivery-cost').val(this.sandbox.numberFormat(deliveryCost, 'n'));
-                    // Update the global price.
-                    updateGlobalPrice.call(this);
-                    this.options.deliveryCostChangedCallback(deliveryCost);
-                }.bind(this), 'input');
+                this.sandbox.dom.on('#item-table-form', 'focusout', deliveryCostChangedHandler.bind(this));
             }
+        },
+
+        /**
+         *  DOM-EVENT listener: Delivery cost focus out.
+         *
+         *  @param {Object} event
+         */
+        deliveryCostChangedHandler = function(event) {
+            var deliveryCost = this.sandbox.parseFloat($('#delivery-cost').val());
+            // Reformat the input.
+            $('#delivery-cost').val(this.sandbox.numberFormat(deliveryCost, 'n'));
+            // Update the global price.
+            updateGlobalPrice.call(this);
+            this.options.deliveryCostChangedCallback(deliveryCost);
         },
 
         getItemRowById = function(rowId) {
