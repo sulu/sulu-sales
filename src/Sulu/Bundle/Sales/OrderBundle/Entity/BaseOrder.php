@@ -98,7 +98,7 @@ abstract class BaseOrder implements OrderInterface
     /**
      * @var float
      */
-    protected $deliveryCost;
+    protected $deliveryCost = 0;
 
     /**
      * {@inheritDoc}
@@ -399,7 +399,7 @@ abstract class BaseOrder implements OrderInterface
     /**
      * {@inheritDoc}
      */
-    public function setDeliveryCost($deliveryCost)
+    public function setDeliveryCost($deliveryCost = 0)
     {
         $this->deliveryCost = $deliveryCost;
 

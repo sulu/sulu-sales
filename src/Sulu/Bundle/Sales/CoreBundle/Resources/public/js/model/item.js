@@ -14,7 +14,7 @@ define([
 ], function(RelationalModel) {
 
     'use strict';
-    
+
     return RelationalModel({
         urlRoot: '/admin/api/item',
         defaults: function() {

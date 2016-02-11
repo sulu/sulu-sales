@@ -514,9 +514,23 @@ define([
                         currency: this.options.data.currencyCode,
                         el: constants.itemTableSelector,
                         settings: {
-                            columns: ['addresses', 'description', 'quantity', 'single-price', 'delivery-date', 'cost-center', 'discount', 'tax-rate']
+                            columns: [
+                                'addresses',
+                                'description',
+                                'quantity',
+                                'single-price',
+                                'delivery-date',
+                                'cost-center',
+                                'discount',
+                                'tax-rate'
+                            ]
                         },
-                        taxfree: this.options.data.taxfree
+                        taxfree: this.options.data.taxfree,
+                        deliveryCost: this.options.data.deliveryCost,
+                        enableDeliveryCost: true,
+                        deliveryCostChangedCallback: function(cost) {
+                            this.deliveryCost = cost;
+                        }.bind(this)
                     }
                 },
                 {
@@ -552,6 +566,8 @@ define([
                 // the data mapper property is not used and therefore the data.currency property
                 // has to be set this way
                 data.currencyCode = !!this.currency ? this.currency : this.options.data.currencyCode;
+
+                data.deliveryCost = this.deliveryCost;
 
                 // FIXME auto complete in mapper
                 // only get id, if auto-complete is not empty:
