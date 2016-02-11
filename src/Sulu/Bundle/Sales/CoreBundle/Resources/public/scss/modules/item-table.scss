@@ -148,6 +148,10 @@ $rowPadding : 0 20px 0 0;
   min-width: 100px;
 }
 
+.disabled .delivery-cost {
+    padding-right: 20px;
+}
+
 .delivery-cost {
     text-align: right;
     min-width: 100px;
