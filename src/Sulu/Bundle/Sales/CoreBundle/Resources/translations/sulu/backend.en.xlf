@@ -238,6 +238,10 @@
                 <source>salescore.invoice-address.country</source>
                 <target>Country Invoice</target>
             </trans-unit>
+            <trans-unit id="22" resname="salescore.item.delivery-cost">
+                <source>salescore.item.delivery-cost</source>
+                <target>Net Delivery Cost</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>

@@ -29,6 +29,9 @@
  * @param {Bool}   [options.allowDuplicatedProducts] Defines if a product can be added multiple times to items list
  * @param {Bool}   [options.showItemCount] Defines if the column which shows the item count should be displayed.
  * @param {Bool}   [options.taxfree] Defines if table should contain taxes
+ * @param {Number} [options.deliveryCost] The delivery cost
+ * @param {Bool}   [options.enableDeliveryCost] Defines if the delivery cost field is enabled or not
+ * @param {function}   [options.deliveryCostChangedCallback] Function called when delivery cost changes
  */
 define([
     'text!sulusalescore/components/item-table/item.form.html',
@@ -67,7 +70,10 @@ define([
             settings: false,
             showItemCount: true,
             urlFilter: {},
-            taxfree: false
+            taxfree: false,
+            deliveryCost: 0,
+            enableDeliveryCost: false,
+            deliveryCostChangedCallback: null,
         },
 
         urls = {
@@ -279,16 +285,16 @@ define([
         },
 
         /**
-         * bind dom events
+         * Bind dom events.
          */
         bindDomEvents = function() {
-            // add new item
+            // Add new item.
             this.sandbox.dom.on(this.$el, 'click', addNewItemClicked.bind(this), '.add-row');
-            // remove row
+            // Remove row.
             this.sandbox.dom.on(this.$el, 'click', removeRowClicked.bind(this), '.remove-row');
 
             this.sandbox.dom.on(this.$el, 'click', rowClicked.bind(this), '.item-table-row');
-            // add new item
+            // Add new item.
             this.sandbox.dom.on(this.$el, 'click', rowCellClicked.bind(this), '.item-table-row td');
 
             this.sandbox.dom.on(this.$el, 'data-changed', function(event) {
@@ -296,10 +302,22 @@ define([
                 rerenderItems.call(this, items);
             }.bind(this));
 
-            // input field listeners
+            // Input field listeners.
             this.sandbox.dom.on(this.$el, 'change', quantityChangedHandler.bind(this), constants.quantityInput);
             this.sandbox.dom.on(this.$el, 'change', priceChangedHandler.bind(this), constants.priceInput);
             this.sandbox.dom.on(this.$el, 'change', discountChangedHandler.bind(this), constants.discountInput);
+
+            if (this.options.enableDeliveryCost === true) {
+                // Listen to focus out of delivery cost input field.
+                this.sandbox.dom.on('#item-table-form', 'focusout', function(event) {
+                    var deliveryCost = this.sandbox.parseFloat($('#delivery-cost').val());
+                    // Reformat the input.
+                    $('#delivery-cost').val(this.sandbox.numberFormat(deliveryCost, 'n'));
+                    // Update the global price.
+                    updateGlobalPrice.call(this);
+                    this.options.deliveryCostChangedCallback(deliveryCost);
+                }.bind(this), 'input');
+            }
         },
 
         getItemRowById = function(rowId) {
@@ -607,7 +625,6 @@ define([
                 $priceCol = this.sandbox.dom.find('.item-overall-price span', $row);
 
             this.sandbox.dom.html($priceCol, getOverallPriceString.call(this, item));
-
         },
 
         /**
@@ -615,22 +632,33 @@ define([
          */
         updateGlobalPrice = function() {
             var items = this.getItems(), result, $table, i;
+            $table = this.$find(constants.globalPriceTableClass);
 
             if (!!items && items.length > 0 && !!items[0].price) {
 
                 var totalNetPrice = 0;
                 var totalPrice = 0;
+                var deliveryCost = 0;
                 for (var i = -1, len = items.length; ++i < len;) {
                     totalNetPrice += items[i].totalNetPrice;
                     totalPrice += items[i].tax / 100.0 * items[i].totalNetPrice + items[i].totalNetPrice;;
                 }
 
-                // visualize
-                $table = this.$find(constants.globalPriceTableClass);
+                // Add delivery cost if enabled.
+                if (this.options.enableDeliveryCost === true) {
+                    deliveryCost = this.sandbox.parseFloat($('#delivery-cost').val());
+                    totalPrice += deliveryCost;
+                    // Add to net price if taxfree is selcted.
+                    if (!!this.options.taxfree) {
+                        totalNetPrice += deliveryCost;
+                    }
+                }
+
+                // Visualize
                 this.sandbox.dom.empty($table);
 
                 if (!!totalNetPrice) {
-                    // add net price
+                    // Add net price.
                     addPriceRow.call(
                         this,
                         $table,
@@ -639,9 +667,9 @@ define([
                     );
 
                     if (!this.options.taxfree) {
-                        result = PriceCalcUtil.getTotalPricesAndTaxes(this.sandbox, this.items);
+                        result = PriceCalcUtil.getTotalPricesAndTaxes(this.sandbox, this.items, deliveryCost);
                         if (result.taxes) {
-                            // add row for every tax group
+                            // Add row for every tax group
                             for (i in result.taxes) {
                                 addPriceRow.call(
                                     this,
@@ -660,6 +688,8 @@ define([
                         );
                     }
                 }
+            } else {
+                this.sandbox.dom.empty($table);
             }
         },
 
@@ -1327,7 +1357,10 @@ define([
                     isEditable: this.options.isEditable,
                     displayToolbars: this.options.displayToolbars,
                     columns: this.options.columns,
-                    showItemCount: this.options.showItemCount
+                    showItemCount: this.options.showItemCount,
+                    translate: this.sandbox.translate,
+                    deliveryCost: this.sandbox.numberFormat(this.options.deliveryCost, 'n'),
+                    enableDeliveryCost: this.options.enableDeliveryCost,
                 }
             );
 
