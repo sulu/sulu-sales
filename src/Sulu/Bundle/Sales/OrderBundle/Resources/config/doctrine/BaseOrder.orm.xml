@@ -22,7 +22,11 @@
 
 
         <field name="customerName" type="string" column="customerName" length="255" nullable="false"/>
-        <field name="deliveryCost" type="float" column="deliveryCost" nullable="true"/>
+        <field name="deliveryCost" type="float" column="deliveryCost" nullable="true">
+            <options>
+                <option name="default">0</option>
+            </options>
+        </field>
 
         <field name="created" type="datetime" column="created"></field>
         <field name="changed" type="datetime" column="changed"></field>

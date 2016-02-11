@@ -230,6 +230,9 @@ class OrderManager
         $order->setTaxfree(
             $this->getPropertyBasedOnPatch($data, 'taxfree', $order->getTaxfree(), $patch)
         );
+        $order->setDeliveryCost(
+            $this->getPropertyBasedOnPatch($data, 'deliveryCost', $order->getDeliveryCost(), $patch)
+        );
 
         // set type of order (if set)
         $this->setOrderType($data, $order, $patch);
