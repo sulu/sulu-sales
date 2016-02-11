@@ -1232,7 +1232,7 @@ define([
                 defaultAddressLabel = this.sandbox.translate(translations.defaultAddress),
                 createNewItem = !rowId;
 
-            var isIndependent = createNewItem || !data.number;
+            var isIndependent = (createNewItem || data || !data.number);
 
             settings = this.sandbox.util.extend({
                 columns: [],
