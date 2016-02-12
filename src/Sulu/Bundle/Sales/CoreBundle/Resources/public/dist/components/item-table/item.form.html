@@ -2,23 +2,43 @@
 <% if (displayToolbars == false) { %>
 <%      displayClass =  'hide-toolbars'; %>
 <% } %>
-<div id="<%= formId %>" class="item-table-list-form<% if (isEditable == 'false' || isEditable == false) {print(' disabled');} %> <%= displayClass %>">
+<% var disabled = '';
+if (isEditable == 'false' || isEditable == false) {
+disabled =  'disabled';
+}
+%>
+<div id="<%= formId %>"
+     class="item-table-list-form<% if (isEditable == 'false' || isEditable == false) {print(' disabled');} %> <%= displayClass %>">
     <div class="item-table-container">
         <table class="item-table-list"></table>
     </div>
 
     <div class="item-add grid-col-5 husky-toolbar small">
-        <ul class="group lef">
-        <li class="toolbar-item">
-            <a href="#" class="add-row"><i class="fa fa-plus-circle"></i></a>
-        </li>
-            <li class="toolbar-item disabled">
-                <a href="#" class="add-row"><i class="fa fa-search"></i></a>
+        <ul class="group left">
+            <% if (allowIndependentItems) { %>
+            <li class="toolbar-item add-independent">
+                <span class="fa-plus-circle icon"></span>
+            </li><% } %><li class="toolbar-item add-row">
+                <span class="fa-search icon"></span>
             </li>
         </ul>
     </div>
+
+    <% if (enableDeliveryCost == true) { %>
+    <div class="grid-col-12 delivery-cost" data-name="deliveryCost">
+        <label><%= translate('salescore.item.delivery-cost') %></label>
+        <input id="delivery-cost" class="price input-field form-element"
+                data-validation-required="true"
+                value="<%= deliveryCost %>"
+                data-type="decimal"
+                data-validation-min="0.0"
+                data-validation-max="999999999"
+        <%= disabled %>/>
+    </div>
+    <% } %>
+
     <% if (columns.indexOf('totalPrice') > -1) { %>
-    <div class="grid-col-7 global-price-container">
+    <div class="grid-col-12 global-price-container">
         <table class="global-price-table grey-font"></table>
     </div>
     <% } %>

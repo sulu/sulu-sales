@@ -148,6 +148,29 @@ $rowPadding : 0 20px 0 0;
   min-width: 100px;
 }
 
+.disabled .delivery-cost {
+    padding-right: 20px;
+}
+
+.delivery-cost {
+    text-align: right;
+    min-width: 100px;
+    padding-right: 50px;
+
+    label {
+        display: inline;
+        margin-right: 13px;
+    }
+
+    input {
+        text-align: right;
+    }
+
+    .form-element {
+        width: 72px;
+    }
+}
+
 // global price
 .global-price-container {
     padding-top: 15px;

@@ -11,30 +11,33 @@
  * @class item-table@sulusalescore
  * @constructor
  *
- * @param {Object} [options] Configuration object
- * @param {Array}  [options.data] Array of data [string, object]
- * @param {Bool}   [options.isEditable] Defines if component is editable
- * @param {Bool}   [options.displayToolbars] Defines if toolbars should be shown, when component is editable.
- *                  If false, no rows can be added or deleted.
- * @param {Array}  [options.columns] Defines which columns should be shown. Array of strings
- * @param {Bool}   [options.hasNestedItems] this is used, when data array is merged (must be an object
- *                 containing an attribute called 'item'
- * @param {Array}  [options.defaultData] can be used to pass extra default parameters to an item
- * @param {Object} [options.columnCallbacks] if a specific column is clicked (as name) a callback can be defined
- *                 by provide key with a function
- * @param {Object} [options.rowCallback] Is called, when a row is clicked. Passes rowId and rowData
- * @param {Object} [options.settings] Configuration Object for displaying settings overlay
- * @param {Object} [options.settings.columns] Columns to be shown in settings overlay
- * @param {Object} [options.settings.addresses] All addresses that can be assigned to a item.
- * @param {Object} [options.settings.taxClasses] All tax classes that can be set to a item.
- * @param {Object} [options.settings.units] All units that can be assigned to an item.
- * @param {Object} [options.urlFilter] Object containing key value pairs to extend the url
- * @param {String} [options.addressKey] Defines how to access address value over api
- * @param {Bool}   [options.allowDuplicatedProducts] Defines if a product can be added multiple times to items list
- * @param {Bool}   [options.showItemCount] Defines if the column which shows the item count should be displayed.
- * @param {Bool}   [options.taxfree] Defines if table should contain taxes
- * @param {Bool}   [options.allowIndependentItems] Defines an independent item can be created
- *                 (without product assignment).
+ * @param {Object}     [options] Configuration object
+ * @param {Array}      [options.data] Array of data [string, object]
+ * @param {Bool}       [options.isEditable] Defines if component is editable
+ * @param {Bool}       [options.displayToolbars] Defines if toolbars should be shown, when component is editable.
+ *                      If false, no rows can be added or deleted.
+ * @param {Array}      [options.columns] Defines which columns should be shown. Array of strings
+ * @param {Bool}       [options.hasNestedItems] this is used, when data array is merged (must be an object
+ *                     containing an attribute called 'item'
+ * @param {Array}      [options.defaultData] can be used to pass extra default parameters to an item
+ * @param {Object}     [options.columnCallbacks] if a specific column is clicked (as name) a callback can be defined
+ *                     by provide key with a function
+ * @param {Object}     [options.rowCallback] Is called, when a row is clicked. Passes rowId and rowData
+ * @param {Object}     [options.settings] Configuration Object for displaying settings overlay
+ * @param {Object}     [options.settings.columns] Columns to be shown in settings overlay
+ * @param {Object}     [options.settings.addresses] All addresses that can be assigned to a item.
+ * @param {Object}     [options.settings.taxClasses] All tax classes that can be set to a item.
+ * @param {Object}     [options.settings.units] All units that can be assigned to an item.
+ * @param {Object}     [options.urlFilter] Object containing key value pairs to extend the url
+ * @param {String}     [options.addressKey] Defines how to access address value over api
+ * @param {Bool}       [options.allowDuplicatedProducts] Defines if a product can be added multiple times to items list
+ * @param {Bool}       [options.showItemCount] Defines if the column which shows the item count should be displayed.
+ * @param {Bool}       [options.taxfree] Defines if table should contain taxes
+ * @param {Bool}       [options.allowIndependentItems] Defines an independent item can be created
+ *                     (without product assignment).
+ * @param {Number}     [options.deliveryCost] The delivery cost
+ * @param {Bool}       [options.enableDeliveryCost] Defines if the delivery cost field is enabled or not
+ * @param {Function}   [options.deliveryCostChangedCallback] Function called when delivery cost changes
  *
  * ==============================================
  * Necessary data for creating a settings overlay
@@ -81,7 +84,10 @@ define([
             settings: false,
             showItemCount: true,
             urlFilter: {},
-            taxfree: false
+            taxfree: false,
+            deliveryCost: 0,
+            enableDeliveryCost: false,
+            deliveryCostChangedCallback: null
         },
 
         urls = {
@@ -129,7 +135,7 @@ define([
             rowId: '',
             name: '',
             number: '',
-            quantity: '',
+            quantity: 1,
             quantityUnit: '',
             price: '',
             discount: null,
@@ -298,19 +304,18 @@ define([
          * Bind dom events.
          */
         bindDomEvents = function() {
-            // Add new item
+            // Add new item.
             this.sandbox.dom.on(this.$el, 'click', addSearchItemClicked.bind(this), '.add-row');
 
             // Add new independent item row (without product relation).
             this.sandbox.dom.on(this.$el, 'click', addNewIndependentItemClicked.bind(this), '.add-independent');
 
-            // Remove item row
+            // Remove item row.
             this.sandbox.dom.on(this.$el, 'click', removeRowClicked.bind(this), '.remove-row');
 
             // Item row has been clicked
             this.sandbox.dom.on(this.$el, 'click', rowClicked.bind(this), '.item-table-row');
-
-            // Add new item
+            // Add new item.
             this.sandbox.dom.on(this.$el, 'click', rowCellClicked.bind(this), '.item-table-row td');
 
             // Item data was changed
@@ -323,6 +328,25 @@ define([
             this.sandbox.dom.on(this.$el, 'change', quantityChangedHandler.bind(this), constants.quantityInput);
             this.sandbox.dom.on(this.$el, 'change', priceChangedHandler.bind(this), constants.priceInput);
             this.sandbox.dom.on(this.$el, 'change', discountChangedHandler.bind(this), constants.discountInput);
+
+            // Listen to focus out of delivery cost input field.
+            if (this.options.enableDeliveryCost === true) {
+                this.sandbox.dom.on('#item-table-form', 'focusout', deliveryCostChangedHandler.bind(this));
+            }
+        },
+
+        /**
+         *  DOM-EVENT listener: Delivery cost focus out.
+         *
+         *  @param {Object} event
+         */
+        deliveryCostChangedHandler = function(event) {
+            var deliveryCost = this.sandbox.parseFloat($('#delivery-cost').val());
+            // Reformat the input.
+            $('#delivery-cost').val(this.sandbox.numberFormat(deliveryCost, 'n'));
+            // Update the global price.
+            updateGlobalPrice.call(this);
+            this.options.deliveryCostChangedCallback(deliveryCost);
         },
 
         /**
@@ -640,7 +664,6 @@ define([
                 $priceCol = this.sandbox.dom.find('.item-overall-price span', $row);
 
             this.sandbox.dom.html($priceCol, getOverallPriceString.call(this, item));
-
         },
 
         /**
@@ -648,22 +671,31 @@ define([
          */
         updateGlobalPrice = function() {
             var items = this.getItems(), result, $table, i;
+            $table = this.$find(constants.globalPriceTableClass);
 
-            if (!!items && items.length > 0 && !!items[0].price) {
+            if (!!items && items.length > 0) {
 
                 var totalNetPrice = 0;
+                var grossPrice = 0;
                 var totalPrice = 0;
-                for (var i = -1, len = items.length; ++i < len;) {
-                    totalNetPrice += items[i].totalNetPrice;
-                    totalPrice += items[i].tax / 100.0 * items[i].totalNetPrice + items[i].totalNetPrice;;
+                var deliveryCost = 0;
+
+                // Add delivery cost if enabled.
+                if (this.options.enableDeliveryCost === true) {
+                    deliveryCost = this.sandbox.parseFloat($('#delivery-cost').val());
+                }
+                result = PriceCalcUtil.getTotalPricesAndTaxes(this.sandbox, this.items, deliveryCost);
+
+                if (!!result) {
+                    totalNetPrice = result.netPrice;
+                    grossPrice = result.grossPrice;
                 }
 
-                // visualize
-                $table = this.$find(constants.globalPriceTableClass);
+                // Visualize
                 this.sandbox.dom.empty($table);
 
                 if (!!totalNetPrice) {
-                    // add net price
+                    // Add net price.
                     addPriceRow.call(
                         this,
                         $table,
@@ -672,9 +704,8 @@ define([
                     );
 
                     if (!this.options.taxfree) {
-                        result = PriceCalcUtil.getTotalPricesAndTaxes(this.sandbox, this.items);
                         if (result.taxes) {
-                            // add row for every tax group
+                            // Add row for every tax group
                             for (i in result.taxes) {
                                 addPriceRow.call(
                                     this,
@@ -689,10 +720,12 @@ define([
                             this,
                             $table,
                             this.sandbox.translate('salescore.item.overall-price'),
-                            PriceCalcUtil.getFormattedAmountAndUnit(this.sandbox, totalPrice, this.currency)
+                            PriceCalcUtil.getFormattedAmountAndUnit(this.sandbox, grossPrice, this.currency)
                         );
                     }
                 }
+            } else {
+                this.sandbox.dom.empty($table);
             }
         },
 
@@ -1497,7 +1530,10 @@ define([
                     displayToolbars: this.options.displayToolbars,
                     columns: this.options.columns,
                     showItemCount: this.options.showItemCount,
-                    allowIndependentItems: this.options.allowIndependentItems
+                    allowIndependentItems: this.options.allowIndependentItems,
+                    translate: this.sandbox.translate,
+                    deliveryCost: this.sandbox.numberFormat(this.options.deliveryCost, 'n'),
+                    enableDeliveryCost: this.options.enableDeliveryCost
                 }
             );
 

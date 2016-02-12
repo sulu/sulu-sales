@@ -2,6 +2,11 @@
 <% if (displayToolbars == false) { %>
 <%      displayClass =  'hide-toolbars'; %>
 <% } %>
+<% var disabled = '';
+if (isEditable == 'false' || isEditable == false) {
+disabled =  'disabled';
+}
+%>
 <div id="<%= formId %>"
      class="item-table-list-form<% if (isEditable == 'false' || isEditable == false) {print(' disabled');} %> <%= displayClass %>">
     <div class="item-table-container">
@@ -19,8 +24,21 @@
         </ul>
     </div>
 
+    <% if (enableDeliveryCost == true) { %>
+    <div class="grid-col-12 delivery-cost" data-name="deliveryCost">
+        <label><%= translate('salescore.item.delivery-cost') %></label>
+        <input id="delivery-cost" class="price input-field form-element"
+                data-validation-required="true"
+                value="<%= deliveryCost %>"
+                data-type="decimal"
+                data-validation-min="0.0"
+                data-validation-max="999999999"
+        <%= disabled %>/>
+    </div>
+    <% } %>
+
     <% if (columns.indexOf('totalPrice') > -1) { %>
-    <div class="grid-col-7 global-price-container">
+    <div class="grid-col-12 global-price-container">
         <table class="global-price-table grey-font"></table>
     </div>
     <% } %>

@@ -530,7 +530,12 @@ define([
                             taxClasses: this.options.taxClasses,
                             units: this.options.units
                         },
-                        taxfree: this.options.data.taxfree
+                        taxfree: this.options.data.taxfree,
+                        deliveryCost: this.options.data.deliveryCost,
+                        enableDeliveryCost: true,
+                        deliveryCostChangedCallback: function(cost) {
+                            this.deliveryCost = cost;
+                        }.bind(this)
                     }
                 },
                 {
@@ -566,6 +571,8 @@ define([
                 // the data mapper property is not used and therefore the data.currency property
                 // has to be set this way
                 data.currencyCode = !!this.currency ? this.currency : this.options.data.currencyCode;
+
+                data.deliveryCost = this.deliveryCost;
 
                 // FIXME auto complete in mapper
                 // only get id, if auto-complete is not empty:

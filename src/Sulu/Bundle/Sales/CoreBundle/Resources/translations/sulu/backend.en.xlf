@@ -250,6 +250,10 @@
                 <source>salescore.item-table.error.price-update</source>
                 <target>An error occured while calculating the items price. Please check your input.</target>
             </trans-unit>
+            <trans-unit id="25" resname="salescore.item.delivery-cost">
+                <source>salescore.item.delivery-cost</source>
+                <target>Net Delivery Cost</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>
