@@ -1,4 +1,4 @@
-<form id="settings-overlay" class="settings-overlay">
+<form id="settings-overlay" class="settings-overlay husky-validate">
     <% if (!!isIndependent) { %>
     <div class="grid-row">
         <div class="grid-col-12">
@@ -51,6 +51,7 @@
                        type="text"
                        data-type="decimal"
                        data-mapper-property="quantity"
+                       data-validation-min="0.01"
                        data-validation-required="true"
                        value="<%= numberFormat(quantity) %>"/>
             </div>
@@ -98,6 +99,7 @@
                 <div id="delivery-date"
                      data-mapper-property="deliveryDate"
                      data-type="husky-input"
+                     data-value="<%= deliveryDate %>"
                      data-form="true"></div>
             </div>
         </div>
@@ -145,7 +147,13 @@
             <div class="grid-col-6">
                 <div class="form-group-vertical">
                     <label><%= translate('salescore.item.tax-rate') %></label>
-                    <span><%= tax %></span>
+                    <% var selectedTax = tax; %>
+                    <% _.each(settings.taxClasses, function(taxClass) { %>
+                        <% if (taxClass.tax == tax) { %>
+                            <% selectedTax = taxClass.name + ' (' + taxClass.tax +' %)'; %>
+                        <% } %>
+                    <% }); %>
+                    <span><%= selectedTax %></span>
                 </div>
             </div>
         <% } %>

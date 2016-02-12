@@ -42,11 +42,6 @@
  *
  * - All of de data defined in options.settings must be provided
  * - Call set-addresses when changing an account
- *
- * For creating independent items
- * ------------------------------
- * - TODO
- *
  */
 define([
     'text!sulusalescore/components/item-table/item.form.html',
@@ -111,6 +106,7 @@ define([
             overallEmptyString: '-',
             loaderSelector: '.item-table-loader',
             loaderClass: 'item-table-loader',
+            overlayClass: 'settings-overlay',
             overlayClassSelector: '.settings-overlay',
             settingsOverlayId: '#settings-overlay',
             autocompleteLimit: 20
@@ -527,8 +523,9 @@ define([
             }
 
             // if settings are activated, show them
-            if (!!this.options.settings && this.options.settings !== 'false'
-                //&& (!!dataId || dataId === 0)
+            if (!!this.options.settings
+                && this.options.settings !== 'false'
+                && this.items.hasOwnProperty(rowId)
             ) {
                 initSettingsOverlay.call(this, this.items[rowId], this.options.settings, rowId);
             }
@@ -1232,7 +1229,7 @@ define([
                 defaultAddressLabel = this.sandbox.translate(translations.defaultAddress),
                 createNewItem = !rowId;
 
-            var isIndependent = (createNewItem || data || !data.number);
+            var isIndependent = (createNewItem || !data || !data.number);
 
             settings = this.sandbox.util.extend({
                 columns: [],
@@ -1265,7 +1262,7 @@ define([
 
             $content = this.sandbox.util.template(Overlay, templateData);
             $overlay = this.sandbox.dom.createElement('<div class="' + constants.overlayClass + '"></div>');
-            this.sandbox.dom.append(this.$el, $overlay);
+            this.sandbox.dom.append('body', $overlay);
 
             title = data.name;
             subTitle = null;
@@ -1349,10 +1346,11 @@ define([
 
             var deliveryAddress = getDataMapperPropertyValFromOverlay.call(this, 'deliveryAddress');
 
-            //  TODO check
-            var deliveryDate = this.sandbox.dom.val(
-                constants.overlayClassSelector + ' *[data-mapper-property="deliveryDate"] input'
+            var deliveryDate = this.sandbox.dom.data(
+                constants.overlayClassSelector + ' *[data-mapper-property="deliveryDate"]',
+                'value'
             );
+
             var costCentre = getDataMapperPropertyValFromOverlay.call(this, 'costCentre');
 
             var name = getDataMapperPropertyValFromOverlay.call(this, 'name');

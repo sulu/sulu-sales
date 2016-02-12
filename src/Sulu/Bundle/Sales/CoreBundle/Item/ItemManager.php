@@ -31,6 +31,7 @@ use Sulu\Bundle\Sales\CoreBundle\Item\Exception\ItemNotFoundException;
 use Sulu\Bundle\Sales\CoreBundle\Item\Exception\MissingItemAttributeException;
 use Sulu\Bundle\Sales\CoreBundle\Manager\OrderAddressManager;
 use Sulu\Bundle\PricingBundle\Pricing\ItemPriceCalculator;
+use Sulu\Component\Contact\Model\ContactInterface;
 use Sulu\Component\Persistence\RelationTrait;
 use Sulu\Component\Security\Authentication\UserRepositoryInterface;
 use Sulu\Bundle\ProductBundle\Entity\TaxClass;
@@ -155,6 +156,7 @@ class ItemManager
      * @param int|null $userId
      * @param ApiItemInterface|ItemInterface|null $item
      * @param int|null $itemStatusId
+     * @param Contact|null $contact The contact that should be used for order-address
      *
      * @return ApiItemInterface|null
      */
@@ -163,12 +165,13 @@ class ItemManager
         $locale,
         $userId = null,
         $item = null,
-        $itemStatusId = null
+        $itemStatusId = null,
+        ContactInterface $contact = null
     ) {
         $itemEntity = $this->itemFactory->createEntity();
         $isNewItem = !$item;
 
-        // check required data
+        // Check if required data for creating an item is set.
         if ($isNewItem) {
             $this->checkRequiredData($data, true);
             $item = $this->itemFactory->createApiEntity($this->itemFactory->createEntity(), $locale);
@@ -178,17 +181,17 @@ class ItemManager
             $item = $this->itemFactory->createApiEntity($item, $locale);
         }
 
-        // get user
         $user = $userId ? $this->userRepository->findUserById($userId) : null;
 
-        $contact = null;
         $account = null;
-        if ($user) {
+        // If no contact is given take user as fallback.
+        if (!$contact && !!$user) {
             $contact = $user->getContact();
+        }
+        if ($contact) {
             $account = $contact->getMainAccount();
         }
 
-        // set item data
         $item->setQuantity($this->getProperty($data, 'quantity'));
         $item->setUseProductsPrice($this->getProperty($data, 'useProductsPrice', true));
         $this->setDate(
@@ -198,7 +201,7 @@ class ItemManager
             [$item, 'setDeliveryDate']
         );
 
-        // terms of delivery
+        // Set terms of delivery.
         $product = null;
         if ($isNewItem) {
             $productData = $this->getProperty($data, 'product');
@@ -208,7 +211,7 @@ class ItemManager
             }
         }
 
-        // if product is not set, set data manually
+        // If product is not set, set data manually.
         if (!$product) {
             if ($isNewItem) {
                 $item->setUseProductsPrice(false);
@@ -224,19 +227,19 @@ class ItemManager
             $item->setSupplierName($this->getProperty($data, 'supplierName', $item->getSupplierName()));
         }
 
-        // update prices
+        // Update prices.
         $this->updatePrices($item, $data);
 
         $item->setDiscount($this->getProperty($data, 'discount', $item->getDiscount()));
 
         $item->setCostCentre($this->getProperty($data, 'costCentre'));
 
-        // set delivery-address for item
+        // Set delivery-address for item.
         if (isset($data['deliveryAddress'])) {
             $this->setItemDeliveryAddress($data['deliveryAddress'], $item, $contact, $account);
         }
 
-        // create new item
+        // Create new item.
         if ($item->getId() == null) {
             $item->setCreated(new DateTime());
             $item->setCreator($user);
@@ -251,7 +254,7 @@ class ItemManager
             $this->addStatus($item, $itemStatusId);
         }
 
-        // handle attributes
+        // Handle attributes.
         $this->processAttributes($data, $item, $locale);
 
         $item->setChanged(new DateTime());
@@ -406,7 +409,7 @@ class ItemManager
     }
 
     /**
-     * Sets delivery address for an item
+     * Sets delivery address for an item.
      *
      * @param array|int $addressData
      * @param ApiItemInterface $item
@@ -422,17 +425,17 @@ class ItemManager
         Contact $contact = null,
         AccountInterface $account = null
     ) {
-        if ($item->getId() !== null || $item->getDeliveryAddress() === null) {
-            // create delivery address
+        if ($item->getId() !== null || $item->getDeliveryAddress() !== null) {
+            // Create new delivery address.
             $deliveryAddress = new $this->orderAddressEntity();
-            // persist entities
+            // Persist entities.
             $this->em->persist($deliveryAddress);
-            // assign to order
+            // Assign to order.
             $item->setDeliveryAddress($deliveryAddress);
         }
 
         if (is_array($addressData)) {
-                // set order-address
+                // Set order-address.
                 $this->orderAddressManager->setOrderAddress(
                     $item->getDeliveryAddress(),
                     $addressData,
@@ -441,7 +444,7 @@ class ItemManager
                 );
         } elseif (is_int($addressData)) {
             $contactAddressId = $addressData;
-            // create order-address and assign contact-address data
+            // Create order-address and assign contact-address data.
             $deliveryAddress = $item->getEntity()->getDeliveryAddress();
 
             $orderAddress = $this->orderAddressManager->getAndSetOrderAddressByContactAddressId(
@@ -451,10 +454,10 @@ class ItemManager
                 $deliveryAddress
             );
 
-            // set delivery address
+            // Set delivery address.
             $item->setDeliveryAddress($orderAddress);
 
-            // if new delivery address persist
+            // If new delivery address persist.
             if (!$deliveryAddress) {
                 $this->em->persist($orderAddress);
             }

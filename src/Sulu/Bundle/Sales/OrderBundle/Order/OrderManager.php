@@ -14,6 +14,7 @@ use DateTime;
 use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\NoResultException;
+use Sulu\Component\Contact\Model\ContactInterface;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Sulu\Component\Security\Authentication\UserRepositoryInterface;
 use Sulu\Component\Security\Authentication\UserInterface;
@@ -312,7 +313,7 @@ class OrderManager
 
         if (isset($data['invoiceAddress'])) {
             // set customer name to account if set, otherwise to contact
-            $contactFullName = $this->getContactData($data['invoiceAddress'], $contact)['fullName'];
+            $contactFullName = $this->orderAddressManager->getContactData($data['invoiceAddress'], $contact)['fullName'];
 
             // set OrderAddress data
             $this->orderAddressManager->setOrderAddress(
@@ -389,47 +390,6 @@ class OrderManager
 
         // set total price
         $apiOrder->setTotalNetPrice($totalPrice);
-    }
-
-    /**
-     * Returns contact data as an array. Either by provided address or contact
-     *
-     * @param array $addressData
-     * @param Contact $contact
-     *
-     * @throws MissingOrderAttributeException
-     *
-     * @return array
-     */
-    public function getContactData($addressData, $contact)
-    {
-        $result = array();
-        // if account is set, take account's name
-        if ($addressData && isset($addressData['firstName']) && isset($addressData['lastName'])) {
-            $result['firstName'] = $addressData['firstName'];
-            $result['lastName'] = $addressData['lastName'];
-            $result['fullName'] = $result['firstName'] . ' ' . $result['lastName'];
-            if (isset($addressData['title'])) {
-                $result['title'] = $addressData['title'];
-            }
-            if (isset($addressData['salutation'])) {
-                $result['salutation'] = $addressData['salutation'];
-            }
-        } else {
-            if ($contact) {
-                $result['firstName'] = $contact->getFirstName();
-                $result['lastName'] = $contact->getLastName();
-                $result['fullName'] = $contact->getFullName();
-                $result['salutation'] = $contact->getFormOfAddress();
-                if ($contact->getTitle() !== null) {
-                    $result['title'] = $contact->getTitle()->getTitle();
-                }
-            } else {
-                throw new MissingOrderAttributeException('firstName, lastName or contact');
-            }
-        }
-
-        return $result;
     }
 
     /**
@@ -707,7 +667,7 @@ class OrderManager
      */
     public function addItem($itemData, $locale, $userId, $order)
     {
-        $item = $this->itemManager->save($itemData, $locale, $userId);
+        $item = $this->itemManager->save($itemData, $locale, $userId, null, null, $order->getCustomerContact());
 
         $order->addItem($item->getEntity());
 
@@ -722,9 +682,9 @@ class OrderManager
      *
      * @return null|\Sulu\Bundle\Sales\CoreBundle\Api\Item
      */
-    public function updateItem(ItemInterface $item, $itemData, $locale, $userId)
+    public function updateItem(ItemInterface $item, $itemData, $locale, $userId, $order)
     {
-        return $this->itemManager->save($itemData, $locale, $userId, $item);
+        return $this->itemManager->save($itemData, $locale, $userId, $item, null, $order->getCustomerContact());
     }
 
     /**
@@ -1446,13 +1406,13 @@ class OrderManager
 
                 $update = function ($item, $matchedEntry) use ($locale, $userId, $order) {
                     $item = $item->getEntity();
-                    $itemEntity = $this->updateItem($item, $matchedEntry, $locale, $userId);
+                    $itemEntity = $this->updateItem($item, $matchedEntry, $locale, $userId, $order->getEntity());
 
                     return $itemEntity ? true : false;
                 };
 
                 $add = function ($itemData) use ($locale, $userId, $order) {
-                    return $this->addItem($itemData, $locale, $userId, $order);
+                    return $this->addItem($itemData, $locale, $userId, $order->getEntity());
                 };
 
                 $result = $this->processSubEntities(
