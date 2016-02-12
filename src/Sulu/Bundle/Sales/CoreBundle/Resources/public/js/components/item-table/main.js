@@ -119,7 +119,7 @@ define([
             rowId: '',
             name: '',
             number: '',
-            quantity: '',
+            quantity: 1,
             quantityUnit: '',
             price: '',
             discount: null,
@@ -641,24 +641,22 @@ define([
             var items = this.getItems(), result, $table, i;
             $table = this.$find(constants.globalPriceTableClass);
 
-            if (!!items && items.length > 0 && !!items[0].price) {
+            if (!!items && items.length > 0) {
 
                 var totalNetPrice = 0;
+                var grossPrice = 0;
                 var totalPrice = 0;
                 var deliveryCost = 0;
-                for (var i = -1, len = items.length; ++i < len;) {
-                    totalNetPrice += items[i].totalNetPrice;
-                    totalPrice += items[i].tax / 100.0 * items[i].totalNetPrice + items[i].totalNetPrice;;
-                }
 
                 // Add delivery cost if enabled.
                 if (this.options.enableDeliveryCost === true) {
                     deliveryCost = this.sandbox.parseFloat($('#delivery-cost').val());
-                    totalPrice += deliveryCost;
-                    // Add to net price if taxfree is selcted.
-                    if (!!this.options.taxfree) {
-                        totalNetPrice += deliveryCost;
-                    }
+                }
+                result = PriceCalcUtil.getTotalPricesAndTaxes(this.sandbox, this.items, deliveryCost);
+
+                if (!!result) {
+                    totalNetPrice = result.netPrice;
+                    grossPrice = result.grossPrice;
                 }
 
                 // Visualize
@@ -674,7 +672,6 @@ define([
                     );
 
                     if (!this.options.taxfree) {
-                        result = PriceCalcUtil.getTotalPricesAndTaxes(this.sandbox, this.items, deliveryCost);
                         if (result.taxes) {
                             // Add row for every tax group
                             for (i in result.taxes) {
@@ -691,7 +688,7 @@ define([
                             this,
                             $table,
                             this.sandbox.translate('salescore.item.overall-price'),
-                            PriceCalcUtil.getFormattedAmountAndUnit(this.sandbox, totalPrice, this.currency)
+                            PriceCalcUtil.getFormattedAmountAndUnit(this.sandbox, grossPrice, this.currency)
                         );
                     }
                 }
