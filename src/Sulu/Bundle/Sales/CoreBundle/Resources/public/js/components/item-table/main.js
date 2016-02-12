@@ -641,7 +641,7 @@ define([
             var items = this.getItems(), result, $table, i;
             $table = this.$find(constants.globalPriceTableClass);
 
-            if (!!items && items.length > 0 && !!items[0].price) {
+            if (!!items && items.length > 0) {
 
                 var totalNetPrice = 0;
                 var grossPrice = 0;
