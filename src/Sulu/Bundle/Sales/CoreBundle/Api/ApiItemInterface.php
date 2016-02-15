@@ -108,7 +108,7 @@ interface ApiItemInterface
      *
      * @param float $price
      *
-     * return ApiItemInterface
+     * @return ApiItemInterface
      */
     public function setPrice($price);
 
@@ -124,7 +124,7 @@ interface ApiItemInterface
      *
      * @param float $discount
      *
-     * return ApiItemInterface
+     * @return ApiItemInterface
      */
     public function setDiscount($discount);
 
@@ -140,7 +140,7 @@ interface ApiItemInterface
      *
      * @param string $description
      *
-     * return ApiItemInterface
+     * @return ApiItemInterface
      */
     public function setDescription($description);
 
@@ -156,7 +156,7 @@ interface ApiItemInterface
      *
      * @param float $weight
      *
-     * return ApiItemInterface
+     * @return ApiItemInterface
      */
     public function setWeight($weight);
 
@@ -172,7 +172,7 @@ interface ApiItemInterface
      *
      * @param float $width
      *
-     * return ApiItemInterface
+     * @return ApiItemInterface
      */
     public function setWidth($width);
 
@@ -188,7 +188,7 @@ interface ApiItemInterface
      *
      * @param float $height
      *
-     * return ApiItemInterface
+     * @return ApiItemInterface
      */
     public function setHeight($height);
 
@@ -204,7 +204,7 @@ interface ApiItemInterface
      *
      * @param float $length
      *
-     * return ApiItemInterface
+     * @return ApiItemInterface
      */
     public function setLength($length);
 
@@ -220,7 +220,7 @@ interface ApiItemInterface
      *
      * @param DateTime $created
      *
-     * return ApiItemInterface
+     * @return ApiItemInterface
      */
     public function setCreated(DateTime $created);
 
@@ -236,7 +236,7 @@ interface ApiItemInterface
      *
      * @param DateTime $changed
      *
-     * return ApiItemInterface
+     * @return ApiItemInterface
      */
     public function setChanged(DateTime $changed);
 
@@ -259,7 +259,7 @@ interface ApiItemInterface
      *
      * @param $product
      *
-     * return ApiItemInterface
+     * @return ApiItemInterface
      */
     public function setProduct($product = null);
 
@@ -275,7 +275,7 @@ interface ApiItemInterface
      *
      * @param UserInterface $changer
      *
-     * return ApiItemInterface
+     * @return ApiItemInterface
      */
     public function setChanger(UserInterface $changer = null);
 
@@ -291,7 +291,7 @@ interface ApiItemInterface
      *
      * @param UserInterface $creator
      *
-     * return ApiItemInterface
+     * @return ApiItemInterface
      */
     public function setCreator(UserInterface $creator = null);
 
@@ -307,7 +307,7 @@ interface ApiItemInterface
      *
      * @param integer $bitmaskStatus
      *
-     * return ApiItemInterface
+     * @return ApiItemInterface
      */
     public function setBitmaskStatus($bitmaskStatus);
 
@@ -323,7 +323,7 @@ interface ApiItemInterface
      *
      * @param float $totalNetPrice
      *
-     * return ApiItemInterface
+     * @return ApiItemInterface
      */
     public function setTotalNetPrice($totalNetPrice);
 
@@ -346,7 +346,7 @@ interface ApiItemInterface
      *
      * @param DateTime $deliveryDate
      *
-     * return ApiItemInterface
+     * @return ApiItemInterface
      */
     public function setDeliveryDate(DateTime $deliveryDate);
 
@@ -358,7 +358,7 @@ interface ApiItemInterface
     /**
      * @param string $costCentre
      *
-     * return ApiItemInterface
+     * @return ApiItemInterface
      */
     public function setCostCentre($costCentre);
 }

@@ -27,6 +27,8 @@ define([
             currencyCode : 'EUR'
         },
 
+        namespace = 'sulu.salesorder.',
+
         /**
          * Used for setting any parameter to options configuration.
          *
@@ -35,7 +37,7 @@ define([
          * @param {string} key
          * @param {string} value
          */
-        EVENT_SET_OPTIONS_DATA = 'sulu.salesorder.set-options-data',
+        EVENT_SET_OPTIONS_DATA = namespace + 'set-options-data',
 
         constants = {
             accountContactsUrl: '/admin/api/accounts/<%= id %>/contacts?flat=true',
@@ -66,8 +68,8 @@ define([
         /**
          * Sets specific data to options.
          *
-         * @param key Where to set data (this.options[key])
-         * @param optionData Data to set onto options
+         * @param {String} key Where to set data (this.options[key])
+         * @param {Mixed} optionData Data to set onto options
          */
         setOptionsData = function(key, optionData) {
             this.options[key] = optionData;
@@ -515,7 +517,7 @@ define([
                         data: this.options.data.items,
                         currency: this.options.data.currencyCode,
                         el: constants.itemTableSelector,
-                        allowIndependentItems: true,
+                        enableIndependentItems: true,
                         settings: {
                             columns: [
                                 'addresses',

@@ -2,11 +2,11 @@
 
 namespace Sulu\Bundle\Sales\OrderBundle\Controller;
 
-use Sulu\Bundle\Sales\CoreBundle\Traits\ItemTableTrait;
 use Symfony\Component\HttpFoundation\Response;
-use Sulu\Bundle\ContactExtensionBundle\Entity\Account;
-use Sulu\Bundle\Sales\OrderBundle\Api\OrderStatus;
 use Sulu\Component\Rest\RestController;
+use Sulu\Bundle\ContactExtensionBundle\Entity\Account;
+use Sulu\Bundle\Sales\CoreBundle\Traits\ItemTableTrait;
+use Sulu\Bundle\Sales\OrderBundle\Api\OrderStatus;
 
 class TemplateController extends RestController
 {

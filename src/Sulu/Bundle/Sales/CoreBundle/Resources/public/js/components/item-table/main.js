@@ -33,7 +33,7 @@
  * @param {Bool}       [options.allowDuplicatedProducts] Defines if a product can be added multiple times to items list
  * @param {Bool}       [options.showItemCount] Defines if the column which shows the item count should be displayed.
  * @param {Bool}       [options.taxfree] Defines if table should contain taxes
- * @param {Bool}       [options.allowIndependentItems] Defines an independent item can be created
+ * @param {Bool}       [options.enableIndependentItems] Defines an independent item can be created
  *                     (without product assignment).
  * @param {Number}     [options.deliveryCost] The delivery cost
  * @param {Bool}       [options.enableDeliveryCost] Defines if the delivery cost field is enabled or not
@@ -62,7 +62,7 @@ define([
     var defaults = {
             addressKey: 'deliveryAddress',
             allowDuplicatedProducts: true,
-            allowIndependentItems: false,
+            enableIndependentItems: false,
             columnCallbacks: {},
             columns: [
                 'name',
@@ -76,18 +76,18 @@ define([
             ],
             data: [],
             defaultData: {},
+            deliveryCost: 0,
+            deliveryCostChangedCallback: null,
             displayToolbars: true,
+            enableDeliveryCost: false,
+            taxfree: false,
             formId: 'item-table-form',
             hasNestedItems: false,
             isEditable: true,
             rowCallback: null,
             settings: false,
             showItemCount: true,
-            urlFilter: {},
-            taxfree: false,
-            deliveryCost: 0,
-            enableDeliveryCost: false,
-            deliveryCostChangedCallback: null
+            urlFilter: {}
         },
 
         urls = {
@@ -675,6 +675,11 @@ define([
          * Updates row with global prices.
          */
         updateGlobalPrice = function() {
+            // Do not update global price, when prices are not shown.
+            if (this.options.columns.indexOf('price') === -1) {
+                return;
+            }
+
             var items = this.getItems(), result, $table, i;
             $table = this.$find(constants.globalPriceTableClass);
 
@@ -697,7 +702,7 @@ define([
                 // Visualize
                 this.sandbox.dom.empty($table);
 
-                if (!!totalNetPrice) {
+                if (typeof totalNetPrice !== "undefined") {
                     // Add net price.
                     addPriceRow.call(
                         this,
@@ -858,12 +863,11 @@ define([
             }.bind(this));
 
             // load product price
-            this.sandbox.util.save(urls.pricing, 'POST' , {
+            this.sandbox.util.save(urls.pricing, 'POST', {
                 currency: this.currency,
                 taxfree: this.options.taxfree,
                 items: items
-            })
-            .then(function(response) {
+            }).then(function(response) {
                 // map each result of response back to rowIds
                 for (var i = -1, len = response.items.length; ++i < len;) {
                     var rowId = rowIds[i];
@@ -892,7 +896,7 @@ define([
          *
          * @param {String|Int} productId
          *
-         * @returns {Boolean}
+         * @returns {Bool}
          */
         productIsForbiddenDuplicate = function(productId) {
             return !this.options.allowDuplicatedProducts && this.addedProductIds.indexOf(productId) !== -1;
@@ -1137,13 +1141,13 @@ define([
          * @param {Object} $row
          */
         addValidationFields = function($row) {
-            if (this.options.columns.indexOf('quantity') > 0) {
+            if (this.options.columns.indexOf('quantity') > -1) {
                 this.sandbox.form.addField(this.selectorFormId, this.sandbox.dom.find(constants.quantityInput, $row));
             }
-            if (this.options.columns.indexOf('price') > 0) {
+            if (this.options.columns.indexOf('price') > -1) {
                 this.sandbox.form.addField(this.selectorFormId, this.sandbox.dom.find(constants.priceInput, $row));
             }
-            if (this.options.columns.indexOf('discount') > 0) {
+            if (this.options.columns.indexOf('discount') > -1) {
                 this.sandbox.form.addField(this.selectorFormId, this.sandbox.dom.find(constants.discountInput, $row));
             }
         },
@@ -1154,13 +1158,13 @@ define([
          * @param {Object} $row
          */
         removeValidationFields = function($row) {
-            if (this.options.columns.indexOf('quantity') > 0) {
+            if (this.options.columns.indexOf('quantity') > -1) {
                 this.sandbox.form.removeField(this.selectorFormId, this.sandbox.dom.find(constants.quantityInput, $row));
             }
-            if (this.options.columns.indexOf('price') > 0) {
+            if (this.options.columns.indexOf('price') > -1) {
                 this.sandbox.form.removeField(this.selectorFormId, this.sandbox.dom.find(constants.priceInput, $row));
             }
-            if (this.options.columns.indexOf('discount') > 0) {
+            if (this.options.columns.indexOf('discount') > -1) {
                 this.sandbox.form.removeField(this.selectorFormId, this.sandbox.dom.find(constants.discountInput, $row));
             }
         },
@@ -1476,12 +1480,13 @@ define([
          * @param {Array} requiredSettings
          * @param {String} errorMessage
          */
-        checkIfSettingsAreSet = function(requiredSettings, errorMessage)
-        {
+        checkIfSettingsAreSet = function(requiredSettings, errorMessage) {
             for (var i = 0; i < requiredSettings.length; i++) {
                 var requiredSetting = requiredSettings[i]
                 if (!this.options.settings.hasOwnProperty(requiredSetting)) {
-                    throw errorMessage + 'options.settings.'+ requiredSetting +' not given!';
+                    throw {
+                        message: errorMessage + ' options.settings.' + requiredSetting + ' not given!'
+                    };
                 }
             }
         },
@@ -1535,7 +1540,7 @@ define([
                     displayToolbars: this.options.displayToolbars,
                     columns: this.options.columns,
                     showItemCount: this.options.showItemCount,
-                    allowIndependentItems: this.options.allowIndependentItems,
+                    enableIndependentItems: this.options.enableIndependentItems,
                     translate: this.sandbox.translate,
                     deliveryCost: this.sandbox.numberFormat(this.options.deliveryCost, 'n'),
                     enableDeliveryCost: this.options.enableDeliveryCost
@@ -1573,7 +1578,7 @@ define([
             }
 
             // Check options set for settings overlay.
-            if (this.options.allowIndependentItems) {
+            if (this.options.enableIndependentItems) {
                 if (this.options.settings == false) {
                 var errorMessage = 'Independent items cannot be added: ';
                     throw errorMessage + 'options.settings not given!';
