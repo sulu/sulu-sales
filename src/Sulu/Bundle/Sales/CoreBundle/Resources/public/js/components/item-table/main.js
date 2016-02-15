@@ -115,6 +115,7 @@ define([
             overlayClass: 'settings-overlay',
             overlayClassSelector: '.settings-overlay',
             settingsOverlayId: '#settings-overlay',
+            deliveryCostInputId: '#delivery-cost',
             autocompleteLimit: 20
         },
 
@@ -337,13 +338,17 @@ define([
 
         /**
          *  DOM-EVENT listener: Delivery cost focus out.
-         *
-         *  @param {Object} event
          */
-        deliveryCostChangedHandler = function(event) {
-            var deliveryCost = this.sandbox.parseFloat($('#delivery-cost').val());
+        deliveryCostChangedHandler = function() {
+            var deliveryCost = this.sandbox.parseFloat($(constants.deliveryCostInputId).val());
+
+            // Do not format, if delivery-cost is invalid.
+            if (!this.sandbox.dom.isNumeric(deliveryCost)) {
+                return;
+            }
+
             // Reformat the input.
-            $('#delivery-cost').val(this.sandbox.numberFormat(deliveryCost, 'n'));
+            $(constants.deliveryCostInputId).val(this.sandbox.numberFormat(deliveryCost, 'n'));
             // Update the global price.
             updateGlobalPrice.call(this);
             this.options.deliveryCostChangedCallback(deliveryCost);
@@ -674,15 +679,13 @@ define([
             $table = this.$find(constants.globalPriceTableClass);
 
             if (!!items && items.length > 0) {
-
                 var totalNetPrice = 0;
                 var grossPrice = 0;
-                var totalPrice = 0;
                 var deliveryCost = 0;
 
                 // Add delivery cost if enabled.
                 if (this.options.enableDeliveryCost === true) {
-                    deliveryCost = this.sandbox.parseFloat($('#delivery-cost').val());
+                    deliveryCost = this.sandbox.parseFloat($(constants.deliveryCostInputId).val());
                 }
                 result = PriceCalcUtil.getTotalPricesAndTaxes(this.sandbox, this.items, deliveryCost);
 
@@ -705,7 +708,7 @@ define([
 
                     if (!this.options.taxfree) {
                         if (result.taxes) {
-                            // Add row for every tax group
+                            // Add row for every tax group.
                             for (i in result.taxes) {
                                 addPriceRow.call(
                                     this,
@@ -1353,7 +1356,6 @@ define([
 
             // validate form
             var isValid = this.sandbox.form.validate(constants.settingsOverlayId);
-
             if (!isValid) {
                 return false;
             }
@@ -1366,6 +1368,9 @@ define([
                 refreshItemsData.call(this);
             } else {
                 createNewItemRowWithData.call(this, data, true);
+
+                // emit data change
+                this.sandbox.emit(EVENT_CHANGED.call(this));
             }
         },
 

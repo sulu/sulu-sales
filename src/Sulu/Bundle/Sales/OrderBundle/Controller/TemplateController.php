@@ -2,16 +2,16 @@
 
 namespace Sulu\Bundle\Sales\OrderBundle\Controller;
 
+use Sulu\Bundle\Sales\CoreBundle\Traits\ItemTableTrait;
 use Symfony\Component\HttpFoundation\Response;
-use Sulu\Bundle\ProductBundle\Entity\TaxClass;
-use Sulu\Bundle\ProductBundle\Entity\Unit;
 use Sulu\Bundle\ContactExtensionBundle\Entity\Account;
-use Sulu\Bundle\ProductBundle\Api\Currency;
 use Sulu\Bundle\Sales\OrderBundle\Api\OrderStatus;
 use Sulu\Component\Rest\RestController;
 
 class TemplateController extends RestController
 {
+    use ItemTableTrait;
+
     protected static $termsOfPaymentEntityName = 'SuluContactExtensionBundle:TermsOfPayment';
     protected static $termsOfDeliveryEntityName = 'SuluContactExtensionBundle:TermsOfDelivery';
     protected static $orderStatusEntityName = 'SuluSalesOrderBundle:OrderStatus';
@@ -114,80 +114,5 @@ class TemplateController extends RestController
             );
         }
         return $statusArray;
-    }
-
-    /**
-     * Returns all currencies.
-     *
-     * @param string $locale
-     *
-     * @return array
-     */
-    private function getCurrencies($locale)
-    {
-        /** @var Currency[] $currencies */
-        $currencies = $this->get('sulu_product.currency_manager')->findAll($locale);
-
-        $currencyValues = array();
-
-        foreach ($currencies as $currency) {
-            $currencyValues[] = array(
-                'id' => $currency->getId(),
-                'name' => $currency->getName(),
-                'code' => $currency->getCode()
-            );
-        }
-
-        return $currencyValues;
-    }
-
-    /**
-     * Returns all tax classes.
-     *
-     * @param string $locale
-     *
-     * @return array
-     */
-    private function getTaxClasses($locale)
-    {
-        $itemManager = $this->get('sulu_sales_core.item_manager');
-        /** @var TaxClass[] $taxClasses */
-        $taxClasses = $this->get('sulu_product.tax_class_repository')->findAll();
-
-        $result = [];
-
-        foreach ($taxClasses as $taxClass) {
-            $result[] = [
-                'id' => $taxClass->getId(),
-                'name' => $taxClass->getTranslation($locale)->getName(),
-                'tax' => $itemManager->retrieveTaxForClass($taxClass)
-            ];
-        }
-
-        return $result;
-    }
-
-    /**
-     * Returns all product units.
-     *
-     * @param string $locale
-     *
-     * @return array
-     */
-    private function getProductUnits($locale)
-    {
-        /** @var Unit[] $productUnits */
-        $productUnits = $this->get('sulu_product.unit_repository')->findAll();
-
-        $result = [];
-
-        foreach ($productUnits as $productUnit) {
-            $result[] = [
-                'id' => $productUnit->getId(),
-                'name' => $productUnit->getTranslation($locale)->getName(),
-            ];
-        }
-
-        return $result;
     }
 }

@@ -121,7 +121,9 @@
                         <div class="grid__item two-twelfths text-align-right">
                             <div class="bold subline">
                                 {% block productlist_footer_shippingcost_value %}
-                                    0,00
+                                    {% if order.deliveryCost is defined %}
+                                        {{ order.deliveryCost }}
+                                    {% endif %}
                                 {% endblock %}
                             </div>
                             <div class="bold">
