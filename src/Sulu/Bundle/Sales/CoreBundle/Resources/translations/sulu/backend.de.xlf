@@ -238,7 +238,19 @@
                 <source>salescore.invoice-address.country</source>
                 <target>Land Rechnung</target>
             </trans-unit>
-            <trans-unit id="22" resname="salescore.item.delivery-cost">
+            <trans-unit id="22" resname="salescore.create-new-item">
+                <source>salescore.create-new-item</source>
+                <target>Neue Position erstellen</target>
+            </trans-unit>
+            <trans-unit id="23" resname="salescore.item.name">
+                <source>salescore.item.name</source>
+                <target>Bezeichnung</target>
+            </trans-unit>
+            <trans-unit id="24" resname="salescore.item-table.error.price-update">
+                <source>salescore.item-table.error.price-update</source>
+                <target>Beim Berechnen des Produktpreises ist ein Fehler aufgetreten. Bitte überprüfen Sie Ihre Eingabe.</target>
+            </trans-unit>
+            <trans-unit id="25" resname="salescore.item.delivery-cost">
                 <source>salescore.item.delivery-cost</source>
                 <target>Versandkosten netto</target>
             </trans-unit>

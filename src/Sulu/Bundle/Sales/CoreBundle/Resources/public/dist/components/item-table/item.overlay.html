@@ -1,4 +1,18 @@
-<form class="settings-overlay">
+<form id="settings-overlay" class="settings-overlay husky-validate">
+    <% if (!!isIndependent) { %>
+    <div class="grid-row">
+        <div class="grid-col-12">
+            <div class="form-group-vertical">
+                <label><%= translate('salescore.item.title') %></label>
+                <input class="form-element"
+                       data-validation-required="true"
+                       type="text"
+                       data-mapper-property="name"
+                       value="<%= name %>">
+            </div>
+        </div>
+    </div>
+    <% } %>
     <% if (settings.columns.indexOf('addresses') > -1) { %>
     <div class="grid-row">
         <div class="grid-col-12">
@@ -33,13 +47,30 @@
         <div class="grid-col-3">
             <div class="form-group-vertical">
                 <label><%= translate('salescore.item.quantity') %></label>
-                <input class="form-element" type="text" data-mapper-property="quantity" value="<%= numberFormat(quantity) %>"/>
+                <input class="form-element"
+                       type="text"
+                       data-type="decimal"
+                       data-mapper-property="quantity"
+                       data-validation-min="0.01"
+                       data-validation-required="true"
+                       value="<%= numberFormat(quantity) %>"/>
             </div>
         </div>
         <div class="grid-col-3">
             <div class="form-group-vertical">
                 <label><%= translate('salescore.item.unit') %></label>
-                <span><%= quantityUnit %></span>
+                <% if (!!isIndependent) { %>
+                    <select class="form-element" data-type="select" data-mapper-property="quantityUnit">
+                        <% _.each(settings.units, function(unit) { %>
+                            <option value="<%= unit.name %>"
+                            <% if (unit.name === quantityUnit) print(selected="selected") %>>
+                                <%= unit.name %>
+                            </option>
+                        <% }); %>
+                    </select>
+                <% } else { %>
+                    <span><%= quantityUnit %></span>
+                <% } %>
             </div>
         </div>
         <% } %>
@@ -47,7 +78,12 @@
         <div class="grid-col-6">
             <div class="form-group-vertical">
                 <label><%= translate('salescore.item.price') %></label>
-                <input class="form-element" type="text" data-mapper-property="price" value="<%= numberFormat(price) %>"/>
+                <input class="form-element"
+                       type="text"
+                       data-mapper-property="price"
+                       data-type="decimal"
+                       data-validation-required="true"
+                       value="<%= numberFormat(price) %>"/>
             </div>
         </div>
         <% } %>
@@ -63,6 +99,7 @@
                 <div id="delivery-date"
                      data-mapper-property="deliveryDate"
                      data-type="husky-input"
+                     data-value="<%= deliveryDate %>"
                      data-form="true"></div>
             </div>
         </div>
@@ -71,7 +108,7 @@
         <div class="grid-col-6">
             <div class="form-group-vertical">
                 <label><%= translate('salesorder.orders.costCentre') %></label>
-                <input class="form-element" type="text" data-mapper-property="costCenter" value="<%= costCenter %>"/>
+                <input class="form-element" type="text" data-mapper-property="costCentre" value="<%= costCentre %>"/>
             </div>
         </div>
         <% } %>
@@ -83,17 +120,42 @@
         <div class="grid-col-6">
             <div class="form-group-vertical">
                 <label><%= translate('salescore.item.discount') %></label>
-                <input class="form-element" type="text" data-mapper-property="discount" value="<%= numberFormat(discount) %>"/>
+                <input class="form-element"
+                       type="text"
+                       data-type="decimal"
+                       data-mapper-property="discount"
+                       value="<%= numberFormat(discount) %>"/>
             </div>
         </div>
         <% } %>
-        <% if (settings.columns.indexOf('tax-rate') > -1) { %>
-        <div class="grid-col-6">
-            <div class="form-group-vertical">
-                <label><%= translate('salescore.item.tax-rate') %></label>
-                <span><%= tax %></span>
+
+        <% if (!!isIndependent) { %>
+            <div class="grid-col-6">
+                <div class="form-group-vertical">
+                    <label><%= translate('salescore.item.tax-rate') %></label>
+                    <select class="form-element" data-type="select" data-mapper-property="tax">
+                        <% _.each(settings.taxClasses, function(taxClass) { %>
+                            <option value="<%= taxClass.tax %>"
+                            <% if (taxClass.tax == tax) print(selected="selected") %>>
+                                <%= taxClass.name %> <%= taxClass.tax %> %
+                            </option>
+                        <% }); %>
+                    </select>
+                </div>
             </div>
-        </div>
+        <% } else if (settings.columns.indexOf('tax-rate') > -1) { %>
+            <div class="grid-col-6">
+                <div class="form-group-vertical">
+                    <label><%= translate('salescore.item.tax-rate') %></label>
+                    <% var selectedTax = tax; %>
+                    <% _.each(settings.taxClasses, function(taxClass) { %>
+                        <% if (taxClass.tax == tax) { %>
+                            <% selectedTax = taxClass.name + ' (' + taxClass.tax +' %)'; %>
+                        <% } %>
+                    <% }); %>
+                    <span><%= selectedTax %></span>
+                </div>
+            </div>
         <% } %>
     </div>
     <% } %>

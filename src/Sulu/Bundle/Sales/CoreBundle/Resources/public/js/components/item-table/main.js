@@ -23,15 +23,28 @@
  * @param {Object}     [options.columnCallbacks] if a specific column is clicked (as name) a callback can be defined
  *                     by provide key with a function
  * @param {Object}     [options.rowCallback] Is called, when a row is clicked. Passes rowId and rowData
- * @param {Object}     [options.settings] Configuration Object for displaying Options overlay
+ * @param {Object}     [options.settings] Configuration Object for displaying settings overlay
+ * @param {Object}     [options.settings.columns] Columns to be shown in settings overlay
+ * @param {Object}     [options.settings.addresses] All addresses that can be assigned to a item.
+ * @param {Object}     [options.settings.taxClasses] All tax classes that can be set to a item.
+ * @param {Object}     [options.settings.units] All units that can be assigned to an item.
  * @param {Object}     [options.urlFilter] Object containing key value pairs to extend the url
  * @param {String}     [options.addressKey] Defines how to access address value over api
  * @param {Bool}       [options.allowDuplicatedProducts] Defines if a product can be added multiple times to items list
  * @param {Bool}       [options.showItemCount] Defines if the column which shows the item count should be displayed.
  * @param {Bool}       [options.taxfree] Defines if table should contain taxes
+ * @param {Bool}       [options.enableIndependentItems] Defines an independent item can be created
+ *                     (without product assignment).
  * @param {Number}     [options.deliveryCost] The delivery cost
  * @param {Bool}       [options.enableDeliveryCost] Defines if the delivery cost field is enabled or not
  * @param {Function}   [options.deliveryCostChangedCallback] Function called when delivery cost changes
+ *
+ * ==============================================
+ * Necessary data for creating a settings overlay
+ * ==============================================
+ *
+ * - All of de data defined in options.settings must be provided
+ * - Call set-addresses when changing an account
  */
 define([
     'text!sulusalescore/components/item-table/item.form.html',
@@ -49,6 +62,7 @@ define([
     var defaults = {
             addressKey: 'deliveryAddress',
             allowDuplicatedProducts: true,
+            enableIndependentItems: false,
             columnCallbacks: {},
             columns: [
                 'name',
@@ -62,18 +76,18 @@ define([
             ],
             data: [],
             defaultData: {},
+            deliveryCost: 0,
+            deliveryCostChangedCallback: null,
             displayToolbars: true,
+            enableDeliveryCost: false,
+            taxfree: false,
             formId: 'item-table-form',
             hasNestedItems: false,
             isEditable: true,
             rowCallback: null,
             settings: false,
             showItemCount: true,
-            urlFilter: {},
-            taxfree: false,
-            deliveryCost: 0,
-            enableDeliveryCost: false,
-            deliveryCostChangedCallback: null
+            urlFilter: {}
         },
 
         urls = {
@@ -98,7 +112,10 @@ define([
             overallEmptyString: '-',
             loaderSelector: '.item-table-loader',
             loaderClass: 'item-table-loader',
+            overlayClass: 'settings-overlay',
             overlayClassSelector: '.settings-overlay',
+            settingsOverlayId: '#settings-overlay',
+            deliveryCostInputId: '#delivery-cost',
             autocompleteLimit: 20
         },
 
@@ -144,7 +161,7 @@ define([
                 ].join('');
             },
             loader: function(classes) {
-                return '<div style="display:hidden" class="grid-row ' + classes + '"></div>';
+                return '<div style="display:none" class="grid-row ' + classes + '"></div>';
             }
         },
 
@@ -289,20 +306,26 @@ define([
          */
         bindDomEvents = function() {
             // Add new item.
-            this.sandbox.dom.on(this.$el, 'click', addNewItemClicked.bind(this), '.add-row');
-            // Remove row.
+            this.sandbox.dom.on(this.$el, 'click', addSearchItemClicked.bind(this), '.add-row');
+
+            // Add new independent item row (without product relation).
+            this.sandbox.dom.on(this.$el, 'click', addNewIndependentItemClicked.bind(this), '.add-independent');
+
+            // Remove item row.
             this.sandbox.dom.on(this.$el, 'click', removeRowClicked.bind(this), '.remove-row');
 
+            // Item row has been clicked
             this.sandbox.dom.on(this.$el, 'click', rowClicked.bind(this), '.item-table-row');
             // Add new item.
             this.sandbox.dom.on(this.$el, 'click', rowCellClicked.bind(this), '.item-table-row td');
 
+            // Item data was changed
             this.sandbox.dom.on(this.$el, 'data-changed', function(event) {
                 var items = event.items || [];
                 rerenderItems.call(this, items);
             }.bind(this));
 
-            // Input field listeners.
+            // Input field listeners (change)
             this.sandbox.dom.on(this.$el, 'change', quantityChangedHandler.bind(this), constants.quantityInput);
             this.sandbox.dom.on(this.$el, 'change', priceChangedHandler.bind(this), constants.priceInput);
             this.sandbox.dom.on(this.$el, 'change', discountChangedHandler.bind(this), constants.discountInput);
@@ -315,18 +338,29 @@ define([
 
         /**
          *  DOM-EVENT listener: Delivery cost focus out.
-         *
-         *  @param {Object} event
          */
-        deliveryCostChangedHandler = function(event) {
-            var deliveryCost = this.sandbox.parseFloat($('#delivery-cost').val());
+        deliveryCostChangedHandler = function() {
+            var deliveryCost = this.sandbox.parseFloat($(constants.deliveryCostInputId).val());
+
+            // Do not format, if delivery-cost is invalid.
+            if (!this.sandbox.dom.isNumeric(deliveryCost)) {
+                return;
+            }
+
             // Reformat the input.
-            $('#delivery-cost').val(this.sandbox.numberFormat(deliveryCost, 'n'));
+            $(constants.deliveryCostInputId).val(this.sandbox.numberFormat(deliveryCost, 'n'));
             // Update the global price.
             updateGlobalPrice.call(this);
             this.options.deliveryCostChangedCallback(deliveryCost);
         },
 
+        /**
+         * Returns item row by its id.
+         *
+         * @param {String} rowId
+         *
+         * @returns {Object}
+         */
         getItemRowById = function(rowId) {
             return this.sandbox.dom.find('#' + rowId, this.$list);
         },
@@ -518,7 +552,10 @@ define([
             }
 
             // if settings are activated, show them
-            if (!!this.options.settings && this.options.settings !== 'false' && (!!dataId || dataId === 0)) {
+            if (!!this.options.settings
+                && this.options.settings !== 'false'
+                && this.items.hasOwnProperty(rowId)
+            ) {
                 initSettingsOverlay.call(this, this.items[rowId], this.options.settings, rowId);
             }
         },
@@ -638,19 +675,22 @@ define([
          * Updates row with global prices.
          */
         updateGlobalPrice = function() {
+            // Do not update global price, when prices are not shown.
+            if (this.options.columns.indexOf('price') === -1) {
+                return;
+            }
+
             var items = this.getItems(), result, $table, i;
             $table = this.$find(constants.globalPriceTableClass);
 
             if (!!items && items.length > 0) {
-
                 var totalNetPrice = 0;
                 var grossPrice = 0;
-                var totalPrice = 0;
                 var deliveryCost = 0;
 
                 // Add delivery cost if enabled.
                 if (this.options.enableDeliveryCost === true) {
-                    deliveryCost = this.sandbox.parseFloat($('#delivery-cost').val());
+                    deliveryCost = this.sandbox.parseFloat($(constants.deliveryCostInputId).val());
                 }
                 result = PriceCalcUtil.getTotalPricesAndTaxes(this.sandbox, this.items, deliveryCost);
 
@@ -662,7 +702,7 @@ define([
                 // Visualize
                 this.sandbox.dom.empty($table);
 
-                if (!!totalNetPrice) {
+                if (typeof totalNetPrice !== "undefined") {
                     // Add net price.
                     addPriceRow.call(
                         this,
@@ -673,7 +713,7 @@ define([
 
                     if (!this.options.taxfree) {
                         if (result.taxes) {
-                            // Add row for every tax group
+                            // Add row for every tax group.
                             for (i in result.taxes) {
                                 addPriceRow.call(
                                     this,
@@ -823,7 +863,7 @@ define([
             }.bind(this));
 
             // load product price
-            this.sandbox.util.save(urls.pricing, 'POST' , {
+            this.sandbox.util.save(urls.pricing, 'POST', {
                 currency: this.currency,
                 taxfree: this.options.taxfree,
                 items: items
@@ -836,34 +876,30 @@ define([
 
                 isLoadedPromise.resolve();
             }.bind(this))
-                .fail(function(request, message, error) {
-                    this.sandbox.emit('sulu.labels.warning.show',
-                        this.sandbox.translate('salescore.item-table.'),
-                        'labels.error',
-                        ''
-                    );
-                    this.sandbox.logger.error(request, message, error);
+            .fail(function(request, message, error) {
+                this.sandbox.emit('sulu.labels.error.show',
+                    this.sandbox.translate('salescore.item-table.error.price-update'),
+                    'labels.error',
+                    ''
+                );
+                this.sandbox.logger.error(request, message, error);
 
-                    isLoadedPromise.reject();
+                isLoadedPromise.reject();
 
-                }.bind(this));
+            }.bind(this));
 
             return isLoadedPromise;
         },
 
         /**
-         * Checks if a product is not an unallowed duplicate.
+         * Checks if a product is a forbidden duplicate.
          *
          * @param {String|Int} productId
          *
          * @returns {Bool}
          */
         productIsForbiddenDuplicate = function(productId) {
-            if (!this.options.allowDuplicatedProducts && this.addedProductIds.indexOf(productId) !== -1) {
-                return true;
-            }
-
-            return false;
+            return !this.options.allowDuplicatedProducts && this.addedProductIds.indexOf(productId) !== -1;
         },
 
         /**
@@ -938,13 +974,23 @@ define([
         },
 
         /**
-         *  DOM-EVENT listener: add a new row.
+         * DOM-EVENT listener: add a new row.
          *
-         *  @param {Object} event
+         * @param {Object} event
          */
-        addNewItemClicked = function(event) {
+        addSearchItemClicked = function(event) {
             event.preventDefault();
-            addNewItemRow.call(this);
+            addSearchItemRow.call(this);
+        },
+
+        /**
+         * DOM-EVENT listener: add a new row.
+         *
+         * @param {Object} event
+         */
+        addNewIndependentItemClicked = function(event) {
+            event.preventDefault();
+            initSettingsOverlay.call(this, rowDefaults, this.options.settings);
         },
 
         /**
@@ -1020,6 +1066,31 @@ define([
         },
 
         /**
+         * Creates a new item row and fills it with given data.
+         * and adds item data to this.items.
+         *
+         * @param {Object} itemData
+         * @param {Bool} shouldUpdatePrices
+         *
+         * @param {Object} $row
+         */
+        createNewItemRowWithData = function(itemData, shouldUpdatePrices)
+        {
+            // Create row in dom.
+            var $row = addItemRow.call(this, itemData);
+            // Add to items array.
+            var rowId = addItemDataEntryByObject.call(this, $row, itemData);
+
+            if (!!shouldUpdatePrices) {
+                updateItemRowPrices.call(this, rowId);
+            }
+
+            refreshItemsData.call(this);
+
+            return $row;
+        },
+
+        /**
          * Adds an existing item to the list.
          *
          * @param {Object} itemData
@@ -1038,6 +1109,7 @@ define([
             $row = createItemRow.call(this, itemData);
             this.$lastAddedRow = $row;
             this.sandbox.dom.append(this.$find(constants.listClass), $row);
+
             return $row;
         },
 
@@ -1069,13 +1141,13 @@ define([
          * @param {Object} $row
          */
         addValidationFields = function($row) {
-            if (this.options.columns.indexOf('quantity') > 0) {
+            if (this.options.columns.indexOf('quantity') > -1) {
                 this.sandbox.form.addField(this.selectorFormId, this.sandbox.dom.find(constants.quantityInput, $row));
             }
-            if (this.options.columns.indexOf('price') > 0) {
+            if (this.options.columns.indexOf('price') > -1) {
                 this.sandbox.form.addField(this.selectorFormId, this.sandbox.dom.find(constants.priceInput, $row));
             }
-            if (this.options.columns.indexOf('discount') > 0) {
+            if (this.options.columns.indexOf('discount') > -1) {
                 this.sandbox.form.addField(this.selectorFormId, this.sandbox.dom.find(constants.discountInput, $row));
             }
         },
@@ -1086,21 +1158,21 @@ define([
          * @param {Object} $row
          */
         removeValidationFields = function($row) {
-            if (this.options.columns.indexOf('quantity') > 0) {
+            if (this.options.columns.indexOf('quantity') > -1) {
                 this.sandbox.form.removeField(this.selectorFormId, this.sandbox.dom.find(constants.quantityInput, $row));
             }
-            if (this.options.columns.indexOf('price') > 0) {
+            if (this.options.columns.indexOf('price') > -1) {
                 this.sandbox.form.removeField(this.selectorFormId, this.sandbox.dom.find(constants.priceInput, $row));
             }
-            if (this.options.columns.indexOf('discount') > 0) {
+            if (this.options.columns.indexOf('discount') > -1) {
                 this.sandbox.form.removeField(this.selectorFormId, this.sandbox.dom.find(constants.discountInput, $row));
             }
         },
 
         /**
-         * Adds a new item.
+         * Adds a new item which is used for searching products.
          */
-        addNewItemRow = function() {
+        addSearchItemRow = function() {
             var $row,
                 data = {
                     rowClass: 'new'
@@ -1126,18 +1198,26 @@ define([
          * @param {Array} items
          */
         renderItems = function(items) {
-            var i, length, item, $row, rowId;
+            var i, length, $row;
             for (i = -1, length = items.length; ++i < length;) {
-                item = items[i];
-
-                $row = addItemRow.call(this, items[i]);
-
-                // add to items array
-                rowId = this.sandbox.dom.attr($row, 'id');
-                this.items[rowId] = item;
+                createNewItemRowWithData.call(this, items[i]);
             }
-            // refresh items data attribute
+            // Refresh items data attribute.
             refreshItemsData.call(this);
+        },
+
+        /**
+         * Adds new itemdata to this.items based on dom object
+         *
+         * @param {Object} $row
+         *
+         * @returns {String} rowId
+         */
+        addItemDataEntryByObject = function($row, itemData) {
+            var rowId = this.sandbox.dom.attr($row, 'id');
+            this.items[rowId] = itemData;
+
+            return rowId;
         },
 
         /**
@@ -1186,7 +1266,10 @@ define([
          */
         initSettingsOverlay = function(data, settings, rowId) {
             var $overlay, $content, title, subTitle,
-                defaultAddressLabel = this.sandbox.translate(translations.defaultAddress);
+                defaultAddressLabel = this.sandbox.translate(translations.defaultAddress),
+                createNewItem = !rowId;
+
+            var isIndependent = (createNewItem || !data || !data.number);
 
             settings = this.sandbox.util.extend({
                 columns: [],
@@ -1197,34 +1280,48 @@ define([
                 defaultAddressLabel = this.sandbox.sulu.createAddressString(data[this.options.addressKey]);
             }
 
-            data = this.sandbox.util.extend({
-                settings: settings,
-                defaultAddressLabel: defaultAddressLabel,
+            var templateData = this.sandbox.util.extend({
+                costCentre: null,
                 createAddressString: this.sandbox.sulu.createAddressString,
-                translate: this.sandbox.translate,
-                deliveryDate: null,
-                costCenter: null,
+                isIndependent: isIndependent,
+                defaultAddressLabel: defaultAddressLabel,
                 discount: null,
-                numberFormat: this.sandbox.numberFormat
+                deliveryDate: null,
+                numberFormat: this.sandbox.numberFormat,
+                settings: settings,
+                translate: this.sandbox.translate
             }, data);
 
-            if (!data.hasOwnProperty(this.options.addressKey) || !data[this.options.addressKey]) {
-                data[this.options.addressKey] = {id: null};
+            if (!templateData.hasOwnProperty(this.options.addressKey) || !templateData[this.options.addressKey]) {
+                templateData[this.options.addressKey] = {id: null};
             }
 
-            // prevent multiple initialization of the overlay
+            // Prevent multiple initialization of the overlay.
             this.sandbox.stop(this.sandbox.dom.find(constants.overlayClassSelector, this.$el));
             this.sandbox.dom.remove(this.sandbox.dom.find(constants.overlayClassSelector, this.$el));
 
-            $content = this.sandbox.util.template(Overlay, data);
+            $content = this.sandbox.util.template(Overlay, templateData);
             $overlay = this.sandbox.dom.createElement('<div class="' + constants.overlayClass + '"></div>');
-            this.sandbox.dom.append(this.$el, $overlay);
+            this.sandbox.dom.append('body', $overlay);
 
             title = data.name;
-            subTitle = '#' + data.number;
-            if (data.supplierName && data.supplierName !== '') {
-                subTitle += '<br/>' + data.supplierName;
+            subTitle = null;
+            if (!isIndependent) {
+                subTitle = '#' + data.number;
+                if (data.supplierName && data.supplierName !== '') {
+                    subTitle += '<br/>' + data.supplierName;
+                }
             }
+
+            // When creating a new item with overlay.
+            if (createNewItem) {
+                title = this.sandbox.translate('salescore.create-new-item');
+            }
+
+            // Create form for validation once overlay is rendered.
+            this.sandbox.once('husky.overlay.settings.opened', function() {
+                this.sandbox.form.create(constants.settingsOverlayId);
+            }.bind(this));
 
             this.sandbox.start([
                 {
@@ -1238,35 +1335,7 @@ define([
                         removeOnClose: false,
                         skin: 'wide',
                         data: $content,
-                        okCallback: function() {
-                            var deliveryAddress = this.sandbox.dom.val(constants.overlayClassSelector + ' *[data-mapper-property="deliveryAddress"]'),
-                                deliveryDate = this.sandbox.dom.val(constants.overlayClassSelector + ' *[data-mapper-property="deliveryDate"] input'),
-                                costCenter = this.sandbox.dom.val(constants.overlayClassSelector + ' *[data-mapper-property="costCenter"]');
-
-                            this.items[rowId].description = this.sandbox.dom.val(constants.overlayClassSelector + ' *[data-mapper-property="description"]');
-                            this.items[rowId].quantity = this.sandbox.parseFloat(
-                                this.sandbox.dom.val(constants.overlayClassSelector + ' *[data-mapper-property="quantity"]')
-                            );
-                            this.items[rowId].price = this.sandbox.parseFloat(
-                                this.sandbox.dom.val(constants.overlayClassSelector + ' *[data-mapper-property="price"]')
-                            );
-                            this.items[rowId].discount = this.sandbox.parseFloat(
-                                this.sandbox.dom.val(constants.overlayClassSelector + ' *[data-mapper-property="discount"]')
-                            );
-
-                            // set address
-                            if (deliveryAddress !== '-1') {
-                                // TODO: set whole order-address (contact-data as well)
-                                this.items[rowId][this.options.addressKey] = getAddressById.call(this, deliveryAddress);
-                                //delete this.items[rowId][this.options.addressKey].id; // delete reference to contact-address
-                            }
-                            this.items[rowId].deliveryDate = deliveryDate !== '' ? deliveryDate : null;
-                            this.items[rowId].costCenter = costCenter !== '' ? costCenter : null;
-
-                            updateItemRow.call(this, rowId, this.items[rowId]);
-                            updateGlobalPrice.call(this, rowId);
-                            refreshItemsData.call(this);
-                        }.bind(this)
+                        okCallback: saveSettingsOverlayClicked.bind(this, rowId)
                     }
                 },
                 {
@@ -1279,6 +1348,97 @@ define([
                     }
                 }
             ]);
+        },
+
+        /**
+         * Gets called when settings overlay's save button is clicked.
+         *
+         * @param {String} rowId
+         */
+        saveSettingsOverlayClicked = function(rowId) {
+            var data = retrieveDataFromSettingsOverlay.call(this);
+
+            // Validate form.
+            var isValid = this.sandbox.form.validate(constants.settingsOverlayId);
+            if (!isValid) {
+                return false;
+            }
+
+            // If edited item already exists.
+            if (!!rowId) {
+                this.items[rowId] = this.sandbox.util.extend({}, this.items[rowId], data);
+                updateItemRow.call(this, rowId, this.items[rowId]);
+                updateItemRowPrices.call(this, rowId);
+                updateGlobalPrice.call(this, rowId);
+                refreshItemsData.call(this);
+            } else {
+                createNewItemRowWithData.call(this, data, true);
+
+                // Emit data change.
+                this.sandbox.emit(EVENT_CHANGED.call(this));
+            }
+        },
+
+        /**
+         * Retrieves all data from settings overlay.
+         *
+         * @returns {Object}
+         */
+        retrieveDataFromSettingsOverlay = function() {
+            var data = {};
+
+            var deliveryAddress = getDataMapperPropertyValFromOverlay.call(this, 'deliveryAddress');
+
+            var deliveryDate = this.sandbox.dom.data(
+                constants.overlayClassSelector + ' *[data-mapper-property="deliveryDate"]',
+                'value'
+            );
+
+            var costCentre = getDataMapperPropertyValFromOverlay.call(this, 'costCentre');
+
+            var name = getDataMapperPropertyValFromOverlay.call(this, 'name');
+            if (!!name) {
+                data.name = name;
+            }
+
+            var quantityUnit = getDataMapperPropertyValFromOverlay.call(this, 'quantityUnit');
+            if (!!quantityUnit) {
+                data.quantityUnit = quantityUnit;
+            }
+
+            var tax = getDataMapperPropertyValFromOverlay.call(this, 'tax');
+            if (!!tax) {
+                data.tax = tax;
+            }
+
+            var discount = getDataMapperPropertyValFromOverlay.call(this, 'discount') || '0';
+            data.discount = this.sandbox.parseFloat(discount);
+
+            data.description = getDataMapperPropertyValFromOverlay.call(this, 'description');
+            data.quantity = this.sandbox.parseFloat(getDataMapperPropertyValFromOverlay.call(this, 'quantity'));
+            data.price = this.sandbox.parseFloat(getDataMapperPropertyValFromOverlay.call(this, 'price'));
+
+            // Set address
+            if (deliveryAddress !== '-1') {
+                data[this.options.addressKey] = getAddressById.call(this, deliveryAddress);
+            }
+            data.deliveryDate = deliveryDate !== '' ? deliveryDate : null;
+            data.costCentre = costCentre !== '' ? costCentre : null;
+
+            return data;
+        },
+
+        /**
+         * Returns value of a specific datamapper-property attribute from DOM.
+         *
+         * @param {String} property
+         *
+         * @returns {String}
+         */
+        getDataMapperPropertyValFromOverlay = function(property) {
+            return this.sandbox.dom.val(
+                constants.overlayClassSelector + ' *[data-mapper-property="' + property + '"]'
+            );
         },
 
         /**
@@ -1316,6 +1476,23 @@ define([
         },
 
         /**
+         * Checks if required settings are set.
+         *
+         * @param {Array} requiredSettings
+         * @param {String} errorMessage
+         */
+        checkIfSettingsAreSet = function(requiredSettings, errorMessage) {
+            for (var i = 0; i < requiredSettings.length; i++) {
+                var requiredSetting = requiredSettings[i]
+                if (!this.options.settings.hasOwnProperty(requiredSetting)) {
+                    throw {
+                        message: errorMessage + ' options.settings.' + requiredSetting + ' not given!'
+                    };
+                }
+            }
+        },
+
+        /**
          * Initialize husky-validation.
          */
         initializeForm = function() {
@@ -1328,6 +1505,8 @@ define([
             this.options = this.sandbox.util.extend({}, defaults, this.options);
 
             this.selectorFormId = '#'+ this.options.formId;
+
+            this.checkOptions();
 
             // variables
             this.items = {};
@@ -1362,9 +1541,10 @@ define([
                     displayToolbars: this.options.displayToolbars,
                     columns: this.options.columns,
                     showItemCount: this.options.showItemCount,
+                    enableIndependentItems: this.options.enableIndependentItems,
                     translate: this.sandbox.translate,
                     deliveryCost: this.sandbox.numberFormat(this.options.deliveryCost, 'n'),
-                    enableDeliveryCost: this.options.enableDeliveryCost,
+                    enableDeliveryCost: this.options.enableDeliveryCost
                 }
             );
 
@@ -1385,6 +1565,28 @@ define([
             updateGlobalPrice.call(this);
 
             this.sandbox.emit(EVENT_INITIALIZED.call(this));
+        },
+
+        /**
+         * Function checks if all necessary options are set and if they are consistent.
+         */
+        checkOptions: function() {
+            var requiredSettings = ['taxClasses', 'columns'];
+            var requiredIndependentSettings = ['units']
+
+            if (this.options.settings !== false) {
+                checkIfSettingsAreSet.call(this, requiredSettings, 'Settings overlay cannot be initialized:');
+            }
+
+            // Check options set for settings overlay.
+            if (this.options.enableIndependentItems) {
+                if (this.options.settings == false) {
+                var errorMessage = 'Independent items cannot be added: ';
+                    throw errorMessage + 'options.settings not given!';
+                }
+
+                checkIfSettingsAreSet.call(this, requiredIndependentSettings, errorMessage);
+            }
         },
 
         /**

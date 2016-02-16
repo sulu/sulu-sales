@@ -11,6 +11,7 @@
 namespace Sulu\Bundle\Sales\CoreBundle\Manager;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Sulu\Component\Contact\Model\ContactInterface;
 use Sulu\Component\Rest\Exception\EntityNotFoundException;
 use Sulu\Bundle\ContactBundle\Entity\Address;
 use Sulu\Bundle\ContactBundle\Entity\Contact;
@@ -67,10 +68,10 @@ class OrderAddressManager
      */
     public function setOrderAddress($orderAddress, $addressData, $contact = null, $account = null)
     {
-        // check if address with id can be found
+        // Check if address with id can be found.
 
         $contactData = $this->getContactData($addressData, $contact);
-        // add contact data
+        // Add contact data.
         if ($contactData) {
             $orderAddress->setFirstName($contactData['firstName']);
             $orderAddress->setLastName($contactData['lastName']);
@@ -82,13 +83,13 @@ class OrderAddressManager
             }
         }
 
-        // add account data
+        // Add account data.
+        $orderAddress->setAccountName(null);
+        $orderAddress->setUid(null);
+
         if ($account) {
             $orderAddress->setAccountName($account->getName());
             $orderAddress->setUid($account->getUid());
-        } else {
-            $orderAddress->setAccountName(null);
-            $orderAddress->setUid(null);
         }
 
         // TODO: add phone
@@ -180,7 +181,24 @@ class OrderAddressManager
     }
 
     /**
-     * Copies address data to order address
+     * Sets contact data to address data.
+     *
+     * @param array $addressData
+     * @param ContactInterface $contact
+     */
+    public function mergeContactIntoAddressData(array &$addressData, ContactInterface $contact)
+    {
+        $addressData['firstName'] = $contact->getFirstName();
+        $addressData['lastName'] = $contact->getLastName();
+        $addressData['fullName'] = $contact->getFullName();
+        $addressData['salutation'] = $contact->getFormOfAddress();
+        if ($contact->getTitle() !== null) {
+            $addressData['title'] = $contact->getTitle()->getTitle();
+        }
+    }
+
+    /**
+     * Copies address data to order address.
      *
      * @param OrderAddressInterface $orderAddress
      * @param array $addressData
@@ -193,7 +211,16 @@ class OrderAddressManager
         $orderAddress->setCity($this->getProperty($addressData, 'city', ''));
         $orderAddress->setZip($this->getProperty($addressData, 'zip', ''));
         $orderAddress->setState($this->getProperty($addressData, 'state', ''));
-        $orderAddress->setCountry($this->getProperty($addressData, 'country', ''));
+
+        $countryName = $this->getProperty($addressData, 'country', '');
+        // Get country name if country is an array.
+        if (is_array($countryName)) {
+            $countryName = '';
+            if (isset($countryName['name'])) {
+                $countryName = $countryName['name'];
+            }
+        }
+        $orderAddress->setCountry($countryName);
         $orderAddress->setEmail($this->getProperty($addressData, 'email', ''));
         $orderAddress->setPhone($this->getProperty($addressData, 'phone', ''));
         $orderAddress->setNote($this->getProperty($addressData, 'note', ''));
@@ -214,7 +241,8 @@ class OrderAddressManager
     }
 
     /**
-     * Returns contact data as an array. either by provided address or contact
+     * Returns contact data as an array.
+     * Either by provided address or contact.
      *
      * @param array $addressData
      * @param Contact $contact
@@ -226,8 +254,10 @@ class OrderAddressManager
     public function getContactData($addressData, Contact $contact = null)
     {
         $result = array();
-        // if account is set, take account's name
-        if ($addressData && isset($addressData['firstName']) && isset($addressData['lastName'])) {
+
+        if ($contact) {
+            $this->mergeContactIntoAddressData($result, $contact);
+        } elseif ($addressData && isset($addressData['firstName']) && isset($addressData['lastName'])) {
             $result['firstName'] = $addressData['firstName'];
             $result['lastName'] = $addressData['lastName'];
             $result['fullName'] = $result['firstName'] . ' ' . $result['lastName'];
@@ -236,14 +266,6 @@ class OrderAddressManager
             }
             if (isset($addressData['salutation'])) {
                 $result['salutation'] = $addressData['salutation'];
-            }
-        } elseif ($contact) {
-            $result['firstName'] = $contact->getFirstName();
-            $result['lastName'] = $contact->getLastName();
-            $result['fullName'] = $contact->getFullName();
-            $result['salutation'] = $contact->getFormOfAddress();
-            if ($contact->getTitle() !== null) {
-                $result['title'] = $contact->getTitle()->getTitle();
             }
         } else {
             throw new MissingAttributeException('firstName, lastName or contact');

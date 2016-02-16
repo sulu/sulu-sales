@@ -2,20 +2,24 @@
 
 namespace Sulu\Bundle\Sales\OrderBundle\Controller;
 
-use Sulu\Bundle\ContactExtensionBundle\Entity\Account;
-use Sulu\Bundle\ProductBundle\Api\Currency;
-use Sulu\Bundle\Sales\OrderBundle\Api\OrderStatus;
+use Symfony\Component\HttpFoundation\Response;
 use Sulu\Component\Rest\RestController;
+use Sulu\Bundle\ContactExtensionBundle\Entity\Account;
+use Sulu\Bundle\Sales\CoreBundle\Traits\ItemTableTrait;
+use Sulu\Bundle\Sales\OrderBundle\Api\OrderStatus;
 
 class TemplateController extends RestController
 {
+    use ItemTableTrait;
+
     protected static $termsOfPaymentEntityName = 'SuluContactExtensionBundle:TermsOfPayment';
     protected static $termsOfDeliveryEntityName = 'SuluContactExtensionBundle:TermsOfDelivery';
     protected static $orderStatusEntityName = 'SuluSalesOrderBundle:OrderStatus';
 
     /**
-     * Returns Template for list
-     * @return \Symfony\Component\HttpFoundation\Response
+     * Returns Template for list.
+     *
+     * @return Response
      */
     public function orderListAction()
     {
@@ -25,11 +29,14 @@ class TemplateController extends RestController
     }
 
     /**
-     * Returns Template for list
-     * @return \Symfony\Component\HttpFoundation\Response
+     * Returns Template for list.
+     *
+     * @return Response
      */
     public function orderFormAction()
     {
+        $locale = $this->getUser()->getLocale();
+
         return $this->render(
             'SuluSalesOrderBundle:Template:order.form.html.twig',
             array(
@@ -38,14 +45,17 @@ class TemplateController extends RestController
                 'termsOfPayment' => $this->getTermsArray(self::$termsOfPaymentEntityName),
                 'termsOfDelivery' => $this->getTermsArray(self::$termsOfDeliveryEntityName),
                 'orderStatus' => $this->getOrderStatus(),
-                'currencies' => $this->getCurrencies($this->getUser()->getLocale()),
+                'currencies' => $this->getCurrencies($locale),
                 'customerId' => Account::TYPE_CUSTOMER,
+                'taxClasses' => $this->getTaxClasses($locale),
+                'units' => $this->getProductUnits($locale),
             )
         );
     }
 
     /**
-     * returns all sulu system users
+     * Returns all sulu system users.
+     *
      * @return array
      */
     public function getSystemUserArray()
@@ -65,8 +75,10 @@ class TemplateController extends RestController
     }
 
     /**
-     * returns Terms Of Payment / Delivery
-     * @param $entityName
+     * Returns Terms Of Payment / Delivery.
+     *
+     * @param string $entityName
+     *
      * @return array
      */
     public function getTermsArray($entityName)
@@ -84,7 +96,8 @@ class TemplateController extends RestController
     }
 
     /**
-     * returns array of order statuses
+     * Returns array of order statuses.
+     *
      * @return array
      */
     public function getOrderStatus()
@@ -101,29 +114,5 @@ class TemplateController extends RestController
             );
         }
         return $statusArray;
-    }
-
-    /**
-     * Returns currencies
-     *
-     * @param $language
-     * @return array
-     */
-    private function getCurrencies($language)
-    {
-        /** @var Currency[] $currencies */
-        $currencies = $this->get('sulu_product.currency_manager')->findAll($language);
-
-        $currencyValues = array();
-
-        foreach ($currencies as $currency) {
-            $currencyValues[] = array(
-                'id' => $currency->getId(),
-                'name' => $currency->getName(),
-                'code' => $currency->getCode()
-            );
-        }
-
-        return $currencyValues;
     }
 }

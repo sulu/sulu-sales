@@ -27,6 +27,18 @@ define([
             currencyCode : 'EUR'
         },
 
+        namespace = 'sulu.salesorder.',
+
+        /**
+         * Used for setting any parameter to options configuration.
+         *
+         * @event sulu.salesorder.set-options-data
+         *
+         * @param {String} key
+         * @param {Mixed} value
+         */
+        EVENT_SET_OPTIONS_DATA = namespace + 'set-options-data',
+
         constants = {
             accountContactsUrl: '/admin/api/accounts/<%= id %>/contacts?flat=true',
             accountAddressesUrl: '/admin/api/accounts/<%= id %>/addresses',
@@ -54,24 +66,17 @@ define([
         },
 
         /**
-         * set order statuses
-         * @param statuses
+         * Sets specific data to options.
+         *
+         * @param {String} key Where to set data (this.options[key])
+         * @param {Mixed} optionData Data to set onto options
          */
-        setOrderStatuses = function(statuses) {
-            this.options.orderStatuses = statuses;
-        },
-
-        /**
-         * set currencies
-         * @param currencies
-         */
-        setCurrencies = function(currencies) {
-            this.options.currencies = currencies;
+        setOptionsData = function(key, optionData) {
+            this.options[key] = optionData;
         },
 
         bindCustomEvents = function() {
-            this.sandbox.on('sulu.salesorder.set-order-status', setOrderStatuses.bind(this));
-            this.sandbox.on('sulu.salesorder.set-currencies', setCurrencies.bind(this));
+            this.sandbox.on(EVENT_SET_OPTIONS_DATA, setOptionsData.bind(this));
 
             this.sandbox.on('husky.auto-complete.' + this.accountInstanceName + '.initialized', function() {
                 if (!this.isEditable) {
@@ -485,7 +490,6 @@ define([
         },
 
         render: function() {
-
             this.sandbox.dom.html(this.$el, this.renderTemplate(this.templates[0], {
                 isEditable: this.isEditable,
                 parseDate: CoreHelper.parseDate
@@ -513,6 +517,7 @@ define([
                         data: this.options.data.items,
                         currency: this.options.data.currencyCode,
                         el: constants.itemTableSelector,
+                        enableIndependentItems: true,
                         settings: {
                             columns: [
                                 'addresses',
@@ -523,7 +528,9 @@ define([
                                 'cost-center',
                                 'discount',
                                 'tax-rate'
-                            ]
+                            ],
+                            taxClasses: this.options.taxClasses,
+                            units: this.options.units
                         },
                         taxfree: this.options.data.taxfree,
                         deliveryCost: this.options.data.deliveryCost,
