@@ -34,8 +34,8 @@ define([
          *
          * @event sulu.salesorder.set-options-data
          *
-         * @param {string} key
-         * @param {string} value
+         * @param {String} key
+         * @param {Mixed} value
          */
         EVENT_SET_OPTIONS_DATA = namespace + 'set-options-data',
 

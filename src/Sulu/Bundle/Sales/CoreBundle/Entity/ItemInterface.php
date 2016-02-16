@@ -12,7 +12,7 @@ interface ItemInterface
      *
      * @param string $name
      *
-     * @return ItemInterface
+     * @return self
      */
     public function setName($name);
 
@@ -28,7 +28,7 @@ interface ItemInterface
      *
      * @param string $number
      *
-     * @return ItemInterface
+     * @return self
      */
     public function setNumber($number);
 
@@ -44,7 +44,7 @@ interface ItemInterface
      *
      * @param float $quantity
      *
-     * @return ItemInterface
+     * @return self
      */
     public function setQuantity($quantity);
 
@@ -60,7 +60,7 @@ interface ItemInterface
      *
      * @param string $quantityUnit
      *
-     * @return ItemInterface
+     * @return self
      */
     public function setQuantityUnit($quantityUnit);
 
@@ -76,7 +76,7 @@ interface ItemInterface
      *
      * @param boolean $useProductsPrice
      *
-     * @return ItemInterface
+     * @return self
      */
     public function setUseProductsPrice($useProductsPrice);
 
@@ -92,7 +92,7 @@ interface ItemInterface
      *
      * @param float $tax
      *
-     * @return ItemInterface
+     * @return self
      */
     public function setTax($tax);
 
@@ -108,7 +108,7 @@ interface ItemInterface
      *
      * @param float $price
      *
-     * @return ItemInterface
+     * @return self
      */
     public function setPrice($price);
 
@@ -124,7 +124,7 @@ interface ItemInterface
      *
      * @param float $discount
      *
-     * @return ItemInterface
+     * @return self
      */
     public function setDiscount($discount);
 
@@ -140,7 +140,7 @@ interface ItemInterface
      *
      * @param string $description
      *
-     * @return ItemInterface
+     * @return self
      */
     public function setDescription($description);
 
@@ -156,7 +156,7 @@ interface ItemInterface
      *
      * @param float $weight
      *
-     * @return ItemInterface
+     * @return self
      */
     public function setWeight($weight);
 
@@ -172,7 +172,7 @@ interface ItemInterface
      *
      * @param float $width
      *
-     * @return ItemInterface
+     * @return self
      */
     public function setWidth($width);
 
@@ -188,7 +188,7 @@ interface ItemInterface
      *
      * @param float $height
      *
-     * @return ItemInterface
+     * @return self
      */
     public function setHeight($height);
 
@@ -204,7 +204,7 @@ interface ItemInterface
      *
      * @param float $length
      *
-     * @return ItemInterface
+     * @return self
      */
     public function setLength($length);
 
@@ -220,7 +220,7 @@ interface ItemInterface
      *
      * @param \DateTime $created
      *
-     * @return ItemInterface
+     * @return self
      */
     public function setCreated($created);
 
@@ -236,7 +236,7 @@ interface ItemInterface
      *
      * @param \DateTime $changed
      *
-     * @return ItemInterface
+     * @return self
      */
     public function setChanged($changed);
 
@@ -259,7 +259,7 @@ interface ItemInterface
      *
      * @param ProductInterface $product
      *
-     * @return ItemInterface
+     * @return self
      */
     public function setProduct(ProductInterface $product = null);
 
@@ -275,7 +275,7 @@ interface ItemInterface
      *
      * @param UserInterface $changer
      *
-     * @return ItemInterface
+     * @return self
      */
     public function setChanger(UserInterface $changer = null);
 
@@ -291,7 +291,7 @@ interface ItemInterface
      *
      * @param UserInterface $creator
      *
-     * @return ItemInterface
+     * @return self
      */
     public function setCreator(UserInterface $creator = null);
 
@@ -307,7 +307,7 @@ interface ItemInterface
      *
      * @param integer $bitmaskStatus
      *
-     * @return ItemInterface
+     * @return self
      */
     public function setBitmaskStatus($bitmaskStatus);
 
@@ -323,7 +323,7 @@ interface ItemInterface
      *
      * @param float $totalNetPrice
      *
-     * @return ItemInterface
+     * @return self
      */
     public function setTotalNetPrice($totalNetPrice);
 
@@ -339,7 +339,7 @@ interface ItemInterface
      *
      * @param \DateTime $deliveryDate
      *
-     * @return ItemInterface
+     * @return self
      */
     public function setDeliveryDate($deliveryDate);
 
@@ -353,7 +353,7 @@ interface ItemInterface
     /**
      * @param string $costCentre
      *
-     * @return ItemInterface
+     * @return self
      */
     public function setCostCentre($costCentre);
 
@@ -361,6 +361,4 @@ interface ItemInterface
      * @return string
      */
     public function getCostCentre();
-
-
 }

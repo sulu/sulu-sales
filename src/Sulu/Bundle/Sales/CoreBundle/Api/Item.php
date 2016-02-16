@@ -914,5 +914,4 @@ class Item extends ApiWrapper implements
 
         return $this;
     }
-
 }

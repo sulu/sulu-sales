@@ -1358,12 +1358,13 @@ define([
         saveSettingsOverlayClicked = function(rowId) {
             var data = retrieveDataFromSettingsOverlay.call(this);
 
-            // validate form
+            // Validate form.
             var isValid = this.sandbox.form.validate(constants.settingsOverlayId);
             if (!isValid) {
                 return false;
             }
 
+            // If edited item already exists.
             if (!!rowId) {
                 this.items[rowId] = this.sandbox.util.extend({}, this.items[rowId], data);
                 updateItemRow.call(this, rowId, this.items[rowId]);
@@ -1373,7 +1374,7 @@ define([
             } else {
                 createNewItemRowWithData.call(this, data, true);
 
-                // emit data change
+                // Emit data change.
                 this.sandbox.emit(EVENT_CHANGED.call(this));
             }
         },

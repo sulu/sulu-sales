@@ -283,6 +283,71 @@ class OrderControllerTest extends OrderTestBase
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
     }
 
+
+    public function testPostItemsWithoutProductReference()
+    {
+        $data = array(
+            'supplierName' => $this->data->account->getName(),
+            'customerAccount' => [
+                'id' => $this->data->account->getId()
+            ],
+            'customerContact' => [
+                'id' => $this->data->contact->getId()
+            ],
+            'invoiceAddress' => [
+                'street' => 'Sample-Street',
+                'number' => '12',
+                'addition' => 'Entrance 2',
+                'city' => 'Sample-City',
+                'state' => 'State',
+                'zip' => '12345',
+                'country' => 'Country',
+                'postboxNumber' => 'postboxNumber',
+                'postboxCity' => 'postboxCity',
+                'postboxPostcode' => 'postboxPostcode'
+            ],
+            'deliveryAddress' => [
+                'street' => 'Street',
+                'number' => '2',
+                'city' => 'Utopia',
+                'zip' => '1',
+                'country' => 'Country'
+            ],
+            'items' => [
+                [
+                    'name' => $this->data->productTranslation->getName(),
+                    'number' => $this->data->product->getNumber(),
+                    'quantity' => 2,
+                    'quantityUnit' => 'pc',
+                    'price' => 1000,
+                    'discount' => 10,
+                    'tax' => 20,
+                    'description' => $this->data->productTranslation->getLongDescription(),
+                ]
+            ]
+        );
+        $client = $this->createAuthenticatedClient();
+
+        $client->request('POST', '/api/orders', $data);
+        $response = json_decode($client->getResponse()->getContent());
+        $this->assertEquals(200, $client->getResponse()->getStatusCode(), $response);
+
+        $client->request('GET', '/api/orders/' . $response->id);
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+
+        $response = json_decode($client->getResponse()->getContent(), true);
+        $itemData = $data['items'][0];
+        $item = $response['items'][0];
+
+        $this->assertEquals($itemData['name'], $item['name'], 'item name');
+        $this->assertEquals($itemData['description'], $item['description'], 'item description');
+        $this->assertEquals($itemData['number'], $item['number'], 'item number');
+        $this->assertEquals($itemData['quantity'], $item['quantity'], 'item quantity');
+        $this->assertEquals($itemData['tax'], $item['tax'], 'item tax');
+        $this->assertEquals($itemData['price'], $item['price'], 'item price');
+        $this->assertEquals($itemData['discount'], $item['discount'], 'item discount');
+    }
+
     public function testStatusChange()
     {
         $client = $this->createAuthenticatedClient();
