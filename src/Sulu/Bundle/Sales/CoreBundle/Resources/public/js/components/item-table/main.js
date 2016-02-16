@@ -342,14 +342,13 @@ define([
          * @param {Event} event
          */
         reformatNumberEventHandler = function(event) {
-            console.log("focus out");
             reformatNumberOfInputField.call(this, event.currentTarget);
         },
 
         /**
          * Reformats input fields value if numeric.
          *
-         * @param {Object} $inputField
+         * @param {Object} inputField
          */
         reformatNumberOfInputField = function(inputField) {
             var $inputField = $(inputField);
@@ -1385,9 +1384,9 @@ define([
          *  Reformat all Setting overlay fields.
          */
         formatSettingsOverlayNumberFields = function() {
-            reformatNumberOfInputField.call(this, constants.settingsOverlayId + ' .price');
-            reformatNumberOfInputField.call(this, constants.settingsOverlayId + ' .discount');
-            reformatNumberOfInputField.call(this, constants.settingsOverlayId + ' .quantity');
+            reformatNumberOfInputField.call(this, constants.settingsOverlayId + ' .js-price');
+            reformatNumberOfInputField.call(this, constants.settingsOverlayId + ' .js-discount');
+            reformatNumberOfInputField.call(this, constants.settingsOverlayId + ' .js-quantity');
         },
 
         /**
@@ -1399,7 +1398,7 @@ define([
                 constants.settingsOverlayId,
                 'focusout',
                 reformatNumberEventHandler.bind(this),
-                 '.price, .discount, .quantity'
+                 '.js-price, .js-discount, .js-quantity'
             );
         },
 
