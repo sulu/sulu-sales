@@ -337,6 +337,33 @@ define([
         },
 
         /**
+         * Called on focus out of input field.
+         *
+         * @param {Event} event
+         */
+        reformatNumberEventHandler = function(event) {
+            reformatNumberOfInputField.call(this, event.currentTarget);
+        },
+
+        /**
+         * Reformats input fields value if numeric.
+         *
+         * @param {Object} inputField
+         */
+        reformatNumberOfInputField = function(inputField) {
+            var $inputField = $(inputField);
+            var number = this.sandbox.parseFloat($inputField.val());
+
+            // Do not format, if delivery-cost is invalid.
+            if (!this.sandbox.dom.isNumeric(number)) {
+                return;
+            }
+
+            // Reformat the input.
+            $inputField.val(this.sandbox.numberFormat(number, 'n'));
+        },
+
+        /**
          *  DOM-EVENT listener: Delivery cost focus out.
          */
         deliveryCostChangedHandler = function() {
@@ -1321,6 +1348,9 @@ define([
             // Create form for validation once overlay is rendered.
             this.sandbox.once('husky.overlay.settings.opened', function() {
                 this.sandbox.form.create(constants.settingsOverlayId);
+
+                formatSettingsOverlayNumberFields.call(this);
+                bindSettingsOverlayDomEvents.call(this);
             }.bind(this));
 
             this.sandbox.start([
@@ -1348,6 +1378,28 @@ define([
                     }
                 }
             ]);
+        },
+
+        /**
+         *  Reformat all Setting overlay fields.
+         */
+        formatSettingsOverlayNumberFields = function() {
+            reformatNumberOfInputField.call(this, constants.settingsOverlayId + ' .js-price');
+            reformatNumberOfInputField.call(this, constants.settingsOverlayId + ' .js-discount');
+            reformatNumberOfInputField.call(this, constants.settingsOverlayId + ' .js-quantity');
+        },
+
+        /**
+         * Add events for settings overlay.
+         */
+        bindSettingsOverlayDomEvents = function() {
+            // Focus out events for settings overlay.
+            this.sandbox.dom.on(
+                constants.settingsOverlayId,
+                'focusout',
+                reformatNumberEventHandler.bind(this),
+                 '.js-price, .js-discount, .js-quantity'
+            );
         },
 
         /**
