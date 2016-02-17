@@ -63,9 +63,7 @@
                     <select class="form-element" data-type="select" data-mapper-property="quantityUnit">
                         <% _.each(settings.units, function(unit) { %>
                             <option value="<%= unit.name %>"
-                            <% if ((!!quantityUnit && unit.name === quantityUnit) ||
-                                    unit.id === 1
-                               ) {
+                            <% if (unit.id === 1 || (!!quantityUnit && unit.name === quantityUnit)) {
                                    print(selected="selected");
                                }
                             %>>
