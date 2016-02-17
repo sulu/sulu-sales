@@ -4,6 +4,7 @@ namespace Sulu\Bundle\Sales\CoreBundle\Api;
 
 use DateTime;
 use Sulu\Component\Security\Authentication\UserInterface;
+use Sulu\Bundle\Sales\CoreBundle\Entity\OrderAddressInterface;
 
 interface ApiItemInterface
 {
@@ -349,6 +350,18 @@ interface ApiItemInterface
      * @return self
      */
     public function setDeliveryDate(DateTime $deliveryDate);
+
+    /**
+     * @return OrderAddressInterface|null
+     */
+    public function getDeliveryAddress();
+
+    /**
+     * @param OrderAddressInterface|null $deliveryAddress
+     *
+     * @return self
+     */
+    public function setDeliveryAddress(OrderAddressInterface $deliveryAddress = null);
 
     /**
      * @return string
