@@ -63,7 +63,12 @@
                     <select class="form-element" data-type="select" data-mapper-property="quantityUnit">
                         <% _.each(settings.units, function(unit) { %>
                             <option value="<%= unit.name %>"
-                            <% if (unit.name === quantityUnit) print(selected="selected") %>>
+                            <% if ((!!quantityUnit && unit.name === quantityUnit) ||
+                                    unit.id === 1
+                               ) {
+                                   print(selected="selected");
+                               }
+                            %>>
                                 <%= unit.name %>
                             </option>
                         <% }); %>
@@ -124,6 +129,8 @@
                        type="text"
                        data-type="decimal"
                        data-mapper-property="discount"
+                       data-validation-min="0.0"
+                       data-validation-max="100"
                        value="<%= numberFormat(discount) %>"/>
             </div>
         </div>

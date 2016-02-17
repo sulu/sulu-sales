@@ -425,7 +425,7 @@ class ItemManager
         Contact $contact = null,
         AccountInterface $account = null
     ) {
-        if ($item->getId() !== null || $item->getDeliveryAddress() !== null) {
+        if ($item->getDeliveryAddress() === null) {
             // Create new delivery address.
             $deliveryAddress = new $this->orderAddressEntity();
             // Persist entities.

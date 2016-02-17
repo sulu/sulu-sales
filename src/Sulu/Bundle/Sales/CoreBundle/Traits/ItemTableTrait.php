@@ -13,7 +13,7 @@ namespace Sulu\Bundle\Sales\CoreBundle\Traits;
 
 use Sulu\Bundle\ProductBundle\Entity\TaxClass;
 use Sulu\Bundle\ProductBundle\Entity\Unit;
-use Sulu\Bundle\ProductBundle\Api\Currency;
+use Sulu\Bundle\ProductBundle\Entity\Currency;
 
 /**
  * Helper Trait for getting data that's needed for displaying full item-table
@@ -23,17 +23,14 @@ trait ItemTableTrait
     /**
      * Returns all currencies.
      *
-     * @param string $locale
-     *
      * @return array
      */
-    private function getCurrencies($locale)
+    private function getCurrencies()
     {
         /** @var Currency[] $currencies */
-        $currencies = $this->get('sulu_product.currency_manager')->findAll($locale);
+        $currencies = $this->get('sulu_product.currency_repository')->findBy([],['name'=>'asc']);
 
         $currencyValues = array();
-
         foreach ($currencies as $currency) {
             $currencyValues[] = array(
                 'id' => $currency->getId(),
@@ -81,7 +78,7 @@ trait ItemTableTrait
     private function getProductUnits($locale)
     {
         /** @var Unit[] $productUnits */
-        $productUnits = $this->get('sulu_product.unit_repository')->findAll();
+        $productUnits = $this->get('sulu_product.unit_repository')->findAllByLocale($locale);
 
         $result = [];
 
