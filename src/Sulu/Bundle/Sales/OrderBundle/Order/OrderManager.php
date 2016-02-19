@@ -669,7 +669,7 @@ class OrderManager
      */
     public function addItem($itemData, $locale, $userId, $order)
     {
-        $item = $this->itemManager->save($itemData, $locale, $userId, null, null, $order->getCustomerContact());
+        $item = $this->itemManager->save($itemData, $locale, $userId, null, null, $order->getEntity()->getCustomerContact());
 
         $order->addItem($item->getEntity());
 
@@ -681,12 +681,13 @@ class OrderManager
      * @param array $itemData
      * @param string $locale
      * @param int $userId
+     * @param Order $order
      *
      * @return null|\Sulu\Bundle\Sales\CoreBundle\Api\Item
      */
     public function updateItem(ItemInterface $item, $itemData, $locale, $userId, $order)
     {
-        return $this->itemManager->save($itemData, $locale, $userId, $item, null, $order->getCustomerContact());
+        return $this->itemManager->save($itemData, $locale, $userId, $item, null, $order->getEntity()->getCustomerContact());
     }
 
     /**
