@@ -558,7 +558,7 @@ class CartManager extends BaseSalesManager
         // define user-id
         $userId = $user ? $user->getId() : null;
 
-        $item = $this->orderManager->addItem($data, $locale, $userId, $cart);
+        $item = $this->orderManager->addItem($data, $locale, $userId, $cart->getEntity());
 
         $this->validateIfItemProductActive($item->getEntity());
 
@@ -588,7 +588,7 @@ class CartManager extends BaseSalesManager
 
         $item = $this->orderManager->getOrderItemById($itemId, $cart->getEntity());
 
-        $this->orderManager->updateItem($item, $data, $locale, $userId);
+        $this->orderManager->updateItem($item, $data, $locale, $userId, $cart->getEntity());
 
         $this->removeOrderAddressIfContactAddressIdIsEqualTo(
             $item,
