@@ -32,6 +32,7 @@ use Sulu\Bundle\Sales\CoreBundle\Item\Exception\ItemNotFoundException;
 use Sulu\Bundle\Sales\CoreBundle\Item\ItemManager;
 use Sulu\Bundle\PricingBundle\Pricing\GroupedItemsPriceCalculatorInterface;
 use Sulu\Bundle\Sales\CoreBundle\Entity\OrderAddress;
+use Sulu\Bundle\Sales\OrderBundle\Entity\Order as OrderEntity;
 use Sulu\Bundle\Sales\OrderBundle\Entity\OrderActivityLog;
 use Sulu\Bundle\Sales\OrderBundle\Entity\OrderInterface;
 use Sulu\Bundle\Sales\OrderBundle\Entity\OrderRepository;
@@ -663,11 +664,11 @@ class OrderManager
      * @param array $itemData
      * @param string $locale
      * @param int $userId
-     * @param Order $order
+     * @param OrderEntity $order
      *
      * @return ApiItemInterface
      */
-    public function addItem($itemData, $locale, $userId, $order)
+    public function addItem($itemData, $locale, $userId, OrderEntity $order)
     {
         $item = $this->itemManager->save($itemData, $locale, $userId, null, null, $order->getCustomerContact());
 
@@ -681,10 +682,11 @@ class OrderManager
      * @param array $itemData
      * @param string $locale
      * @param int $userId
+     * @param OrderEntity $order
      *
      * @return null|\Sulu\Bundle\Sales\CoreBundle\Api\Item
      */
-    public function updateItem(ItemInterface $item, $itemData, $locale, $userId, $order)
+    public function updateItem(ItemInterface $item, $itemData, $locale, $userId, OrderEntity $order)
     {
         return $this->itemManager->save($itemData, $locale, $userId, $item, null, $order->getCustomerContact());
     }
