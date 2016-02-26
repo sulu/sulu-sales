@@ -38,6 +38,7 @@
  * @param {Number}     [options.deliveryCost] The delivery cost
  * @param {Bool}       [options.enableDeliveryCost] Defines if the delivery cost field is enabled or not
  * @param {Function}   [options.deliveryCostChangedCallback] Function called when delivery cost changes
+ * @param {Bool}       [options.displayGlobalPrice] Defines if global price should be calculated
  *
  * ==============================================
  * Necessary data for creating a settings overlay
@@ -62,7 +63,6 @@ define([
     var defaults = {
             addressKey: 'deliveryAddress',
             allowDuplicatedProducts: true,
-            enableIndependentItems: false,
             columnCallbacks: {},
             columns: [
                 'name',
@@ -78,15 +78,17 @@ define([
             defaultData: {},
             deliveryCost: 0,
             deliveryCostChangedCallback: null,
+            displayGlobalPrice: true,
             displayToolbars: true,
             enableDeliveryCost: false,
-            taxfree: false,
+            enableIndependentItems: false,
             formId: 'item-table-form',
             hasNestedItems: false,
             isEditable: true,
             rowCallback: null,
             settings: false,
             showItemCount: true,
+            taxfree: false,
             urlFilter: {}
         },
 
@@ -702,8 +704,8 @@ define([
          * Updates row with global prices.
          */
         updateGlobalPrice = function() {
-            // Do not update global price, when prices are not shown.
-            if (this.options.columns.indexOf('price') === -1) {
+            // Do not update global price, when prices are not shown or its disabled via options.
+            if (!this.options.displayGlobalPrice || this.options.columns.indexOf('price') === -1) {
                 return;
             }
 
