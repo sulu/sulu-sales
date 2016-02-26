@@ -139,6 +139,9 @@ class ShippingManager
         $shipping->setTrackingId($this->getProperty($data, 'trackingId', $shipping->getTrackingId()));
         $shipping->setTrackingUrl($this->getProperty($data, 'trackingUrl', $shipping->getTrackingUrl()));
 
+        // internal note
+        $shipping->setInternalNote($this->getProperty($data, 'internalNote', $shipping->getInternalNote()));
+
         $this->setShippingOrder($data, $shipping);
 
         // TODO: check if empty string overrides note
