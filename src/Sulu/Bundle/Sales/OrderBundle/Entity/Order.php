@@ -20,6 +20,11 @@ class Order extends AbstractOrder
     protected $bitmaskStatus;
 
     /**
+     * @var string
+     */
+    protected $internalNote;
+
+    /**
      * Set sessionId
      *
      * @param string $sessionId
@@ -83,5 +88,29 @@ class Order extends AbstractOrder
     public function getBitmaskStatus()
     {
         return $this->bitmaskStatus;
+    }
+
+    /**
+     * Set internalNote
+     *
+     * @param string $note
+     *
+     * @return Inquiry
+     */
+    public function setInternalNote($note)
+    {
+        $this->internalNote = $note;
+
+        return $this;
+    }
+
+    /**
+     * Get internalNote
+     *
+     * @return string
+     */
+    public function getInternalNote()
+    {
+        return $this->internalNote;
     }
 }

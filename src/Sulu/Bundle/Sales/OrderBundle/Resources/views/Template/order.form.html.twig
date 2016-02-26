@@ -179,6 +179,7 @@
             </div>
         </div>
     </div>
+
     <div class="grid-row small changeListener">
         <div class="grid-col-12">
             <div class="form-group">
@@ -195,6 +196,16 @@
                      data-aura-disabled="<%= !isEditable %>"
                      data-type="editableDataRow">
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid-row changeListener">
+        <div class="grid-col-12">
+            <div class="form-group">
+                <label for="internal-note" class="top"><%=translate('purchasecore.internal-note')%></label>
+                <textarea id="internal-note" class="form-element" data-mapper-property="internalNote"
+                <%= disabled %>/></textarea>
             </div>
         </div>
     </div>

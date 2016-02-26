@@ -1126,4 +1126,27 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     {
         return $this->allowDelete;
     }
+
+    /**
+     * @VirtualProperty
+     * @SerializedName("internalNote")
+     *
+     * @return string
+     */
+    public function getInternalNote()
+    {
+        return $this->entity->getInternalNote();
+    }
+
+    /**
+     * @param string $note
+     *
+     * @return Inquiry
+     */
+    public function setInternalNote($note)
+    {
+        $this->entity->setInternalNote($note);
+
+        return $this;
+    }
 }
