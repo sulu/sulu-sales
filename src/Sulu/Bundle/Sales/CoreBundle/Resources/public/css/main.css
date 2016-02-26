@@ -257,10 +257,13 @@ h2.divider {
   clear: both;
 }
 
-/* line 18, ../scss/main.scss */
+/* line 19, ../scss/main.scss */
 .disabled-button {
   opacity: 0.5;
   filter: alpha(opacity=50);
   zoom: 1;
-  cursor: inherit;
+}
+/* line 24, ../scss/main.scss */
+.disabled-button i {
+  cursor: no-drop;
 }
