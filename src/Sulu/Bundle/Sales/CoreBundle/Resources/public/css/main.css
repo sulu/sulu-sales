@@ -256,3 +256,14 @@
 h2.divider {
   clear: both;
 }
+
+/* line 19, ../scss/main.scss */
+.disabled-button {
+  opacity: 0.5;
+  filter: alpha(opacity=50);
+  zoom: 1;
+}
+/* line 24, ../scss/main.scss */
+.disabled-button i {
+  cursor: no-drop;
+}
