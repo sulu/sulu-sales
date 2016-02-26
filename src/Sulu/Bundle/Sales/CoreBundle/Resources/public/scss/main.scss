@@ -14,3 +14,11 @@
 h2.divider {
     clear: both;
 }
+
+// Use this to disable a button
+.disabled-button {
+    opacity: 0.5;
+    filter: alpha(opacity=50);
+    zoom: 1;
+    cursor: inherit;
+}
