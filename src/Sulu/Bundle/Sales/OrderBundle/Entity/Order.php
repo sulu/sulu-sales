@@ -25,8 +25,6 @@ class Order extends AbstractOrder
     protected $internalNote;
 
     /**
-     * Set sessionId
-     *
      * @param string $sessionId
      *
      * @return Order
@@ -39,8 +37,6 @@ class Order extends AbstractOrder
     }
 
     /**
-     * Get sessionId
-     *
      * @return string
      */
     public function getSessionId()
@@ -49,8 +45,6 @@ class Order extends AbstractOrder
     }
 
     /**
-     * Set type
-     *
      * @param OrderType $type
      *
      * @return Order
@@ -63,8 +57,6 @@ class Order extends AbstractOrder
     }
 
     /**
-     * Get type
-     *
      * @return OrderType
      */
     public function getType()
@@ -91,8 +83,6 @@ class Order extends AbstractOrder
     }
 
     /**
-     * Set internalNote
-     *
      * @param string $note
      *
      * @return Inquiry
@@ -105,8 +95,6 @@ class Order extends AbstractOrder
     }
 
     /**
-     * Get internalNote
-     *
      * @return string
      */
     public function getInternalNote()
