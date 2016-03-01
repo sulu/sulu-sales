@@ -210,6 +210,7 @@ define([
                     columns: this.options.columns,
                     data: filterCustomerDataById.call(this, customerId),
                     displayToolbars: false,
+                    displayGlobalPrice: false,
                     el: selectors.itemsTable,
                     hasNestedItems: true,
                     instanceName: 'transition',

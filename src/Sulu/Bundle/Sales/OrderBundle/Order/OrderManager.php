@@ -234,6 +234,9 @@ class OrderManager
         $order->setDeliveryCost(
             $this->getPropertyBasedOnPatch($data, 'deliveryCost', $order->getDeliveryCost(), $patch)
         );
+        $order->setInternalNote(
+            $this->getPropertyBasedOnPatch($data, 'internalNote', $order->getInternalNote(), $patch)
+        );
 
         // set type of order (if set)
         $this->setOrderType($data, $order, $patch);

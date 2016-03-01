@@ -7,7 +7,7 @@
         <field name="sessionId" type="string" column="sessionId" length="255" nullable="true"/>
         <field name="termsOfDeliveryContent" type="string" column="termsOfDeliveryContent" length="255" nullable="true"/>
         <field name="termsOfPaymentContent" type="string" column="termsOfPaymentContent" length="255" nullable="true"/>
-
+        <field name="internalNote" type="text" column="internalNote" nullable="true"/>
 
         <field name="bitmaskStatus" type="integer" column="bitmaskStatus" length="3" nullable="false"/>
 

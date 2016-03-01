@@ -254,6 +254,10 @@
                 <source>salescore.item.delivery-cost</source>
                 <target>Versandkosten netto</target>
             </trans-unit>
+            <trans-unit id="26" resname="salescore.internal-note">
+                <source>salescore.internal-note</source>
+                <target>Interne Bemerkung</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>

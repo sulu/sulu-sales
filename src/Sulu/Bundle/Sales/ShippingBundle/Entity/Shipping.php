@@ -128,6 +128,11 @@ class Shipping
     private $bitmaskStatus;
 
     /**
+     * @var string
+     */
+    private $internalNote;
+
+    /**
      * Constructor
      */
     public function __construct()
@@ -682,5 +687,25 @@ class Shipping
     public function getTermsOfPaymentContent()
     {
         return $this->termsOfPaymentContent;
+    }
+
+    /**
+     * @return string
+     */
+    public function getInternalNote()
+    {
+        return $this->internalNote;
+    }
+
+    /**
+     * @param string $note
+     *
+     * @return Inquiry
+     */
+    public function setInternalNote($note)
+    {
+        $this->internalNote = $note;
+
+        return $this;
     }
 }

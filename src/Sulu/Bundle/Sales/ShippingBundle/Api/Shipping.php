@@ -715,6 +715,30 @@ class Shipping extends ApiWrapper implements SalesDocument
     }
 
     /**
+     * @VirtualProperty
+     * @SerializedName("internalNote")
+     *
+     * @return string
+     */
+    public function getInternalNote()
+    {
+        return $this->entity->getInternalNote();
+    }
+
+    /**
+     * @param string $note
+     *
+     * @return Inquiry
+     */
+    public function setInternalNote($note)
+    {
+        $this->entity->setInternalNote($note);
+
+        return $this;
+    }
+
+
+    /**
      * returns the entities locale
      *
      * @return string
