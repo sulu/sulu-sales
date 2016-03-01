@@ -1,0 +1,80 @@
+<class xmlns="http://schemas.sulu.io/class/general"
+       xmlns:orm="http://schemas.sulu.io/class/doctrine"
+       xmlns:list="http://schemas.sulu.io/class/list">
+
+    <orm:joins name="invoiceOrderAddress">
+        <orm:join>
+            <orm:entity-name>%sulu_sales_core.order_address_entity%</orm:entity-name>
+            <orm:field-name>%sulu_sales_order.order.class%.invoiceAddress</orm:field-name>
+        </orm:join>
+    </orm:joins>
+
+    <properties>
+        <property name="id"
+                  filter-type="integer"
+                  list:translation="public.id"
+                  list:type="integer">
+            <orm:field-name>id</orm:field-name>
+            <orm:entity-name>%sulu_sales_order.order.class%</orm:entity-name>
+        </property>
+
+        <property name="number"
+                  filter-type="string"
+                  display="always"
+                  list:translation="salesorder.orders.number"
+                  list:type="string">
+            <orm:field-name>number</orm:field-name>
+            <orm:entity-name>%sulu_sales_order.order.class%</orm:entity-name>
+        </property>
+
+        <property name="account"
+                  list:translation="salesorder.orders.account"
+                  list:type="string"
+                  list:sortable="false">
+            <orm:field-name>accountName</orm:field-name>
+            <orm:entity-name>%sulu_sales_core.order_address_entity%</orm:entity-name>
+            <orm:joins ref="invoiceOrderAddress"/>
+        </property>
+
+        <identity-property name="accountId"
+                           display="never"
+                           filter-type="auto-complete"
+                           list:translation="salesorder.orders.account">
+            <orm:field-name>customerAccount</orm:field-name>
+            <orm:entity-name>%sulu_sales_order.order.class%</orm:entity-name>
+
+            <filter-type-parameters>
+                <parameter key="singleUrl"><![CDATA[/admin/api/accounts/{id}]]></parameter>
+                <parameter key="remoteUrl"><![CDATA[/admin/api/accounts?flat=true&searchFields=name,number&fields=id,number,name&limit=20]]></parameter>
+                <parameter key="resultKey">accounts</parameter>
+                <parameter key="valueKey">name</parameter>
+            </filter-type-parameters>
+        </identity-property>
+
+        <identity-property name="productId"
+                           display="never"
+                           filter-type="auto-complete"
+                           list:translation="pim.product.title">
+            <orm:field-name>product</orm:field-name>
+            <orm:entity-name>%sulu_sales_core.item_entity%</orm:entity-name>
+
+            <orm:joins>
+                <orm:join>
+                    <orm:entity-name>%sulu_sales_core.item_entity%</orm:entity-name>
+                    <orm:field-name>%sulu_sales_order.order.class%.items</orm:field-name>
+                </orm:join>
+                <orm:join>
+                    <orm:entity-name>%sulu_product.product_entity%</orm:entity-name>
+                    <orm:field-name>%sulu_sales_core.item_entity%.product</orm:field-name>
+                </orm:join>
+            </orm:joins>
+
+            <filter-type-parameters>
+                <parameter key="singleUrl"><![CDATA[/admin/api/products/{id}]]></parameter>
+                <parameter key="remoteUrl"><![CDATA[/admin/api/products?flat=true&searchFields=number,name,supplier&fields=id,name,number,supplier&limit=20&disablePagination=true]]></parameter>
+                <parameter key="resultKey">products</parameter>
+                <parameter key="valueKey">name</parameter>
+            </filter-type-parameters>
+        </identity-property>
+    </properties>
+</class>

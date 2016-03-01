@@ -14,6 +14,8 @@ use DateTime;
 use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\NoResultException;
+use Sulu\Component\Rest\ListBuilder\Metadata\FieldDescriptorFactory;
+use Sulu\Component\Rest\ListBuilder\Metadata\FieldDescriptorFactoryInterface;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Sulu\Component\Security\Authentication\UserRepositoryInterface;
 use Sulu\Component\Security\Authentication\UserInterface;
@@ -107,6 +109,11 @@ class OrderManager
     protected $session;
 
     /**
+     * @var FieldDescriptorFactoryInterface
+     */
+    protected $fieldDescriptorFactory;
+
+    /**
      * @var GroupedItemsPriceCalculatorInterface
      */
     private $priceCalculator;
@@ -157,7 +164,8 @@ class OrderManager
         GroupedItemsPriceCalculatorInterface $priceCalculator,
         ProductManagerInterface $productManager,
         OrderFactoryInterface $orderFactory,
-        OrderAddressManager $orderAddressManager
+        OrderAddressManager $orderAddressManager,
+        FieldDescriptorFactoryInterface $fieldDescriptorFactory
     ) {
         $this->orderRepository = $orderRepository;
         $this->userRepository = $userRepository;
@@ -171,6 +179,9 @@ class OrderManager
         $this->productManager = $productManager;
         $this->orderFactory = $orderFactory;
         $this->orderAddressManager = $orderAddressManager;
+        $this->fieldDescriptorFactory = $fieldDescriptorFactory;
+
+        static::$orderEntityName = $this->orderRepository->getClassName();
     }
 
     /**
@@ -889,6 +900,7 @@ class OrderManager
      */
     private function initializeFieldDescriptors($locale)
     {
+
         $deliveryAddressJoin = array(
             self::$orderAddressEntityName => new DoctrineJoinDescriptor(
                 static::$orderAddressEntityName,
@@ -909,49 +921,53 @@ class OrderManager
             )
         );
 
-        $this->fieldDescriptors['id'] = new DoctrineFieldDescriptor(
-            'id',
-            'id',
-            static::$orderEntityName,
-            'public.id',
-            array(),
-            true,
-            false,
-            'string'
+        $this->fieldDescriptors = $this->fieldDescriptorFactory->getFieldDescriptorForClass(
+            static::$orderEntityName
         );
 
-        $this->fieldDescriptors['number'] = new DoctrineFieldDescriptor(
-            'number',
-            'number',
-            static::$orderEntityName,
-            'salesorder.orders.number',
-            array(),
-            false,
-            true,
-            'string'
-        );
+//        $this->fieldDescriptors['id'] = new DoctrineFieldDescriptor(
+//            'id',
+//            'id',
+//            static::$orderEntityName,
+//            'public.id',
+//            array(),
+//            true,
+//            false,
+//            'string'
+//        );
+//
+//        $this->fieldDescriptors['number'] = new DoctrineFieldDescriptor(
+//            'number',
+//            'number',
+//            static::$orderEntityName,
+//            'salesorder.orders.number',
+//            array(),
+//            false,
+//            true,
+//            'string'
+//        );
 
         // TODO: get customer from order-address
 
-        $this->fieldDescriptors['account'] = new DoctrineConcatenationFieldDescriptor(
-            array(
-                new DoctrineFieldDescriptor(
-                    'accountName',
-                    'account',
-                    static::$orderAddressEntityName,
-                    'contact.contacts.contact',
-                    $contactJoin
-                )
-            ),
-            'account',
-            'salesorder.orders.account',
-            ' ',
-            false,
-            false,
-            'string',
-            '',
-            '160px'
-        );
+//        $this->fieldDescriptors['account'] = new DoctrineConcatenationFieldDescriptor(
+//            array(
+//                new DoctrineFieldDescriptor(
+//                    'accountName',
+//                    'account',
+//                    static::$orderAddressEntityName,
+//                    'contact.contacts.contact',
+//                    $contactJoin
+//                )
+//            ),
+//            'account',
+//            'salesorder.orders.account',
+//            ' ',
+//            false,
+//            false,
+//            'string',
+//            '',
+//            '160px'
+//        );
 
         $this->fieldDescriptors['contact'] = new DoctrineConcatenationFieldDescriptor(
             array(
@@ -1157,8 +1173,8 @@ class OrderManager
 
         $contactJoin = array(
             self::$contactEntityName => new DoctrineJoinDescriptor(
-                self::$contactEntityName,
-                self::$orderEntityName . '.responsibleContact'
+                static::$contactEntityName,
+                static::$orderEntityName . '.responsibleContact'
             )
         );
 
