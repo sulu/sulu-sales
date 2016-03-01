@@ -118,7 +118,8 @@ define([
             overlayClassSelector: '.settings-overlay',
             settingsOverlayId: '#settings-overlay',
             deliveryCostInputId: '#delivery-cost',
-            autocompleteLimit: 20
+            autocompleteLimit: 20,
+            disablePagination: true,
         },
 
         translations = {
@@ -939,10 +940,11 @@ define([
          */
         initProductSearch = function($row) {
             var options = Config.get('suluproduct.components.autocomplete.default');
-            var remoteUrl = options.remoteUrl + '{&filter*}{&limit*}';
+            var remoteUrl = options.remoteUrl + '{&filter*}{&limit*}{&disablePagination*}';
             options.remoteUrl = this.sandbox.uritemplate.parse(remoteUrl).expand({
                 filter: this.options.urlFilter,
-                limit: constants.autocompleteLimit
+                limit: constants.autocompleteLimit,
+                disablePagination: constants.disablePagination
             });
             options.el = this.sandbox.dom.find(constants.productSearchClass, $row);
             options.selectCallback = productSelected.bind(this);

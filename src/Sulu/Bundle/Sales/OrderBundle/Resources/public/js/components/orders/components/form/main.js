@@ -244,6 +244,8 @@ define([
          */
         initAddressComponents = function(data, instanceName, preselectedElement) {
             this.sandbox.emit('sulu.editable-data-row.' + instanceName + '.data.update', data, preselectedElement);
+            this.$find('#' + constants.deliveryAddressInstanceName).removeClass('disabled-button');
+            this.$find('#' + constants.billingAddressInstanceName).removeClass('disabled-button');
         },
 
         /**
