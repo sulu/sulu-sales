@@ -296,7 +296,7 @@ class OrderController extends RestController implements ClassResourceInterface, 
      */
     protected function getOrderEntityName()
     {
-        return $this->container->getParameter('sulu_sales_order.order.class');
+        return $this->container->getParameter('sulu_sales_order.order_entity');
     }
 
     /**

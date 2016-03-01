@@ -151,6 +151,7 @@ class OrderManager
      * @param ProductManagerInterface $productManager
      * @param OrderFactoryInterface $orderFactory
      * @param OrderAddressManager $orderAddressManager
+     * @param FieldDescriptorFactoryInterface $fieldDescriptorFactory
      */
     public function __construct(
         ObjectManager $em,

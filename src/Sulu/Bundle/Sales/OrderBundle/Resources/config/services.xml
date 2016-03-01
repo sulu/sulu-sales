@@ -19,9 +19,9 @@
         <parameter key="sulu_sales_order.order_pdf_manager.class">Sulu\Bundle\Sales\OrderBundle\Order\OrderPdfManager</parameter>
         <parameter key="sulu_sales_order.order_factory.class">Sulu\Bundle\Sales\OrderBundle\Order\OrderFactory</parameter>
         <parameter key="sulu_sales_order.order_email_manager.class">Sulu\Bundle\Sales\OrderBundle\Order\OrderEmailManager</parameter>
-        <parameter key="sulu_sales_order.order.class">Sulu\Bundle\Sales\OrderBundle\Entity\Order</parameter>
-        <parameter key="sulu_sales_order.order_status.class">Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatus</parameter>
-        <parameter key="sulu_sales_order.order_type.class">Sulu\Bundle\Sales\OrderBundle\Entity\OrderType</parameter>
+        <parameter key="sulu_sales_order.order_entity">Sulu\Bundle\Sales\OrderBundle\Entity\Order</parameter>
+        <parameter key="sulu_sales_order.order_status_entity">Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatus</parameter>
+        <parameter key="sulu_sales_order.order_type_entity">Sulu\Bundle\Sales\OrderBundle\Entity\OrderType</parameter>
     </parameters>
     <services>
         <!--ADMIN-->
@@ -47,17 +47,17 @@
         <!--REPOSITORIES-->
         <service id="sulu_sales_order.order_repository" class="%sulu_sales_order.order_repository.class%"
                  factory-method="getRepository" factory-service="doctrine.orm.entity_manager">
-            <argument>%sulu_sales_order.order.class%</argument>
+            <argument>%sulu_sales_order.order_entity%</argument>
         </service>
 
         <service id="sulu_sales_order.order_status_repository" class="%sulu_sales_order.order_status_repository.class%"
                  factory-method="getRepository" factory-service="doctrine.orm.entity_manager">
-            <argument>%sulu_sales_order.order_status.class%</argument>
+            <argument>%sulu_sales_order.order_status_entity%</argument>
         </service>
 
         <service id="sulu_sales_order.order_type_repository" class="%sulu_sales_order.order_type_repository.class%"
                  factory-method="getRepository" factory-service="doctrine.orm.entity_manager">
-            <argument>%sulu_sales_order.order_type.class%</argument>
+            <argument>%sulu_sales_order.order_type_entity%</argument>
         </service>
 
         <!--MANAGERS-->

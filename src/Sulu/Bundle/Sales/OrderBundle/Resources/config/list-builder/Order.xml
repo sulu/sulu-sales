@@ -5,7 +5,7 @@
     <orm:joins name="invoiceOrderAddress">
         <orm:join>
             <orm:entity-name>%sulu_sales_core.order_address_entity%</orm:entity-name>
-            <orm:field-name>%sulu_sales_order.order.class%.invoiceAddress</orm:field-name>
+            <orm:field-name>%sulu_sales_order.order_entity%.invoiceAddress</orm:field-name>
         </orm:join>
     </orm:joins>
 
@@ -15,7 +15,7 @@
                   list:translation="public.id"
                   list:type="integer">
             <orm:field-name>id</orm:field-name>
-            <orm:entity-name>%sulu_sales_order.order.class%</orm:entity-name>
+            <orm:entity-name>%sulu_sales_order.order_entity%</orm:entity-name>
         </property>
 
         <property name="number"
@@ -24,7 +24,7 @@
                   list:translation="salesorder.orders.number"
                   list:type="string">
             <orm:field-name>number</orm:field-name>
-            <orm:entity-name>%sulu_sales_order.order.class%</orm:entity-name>
+            <orm:entity-name>%sulu_sales_order.order_entity%</orm:entity-name>
         </property>
 
         <property name="account"
@@ -41,7 +41,7 @@
                            filter-type="auto-complete"
                            list:translation="salesorder.orders.account">
             <orm:field-name>customerAccount</orm:field-name>
-            <orm:entity-name>%sulu_sales_order.order.class%</orm:entity-name>
+            <orm:entity-name>%sulu_sales_order.order_entity%</orm:entity-name>
 
             <filter-type-parameters>
                 <parameter key="singleUrl"><![CDATA[/admin/api/accounts/{id}]]></parameter>
@@ -61,7 +61,7 @@
             <orm:joins>
                 <orm:join>
                     <orm:entity-name>%sulu_sales_core.item_entity%</orm:entity-name>
-                    <orm:field-name>%sulu_sales_order.order.class%.items</orm:field-name>
+                    <orm:field-name>%sulu_sales_order.order_entity%.items</orm:field-name>
                 </orm:join>
                 <orm:join>
                     <orm:entity-name>%sulu_product.product_entity%</orm:entity-name>
