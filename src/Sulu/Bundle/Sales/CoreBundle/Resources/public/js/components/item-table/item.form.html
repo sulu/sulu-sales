@@ -15,7 +15,7 @@ disabled =  'disabled';
 
     <div class="item-add grid-col-5 husky-toolbar small">
         <ul class="group left">
-            <% if (enableIndependentItems) { %>
+            <% if (!enableIndependentItems) { %>
             <li class="toolbar-item add-row">
                 <span class="fa-search icon"></span>
             </li><% } %><li class="toolbar-item add-independent">
