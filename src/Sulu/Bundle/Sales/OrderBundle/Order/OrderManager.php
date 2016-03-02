@@ -22,6 +22,7 @@ use Sulu\Component\Rest\Exception\EntityNotFoundException;
 use Sulu\Component\Rest\ListBuilder\Doctrine\FieldDescriptor\DoctrineConcatenationFieldDescriptor;
 use Sulu\Component\Rest\ListBuilder\Doctrine\FieldDescriptor\DoctrineFieldDescriptor;
 use Sulu\Component\Rest\ListBuilder\Doctrine\FieldDescriptor\DoctrineJoinDescriptor;
+use Sulu\Component\Rest\ListBuilder\Metadata\FieldDescriptorFactoryInterface;
 use Sulu\Bundle\ContactBundle\Entity\AccountRepository;
 use Sulu\Bundle\ContactBundle\Entity\Contact;
 use Sulu\Bundle\ProductBundle\Product\ProductManagerInterface;
@@ -107,6 +108,11 @@ class OrderManager
     protected $session;
 
     /**
+     * @var FieldDescriptorFactoryInterface
+     */
+    protected $fieldDescriptorFactory;
+
+    /**
      * @var GroupedItemsPriceCalculatorInterface
      */
     private $priceCalculator;
@@ -144,6 +150,7 @@ class OrderManager
      * @param ProductManagerInterface $productManager
      * @param OrderFactoryInterface $orderFactory
      * @param OrderAddressManager $orderAddressManager
+     * @param FieldDescriptorFactoryInterface $fieldDescriptorFactory
      */
     public function __construct(
         ObjectManager $em,
@@ -157,7 +164,8 @@ class OrderManager
         GroupedItemsPriceCalculatorInterface $priceCalculator,
         ProductManagerInterface $productManager,
         OrderFactoryInterface $orderFactory,
-        OrderAddressManager $orderAddressManager
+        OrderAddressManager $orderAddressManager,
+        FieldDescriptorFactoryInterface $fieldDescriptorFactory
     ) {
         $this->orderRepository = $orderRepository;
         $this->userRepository = $userRepository;
@@ -171,10 +179,13 @@ class OrderManager
         $this->productManager = $productManager;
         $this->orderFactory = $orderFactory;
         $this->orderAddressManager = $orderAddressManager;
+        $this->fieldDescriptorFactory = $fieldDescriptorFactory;
+
+        static::$orderEntityName = $this->orderRepository->getClassName();
     }
 
     /**
-     * Creates a new Order Entity
+     * Creates a new Order Entity.
      *
      * @param array $data The data array, which will be used for setting the orders data
      * @param string $locale Locale
@@ -912,48 +923,8 @@ class OrderManager
             )
         );
 
-        $this->fieldDescriptors['id'] = new DoctrineFieldDescriptor(
-            'id',
-            'id',
-            static::$orderEntityName,
-            'public.id',
-            array(),
-            true,
-            false,
-            'string'
-        );
-
-        $this->fieldDescriptors['number'] = new DoctrineFieldDescriptor(
-            'number',
-            'number',
-            static::$orderEntityName,
-            'salesorder.orders.number',
-            array(),
-            false,
-            true,
-            'string'
-        );
-
-        // TODO: get customer from order-address
-
-        $this->fieldDescriptors['account'] = new DoctrineConcatenationFieldDescriptor(
-            array(
-                new DoctrineFieldDescriptor(
-                    'accountName',
-                    'account',
-                    static::$orderAddressEntityName,
-                    'contact.contacts.contact',
-                    $contactJoin
-                )
-            ),
-            'account',
-            'salesorder.orders.account',
-            ' ',
-            false,
-            false,
-            'string',
-            '',
-            '160px'
+        $this->fieldDescriptors = $this->fieldDescriptorFactory->getFieldDescriptorForClass(
+            static::$orderEntityName
         );
 
         $this->fieldDescriptors['contact'] = new DoctrineConcatenationFieldDescriptor(
@@ -1160,8 +1131,8 @@ class OrderManager
 
         $contactJoin = array(
             self::$contactEntityName => new DoctrineJoinDescriptor(
-                self::$contactEntityName,
-                self::$orderEntityName . '.responsibleContact'
+                static::$contactEntityName,
+                static::$orderEntityName . '.responsibleContact'
             )
         );
 

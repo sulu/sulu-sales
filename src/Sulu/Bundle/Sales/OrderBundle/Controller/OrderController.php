@@ -15,15 +15,7 @@ use FOS\RestBundle\Controller\Annotations\Post;
 use Hateoas\Representation\CollectionRepresentation;
 use JMS\Serializer\SerializationContext;
 use Symfony\Component\HttpFoundation\Request;
-use Sulu\Bundle\Sales\OrderBundle\Api\Order;
-use Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatus;
-use Sulu\Bundle\Sales\OrderBundle\Entity\OrderType;
-use Sulu\Bundle\Sales\OrderBundle\Order\Exception\MissingOrderAttributeException;
-use Sulu\Bundle\Sales\OrderBundle\Order\Exception\OrderDependencyNotFoundException;
-use Sulu\Bundle\Sales\OrderBundle\Order\Exception\OrderException;
-use Sulu\Bundle\Sales\OrderBundle\Order\Exception\OrderNotFoundException;
-use Sulu\Bundle\Sales\OrderBundle\Order\OrderDependencyManager;
-use Sulu\Bundle\Sales\OrderBundle\Order\OrderManager;
+use Symfony\Component\HttpFoundation\Response;
 use Sulu\Component\Rest\Exception\EntityNotFoundException;
 use Sulu\Component\Rest\Exception\MissingArgumentException;
 use Sulu\Component\Rest\Exception\RestException;
@@ -35,14 +27,18 @@ use Sulu\Component\Rest\ListBuilder\ListRepresentation;
 use Sulu\Component\Rest\RestController;
 use Sulu\Component\Rest\RestHelperInterface;
 use Sulu\Component\Security\SecuredControllerInterface;
+use Sulu\Bundle\Sales\OrderBundle\Api\Order;
+use Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatus;
+use Sulu\Bundle\Sales\OrderBundle\Entity\OrderType;
+use Sulu\Bundle\Sales\OrderBundle\Order\Exception\MissingOrderAttributeException;
+use Sulu\Bundle\Sales\OrderBundle\Order\Exception\OrderDependencyNotFoundException;
+use Sulu\Bundle\Sales\OrderBundle\Order\Exception\OrderException;
+use Sulu\Bundle\Sales\OrderBundle\Order\Exception\OrderNotFoundException;
+use Sulu\Bundle\Sales\OrderBundle\Order\OrderDependencyManager;
+use Sulu\Bundle\Sales\OrderBundle\Order\OrderManager;
 
-/**
- * Makes orders available through a REST API
- */
 class OrderController extends RestController implements ClassResourceInterface, SecuredControllerInterface
 {
-
-    protected static $orderEntityName = 'SuluSalesOrderBundle:Order';
     protected static $orderStatusEntityName = 'SuluSalesOrderBundle:OrderStatus';
 
     protected static $entityKey = 'orders';
@@ -64,22 +60,24 @@ class OrderController extends RestController implements ClassResourceInterface, 
     }
 
     /**
-     * returns all fields that can be used by list
+     * Returns all fields that can be used by list.
      *
      * @param Request $request
-     * @return \Symfony\Component\HttpFoundation\Response
+     *
+     * @return Response
      */
     public function fieldsAction(Request $request)
     {
         $locale = $this->getLocale($request);
 
-        // default contacts list
+        // Default contacts list
         return $this->handleView($this->view(array_values($this->getManager()->getFieldDescriptors($locale)), 200));
     }
 
     /**
      * @param Request $request
-     * @return mixed
+     *
+     * @return Response
      */
     public function cgetAction(Request $request)
     {
@@ -100,7 +98,7 @@ class OrderController extends RestController implements ClassResourceInterface, 
             $factory = $this->get('sulu_core.doctrine_list_builder_factory');
 
             /** @var DoctrineListBuilder $listBuilder */
-            $listBuilder = $factory->create(self::$orderEntityName);
+            $listBuilder = $factory->create($this->getOrderEntityName());
 
             $restHelper->initializeListBuilder($listBuilder, $this->getManager()->getFieldDescriptors($locale));
 
@@ -108,7 +106,7 @@ class OrderController extends RestController implements ClassResourceInterface, 
                 $listBuilder->where($this->getManager()->getFieldDescriptor($key), $value);
             }
 
-            // exclude in cart orders
+            // Exclude in cart orders
             $listBuilder->whereNot($this->getStatusFieldDescriptor(), OrderStatus::STATUS_IN_CART);
 
             $listBuilder->sort($this->getManager()->getFieldDescriptor('created', $this->getLocale($request)), 'DESC');
@@ -135,11 +133,12 @@ class OrderController extends RestController implements ClassResourceInterface, 
     }
 
     /**
-     * Retrieves and shows an order with the given ID
+     * Retrieves and shows an order with the given ID.
      *
-     * @param \Symfony\Component\HttpFoundation\Request $request
-     * @param integer $id order ID
-     * @return \Symfony\Component\HttpFoundation\Response
+     * @param Request $request
+     * @param int $id
+     *
+     * @return Response
      */
     public function getAction(Request $request, $id)
     {
@@ -172,8 +171,9 @@ class OrderController extends RestController implements ClassResourceInterface, 
     /**
      * Creates and stores a new order.
      *
-     * @param \Symfony\Component\HttpFoundation\Request $request
-     * @return \Symfony\Component\HttpFoundation\Response
+     * @param Request $request
+     *
+     * @return Response
      */
     public function postAction(Request $request)
     {
@@ -192,7 +192,7 @@ class OrderController extends RestController implements ClassResourceInterface, 
             $exception = new EntityNotFoundException($exc->getEntityName(), $exc->getId());
             $view = $this->view($exception->toArray(), 400);
         } catch (MissingOrderAttributeException $exc) {
-            $exception = new MissingArgumentException(self::$orderEntityName, $exc->getAttribute());
+            $exception = new MissingArgumentException($this->getOrderEntityName(), $exc->getAttribute());
             $view = $this->view($exception->toArray(), 400);
         }
 
@@ -202,9 +202,10 @@ class OrderController extends RestController implements ClassResourceInterface, 
     /**
      * Change a order.
      *
-     * @param \Symfony\Component\HttpFoundation\Request $request
-     * @param $id order ID
-     * @return \Symfony\Component\HttpFoundation\Response
+     * @param Request $request
+     * @param int $id
+     *
+     * @return Response
      */
     public function putAction(Request $request, $id)
     {
@@ -224,7 +225,7 @@ class OrderController extends RestController implements ClassResourceInterface, 
             $exception = new EntityNotFoundException($exc->getEntityName(), $exc->getId());
             $view = $this->view($exception->toArray(), 400);
         } catch (MissingOrderAttributeException $exc) {
-            $exception = new MissingArgumentException(self::$orderEntityName, $exc->getAttribute());
+            $exception = new MissingArgumentException($this->getOrderEntityName(), $exc->getAttribute());
             $view = $this->view($exception->toArray(), 400);
         } catch (OrderException $exc) {
             $exception = new RestException($exc->getMessage());
@@ -235,9 +236,17 @@ class OrderController extends RestController implements ClassResourceInterface, 
     }
 
     /**
-     * triggers actions like status conversion
+     * Triggers actions like status conversion.
      *
      * @Post("/orders/{id}")
+     *
+     * @param $id
+     * @param Request $request
+     *
+     * @throws EntityNotFoundException
+     * @throws RestException
+     *
+     * @return Response
      */
     public function postTriggerAction($id, Request $request)
     {
@@ -274,11 +283,11 @@ class OrderController extends RestController implements ClassResourceInterface, 
     /**
      * Delete an order with the given id.
      *
-     * @param \Symfony\Component\HttpFoundation\Request $request
      * @param int $id
-     * @return \Symfony\Component\HttpFoundation\Response
+     *
+     * @return Response
      */
-    public function deleteAction(Request $request, $id)
+    public function deleteAction($id)
     {
         $delete = function ($id) {
             $this->getManager()->delete($id);
@@ -289,7 +298,18 @@ class OrderController extends RestController implements ClassResourceInterface, 
     }
 
     /**
-     * holds status field descriptor (which is not needed in list)
+     * Returns name of order entity.
+     *
+     * @return string
+     */
+    protected function getOrderEntityName()
+    {
+        return $this->container->getParameter('sulu_sales_order.order_entity');
+    }
+
+    /**
+     * Holds status field descriptor (which is not needed in list).
+     *
      * @return DoctrineFieldDescriptor
      */
     private function getStatusFieldDescriptor()
@@ -302,7 +322,7 @@ class OrderController extends RestController implements ClassResourceInterface, 
             array(
                 self::$orderStatusEntityName => new DoctrineJoinDescriptor(
                     self::$orderStatusEntityName,
-                    self::$orderEntityName . '.status'
+                    $this->getOrderEntityName() . '.status'
                 ),
             )
         );
