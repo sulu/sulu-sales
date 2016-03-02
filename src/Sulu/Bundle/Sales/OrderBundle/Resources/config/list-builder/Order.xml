@@ -42,7 +42,6 @@
                            list:translation="salesorder.orders.account">
             <orm:field-name>customerAccount</orm:field-name>
             <orm:entity-name>%sulu_sales_order.order_entity%</orm:entity-name>
-
             <filter-type-parameters>
                 <parameter key="singleUrl"><![CDATA[/admin/api/accounts/{id}]]></parameter>
                 <parameter key="remoteUrl"><![CDATA[/admin/api/accounts?flat=true&searchFields=name,number&fields=id,number,name&limit=20]]></parameter>
@@ -57,7 +56,6 @@
                            list:translation="pim.product.title">
             <orm:field-name>product</orm:field-name>
             <orm:entity-name>%sulu_sales_core.item_entity%</orm:entity-name>
-
             <orm:joins>
                 <orm:join>
                     <orm:entity-name>%sulu_sales_core.item_entity%</orm:entity-name>
@@ -68,7 +66,6 @@
                     <orm:field-name>%sulu_sales_core.item_entity%.product</orm:field-name>
                 </orm:join>
             </orm:joins>
-
             <filter-type-parameters>
                 <parameter key="singleUrl"><![CDATA[/admin/api/products/{id}]]></parameter>
                 <parameter key="remoteUrl"><![CDATA[/admin/api/products?flat=true&searchFields=number,name,supplier&fields=id,name,number,supplier&limit=20&disablePagination=true]]></parameter>
