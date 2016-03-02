@@ -44,7 +44,7 @@
             <orm:entity-name>%sulu_sales_order.order_entity%</orm:entity-name>
             <filter-type-parameters>
                 <parameter key="singleUrl"><![CDATA[/admin/api/accounts/{id}]]></parameter>
-                <parameter key="remoteUrl"><![CDATA[/admin/api/accounts?flat=true&searchFields=name,number&fields=id,number,name&limit=20]]></parameter>
+                <parameter key="remoteUrl"><![CDATA[/admin/api/accounts?flat=true&searchFields=name,number&fields=id,number,name&type=2&limit=20]]></parameter>
                 <parameter key="resultKey">accounts</parameter>
                 <parameter key="valueKey">name</parameter>
             </filter-type-parameters>
