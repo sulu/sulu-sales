@@ -26,13 +26,13 @@ class CartManagerTest extends OrderTestBase
     {
         parent::setUpTestData();
 
-        // set order to cart order
+        // Set order to cart order
         $this->data->setupCartTests();
     }
 
     public function testGetCartByUser()
     {
-        // get cart by user
+        // Get cart by user
         $cart = $this->getCartManager()->getUserCart($this->data->user);
 
         // $cart is an ApiOrder, so get entity first
@@ -58,7 +58,7 @@ class CartManagerTest extends OrderTestBase
 
         $this->assertEquals($result['totalItems'], 2);
 
-        // calculate price 26.1
+        // Calculate price 26.1
         $expectedPrice = 0;
         $expectedPrice += $this->calcTotalPriceForItem($this->data->item, $this->data->productPrice);
         $expectedPrice += $this->calcTotalPriceForItem($this->data->item2, $this->data->productPrice);
@@ -78,7 +78,7 @@ class CartManagerTest extends OrderTestBase
      * Simple helper function for calculating item-price
      *
      * @param $item
-     * @param $productPrice
+     * @param $productPriceEntity
      *
      * @return float
      */

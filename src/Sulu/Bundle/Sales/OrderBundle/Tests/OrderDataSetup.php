@@ -526,6 +526,7 @@ class OrderDataSetup
         $order->setCreator($this->user);
         $order->setChanger($this->user);
         $order->setResponsibleContact($this->contact2);
+        $order->setInternalNote('tiny internal note');
 
         $this->em->persist($order);
 
