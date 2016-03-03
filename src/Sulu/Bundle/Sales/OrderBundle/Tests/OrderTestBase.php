@@ -48,17 +48,27 @@ class OrderTestBase extends SuluTestCase
     }
 
     /**
-     * compares an order-address response with its origin entities
+     * Compares an order-address response with its origin entities
+     *
+     * @param $orderAddress
+     * @param Address $address
+     * @param Contact $contact
+     * @param AccountInterface $account
      */
-    protected function checkOrderAddress($orderAddress, Address $address, Contact $contact, AccountInterface $account = null) {
-        // contact
+    protected function checkOrderAddress(
+        $orderAddress,
+        Address $address,
+        Contact $contact,
+        AccountInterface $account = null
+    ) {
+        // Contact
         $this->assertEquals($contact->getFirstName(), $orderAddress->firstName);
         $this->assertEquals($contact->getLastName(), $orderAddress->lastName);
         if ($contact->getTitle() !== null) {
             $this->assertEquals($contact->getTitle()->getTitle(), $orderAddress->title);
         }
 
-        // address
+        // Address
         $this->assertEqualsIfExists($address->getStreet(), $orderAddress, 'street');
         $this->assertEqualsIfExists($address->getAddition(), $orderAddress, 'addition');
         $this->assertEqualsIfExists($address->getNumber(), $orderAddress, 'number');
@@ -69,7 +79,7 @@ class OrderTestBase extends SuluTestCase
         $this->assertEqualsIfExists($address->getPostboxCity(), $orderAddress, 'postboxCity');
         $this->assertEqualsIfExists($address->getPostboxPostcode(), $orderAddress, 'postboxPostcode');
 
-        // account
+        // Account
         if ($account) {
             $this->assertEqualsIfExists($account->getName(), $orderAddress, 'accountName');
             $this->assertEqualsIfExists($account->getUid(), $orderAddress, 'uid');
@@ -77,9 +87,14 @@ class OrderTestBase extends SuluTestCase
     }
 
     /**
-     * asserts equality if object's attribute exist
+     * Asserts equality if object's attribute exist
+     *
+     * @param $firstValue
+     * @param $secondObject
+     * @param $value
      */
-    protected function assertEqualsIfExists($firstValue, $secondObject, $value) {
+    protected function assertEqualsIfExists($firstValue, $secondObject, $value)
+    {
         if ($firstValue !== null) {
             $this->assertEquals($firstValue, $secondObject->$value);
         }
