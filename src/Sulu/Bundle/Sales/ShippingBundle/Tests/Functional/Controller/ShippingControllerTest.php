@@ -141,6 +141,7 @@ class ShippingControllerTest extends SuluTestCase
         $this->shipping->setTrackingId('abcd1234');
         $this->shipping->setTrackingUrl('http://www.tracking.url?token=abcd1234');
         $this->shipping->setBitmaskStatus($this->statusCreated->getId());
+        $this->shipping->setInternalNote('Tiny internal note');
 
         $this->shipping2 = clone $this->shipping;
         $this->shipping2->setNumber('00002');
@@ -186,6 +187,7 @@ class ShippingControllerTest extends SuluTestCase
             (new DateTime('2015-01-01'))->getTimestamp(),
             (new DateTime($response->expectedDeliveryDate))->getTimestamp()
         );
+        $this->assertEquals('Tiny internal note', $response->internalNote);
 
         // shipping status
         $this->assertEquals($this->shipping->getStatus()->getId(), $response->status->id);
