@@ -31,6 +31,7 @@ class OrderControllerTest extends OrderTestBase
         $this->assertEquals('commission', $response->commission);
         $this->assertEquals('10kg minimum', $response->termsOfDeliveryContent);
         $this->assertEquals('10% off', $response->termsOfPaymentContent);
+        $this->assertEquals('tiny internal note', $response->internalNote);
         // order status
         $this->assertEquals('Created', $response->status->status);
         $this->assertEquals($this->data->orderStatus->getId(), $response->status->id);
