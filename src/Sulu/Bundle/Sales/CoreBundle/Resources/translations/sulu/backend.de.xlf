@@ -258,6 +258,10 @@
                 <source>salescore.internal-note</source>
                 <target>Interne Bemerkung</target>
             </trans-unit>
+            <trans-unit id="27" resname="salescore.transition.successful">
+                <source>salescore.transition.successful</source>
+                <target>Folgebeleg erstellt</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>
