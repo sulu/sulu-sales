@@ -23,6 +23,11 @@ class TransitionData
     /**
      * @var string
      */
+    protected $number;
+
+    /**
+     * @var string
+     */
     protected $description;
 
     /**
@@ -258,7 +263,7 @@ class TransitionData
      */
     public function setItemsByData($data)
     {
-        foreach($data as $itemData) {
+        foreach ($data as $itemData) {
             $item = new Item();
 
             if (isset($itemData['item'])) {
@@ -317,7 +322,38 @@ class TransitionData
                 $supplierId = $item->getSupplierAccount()->getId();
             }
             $this->customerItems[$customerId][] = $item;
-            $this->customerSupplierItems[$customerId][$supplierId][] = $item;
+            $this->customerSupplierItems[$customerId]['supplierItems'][$supplierId][] = $item;
+        }
+    }
+
+    /**
+     * Adds extra customer data to customerSupplierItems.
+     *
+     * @param array $accountPurchases
+     */
+    public function addAccountPurchases($accountPurchases)
+    {
+        if (!$accountPurchases) {
+            return;
+        }
+
+        foreach ($accountPurchases as $accountPurchase) {
+            $accountId = $accountPurchase['account']['id'];
+
+            if (!array_key_exists($accountId, $this->customerSupplierItems)) {
+                continue;
+            }
+
+            $customerData = [];
+            if (isset($accountPurchase['avisoContact'])) {
+                $customerData['avisoContact'] = $accountPurchase['avisoContact'];
+            }
+            if (isset($accountPurchase['contact'])) {
+                $customerData['contact'] = $accountPurchase['contact'];
+            }
+
+            // Add customer data
+            $this->customerSupplierItems[$accountId] = $this->customerSupplierItems[$accountId] + $customerData;
         }
     }
 
@@ -336,6 +372,8 @@ class TransitionData
     }
 
     /**
+     * Converts TransitionData to array.
+     *
      * @return array
      */
     public function toArray()
@@ -353,9 +391,9 @@ class TransitionData
     }
 
     /**
-     * Calls to Array on a certain object, if method exists.
+     * Calls toArray function on a certain object, if method exists.
      *
-     * @param Object $object
+     * @param mixed $object
      *
      * @return null|array
      */
