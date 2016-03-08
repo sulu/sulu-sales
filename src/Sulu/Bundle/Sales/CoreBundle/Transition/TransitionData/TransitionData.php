@@ -345,8 +345,12 @@ class TransitionData
             }
 
             $customerData = [];
-            $customerData['avisoContact'] = $accountPurchase['avisoContact'];
-            $customerData['contact'] = $accountPurchase['contact'];
+            if (isset($accountPurchase['avisoContact'])) {
+                $customerData['avisoContact'] = $accountPurchase['avisoContact'];
+            }
+            if (isset($accountPurchase['contact'])) {
+                $customerData['contact'] = $accountPurchase['contact'];
+            }
 
             // Add customer data
             $this->customerSupplierItems[$accountId] = $this->customerSupplierItems[$accountId] + $customerData;

@@ -69,7 +69,6 @@ class OrderAddressManager
     public function setOrderAddress($orderAddress, $addressData, $contact = null, $account = null)
     {
         // Check if address with id can be found.
-
         $contactData = $this->getContactData($addressData, $contact);
         // Add contact data.
         if ($contactData) {
