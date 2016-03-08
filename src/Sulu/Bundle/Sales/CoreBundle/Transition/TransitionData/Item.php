@@ -51,7 +51,7 @@ class Item
     private $customerAccount;
 
     /**
-     * @var Address
+     * @var array
      */
     private $address;
 
