@@ -12,7 +12,6 @@ namespace Sulu\Bundle\Sales\CoreBundle\Manager;
 use Sulu\Bundle\ContactBundle\Entity\AccountInterface;
 use Sulu\Component\Contact\Model\ContactInterface;
 use Sulu\Component\Security\Authentication\UserInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class EmailManager
 {
