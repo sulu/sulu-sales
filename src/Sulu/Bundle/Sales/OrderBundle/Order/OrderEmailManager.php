@@ -48,6 +48,11 @@ class OrderEmailManager extends EmailManager
     protected $sendShopownerEmailConfirmation;
 
     /**
+     * @var string
+     */
+    protected $rootPath;
+
+    /**
      * @param \Twig_Environment $twig
      * @param \Swift_Mailer $mailer
      * @param OrderPdfManager $pdfManager
@@ -60,6 +65,7 @@ class OrderEmailManager extends EmailManager
      * @param string $templateFooterTxtPath
      * @param bool $sendEmailConfirmationToShopowner
      * @param bool $sendEmailConfirmationToCustomer
+     * @param string $rootPath
      */
     public function __construct(
         \Twig_Environment $twig,
@@ -73,7 +79,8 @@ class OrderEmailManager extends EmailManager
         $templateFooterHtmlPath,
         $templateFooterTxtPath,
         $sendEmailConfirmationToShopowner,
-        $sendEmailConfirmationToCustomer
+        $sendEmailConfirmationToCustomer,
+        $rootPath
     ) {
         // services
         $this->twig = $twig;
@@ -91,6 +98,8 @@ class OrderEmailManager extends EmailManager
         // define if emails should be sent
         $this->sendEmailConfirmationToShopowner = $sendEmailConfirmationToShopowner;
         $this->sendEmailConfirmationToCustomer = $sendEmailConfirmationToCustomer;
+        // rootPath
+        $this->rootPath = $rootPath;
     }
 
     /**
