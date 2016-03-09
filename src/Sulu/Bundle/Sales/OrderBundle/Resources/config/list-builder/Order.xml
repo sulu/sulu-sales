@@ -18,6 +18,14 @@
             <orm:entity-name>%sulu_sales_order.order_entity%</orm:entity-name>
         </property>
 
+        <property name="totalNetPrice"
+                  filter-type="integer"
+                  list:translation="salescore.item.net-price"
+                  list:type="number">
+            <orm:field-name>totalNetPrice</orm:field-name>
+            <orm:entity-name>%sulu_sales_order.order_entity%</orm:entity-name>
+        </property>
+
         <property name="number"
                   filter-type="string"
                   display="always"
