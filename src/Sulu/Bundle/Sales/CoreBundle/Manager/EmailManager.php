@@ -12,6 +12,7 @@ namespace Sulu\Bundle\Sales\CoreBundle\Manager;
 use Sulu\Bundle\ContactBundle\Entity\AccountInterface;
 use Sulu\Component\Contact\Model\ContactInterface;
 use Sulu\Component\Security\Authentication\UserInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class EmailManager
 {
@@ -36,18 +37,25 @@ class EmailManager
     protected $templateFooterTxtPath;
 
     /**
+     * @var string
+     */
+    protected $rootPath;
+
+    /**
      * @param \Twig_Environment $twig
      * @param \Swift_Mailer $mailer
      * @param string $emailFrom
      * @param string $templateFooterHtmlPath
      * @param string $templateFooterTxtPath
+     * @param string $rootPath
      */
     public function __construct(
         \Twig_Environment $twig,
         \Swift_Mailer $mailer,
         $emailFrom,
         $templateFooterHtmlPath,
-        $templateFooterTxtPath
+        $templateFooterTxtPath,
+        $rootPath
     ) {
         // services
         $this->twig = $twig;
@@ -59,6 +67,8 @@ class EmailManager
         // templates
         $this->templateFooterTxtPath = $templateFooterTxtPath;
         $this->templateFooterHtmlPath = $templateFooterHtmlPath;
+
+        $this->rootPath = $rootPath;
     }
 
     /**
@@ -192,7 +202,7 @@ class EmailManager
      */
     protected function writeLog($message)
     {
-        $fileName = 'app/logs/mail/error.log';
+        $fileName = $this->rootPath . '/logs/mail/error.log';
 
         $log = sprintf("[%s]: %s\n", date_format(new \DateTime(), 'Y-m-d H:i:s'), $message);
         file_put_contents($fileName, $log, FILE_APPEND);
