@@ -38,7 +38,7 @@
  * @param {Number}     [options.deliveryCost] The delivery cost
  * @param {Bool}       [options.enableDeliveryCost] Defines if the delivery cost field is enabled or not
  * @param {Function}   [options.deliveryCostChangedCallback] Function called when delivery cost changes
- * @param {Bool}       [options.displayGlobalPrice] Defines if global price should be calculated
+ * @param {Bool}       [options.calculatePrices] Defines if prices should be calculated
  *
  * ==============================================
  * Necessary data for creating a settings overlay
@@ -78,7 +78,7 @@ define([
             defaultData: {},
             deliveryCost: 0,
             deliveryCostChangedCallback: null,
-            displayGlobalPrice: true,
+            calculatePrices: true,
             displayToolbars: true,
             enableDeliveryCost: false,
             enableIndependentItems: false,
@@ -656,6 +656,9 @@ define([
          * @returns {Object} Deferred
          */
         updateItemRowPrices = function(rowId) {
+            if (!this.options.calculatePrices) {
+                return;
+            }
             var isLoadedPromise = new this.sandbox.data.deferred();
             // update API
             fetchPricesForRow.call(this, rowId).then(function() {
@@ -706,7 +709,7 @@ define([
          */
         updateGlobalPrice = function() {
             // Do not update global price, when prices are not shown or its disabled via options.
-            if (!this.options.displayGlobalPrice || this.options.columns.indexOf('price') === -1) {
+            if (!this.options.calculatePrices || this.options.columns.indexOf('price') === -1) {
                 return;
             }
 
@@ -880,6 +883,9 @@ define([
          * @param {Array} rowId
          */
         fetchPricesForRow = function(rowIds) {
+            if (!this.options.calculatePrices) {
+                return;
+            }
             var isLoadedPromise = new this.sandbox.data.deferred(),
                 items = [];
 

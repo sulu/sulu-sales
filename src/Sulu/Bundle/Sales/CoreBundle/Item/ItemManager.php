@@ -638,7 +638,7 @@ class ItemManager
         }
 
         // set items total net price
-        $price = $this->itemPriceCalculator->calculate($item, $currency, $item->getUseProductsPrice());
+        $price = $this->itemPriceCalculator->calculate($item, $currncy, $item->getUseProductsPrice());
         $item->setTotalNetPrice($price);
 
         // set items price

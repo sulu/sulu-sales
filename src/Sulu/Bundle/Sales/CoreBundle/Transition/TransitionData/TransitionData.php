@@ -258,7 +258,7 @@ class TransitionData
      */
     public function setItemsByData($data)
     {
-        foreach($data as $itemData) {
+        foreach ($data as $itemData) {
             $item = new Item();
 
             if (isset($itemData['item'])) {
