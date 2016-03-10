@@ -179,7 +179,7 @@ class Item
             'note' => $this->note,
         ];
 
-        return array_filter($data);
+        return array_filter($data, [$this, 'checkNotNull']);
     }
 
     /**
@@ -260,5 +260,13 @@ class Item
         }
 
         return null;
+    }
+
+    /**
+     * @param string $entry
+     */
+    private function checkNotNull($entry)
+    {
+        return !is_null($entry);
     }
 }
