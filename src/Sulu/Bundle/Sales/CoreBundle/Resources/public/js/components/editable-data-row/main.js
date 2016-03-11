@@ -53,7 +53,8 @@ define([
         eventNamespace = 'sulu.editable-data-row.',
 
         /**
-         * raised when the instance is initialized
+         * Raised when the instance is initialized.
+         *
          * @event sulu.editable-data-row.[instanceName].initialized
          */
         EVENT_INITIALIZED = function() {
@@ -61,7 +62,8 @@ define([
         },
 
         /**
-         * updates data and sets an element
+         * Updates data and sets an element.
+         *
          * @event sulu.editable-data-row.[instanceName].data.update
          */
         EVENT_DATA_UPDATE = function() {
@@ -69,7 +71,8 @@ define([
         },
 
         /**
-         * sets value of a data row
+         * Sets value of a data row.
+         *
          * @event sulu.editable-data-row.[instanceName].set-value
          * @param value The new value
          */
@@ -78,18 +81,18 @@ define([
         },
 
         /**
-         * bind custom events
+         * Bind custom events.
          */
         bindCustomEvents = function() {
             if (!this.options.disabled) {
 
-                // sets value
+                // Sets value.
                 this.sandbox.on(EVENT_SET_VALUE.call(this), function(preselected) {
                     this.setSelectedData(preselected);
                     this.overlayView.render();
                 }.bind(this));
 
-                // triggered when new data is available
+                // Triggered when new data is available.
                 this.sandbox.on(EVENT_DATA_UPDATE.call(this), function(data, preselected) {
                     this.setSelectedData(preselected);
 
@@ -97,7 +100,7 @@ define([
                     this.overlayView.render();
                 }.bind(this));
 
-                // initialize overlay with template, title, callbacks and data
+                // Initialize overlay with template, title, callbacks and data.
                 this.sandbox.on('sulu.editable-data-row.' + this.options.instanceName + '.overlay.initialize',
                     function(data) {
                         if (!data.overlayTemplate) {
@@ -130,12 +133,12 @@ define([
         },
 
         /**
-         * Inits the overlay with a specific template
+         * Inits the overlay with a specific template.
          */
         initOverlay = function(template, title, okCallback, closeCallback, data) {
             var $overlay, overlayContent, templateData;
 
-            // prevent multiple initialization of the overlay
+            // Prevent multiple initialization of the overlay.
             this.sandbox.stop(this.sandbox.dom.find(constants.overlayContainerClassSelector, this.$el));
             this.sandbox.dom.remove(this.sandbox.dom.find(constants.overlayContainerClassSelector, this.$el));
 
@@ -143,7 +146,7 @@ define([
             this.sandbox.dom.append(this.$el, $overlay);
 
             // FIXME: because the overlay gets started within the element the validation will also affect the labels in
-            // the overlay content
+            // the overlay content.
 
             templateData = {
                 data: data,
@@ -173,7 +176,7 @@ define([
 
         /**
          * Renders the single row with the data according to the fields param or
-         * a replacement when no data is given
+         * a replacement when no data is given.
          */
         renderPlus = function() {
             var $row;
@@ -186,7 +189,8 @@ define([
         },
 
         /**
-         * Validates a view
+         * Validates a view.
+         *
          * @param view
          */
         isViewValid = function(view) {
@@ -201,14 +205,14 @@ define([
 
         initialize: function() {
 
-            // load defaults
+            // Load defaults.
             this.options = this.sandbox.util.extend({}, defaults, this.options);
 
             this.selectedData = this.options.value;
             this.data = this.options.selectData;
 
-            // make a copy of the decorators for each editable-data-row instance
-            // if you directly access the decorators variable the editable-data-row-context in the decorators will be overwritten
+            // Make a copy of the decorators for each editable-data-row instance.
+            // If you directly access the decorators variable the editable-data-row-context in the decorators will be overwritten.
             this.decorators = this.sandbox.util.extend(true, {}, decorators);
             this.viewId = this.options.view;
             this.overlayView = this.decorators[this.viewId];
@@ -252,12 +256,13 @@ define([
             }
 
             this.selectedData = data;
-            this.sandbox.dom.data(this.$el, 'value', data);
+            this.$el.data('value', data);
 
         },
 
         /**
-         * returns data-element which has a property with a specific value
+         * Returns data-element which has a property with a specific value.
+         *
          * @param propertyName
          * @param propertyValue
          */
