@@ -212,7 +212,8 @@ define([
             this.data = this.options.selectData;
 
             // Make a copy of the decorators for each editable-data-row instance.
-            // If you directly access the decorators variable the editable-data-row-context in the decorators will be overwritten.
+            // If you directly access the decorators variable the editable-data-row-context
+            // in the decorators will be overwritten.
             this.decorators = this.sandbox.util.extend(true, {}, decorators);
             this.viewId = this.options.view;
             this.overlayView = this.decorators[this.viewId];
@@ -257,7 +258,6 @@ define([
 
             this.selectedData = data;
             this.$el.data('value', data);
-
         },
 
         /**
