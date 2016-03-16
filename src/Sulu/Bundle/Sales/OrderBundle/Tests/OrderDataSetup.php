@@ -44,6 +44,7 @@ use Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatus;
 use Sulu\Bundle\Sales\OrderBundle\Entity\OrderType;
 use Sulu\Bundle\Sales\OrderBundle\Entity\OrderTypeTranslation;
 use Sulu\Bundle\SecurityBundle\Entity\User;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class OrderDataSetup
 {
@@ -154,6 +155,11 @@ class OrderDataSetup
     public $productPrice;
 
     /**
+     * @var ContainerInterface
+     */
+    public $container;
+
+    /**
      * @var EntityManager
      */
     protected $em;
@@ -171,10 +177,12 @@ class OrderDataSetup
     public function __construct(
         EntityManager $entityManager,
         $itemFactory,
-        $productEntity = 'Sulu\Bundle\ProductBundle\Entity\Product'
+        $productEntity = 'Sulu\Bundle\ProductBundle\Entity\Product',
+        $container = null
     ) {
         $this->productEntity = $productEntity;
         $this->itemFactory = $itemFactory;
+        $this->container = $container;
 
         $this->em = $entityManager;
 
@@ -381,10 +389,11 @@ class OrderDataSetup
         $this->em->persist($translation2);
 
         $this->currency = new Currency();
-        $this->currency->setCode('EUR');
+        $this->currency->setCode($this->getDefaultCurrencyCode());
         $this->currency->setNumber('1');
         $this->currency->setId('1');
         $this->currency->setName('Euro');
+
         $this->productPrice = new ProductPrice();
         $this->productPrice->setCurrency($this->currency);
         $this->productPrice->setMinimumQuantity(0);
@@ -506,7 +515,7 @@ class OrderDataSetup
         $order->setCommission('commission');
         $order->setCostCentre('cost-centre');
         $order->setCustomerName($this->contact->getFullName());
-        $order->setCurrencyCode('EUR');
+        $order->setCurrencyCode($this->getDefaultCurrencyCode());
         $order->setTermsOfDelivery($this->termsOfDelivery);
         $order->setTermsOfDeliveryContent($this->termsOfDelivery->getTerms());
         $order->setTermsOfPayment($this->termsOfPayment);
@@ -583,5 +592,17 @@ class OrderDataSetup
         $this->em->persist($accountContact);
 
         return $accountContact;
+    }
+
+    /**
+     * @return string
+     */
+    protected function getDefaultCurrencyCode()
+    {
+        if ($this->container) {
+            return $this->container->getParameter('default_currency');
+        }
+
+        return 'EUR';
     }
 }

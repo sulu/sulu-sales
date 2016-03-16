@@ -138,6 +138,11 @@ class OrderManager
     private $orderAddressManager;
 
     /**
+     * @var string
+     */
+    private $defaultCurrency;
+
+    /**
      * @param ObjectManager $em
      * @param OrderRepository $orderRepository
      * @param UserRepositoryInterface $userRepository
@@ -151,6 +156,7 @@ class OrderManager
      * @param OrderFactoryInterface $orderFactory
      * @param OrderAddressManager $orderAddressManager
      * @param FieldDescriptorFactoryInterface $fieldDescriptorFactory
+     * @param string $defaultCurrency
      */
     public function __construct(
         ObjectManager $em,
@@ -165,7 +171,8 @@ class OrderManager
         ProductManagerInterface $productManager,
         OrderFactoryInterface $orderFactory,
         OrderAddressManager $orderAddressManager,
-        FieldDescriptorFactoryInterface $fieldDescriptorFactory
+        FieldDescriptorFactoryInterface $fieldDescriptorFactory,
+        $defaultCurrency
     ) {
         $this->orderRepository = $orderRepository;
         $this->userRepository = $userRepository;
@@ -180,6 +187,7 @@ class OrderManager
         $this->orderFactory = $orderFactory;
         $this->orderAddressManager = $orderAddressManager;
         $this->fieldDescriptorFactory = $fieldDescriptorFactory;
+        $this->defaultCurrency = $defaultCurrency;
 
         static::$orderEntityName = $this->orderRepository->getClassName();
     }
@@ -381,21 +389,21 @@ class OrderManager
     {
         $items = $apiOrder->getItems();
 
-        // perform price calucaltion
+        // Perform price calculation.
         $prices = $supplierItems = null;
-        $totalPrice = $this->priceCalculator->calculate($items, $prices, $supplierItems);
+        $totalPrice = $this->priceCalculator->calculate($items, $prices, $supplierItems, $this->defaultCurrency);
 
         if ($supplierItems) {
             $supplierItems = array_values($supplierItems);
-            // update media api entities
+            // Update media api entities.
             $this->createMediaForSupplierItems($supplierItems, $locale);
-            // set grouped items
+            // Set grouped items.
             $apiOrder->setSupplierItems($supplierItems);
         }
 
         $this->createMediaForItems($items, $locale);
 
-        // check if any price in cart has changed
+        // Check if any price in cart has changed.
         $hasChangedPrices = false;
         foreach ($items as $item) {
             if ($item->getPriceChange()) {
@@ -405,7 +413,7 @@ class OrderManager
         }
         $apiOrder->setHasChangedPrices($hasChangedPrices);
 
-        // set total price
+        // Set total price.
         $apiOrder->setTotalNetPrice($totalPrice);
     }
 

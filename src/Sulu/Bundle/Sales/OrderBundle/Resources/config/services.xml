@@ -76,6 +76,7 @@
             <argument type="service" id="sulu_sales_order.order_factory" />
             <argument type="service" id="sulu_sales_core.order_address_manager" />
             <argument type="service" id="sulu_core.list_builder.field_descriptor_factory" />
+            <argument>%sulu_product.default_currency%</argument>
         </service>
 
         <service id="sulu_sales_order.cart_manager" class="%sulu_sales_order.cart_manager.class%">
