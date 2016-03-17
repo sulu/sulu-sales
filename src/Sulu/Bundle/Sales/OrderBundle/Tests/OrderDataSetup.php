@@ -44,7 +44,6 @@ use Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatus;
 use Sulu\Bundle\Sales\OrderBundle\Entity\OrderType;
 use Sulu\Bundle\Sales\OrderBundle\Entity\OrderTypeTranslation;
 use Sulu\Bundle\SecurityBundle\Entity\User;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class OrderDataSetup
 {
@@ -155,9 +154,9 @@ class OrderDataSetup
     public $productPrice;
 
     /**
-     * @var ContainerInterface
+     * @var string
      */
-    public $container;
+    public $defaultCurrencyCode;
 
     /**
      * @var EntityManager
@@ -174,15 +173,23 @@ class OrderDataSetup
      */
     protected $productEntity;
 
+    /**
+     * OrderDataSetup constructor.
+     *
+     * @param EntityManager $entityManager
+     * @param ItemFactoryInterface $itemFactory
+     * @param string $productEntity
+     * @param string $defaultCurrencyCode
+     */
     public function __construct(
         EntityManager $entityManager,
-        $itemFactory,
+        ItemFactoryInterface $itemFactory,
         $productEntity = 'Sulu\Bundle\ProductBundle\Entity\Product',
-        $container = null
+        $defaultCurrencyCode = 'EUR'
     ) {
         $this->productEntity = $productEntity;
         $this->itemFactory = $itemFactory;
-        $this->container = $container;
+        $this->defaultCurrencyCode = $defaultCurrencyCode;
 
         $this->em = $entityManager;
 
@@ -190,9 +197,12 @@ class OrderDataSetup
         $this->setUpTestData();
     }
 
+    /**
+     * Setup tests for cart testing.
+     */
     public function setupCartTests()
     {
-        // set order to cart order
+        // Set order to cart order.
         $this->orderStatus = $this->em
             ->getRepository(static::$orderStatusEntityName)
             ->find(OrderStatus::STATUS_IN_CART);
@@ -203,6 +213,9 @@ class OrderDataSetup
         $this->em->flush();
     }
 
+    /**
+     * Load all fixtures necessary for testing.
+     */
     protected function loadFixtures()
     {
         // load order-status
@@ -210,9 +223,12 @@ class OrderDataSetup
         $statusFixtures->load($this->em);
     }
 
+    /**
+     * Setup test data.
+     */
     protected function setUpTestData()
     {
-        // account
+        // Account
         $this->account = new Account();
         $this->account->setName('Company');
         $this->account->setType(Account::TYPE_BASIC);
@@ -221,14 +237,14 @@ class OrderDataSetup
 
         $this->account2 = clone($this->account);
 
-        // country
+        // Country
         $country = new Country();
         $country->setName('Country');
         $country->setCode('co');
-        // address type
+        // Address type
         $addressType = new AddressType();
         $addressType->setName('Business');
-        // address
+        // Address
         $this->address = new Address();
         $this->address->setStreet('Sample-Street');
         $this->address->setNumber('12');
@@ -241,7 +257,7 @@ class OrderDataSetup
         $this->address->setPostboxPostcode('postboxPostcode');
         $this->address->setPostboxCity('postboxCity');
         $this->address->setAddressType($addressType);
-        // address
+        // Address
         $this->address2 = new Address();
         $this->address2->setStreet('Street');
         $this->address2->setNumber('2');
@@ -250,31 +266,31 @@ class OrderDataSetup
         $this->address2->setCountry($country);
         $this->address2->setAddressType($addressType);
 
-        // add address to entities
+        // Add address to entities.
         $accountAddress = new AccountAddress();
         $accountAddress->setAccount($this->account);
         $accountAddress->setAddress($this->address);
         $accountAddress->setMain(true);
         $this->account->addAccountAddress($accountAddress);
 
-        // phone
+        // Phone
         $phoneType = new PhoneType();
         $phoneType->setName('Business');
         $this->phone = new Phone();
         $this->phone->setPhone('+43 123 / 456 789');
         $this->phone->setPhoneType($phoneType);
 
-        // title
+        // Contact Title
         $title = new ContactTitle();
         $title->setTitle('Dr');
 
-        // contact
+        // Contact
         $this->contact = new Contact();
         $this->contact->setFirstName('John');
         $this->contact->setLastName('Doe');
         $this->contact->setTitle($title);
         $this->contact->setMainEmail('test@test.com');
-        // contact
+        // Second Contact
         $this->contact2 = new Contact();
         $this->contact2->setFirstName('Johanna');
         $this->contact2->setLastName('Dole');
@@ -298,7 +314,7 @@ class OrderDataSetup
 
         $this->orderStatus = $this->em->getRepository(self::$orderStatusEntityName)->find(OrderStatus::STATUS_CREATED);
 
-        // order address
+        // Order address
         $this->orderAddressDelivery = new OrderAddress();
         $this->orderAddressDelivery->setFirstName($this->contact->getFirstName());
         $this->orderAddressDelivery->setLastName($this->contact->getLastName());
@@ -319,7 +335,7 @@ class OrderDataSetup
         $this->orderAddressDelivery->setPhoneMobile('+43 123 / 456');
         $this->orderAddressDelivery->setContactAddress($this->address);
 
-        // clone address for invoice
+        // Clone address for invoice.
         $this->orderAddressInvoice = clone $this->orderAddressDelivery;
 
         $this->termsOfDelivery = new TermsOfDelivery();
@@ -327,7 +343,7 @@ class OrderDataSetup
         $this->termsOfPayment = new TermsOfPayment();
         $this->termsOfPayment->setTerms('10% off');
 
-        // order
+        // Order
         $this->order = $this->createNewTestOrder();
 
         $order2 = $this->createNewTestOrder();
@@ -335,7 +351,7 @@ class OrderDataSetup
         $order2->setDeliveryAddress(null);
         $order2->setInvoiceAddress(null);
 
-        // product order unit
+        // Product order unit
         $orderUnit = new Unit();
         $orderUnit->setId(1);
         $orderUnitTranslation = new UnitTranslation();
@@ -345,13 +361,13 @@ class OrderDataSetup
         $orderUnit->addTranslation($orderUnitTranslation);
         $this->em->persist($orderUnit);
         $this->em->persist($orderUnitTranslation);
-        // product type
+        // Product type
         $productType = new Type();
         $productTypeTranslation = new TypeTranslation();
         $productTypeTranslation->setLocale($this->locale);
         $productTypeTranslation->setName('EnglishProductType-1');
         $productTypeTranslation->setType($productType);
-        // product status
+        // Product status
         $productStatus = new Status();
         $productStatus->setId(Status::ACTIVE);
         $metadata = $this->em->getClassMetaData(get_class(new Status()));
@@ -360,7 +376,7 @@ class OrderDataSetup
         $productStatusTranslation->setLocale($this->locale);
         $productStatusTranslation->setName('EnglishProductStatus-1');
         $productStatusTranslation->setStatus($productStatus);
-        // product
+        // Product
         $this->product = new $this->productEntity;
         $this->product->setNumber('ProductNumber-1');
         $this->product->setManufacturer('EnglishManufacturer-1');
@@ -371,7 +387,7 @@ class OrderDataSetup
         $this->product->setSupplier($this->account);
         $this->product->setOrderUnit($orderUnit);
 
-        // product translation
+        // Product translation
         $this->productTranslation = new ProductTranslation();
         $this->productTranslation->setProduct($this->product);
         $this->productTranslation->setLocale($this->locale);
@@ -380,7 +396,7 @@ class OrderDataSetup
         $this->productTranslation->setLongDescription('EnglishProductLongDescription-1');
         $this->product->addTranslation($this->productTranslation);
 
-        // product
+        // Product
         $this->product2 = clone($this->product);
         $this->product2->setSupplier($this->account);
         $translation2 = clone($this->productTranslation);
@@ -389,7 +405,7 @@ class OrderDataSetup
         $this->em->persist($translation2);
 
         $this->currency = new Currency();
-        $this->currency->setCode($this->getDefaultCurrencyCode());
+        $this->currency->setCode($this->defaultCurrencyCode);
         $this->currency->setNumber('1');
         $this->currency->setId('1');
         $this->currency->setName('Euro');
@@ -503,19 +519,19 @@ class OrderDataSetup
     }
 
     /**
-     * Creates a test order
+     * Creates a test order.
      *
      * @return Order
      */
     public function createNewTestOrder()
     {
-        // order
+        // Order
         $order = new Order();
         $order->setNumber('1234');
         $order->setCommission('commission');
         $order->setCostCentre('cost-centre');
         $order->setCustomerName($this->contact->getFullName());
-        $order->setCurrencyCode($this->getDefaultCurrencyCode());
+        $order->setCurrencyCode($this->defaultCurrencyCode);
         $order->setTermsOfDelivery($this->termsOfDelivery);
         $order->setTermsOfDeliveryContent($this->termsOfDelivery->getTerms());
         $order->setTermsOfPayment($this->termsOfPayment);
@@ -543,7 +559,7 @@ class OrderDataSetup
     }
 
     /**
-     * Creates new item for test purpose
+     * Creates new item for test purpose.
      *
      * @return \Sulu\Bundle\Sales\CoreBundle\Entity\ItemInterface
      */
@@ -573,7 +589,7 @@ class OrderDataSetup
     }
 
     /**
-     * Creates account contact relation
+     * Creates account contact relation.
      *
      * @param AccountInterface $account
      * @param Contact $contact
@@ -592,17 +608,5 @@ class OrderDataSetup
         $this->em->persist($accountContact);
 
         return $accountContact;
-    }
-
-    /**
-     * @return string
-     */
-    protected function getDefaultCurrencyCode()
-    {
-        if ($this->container) {
-            return $this->container->getParameter('default_currency');
-        }
-
-        return 'EUR';
     }
 }
