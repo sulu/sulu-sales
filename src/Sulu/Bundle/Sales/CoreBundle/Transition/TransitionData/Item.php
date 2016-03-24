@@ -61,6 +61,11 @@ class Item
     private $deliveryDate;
 
     /**
+     * @var float
+     */
+    private $deliveryCost;
+
+    /**
      * @var string
      */
     private $note;
@@ -176,6 +181,7 @@ class Item
             'quantity' => $this->quantity,
             'quantityUnit' => $this->quantityUnit,
             'deliveryDate' => $this->deliveryDate,
+            'deliveryCost' => $this->deliveryCost,
             'note' => $this->note,
         ];
 
@@ -247,6 +253,22 @@ class Item
     }
 
     /**
+     * @return float
+     */
+    public function getDeliveryCost()
+    {
+        return $this->deliveryCost;
+    }
+
+    /**
+     * @param float $deliveryCost
+     */
+    public function setDeliveryCost($deliveryCost)
+    {
+        $this->deliveryCost = $deliveryCost;
+    }
+
+    /**
      * Calls to Array on a certain object, if method exists.
      *
      * @param Object $object
@@ -264,6 +286,8 @@ class Item
 
     /**
      * @param string $entry
+     *
+     * @return bool
      */
     private function checkNotNull($entry)
     {
