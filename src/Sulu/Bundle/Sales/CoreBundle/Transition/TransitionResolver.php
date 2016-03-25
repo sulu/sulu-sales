@@ -65,6 +65,7 @@ class TransitionResolver
 
         $allTransitions['current'] = $current;
 
+        // Find all previous transitions.
         if ($currentTransition) {
             $allTransitions['previous'] = array_reverse(
                 $this->getPreviousTransitions(
@@ -73,13 +74,14 @@ class TransitionResolver
                     $hydrationMode
                 )
             );
-
-            $allTransitions['following'] = $this->getFollowingTransitions(
-                $currentTransition->getDestination(),
-                $currentTransition->getDestinationId(),
-                $hydrationMode
-            );
         }
+
+        // Find all following transitions.
+        $allTransitions['following'] = $this->getFollowingTransitions(
+            $alias,
+            $id,
+            $hydrationMode
+        );
 
         return $allTransitions;
     }
@@ -271,28 +273,30 @@ class TransitionResolver
     protected function getFollowingTransitions($alias, $id, $hydrationMode = self::HYDRATION_MODE_OBJECTS)
     {
         $transitionResults = [];
-        $transition = $this->transitionManager->findOneBySource($alias, $id);
+        $transitions = $this->transitionManager->findBySource($alias, $id);
 
-        if ($transition) {
-            $transitionResult = $this->createTransitionResult(
-                $transition->getDestination(),
-                $transition->getDestinationId(),
-                $hydrationMode
-            );
+        if ($transitions && count($transitions) > 0) {
+            foreach ($transitions as $transition) {
+                $transitionResult = $this->createTransitionResult(
+                    $transition->getDestination(),
+                    $transition->getDestinationId(),
+                    $hydrationMode
+                );
 
-            $transitionResult->setId($transition->getId());
-            $transitionResult->setTransition($transition);
+                $transitionResult->setId($transition->getId());
+                $transitionResult->setTransition($transition);
 
-            $transitionResults[] = $transitionResult;
+                $transitionResults[] = $transitionResult;
 
-            $currentAlias = $transition->getDestination();
-            $currentId = $transition->getDestinationId();
+                $currentAlias = $transition->getDestination();
+                $currentId = $transition->getDestinationId();
 
-            // recursive call to get all previous of previous....
-            while ($nextTransition = $this->getNextFollowingTransition($currentAlias, $currentId, $hydrationMode)) {
-                $transitionResults[] = $nextTransition;
-                $currentAlias = $nextTransition->getTransition()->getDestination();
-                $currentId = $nextTransition->getTransition()->getDestinationId();
+                // Recursive call to get all previous of previous....
+                while ($nextTransition = $this->getNextFollowingTransition($currentAlias, $currentId, $hydrationMode)) {
+                    $transitionResults[] = $nextTransition;
+                    $currentAlias = $nextTransition->getTransition()->getDestination();
+                    $currentId = $nextTransition->getTransition()->getDestinationId();
+                }
             }
         }
 
