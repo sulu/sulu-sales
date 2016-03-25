@@ -89,7 +89,7 @@ define([
         initOverlay = function(data) {
             var $overlay, overlayContent, templateData;
 
-            // prevent multiple initialization of the overlay
+            // Prevent multiple initialization of the overlay.
             this.sandbox.stop(this.sandbox.dom.find('.' + classes.overlayContainerClass, this.$el));
             this.sandbox.dom.remove(this.sandbox.dom.find('.' + classes.overlayContainerClass, this.$el));
 
@@ -102,7 +102,7 @@ define([
 
             overlayContent = this.sandbox.util.template(Template, templateData);
 
-            // create overlay with data
+            // Create overlay with data.
             this.sandbox.start([
                 {
                     name: 'overlay@husky',
@@ -159,12 +159,12 @@ define([
             for (var i = -1, len = data.length; ++i < len;) {
                 customer = data[i];
 
-                // filter by customer
+                // Filter by customer.
                 if (!!customerId && customerId != customer.id) {
                     continue;
                 }
 
-                // add account to each item
+                // Add account to each item.
                 this.sandbox.util.foreach(customer.items, function(item) {
                     item.account = {
                         name: cropString(customer.name, constants.MAX_CUSTOMER_LENGTH),
@@ -172,7 +172,7 @@ define([
                     }
                 });
 
-                // add to items
+                // Add to items.
                 items = items.concat(customer.items);
 
                 if (!!customerId) {
@@ -184,7 +184,7 @@ define([
         },
 
         /**
-         * Shortens a String
+         * Shortens a String.
          *
          * @param {String} String
          * @param {Number} maxLength
@@ -204,19 +204,23 @@ define([
          * @param {Number} customerId
          */
         startItemsTable = function(customerId) {
+            // Define item-table options.
+            var itemTableOptions = {
+                columns: this.options.columns,
+                data: filterCustomerDataById.call(this, customerId),
+                displayToolbars: false,
+                calculatePrices: false,
+                el: selectors.itemsTable,
+                hasNestedItems: true,
+                instanceName: 'transition',
+                showPrice: false,
+                showItemCount: false
+            };
+
+            // Start item-table component.
             this.sandbox.start([{
                 name: 'item-table@sulusalescore',
-                options: {
-                    columns: this.options.columns,
-                    data: filterCustomerDataById.call(this, customerId),
-                    displayToolbars: false,
-                    calculatePrices: false,
-                    el: selectors.itemsTable,
-                    hasNestedItems: true,
-                    instanceName: 'transition',
-                    showPrice: false,
-                    showItemCount: false
-                }
+                options: itemTableOptions
             }]);
         },
 
@@ -237,7 +241,7 @@ define([
             var transitionData = parseObjectDataForSelect.call(this, this.options.transitionData),
                 customerData = this.options.customerData;
 
-            // display selects with transitions and customers
+            // Display selects with transitions and customers.
             this.sandbox.start([
                 {
                     name: 'select@husky',
@@ -263,7 +267,7 @@ define([
                 }
             ]);
 
-            // start item-table
+            // Start item-table.
             startItemsTable.call(this);
         },
 
@@ -274,7 +278,7 @@ define([
             var transitionKey,
                 itemsData;
 
-            // gather data
+            // Gather data.
             this.sandbox.emit('husky.select.transition.get-checked', function(selection) {
                 transitionKey = selection[0];
             });
@@ -282,7 +286,7 @@ define([
                 itemsData = items;
             });
 
-            // return data
+            // Return data via okCallback.
             if (!!this.options.okCallback) {
                 this.options.okCallback({
                     transition: transitionKey,
