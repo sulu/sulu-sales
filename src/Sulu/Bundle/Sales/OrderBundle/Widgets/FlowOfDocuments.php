@@ -55,7 +55,7 @@ class FlowOfDocuments extends FlowOfDocumentsBase
      */
     public function getData($options)
     {
-        if ($this->checkRequiredParameters(
+        $this->checkRequiredParameters(
             $options,
             [
                 'orderNumber',
@@ -63,16 +63,13 @@ class FlowOfDocuments extends FlowOfDocumentsBase
                 'orderId',
                 'locale'
             ]
-        )
-        ) {
-            $this->getOrderData($options);
-            $this->fetchDocumentData($options);
-            parent::orderDataByDate(false);
+        );
 
-            return parent::serializeData();
-        }
+        $this->getOrderData($options);
+        $this->fetchDocumentData($options);
+        parent::orderDataByDate(false);
 
-        throw new WidgetException('No params found!', $this->getName());
+        return parent::serializeData();
     }
 
     /**

@@ -77,13 +77,11 @@ class TransitionResolver
         }
 
         // Find all following transitions.
-        $following = $this->getFollowingTransitions(
+        $allTransitions['following'] = $this->getFollowingTransitions(
             $alias,
             $id,
             $hydrationMode
         );
-
-        $allTransitions['following'] = $following;
 
         return $allTransitions;
     }
@@ -298,11 +296,7 @@ class TransitionResolver
                 // Recursive call to get all following transitions.
                 $transitionResults = array_merge(
                     $transitionResults,
-                    $this->getFollowingTransitions(
-                        $currentAlias,
-                        $currentId,
-                        self::HYDRATION_MODE_OBJECTS
-                    )
+                    $this->getFollowingTransitions($currentAlias, $currentId, $hydrationMode)
                 );
             }
         }
