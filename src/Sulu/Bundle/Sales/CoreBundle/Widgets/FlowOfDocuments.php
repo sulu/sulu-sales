@@ -142,4 +142,29 @@ abstract class FlowOfDocuments implements WidgetInterface
 
         return '';
     }
+
+    /**
+     * Checks for required parameters.
+     *
+     * @param array $options
+     *
+     * @throws WidgetException
+     * @throws WidgetParameterException
+     */
+    protected function checkRequiredParameters(array $options = null, $requiredParameters = [])
+    {
+        if (empty($options)) {
+            throw new WidgetException('No params found!', $this->getName());
+        }
+
+        foreach ($requiredParameters as $parameter) {
+            if (empty($options[$parameter])) {
+                throw new WidgetParameterException(
+                    'Required parameter ' . $parameter . ' not found or invalid!',
+                    $this->widgetName,
+                    $parameter
+                );
+            }
+        }
+    }
 }

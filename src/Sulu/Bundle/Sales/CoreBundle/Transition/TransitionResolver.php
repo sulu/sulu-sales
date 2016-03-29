@@ -77,11 +77,13 @@ class TransitionResolver
         }
 
         // Find all following transitions.
-        $allTransitions['following'] = $this->getFollowingTransitions(
+        $following = $this->getFollowingTransitions(
             $alias,
             $id,
             $hydrationMode
         );
+
+        $allTransitions['following'] = $following;
 
         return $allTransitions;
     }
@@ -277,26 +279,31 @@ class TransitionResolver
 
         if ($transitions && count($transitions) > 0) {
             foreach ($transitions as $transition) {
+                $currentAlias = $transition->getDestination();
+                $currentId = $transition->getDestinationId();
+
+                // Create TransitionResult.
                 $transitionResult = $this->createTransitionResult(
-                    $transition->getDestination(),
-                    $transition->getDestinationId(),
+                    $currentAlias,
+                    $currentId,
                     $hydrationMode
                 );
 
                 $transitionResult->setId($transition->getId());
                 $transitionResult->setTransition($transition);
 
+                // Add to result-set.
                 $transitionResults[] = $transitionResult;
 
-                $currentAlias = $transition->getDestination();
-                $currentId = $transition->getDestinationId();
-
-                // Recursive call to get all previous of previous....
-                while ($nextTransition = $this->getNextFollowingTransition($currentAlias, $currentId, $hydrationMode)) {
-                    $transitionResults[] = $nextTransition;
-                    $currentAlias = $nextTransition->getTransition()->getDestination();
-                    $currentId = $nextTransition->getTransition()->getDestinationId();
-                }
+                // Recursive call to get all following transitions.
+                $transitionResults = array_merge(
+                    $transitionResults,
+                    $this->getFollowingTransitions(
+                        $currentAlias,
+                        $currentId,
+                        self::HYDRATION_MODE_OBJECTS
+                    )
+                );
             }
         }
 
