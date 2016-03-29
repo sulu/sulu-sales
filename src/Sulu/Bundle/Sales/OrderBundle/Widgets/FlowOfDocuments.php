@@ -21,7 +21,6 @@ class FlowOfDocuments extends FlowOfDocumentsBase
 {
 
     /**
-     * DependencyManager
      * @var SalesDependencyClassInterface
      */
     protected $dependencyManager;
@@ -30,7 +29,7 @@ class FlowOfDocuments extends FlowOfDocumentsBase
 
     protected $widgetName = 'OrderFlowOfDocuments';
 
-    function __construct(SalesDependencyClassInterface $dependencyManager, array $routes)
+    public function __construct(SalesDependencyClassInterface $dependencyManager, array $routes)
     {
         $this->dependencyManager = $dependencyManager;
         $this->routes = $routes;
@@ -50,7 +49,9 @@ class FlowOfDocuments extends FlowOfDocumentsBase
      * Returns data to render template.
      *
      * @param array $options
+     *
      * @throws WidgetException
+     *
      * @return array
      */
     public function getData($options)
@@ -75,7 +76,8 @@ class FlowOfDocuments extends FlowOfDocumentsBase
     /**
      * Retrieves order data.
      *
-     * @param $options
+     * @param array $options
+     *
      * @throws \Sulu\Bundle\AdminBundle\Widgets\WidgetParameterException
      */
     protected function getOrderData($options)
@@ -94,7 +96,8 @@ class FlowOfDocuments extends FlowOfDocumentsBase
     /**
      * Retrieves document data for a specific order and adds it to the entries.
      *
-     * @param $options
+     * @param array $options
+     *
      * @throws \Sulu\Bundle\AdminBundle\Widgets\WidgetParameterException
      */
     protected function fetchDocumentData($options)

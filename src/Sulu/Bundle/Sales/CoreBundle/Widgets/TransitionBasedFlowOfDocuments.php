@@ -39,7 +39,6 @@ abstract class TransitionBasedFlowOfDocuments extends FlowOfDocumentsBase
      */
     protected $optionsIdKey;
 
-
     /**
      * @param TransitionResolver $transitionResolver
      */
