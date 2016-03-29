@@ -64,18 +64,13 @@ class DefaultContext extends AdminContext
      *
      * @throws ElementNotFoundException
      */
-    public function addCustomerToInquiry($customer,$contactPerson)
+    public function addCustomerToInquiry($customer, $contactPerson)
     {
-        $this->waitForSelector('#customer-1');
-
-        $itemTableFormElement = $this->getSession()->getPage()->find('css', '#customer-1');
-
-        if (null === $itemTableFormElement) {
-            throw new ElementNotFoundException($this->getSession(), '#customer-1');
-        }
+        $selector = '#customer-1';
+        $this->waitForSelector($selector);
 
         // Fill in auto complete customer.
-        $this->iSelectFromTheHuskyAutoComplete($customer, '#customer-1');
+        $this->iSelectFromTheHuskyAutoComplete($customer, $selector);
 
         // Wait until loading is finished.
         $this->spin(
@@ -90,7 +85,7 @@ class DefaultContext extends AdminContext
                     return false;
                 }
 
-                // Also the address should be displayed now.
+                // The address should be displayed now.
                 $addressElement = $context->getSession()->getPage()->find(
                     'css',
                     '#customers #address-1'
