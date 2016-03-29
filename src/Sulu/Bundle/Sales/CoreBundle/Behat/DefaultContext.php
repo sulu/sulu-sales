@@ -57,6 +57,53 @@ class DefaultContext extends AdminContext
     }
 
     /**
+     * @Given I add customer :customer with contact person :contactPerson to inquiry
+     *
+     * @param string $customer
+     * @param string $contactPerson
+     *
+     * @throws ElementNotFoundException
+     */
+    public function addCustomerToInquiry($customer, $contactPerson)
+    {
+        $selector = '#customer-1';
+        $this->waitForSelector($selector);
+
+        // Fill in auto complete customer.
+        $this->iSelectFromTheHuskyAutoComplete($customer, $selector);
+
+        // Wait until loading is finished.
+        $this->spin(
+            function (RawMinkContext $context) {
+                // Check for a spinner.
+                $spinnerElement = $context->getSession()->getPage()->find(
+                    'css',
+                    '#customers .spinner'
+                );
+
+                if ($spinnerElement && $spinnerElement->isVisible()) {
+                    return false;
+                }
+
+                // The address should be displayed now.
+                $addressElement = $context->getSession()->getPage()->find(
+                    'css',
+                    '#customers #address-1'
+                );
+
+                if (!$addressElement || $addressElement->getText() === '') {
+                    return false;
+                }
+
+                return true;
+            }
+        );
+
+        // Select contact person from list.
+        $this->iFillTheHuskyField('contact-select-1', $contactPerson);
+    }
+
+    /**
      * @Given I wait for :value seconds
      */
     public function waitForSeconds($value)
