@@ -12,7 +12,7 @@ use Sulu\Bundle\AdminBundle\Behat\AdminContext;
 class DefaultContext extends AdminContext
 {
     /**
-     * @Given I add product :product to demand item table
+     * @Given I add product :product to item table
      *
      * @param string $product
      *
