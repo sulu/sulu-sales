@@ -165,6 +165,10 @@ class TransitionResolver
                 $hydrationMode
             );
 
+            if (!$transitionResult) {
+                return;
+            }
+
             $transitionResult->setId($transition->getId());
             $transitionResult->setTransition($transition);
 
@@ -173,7 +177,7 @@ class TransitionResolver
             $currentAlias = $transition->getSource();
             $currentId = $transition->getSourceId();
 
-            // recursive call to get all previous of previous....
+            // Recursive call to get all previous of previous.
             while ($previousTransition = $this->getNextPreviousTransition($currentAlias, $currentId, $hydrationMode)) {
                 $transitionResults[] = $previousTransition;
                 $currentAlias = $previousTransition->getTransition()->getSource();
@@ -181,9 +185,8 @@ class TransitionResolver
             }
 
             $firstTransitionResult = $this->createTransitionResult($currentAlias, $currentId, $hydrationMode);
-            $transitionResults[] = $firstTransitionResult;
         } else {
-            // no previous found - use the first source
+            // No previous found - use the first source.
             $transition = $this->transitionManager->findOneBySource($alias, $id);
 
             $firstTransitionResult = $this->createTransitionResult(
@@ -191,6 +194,9 @@ class TransitionResolver
                 $transition->getSourceId(),
                 $hydrationMode
             );
+        }
+
+        if ($firstTransitionResult) {
             $transitionResults[] = $firstTransitionResult;
         }
 
@@ -216,6 +222,10 @@ class TransitionResolver
                 $transition->getDestinationId(),
                 $hydrationMode
             );
+
+            if ($transitionResult) {
+                return;
+            }
 
             $transitionResult->setId($transition->getId());
             $transitionResult->setTransition($transition);
@@ -247,6 +257,10 @@ class TransitionResolver
             /** @var EntityRepository $entityRepository */
             $entityRepository = $this->entityManager->getRepository($parameters['class']);
             $entity = $entityRepository->find($id);
+
+            if (!$entity) {
+                return null;
+            }
 
             if (method_exists($entity, 'getNumber')) {
                 $number = $entity->getNumber();
@@ -287,6 +301,10 @@ class TransitionResolver
                     $hydrationMode
                 );
 
+                if (!$transitionResult) {
+                    continue;
+                }
+
                 $transitionResult->setId($transition->getId());
                 $transitionResult->setTransition($transition);
 
@@ -321,6 +339,10 @@ class TransitionResolver
                 $transition->getDestinationId(),
                 $hydrationMode
             );
+
+            if (!$transitionResult) {
+                return null;
+            }
 
             $transitionResult->setId($transition->getId());
             $transitionResult->setTransition($transition);
