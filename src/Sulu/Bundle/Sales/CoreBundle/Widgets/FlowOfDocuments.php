@@ -11,22 +11,32 @@
 namespace Sulu\Bundle\Sales\CoreBundle\Widgets;
 
 use DateTime;
+use Sulu\Bundle\AdminBundle\Widgets\WidgetException;
 use Sulu\Bundle\AdminBundle\Widgets\WidgetInterface;
+use Sulu\Bundle\AdminBundle\Widgets\WidgetParameterException;
 
 /**
- * Class FlowOfDocuments
  * Abstract class for widgets which show flow of documents (invoice, order, etc)
- *
- * @package Sulu\Bundle\Sales\CoreBundle\Widgets
  */
 abstract class FlowOfDocuments implements WidgetInterface
 {
+    /**
+     * @var array
+     */
     private $entries = [];
 
+    /**
+     * @var string
+     */
+    protected $widgetName;
+
+    /**
+     * @var array
+     */
     protected $routes;
 
     /**
-     * @return array []
+     * @return array
      */
     public function getEntries()
     {
@@ -34,7 +44,7 @@ abstract class FlowOfDocuments implements WidgetInterface
     }
 
     /**
-     * Creates and adds an entry to the existing entries
+     * Creates and adds an entry to the existing entries.
      *
      * @param int $id
      * @param string $number
@@ -58,7 +68,7 @@ abstract class FlowOfDocuments implements WidgetInterface
     }
 
     /**
-     * Sorts the data array by the date
+     * Sorts the data array by the date.
      *
      * @param bool $desc
      */
@@ -87,7 +97,7 @@ abstract class FlowOfDocuments implements WidgetInterface
     }
 
     /**
-     * returns template name of widget
+     * Returns template name of widget.
      *
      * @return string
      */
@@ -97,9 +107,10 @@ abstract class FlowOfDocuments implements WidgetInterface
     }
 
     /**
-     * Serializes given entries and returns them
+     * Serializes given entries and returns them.
      *
-     * @param $dateFormat
+     * @param string $dateFormat
+     *
      * @return mixed
      */
     protected function serializeData($dateFormat = DateTime::W3C)
@@ -108,11 +119,12 @@ abstract class FlowOfDocuments implements WidgetInterface
     }
 
     /**
-     * Parses dates according to a given format
+     * Parses dates according to a given format.
      *
-     * @param $data
+     * @param array $data
      * @param string $format
-     * @return mixed
+     *
+     * @return string
      */
     private function parseDates($data, $format)
     {
@@ -124,11 +136,12 @@ abstract class FlowOfDocuments implements WidgetInterface
     }
 
     /**
-     * Returns uri for shippings
+     * Returns uri for shippings.
      *
-     * @param $id
+     * @param string $id
      * @param string $subject
      * @param string $type
+     *
      * @return string
      */
     protected function getRoute($id, $subject, $type)
@@ -141,5 +154,31 @@ abstract class FlowOfDocuments implements WidgetInterface
         }
 
         return '';
+    }
+
+    /**
+     * Checks for required parameters.
+     *
+     * @param array $options
+     * @param array $requiredParameters
+     *
+     * @throws WidgetException
+     * @throws WidgetParameterException
+     */
+    protected function checkRequiredParameters(array $options = null, $requiredParameters = [])
+    {
+        if (empty($options)) {
+            throw new WidgetException('No params found!', $this->getName());
+        }
+
+        foreach ($requiredParameters as $parameter) {
+            if (empty($options[$parameter])) {
+                throw new WidgetParameterException(
+                    'Required parameter ' . $parameter . ' not found or invalid!',
+                    $this->widgetName,
+                    $parameter
+                );
+            }
+        }
     }
 }

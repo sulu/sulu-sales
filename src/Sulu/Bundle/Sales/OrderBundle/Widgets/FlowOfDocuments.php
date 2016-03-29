@@ -21,7 +21,6 @@ class FlowOfDocuments extends FlowOfDocumentsBase
 {
 
     /**
-     * DependencyManager
      * @var SalesDependencyClassInterface
      */
     protected $dependencyManager;
@@ -30,14 +29,14 @@ class FlowOfDocuments extends FlowOfDocumentsBase
 
     protected $widgetName = 'OrderFlowOfDocuments';
 
-    function __construct(SalesDependencyClassInterface $dependencyManager, array $routes)
+    public function __construct(SalesDependencyClassInterface $dependencyManager, array $routes)
     {
         $this->dependencyManager = $dependencyManager;
         $this->routes = $routes;
     }
 
     /**
-     * return name of widget
+     * Return name of widget.
      *
      * @return string
      */
@@ -47,29 +46,38 @@ class FlowOfDocuments extends FlowOfDocumentsBase
     }
 
     /**
-     * returns data to render template
+     * Returns data to render template.
      *
      * @param array $options
+     *
      * @throws WidgetException
+     *
      * @return array
      */
     public function getData($options)
     {
-        if ($this->checkRequiredParameters($options)) {
-            $this->getOrderData($options);
-            $this->fetchDocumentData($options);
-            parent::orderDataByDate(false);
+        $this->checkRequiredParameters(
+            $options,
+            [
+                'orderNumber',
+                'orderDate',
+                'orderId',
+                'locale'
+            ]
+        );
 
-            return parent::serializeData();
-        } else {
-            throw new WidgetException('No params found!', $this->getName());
-        }
+        $this->getOrderData($options);
+        $this->fetchDocumentData($options);
+        parent::orderDataByDate(false);
+
+        return parent::serializeData();
     }
 
     /**
-     * Retrieves order data
+     * Retrieves order data.
      *
-     * @param $options
+     * @param array $options
+     *
      * @throws \Sulu\Bundle\AdminBundle\Widgets\WidgetParameterException
      */
     protected function getOrderData($options)
@@ -86,9 +94,10 @@ class FlowOfDocuments extends FlowOfDocumentsBase
     }
 
     /**
-     * Retrieves document data for a specific order and adds it to the entries
+     * Retrieves document data for a specific order and adds it to the entries.
      *
-     * @param $options
+     * @param array $options
+     *
      * @throws \Sulu\Bundle\AdminBundle\Widgets\WidgetParameterException
      */
     protected function fetchDocumentData($options)
@@ -112,48 +121,7 @@ class FlowOfDocuments extends FlowOfDocumentsBase
     }
 
     /**
-     * @param $options
-     * @return bool
-     * @throws \Sulu\Bundle\AdminBundle\Widgets\WidgetParameterException
-     */
-    function checkRequiredParameters($options)
-    {
-        $attribute = "";
-        if (!empty($options)) {
-
-            if (empty($options['orderNumber'])) {
-                $attribute = 'orderNumber';
-            }
-
-            if (empty($options['orderDate'])) {
-                $attribute = 'orderDate';
-            }
-
-            if (empty($options['orderId'])) {
-                $attribute = 'orderId';
-            }
-
-            if (empty($options['locale'])) {
-                $attribute = 'locale';
-            }
-
-            if (empty($attribute)) {
-                return true;
-            }
-
-        } else {
-            return false;
-        }
-
-        throw new WidgetParameterException(
-            'Required parameter ' . $attribute . ' not found or invalid!',
-            $this->widgetName,
-            $attribute
-        );
-    }
-
-    /**
-     * Returns value from array if key exists, else returns default
+     * Returns value from array if key exists, else returns default.
      *
      * @param array $array
      * @param string $key

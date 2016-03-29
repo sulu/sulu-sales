@@ -47,7 +47,18 @@ class FlowOfDocuments extends FlowOfDocumentsBase
      */
     public function getData($options)
     {
-        $this->checkRequiredParameters($options);
+        $this->checkRequiredParameters(
+            $options,
+            [
+                'orderNumber',
+                'orderDate',
+                'orderId',
+                'locale',
+                'id',
+                'date',
+                'number'
+            ]
+        );
 
         $this->getOrderData($options);
         $this->getShipppingData($options);
@@ -94,34 +105,5 @@ class FlowOfDocuments extends FlowOfDocumentsBase
             null,
             'salesshipping.shipping'
         );
-    }
-
-    /**
-     * @param $options
-     *
-     * @throws WidgetException
-     * @throws WidgetParameterException
-     *
-     * @return bool
-     */
-    protected function checkRequiredParameters($options)
-    {
-        if (empty($options)) {
-            throw new WidgetException('No params found!', $this->getName());
-        }
-
-        $requiredParameters = ['orderNumber', 'orderDate', 'orderId', 'locale', 'id', 'date', 'number'];
-
-        // check if all required params are set
-        foreach ($requiredParameters as $parameter) {
-            if (empty($options[$parameter])) {
-                throw new WidgetParameterException(
-                    'Required parameter ' . $parameter . ' not found or invalid!',
-                    $this->widgetName,
-                    $parameter
-                );
-            }
-        }
-        return true;
     }
 }
