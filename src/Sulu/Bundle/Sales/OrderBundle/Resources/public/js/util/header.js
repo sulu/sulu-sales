@@ -27,7 +27,7 @@ define([], function() {
                     delete: {
                         options: {
                             callback: function() {
-                                this.sandbox.emit('sulu.salesorder.order.delete');
+                                this.sandbox.emit('sulu.salesorder.order.delete', order.id);
                             }.bind(this),
                             disabled: true
                         }
