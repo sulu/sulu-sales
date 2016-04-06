@@ -783,7 +783,7 @@ class CartManager extends BaseSalesManager
             throw new ProductNotFoundException('item ' . $item->getId());
         }
 
-        if ($product->getStatus()->getId() !== Status::ACTIVE) {
+        if (!$product->isValidShopProduct($this->defaultCurrency)) {
             throw new ProductNotActiveException($product->getId());
         }
 
