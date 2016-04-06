@@ -15,9 +15,8 @@ use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Sulu\Component\Security\Authentication\UserInterface;
 use Sulu\Component\Persistence\RelationTrait;
-use Sulu\Bundle\ProductBundle\Entity\Status;
 use Sulu\Bundle\ProductBundle\Product\Exception\ProductNotFoundException;
-use Sulu\Bundle\ProductBundle\Product\Exception\ProductNotActiveException;
+use Sulu\Bundle\ProductBundle\Product\Exception\ProductNotValidException;
 use Sulu\Bundle\Sales\CoreBundle\Entity\ItemInterface;
 use Sulu\Bundle\PricingBundle\Pricing\GroupedItemsPriceCalculatorInterface;
 use Sulu\Bundle\Sales\CoreBundle\Manager\BaseSalesManager;
@@ -770,7 +769,7 @@ class CartManager extends BaseSalesManager
      *
      * @param ItemInterface $item
      *
-     * @throws ProductNotActiveException
+     * @throws ProductNotValidException
      * @throws ProductNotFoundException
      *
      * @return bool
@@ -784,7 +783,7 @@ class CartManager extends BaseSalesManager
         }
 
         if (!$product->isValidShopProduct($this->defaultCurrency)) {
-            throw new ProductNotActiveException($product->getId());
+            throw new ProductNotValidException($product->getId());
         }
 
         return true;
