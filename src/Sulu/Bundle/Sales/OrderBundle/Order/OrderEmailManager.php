@@ -216,6 +216,10 @@ class OrderEmailManager extends EmailManager
         );
 
         $template = $this->twig->loadTemplate($templatePath);
+
+        // Merge twig globals so that they are also in renderBlock available.
+        $tmplData = $this->twig->mergeGlobals($tmplData);
+
         $subject = $template->renderBlock('subject', $tmplData);
 
         $emailBodyText = $template->renderBlock('body_text', $tmplData);
