@@ -66,10 +66,18 @@ class TransitionData
     protected $customerItems;
 
     /**
+     * @var string
+     */
+    protected $currencyCode;
+
+    /**
      * @var array
      */
     protected $customerSupplierItems;
 
+    /**
+     * TransitionData constructor.
+     */
     public function __construct()
     {
         $this->items = [];
@@ -384,6 +392,7 @@ class TransitionData
             'description' => $this->description,
             'commission' => $this->commission,
             'costCentre' => $this->costCentre,
+            'currencyCode' => $this->costCentre,
             'deliveryCost' => $this->deliveryCost,
             'internalNote' => $this->getInternalNote(),
             'responsibleContact' => $this->createDataArray($this->responsibleContact),
@@ -392,19 +401,19 @@ class TransitionData
     }
 
     /**
-     * Calls toArray function on a certain object, if method exists.
-     *
-     * @param mixed $object
-     *
-     * @return null|array
+     * @return string
      */
-    private function createDataArray($object)
+    public function getCurrencyCode()
     {
-        if ($object && method_exists($object, 'toArray')) {
-            return $object->toArray();
-        }
+        return $this->currencyCode;
+    }
 
-        return null;
+    /**
+     * @param string $currencyCode
+     */
+    public function setCurrencyCode($currencyCode)
+    {
+        $this->currencyCode = $currencyCode;
     }
 
     /**
@@ -423,5 +432,21 @@ class TransitionData
         }
 
         return $default;
+    }
+
+    /**
+     * Calls toArray function on a certain object, if method exists.
+     *
+     * @param mixed $object
+     *
+     * @return null|array
+     */
+    private function createDataArray($object)
+    {
+        if ($object && method_exists($object, 'toArray')) {
+            return $object->toArray();
+        }
+
+        return null;
     }
 }
