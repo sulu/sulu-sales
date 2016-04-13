@@ -48,7 +48,7 @@ class CartManager extends BaseSalesManager
     /**
      * TODO: replace by config
      *
-     * defines when a cart expires
+     * Defines when a cart expires.
      */
     const EXPIRY_MONTHS = 2;
 
@@ -246,7 +246,7 @@ class CartManager extends BaseSalesManager
     }
 
     /**
-     * Submits an order
+     * Submits a cart.
      *
      * @param UserInterface $user
      * @param string $locale
@@ -258,19 +258,21 @@ class CartManager extends BaseSalesManager
      *
      * @return null|ApiOrder
      */
-    public function submit($user, $locale, &$orderWasSubmitted = true, &$originalCart = null)
+    public function submit(UserInterface $user, $locale, &$orderWasSubmitted = true, &$originalCart = null)
     {
         $orderWasSubmitted = true;
 
         $cart = $this->getUserCart($user, $locale, null, false, true);
         $originalCart = $cart;
+
+        // In case of errors, do not submit cart.
         if (count($cart->getCartErrorCodes()) > 0) {
             $orderWasSubmitted = false;
 
             return $cart;
-        } else {
-            $orderWasSubmitted = $this->submitCartDirectly($cart, $user, $locale);
         }
+
+        $orderWasSubmitted = $this->submitCartDirectly($cart, $user, $locale);
 
         return $this->getUserCart($user, $locale);
     }
@@ -279,8 +281,8 @@ class CartManager extends BaseSalesManager
      * Submits a cart
      *
      * @param ApiOrderInterface $cart
-     * @param string $locale
      * @param UserInterface $user
+     * @param string $locale
      *
      * @return bool
      */
