@@ -29,6 +29,7 @@
         <parameter key="sulu_sales_core.transition_manager.class">Sulu\Bundle\Sales\CoreBundle\Transition\TransitionManager</parameter>
         <parameter key="sulu_sales_core.dependency_manager.class">Sulu\Bundle\Sales\CoreBundle\Transition\DependencyManager</parameter>
         <parameter key="sulu_sales_core.transition_resolver.class">Sulu\Bundle\Sales\CoreBundle\Transition\TransitionResolver</parameter>
+        <parameter key="sulu_sales_core.sales_config_parameter_service.class">Sulu\Bundle\Sales\CoreBundle\Service\SalesConfigParameterService</parameter>
     </parameters>
 
     <services>
@@ -130,6 +131,11 @@
         <service id="sulu_sales_core.widget.simple_contact" class="%sulu_sales_core.widgets.simple_contact.class%">
             <tag name="sulu.widget" alias="sulu-sales-core-simple-contact"/>
             <argument type="service" id="doctrine.orm.entity_manager"/>
+        </service>
+
+        <service id="sulu_sales_core.sales_config_parameter_service" class="%sulu_sales_core.sales_config_parameter_service.class%">
+            <argument type="service" id="service_container"/>
+            <argument>%shopowner%</argument>
         </service>
     </services>
 </container>
