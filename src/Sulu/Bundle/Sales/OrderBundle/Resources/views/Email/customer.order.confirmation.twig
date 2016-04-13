@@ -3,8 +3,8 @@
 {% block subject %}
     {% trans with {
         '%number%': order.number,
-        '%date%': order.orderDate|localizeddate('medium', 'none')|default('')
-    } %}customer.subject{% endtrans %}
+        '%date%': order.orderDate | localizeddate('medium', 'none') | default('')
+    } %} customer.subject {% endtrans %}
 {% endblock %}
 
 {% block body_html %}
@@ -22,20 +22,25 @@
             <strong>{{ macros.getSalutation(contact) }},</strong>
         </p>
         <p>
-            {% trans %}customer.content{% endtrans %}
+            {% trans %} customer.content {% endtrans %}
         </p>
     </body>
     </html>
 {% endblock %}
 
 {% block body_text %}
-{% import _self as macros %}
+    {% import _self as macros %}
 
-{% spaceless %}
-{{ macros.getSalutation(contact) }},
-{% trans %}customer.content{% endtrans %}
-{% endspaceless %}
+    {% spaceless %}
+        {{ macros.getSalutation(contact) }},
+        {% trans %} customer.content {% endtrans %}
+    {% endspaceless %}
 
 {% endblock %}
 
-{% macro getSalutation(contact) %}{{ contact.getSalutation()|default('default.salutation'|trans) ~ ' ' ~ contact.getFullName()|default('default.customer'|trans) }}{% endmacro %}
+{% macro getSalutation(contact) %}
+    {{
+        contact.getSalutation() | default('default.salutation' | trans) ~ ' ' ~
+        contact.getFullName() | default('default.customer' | trans)
+    }}
+{% endmacro %}
