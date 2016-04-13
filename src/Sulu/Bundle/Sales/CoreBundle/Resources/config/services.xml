@@ -134,7 +134,6 @@
         </service>
 
         <service id="sulu_sales_core.sales_config_parameter_service" class="%sulu_sales_core.sales_config_parameter_service.class%">
-            <argument type="service" id="service_container"/>
             <argument>%shopowner%</argument>
         </service>
     </services>

@@ -1,17 +1,19 @@
 <?php
+/*
+ * This file is part of the Sulu CMS.
+ *
+ * (c) MASSIVE ART WebServices GmbH
+ *
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
+ */
 
 namespace Sulu\Bundle\Sales\CoreBundle\Service;
 
-use Symfony\Component\Config\Definition\Exception\Exception;
-use Symfony\Component\DependencyInjection\Container;
+use Sulu\Bundle\Sales\CoreBundle\Exceptions\SalesConfigParameterNotFoundException;
 
 class SalesConfigParameterService
 {
-    /**
-     * @var Container $container
-     */
-    private $container;
-
     /**
      * @var array $shopowner
      */
@@ -20,12 +22,10 @@ class SalesConfigParameterService
     /**
      * SalesConfigParameterService constructor.
      *
-     * @param Container $container
      * @param array $shopowner
      */
-    public function __construct(Container $container, $shopowner)
+    public function __construct($shopowner)
     {
-        $this->container = $container;
         $this->shopowner = $shopowner;
     }
 
@@ -34,12 +34,14 @@ class SalesConfigParameterService
      *
      * @param string $parameterName
      *
+     * @throws SalesConfigParameterNotFoundException
+     *
      * @return mixed
      */
     public function getShopownerParameter($parameterName)
     {
         if (!array_key_exists($parameterName, $this->shopowner)) {
-            throw new Exception("Parameter doesn't exists");
+            throw new SalesConfigParameterNotFoundException();
         }
 
         return $this->shopowner[$parameterName];
