@@ -2,11 +2,13 @@
 
 {% block subject %}
     {% trans with {
-    '%number%': order.number,
-    '%date%': order.orderDate|localizeddate('medium', 'none')|default('')
-    } %}owner.subject{% endtrans %}
+        '%shopowner.name_short%': shopowner.name_short,
+        '%number%': order.number,
+        '%date%': order.orderDate | localizeddate('medium', 'none') | default('')
+    } %} owner.subject {% endtrans %}
 {% endblock %}
 
+{# HTML #}
 {% block body_html %}
     {% import _self as macros %}
     <html>
@@ -29,42 +31,37 @@
     </html>
 {% endblock %}
 
-{% block body_text %}
-    {% spaceless %}
-        {% import _self as macros %}
-        {{ macros.getSalutation() }},
-        {{ macros.translateContent(contact, order) }}
-    {% endspaceless %}
-{% endblock %}
+{# TEXT #}
+{% block body_text %}{% spaceless %}
+{% import _self as macros %}
+{{ macros.getSalutation() }},
 
-{% macro getSalutation(contact) %}
-    {% spaceless %}
-        {{
-            contact.getSalutation()|default('default.salutation'|trans) ~ ' ' ~
-            contact.getFullName()|default('default.owner'|trans)
-        }}
-    {% endspaceless %}
-{% endmacro %}
+{{ macros.translateContent(contact, order) }}
+{% endspaceless %}{% endblock %}
 
-{% macro getGender(contact) %}
-    {% spaceless %}
-        {% if contact and contact.getFormOfAddress() is not null %}
-            {% if contact.getFormOfAddress() == 0 %}
-                {{ 'contact.contacts.formOfAddress.male'|trans({},'backend') }}
-            {% else %}
-                {{ 'contact.contacts.formOfAddress.female'|trans({},'backend') }}
-            {% endif %}
+{# MACROS #}
+{% macro getSalutation(contact) %}{% spaceless %}
+    {{
+        contact.getSalutation() | default('default.salutation' | trans) ~ ' ' ~
+        contact.getFullName() | default('default.owner' | trans)
+    }}
+{% endspaceless %}{% endmacro %}
+
+{% macro getGender(contact) %}{% spaceless %}
+    {% if contact and contact.getFormOfAddress() is not null %}
+        {% if contact.getFormOfAddress() == 0 %}
+            {{ 'contact.contacts.formOfAddress.male' | trans({},'backend') }}
+        {% else %}
+            {{ 'contact.contacts.formOfAddress.female' | trans({},'backend') }}
         {% endif %}
-    {% endspaceless %}
-{% endmacro %}
+    {% endif %}
+{% endspaceless %}{% endmacro %}
 
-{% macro translateContent(contact, order) %}
-    {% spaceless %}
-        {% import _self as macros %}
-        {% trans with {
-            '%gender%': macros.getGender(contact),
-            '%customerName%': contact.getFullName(),
-            '%customerAccount%': order.getCustomerAccount().name
-        } %} owner.content {% endtrans %}
-    {% endspaceless %}
-{% endmacro %}
+{% macro translateContent(contact, order) %}{% spaceless %}
+    {% import _self as macros %}
+    {% trans with {
+        '%gender%': macros.getGender(contact),
+        '%customerName%': contact.getFullName(),
+        '%customerAccount%': order.getCustomerAccount().name
+    } %} owner.content {% endtrans %}
+{% endspaceless %}{% endmacro %}
