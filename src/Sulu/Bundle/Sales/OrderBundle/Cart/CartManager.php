@@ -15,9 +15,8 @@ use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Sulu\Component\Security\Authentication\UserInterface;
 use Sulu\Component\Persistence\RelationTrait;
-use Sulu\Bundle\ProductBundle\Entity\Status;
 use Sulu\Bundle\ProductBundle\Product\Exception\ProductNotFoundException;
-use Sulu\Bundle\ProductBundle\Product\Exception\ProductNotActiveException;
+use Sulu\Bundle\ProductBundle\Product\Exception\ProductNotValidException;
 use Sulu\Bundle\Sales\CoreBundle\Entity\ItemInterface;
 use Sulu\Bundle\PricingBundle\Pricing\GroupedItemsPriceCalculatorInterface;
 use Sulu\Bundle\Sales\CoreBundle\Manager\BaseSalesManager;
@@ -49,7 +48,7 @@ class CartManager extends BaseSalesManager
     /**
      * TODO: replace by config
      *
-     * defines when a cart expires
+     * Defines when a cart expires.
      */
     const EXPIRY_MONTHS = 2;
 
@@ -247,7 +246,7 @@ class CartManager extends BaseSalesManager
     }
 
     /**
-     * Submits an order
+     * Submits a cart.
      *
      * @param UserInterface $user
      * @param string $locale
@@ -259,19 +258,21 @@ class CartManager extends BaseSalesManager
      *
      * @return null|ApiOrder
      */
-    public function submit($user, $locale, &$orderWasSubmitted = true, &$originalCart = null)
+    public function submit(UserInterface $user, $locale, &$orderWasSubmitted = true, &$originalCart = null)
     {
         $orderWasSubmitted = true;
 
         $cart = $this->getUserCart($user, $locale, null, false, true);
         $originalCart = $cart;
+
+        // In case of errors, do not submit cart.
         if (count($cart->getCartErrorCodes()) > 0) {
             $orderWasSubmitted = false;
 
             return $cart;
-        } else {
-            $orderWasSubmitted = $this->submitCartDirectly($cart, $user, $locale);
         }
+
+        $orderWasSubmitted = $this->submitCartDirectly($cart, $user, $locale);
 
         return $this->getUserCart($user, $locale);
     }
@@ -280,8 +281,8 @@ class CartManager extends BaseSalesManager
      * Submits a cart
      *
      * @param ApiOrderInterface $cart
-     * @param string $locale
      * @param UserInterface $user
+     * @param string $locale
      *
      * @return bool
      */
@@ -770,7 +771,7 @@ class CartManager extends BaseSalesManager
      *
      * @param ItemInterface $item
      *
-     * @throws ProductNotActiveException
+     * @throws ProductNotValidException
      * @throws ProductNotFoundException
      *
      * @return bool
@@ -783,8 +784,8 @@ class CartManager extends BaseSalesManager
             throw new ProductNotFoundException('item ' . $item->getId());
         }
 
-        if ($product->getStatus()->getId() !== Status::ACTIVE) {
-            throw new ProductNotActiveException($product->getId());
+        if (!$product->isValidShopProduct($this->defaultCurrency)) {
+            throw new ProductNotValidException($product->getId());
         }
 
         return true;
