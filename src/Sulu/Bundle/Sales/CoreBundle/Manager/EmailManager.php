@@ -94,9 +94,13 @@ class EmailManager
             )
         );
 
-        // load template from twig
+        // Load template from twig.
         $template = $this->twig->loadTemplate($templatePath);
-        // get subject from block
+
+        // Merge twig globals so that they also are available in renderBlock.
+        $tmplData = $this->twig->mergeGlobals($tmplData);
+
+        // Get subject from block.
         $subject = $template->renderBlock('subject', $tmplData);
 
         $emailBodyText = $template->renderBlock('body_text', $tmplData);

@@ -2,30 +2,31 @@
 
 {% macro getSalutation(contact) %}{% spaceless %}
     {% if contact is defined and contact is not null %}
-        {{ contact.getSalutation()|default('default.salutation'|trans) ~ ' ' ~ contact.getFullName()|default('default.owner'|trans) }}
+        {{
+            contact.getSalutation() | default('default.salutation' | trans) ~ ' ' ~
+            contact.getFullName() | default('default.owner' | trans)
+        }}
     {% else %}
-        {{ 'default.full_salutation'|trans }}
+        {{ 'default.full_salutation' | trans }}
     {% endif %}
 {% endspaceless %}{% endmacro %}
 
 {% macro getGender(contact) %}{% spaceless %}
     {% if contact and contact.getFormOfAddress() is not null %}
         {% if contact.getFormOfAddress() == 0 %}
-            {{ 'gender.male'|trans }}
+            {{ 'gender.male' | trans }}
         {% else %}
-            {{ 'gender.female'|trans }}
+            {{ 'gender.female' | trans }}
         {% endif %}
     {% endif %}
 {% endspaceless %}{% endmacro %}
 
-{% macro includeTemplateIfNotEmpty(template, context) %}
+{% macro includeTemplateIfNotEmpty(template, context) %}{% spaceless %}
     {% if template is defined and template is not empty %}
         {{ include(template, {context: context}) }}
     {% endif %}
-{% endmacro %}
+{% endspaceless %}{% endmacro %}
 
-{% macro parseAddress(address) %}
+{% macro parseAddress(address) %}{% spaceless %}
     {{ address.getStreet() }} {{ address.getNumber() }}, {{ address.getZip() }} {{ address.getCity() }}
-{% endmacro %}
-
-
+{% endspaceless %}{% endmacro %}

@@ -36,7 +36,7 @@ class SalesConfigParameterService
      *
      * @throws SalesConfigParameterNotFoundException
      *
-     * @return mixed
+     * @return string
      */
     public function getShopownerParameter($parameterName)
     {

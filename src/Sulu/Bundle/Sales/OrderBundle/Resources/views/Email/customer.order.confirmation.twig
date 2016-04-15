@@ -2,9 +2,10 @@
 
 {% block subject %}
     {% trans with {
+        '%shopowner.name_short%': shopowner.name_short,
         '%number%': order.number,
-        '%date%': order.orderDate|localizeddate('medium', 'none')|default('')
-    } %}customer.subject{% endtrans %}
+        '%date%': order.orderDate | localizeddate('medium', 'none') | default('')
+    } %} customer.subject {% endtrans %}
 {% endblock %}
 
 {% block body_html %}
@@ -22,20 +23,22 @@
             <strong>{{ macros.getSalutation(contact) }},</strong>
         </p>
         <p>
-            {% trans %}customer.content{% endtrans %}
+            {% trans %} customer.content {% endtrans %}
         </p>
     </body>
     </html>
 {% endblock %}
 
-{% block body_text %}
+{% block body_text %}{% spaceless %}
 {% import _self as macros %}
-
-{% spaceless %}
 {{ macros.getSalutation(contact) }},
-{% trans %}customer.content{% endtrans %}
-{% endspaceless %}
 
-{% endblock %}
+{% trans %} customer.content {% endtrans %}
+{% endspaceless %}{% endblock %}
 
-{% macro getSalutation(contact) %}{{ contact.getSalutation()|default('default.salutation'|trans) ~ ' ' ~ contact.getFullName()|default('default.customer'|trans) }}{% endmacro %}
+{% macro getSalutation(contact) %}{% spaceless %}
+    {{
+        contact.getSalutation() | default('default.salutation' | trans) ~ ' ' ~
+        contact.getFullName() | default('default.customer' | trans)
+    }}
+{% endspaceless %}{% endmacro %}

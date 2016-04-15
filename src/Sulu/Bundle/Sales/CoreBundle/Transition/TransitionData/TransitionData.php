@@ -392,7 +392,7 @@ class TransitionData
             'description' => $this->description,
             'commission' => $this->commission,
             'costCentre' => $this->costCentre,
-            'currencyCode' => $this->costCentre,
+            'currencyCode' => $this->currencyCode,
             'deliveryCost' => $this->deliveryCost,
             'internalNote' => $this->getInternalNote(),
             'responsibleContact' => $this->createDataArray($this->responsibleContact),
