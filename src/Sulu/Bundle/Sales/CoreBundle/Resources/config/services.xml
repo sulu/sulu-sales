@@ -30,6 +30,7 @@
         <parameter key="sulu_sales_core.dependency_manager.class">Sulu\Bundle\Sales\CoreBundle\Transition\DependencyManager</parameter>
         <parameter key="sulu_sales_core.transition_resolver.class">Sulu\Bundle\Sales\CoreBundle\Transition\TransitionResolver</parameter>
         <parameter key="sulu_sales_core.sales_config_parameter_service.class">Sulu\Bundle\Sales\CoreBundle\Service\SalesConfigParameterService</parameter>
+        <parameter key="sulu_sales_core.jsconfig.class">Sulu\Bundle\AdminBundle\Admin\JsConfig</parameter>
     </parameters>
 
     <services>
@@ -135,6 +136,14 @@
 
         <service id="sulu_sales_core.sales_config_parameter_service" class="%sulu_sales_core.sales_config_parameter_service.class%">
             <argument>%shopowner%</argument>
+        </service>
+
+        <service id="sulu_sales_core.jsconfig" class="%sulu_sales_core.jsconfig.class%">
+            <argument type="string">sulu_sales_core</argument>
+            <argument type="collection">
+                <argument key="default_currency" type="string">%default_currency%</argument>
+            </argument>
+            <tag name="sulu.js_config"/>
         </service>
     </services>
 </container>

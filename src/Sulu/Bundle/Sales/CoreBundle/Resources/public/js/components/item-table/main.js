@@ -144,7 +144,7 @@ define([
             price: '',
             discount: 0,
             overallPrice: '',
-            currency: 'EUR',
+            currency: Config.get('sulu_sales_core').default_currency,
             useProductsPrice: false,
             tax: 0,
             supplierName: ''
