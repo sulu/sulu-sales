@@ -275,6 +275,7 @@ class OrderEmailManager extends EmailManager
     {
         $xmlFilename = 'PA_OrderConfirmation-' . $apiOrder->getNumber() . '.xml';
         $context = SerializationContext::create()->setGroups(['xmlOrder']);
+        $context->setSerializeNull(true);
         $serialized = $this->serializer->serialize($apiOrder, 'xml', $context);
 
         return \Swift_Attachment::newInstance($serialized, $xmlFilename, 'application/xml');
