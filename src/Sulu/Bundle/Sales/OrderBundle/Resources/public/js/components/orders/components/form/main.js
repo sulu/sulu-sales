@@ -21,10 +21,8 @@ define([
 
     var form = '#order-form',
 
-        // TODO: default-currency needs to be passed from backend
-        // https://github.com/sulu-io/SuluSalesOrderBundle/issues/72
         defaults = {
-            currencyCode : 'EUR'
+            currencyCode : Config.get('sulu_sales_core').default_currency
         },
 
         namespace = 'sulu.salesorder.',

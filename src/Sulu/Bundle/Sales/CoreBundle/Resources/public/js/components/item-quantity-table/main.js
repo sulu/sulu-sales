@@ -68,7 +68,7 @@ define([
                 price: '',
                 discount: null,
                 overallPrice: '',
-                currency: 'EUR',
+                currency: Config.get('sulu_sales_core').default_currency,
                 useProductsPrice: false,
                 tax: 0
             },
