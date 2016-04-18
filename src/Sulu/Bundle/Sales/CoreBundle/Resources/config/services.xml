@@ -143,7 +143,6 @@
             <argument type="collection">
                 <argument key="default_currency" type="string">%default_currency%</argument>
             </argument>
-
             <tag name="sulu.js_config"/>
         </service>
     </services>
