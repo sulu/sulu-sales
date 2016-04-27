@@ -5,6 +5,7 @@ namespace Sulu\Bundle\Sales\ShippingBundle\Api;
 use JMS\Serializer\Annotation\VirtualProperty;
 use JMS\Serializer\Annotation\SerializedName;
 use JMS\Serializer\Annotation\Exclude;
+use Sulu\Bundle\PricingBundle\Pricing\PriceFormatter;
 use Sulu\Bundle\Sales\CoreBundle\Api\Item as ApiItem;
 use Sulu\Bundle\Sales\CoreBundle\Entity\Item;
 use Sulu\Bundle\Sales\CoreBundle\Item\ItemFactoryInterface;
@@ -25,15 +26,26 @@ class ShippingItem extends ApiWrapper
     private $shippedItems;
 
     /**
+     * @var PriceFormatter
+     */
+    private $priceFormatter;
+
+    /**
      * @param ShippingItemEntity $entity
      * @param string $locale
      * @param ItemFactoryInterface $itemFactory
+     * @param PriceFormatter $priceFormatter
      */
-    public function __construct(ShippingItemEntity $entity, $locale, ItemFactoryInterface $itemFactory)
-    {
+    public function __construct(
+        ShippingItemEntity $entity,
+        $locale,
+        ItemFactoryInterface $itemFactory,
+        PriceFormatter $priceFormatter
+    ) {
         $this->entity = $entity;
         $this->locale = $locale;
         $this->itemFactory = $itemFactory;
+        $this->priceFormatter = $priceFormatter;
     }
 
     /**
@@ -124,7 +136,12 @@ class ShippingItem extends ApiWrapper
      */
     public function getShipping()
     {
-        return new ApiShipping($this->entity->getShipping(), $this->locale, $this->itemFactory);
+        return new ApiShipping(
+            $this->entity->getShipping(),
+            $this->locale,
+            $this->itemFactory,
+            $this->priceFormatter
+        );
     }
 
     /**
