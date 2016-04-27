@@ -574,7 +574,12 @@ class Shipping extends ApiWrapper implements SalesDocument
         if (!$this->shippingItems) {
             $this->shippingItems = array();
             foreach ($this->entity->getShippingItems() as $shippingItem) {
-                $this->shippingItems[] = new ShippingItem($shippingItem, $this->locale, $this->itemFactory);
+                $this->shippingItems[] = new ShippingItem(
+                    $shippingItem,
+                    $this->locale,
+                    $this->itemFactory,
+                    $this->priceFormatter
+                );
             }
         }
 

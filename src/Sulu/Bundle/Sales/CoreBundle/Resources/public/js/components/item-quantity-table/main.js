@@ -24,8 +24,9 @@
 define([
     'text!sulusalescore/components/item-quantity-table/item.form.html',
     'text!sulusalescore/components/item-quantity-table/item.row.html',
-    'text!sulusalescore/components/item-quantity-table/item.row-head.html'
-], function(FormTpl, RowTpl, RowHeadTpl) {
+    'text!sulusalescore/components/item-quantity-table/item.row-head.html',
+    'config'
+], function(FormTpl, RowTpl, RowHeadTpl, Config) {
 
     'use strict';
 
