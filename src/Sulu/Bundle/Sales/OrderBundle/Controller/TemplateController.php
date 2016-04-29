@@ -61,7 +61,7 @@ class TemplateController extends RestController
     public function getSystemUserArray()
     {
         $repo = $this->get('sulu_security.user_repository');
-        $users = $repo->getUserInSystem();
+        $users = $repo->findUserBySystem($this->container->getParameter('sulu_security.system'));
         $contacts = [];
 
         foreach ($users as $user) {
