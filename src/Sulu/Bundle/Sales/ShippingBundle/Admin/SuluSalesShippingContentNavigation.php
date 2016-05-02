@@ -20,6 +20,7 @@ class SuluSalesShippingContentNavigation implements ContentNavigationProviderInt
     {
         $overview = new ContentNavigationItem('public.details');
         $overview->setAction('overview');
+        $overview->setPosition(10);
         $overview->setComponent('shippings@sulusalesshipping');
         $overview->setComponentOptions(array('display'=>'form'));
 

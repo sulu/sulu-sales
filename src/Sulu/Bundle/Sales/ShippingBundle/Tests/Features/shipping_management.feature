@@ -31,3 +31,21 @@ Feature: Manage shippings
         And wait that the url should match "/admin/#sales/shippings"
         And I wait and expect to see element "#shippings-list .husky-table"
         Then I should not see "00002"
+
+    Scenario: Switch to shippings tab in sales order detail view
+        Given I am on "/admin/#sales/orders/edit:1/details"
+        And I wait and expect to see element "#order-form"
+        When I click the tab item "Lieferungen"
+        Then wait that the url should match "/admin/#sales/orders/edit:1/shippings"
+        And I wait and expect to see element "#shippings-list"
+
+    Scenario: Create a shipping from a sales order with success
+        Given I am on "/admin/#sales/orders/edit:1/shippings"
+        And I wait and expect to see element "#shippings-list .husky-datagrid"
+        And I click element ".toolbar-item[data-id=add]"
+        And wait that the url should match "/admin/#sales/orders/edit:1/shippings/add"
+        And I wait and expect to see element "#shipping-form"
+        And I wait that the "#delivery-address" element should contain "Kitzbühel"
+        And I click the save icon
+        And wait that the url should match "/admin/#sales/shippings/edit"
+        Then I wait that the ".sulu-title" element should contain "Lieferung #"
