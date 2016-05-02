@@ -30,11 +30,13 @@ class SuluSalesOrderAdmin extends Admin
         $section = new NavigationItem('');
 
         $sales = new NavigationItem('navigation.sales');
+        $sales->setPosition(20);
         $sales->setIcon('shopping-cart');
 
         if ($this->securityChecker->hasPermission('sulu.sales_order.orders', 'view')) {
             $order = new NavigationItem('navigation.sales.order', $sales);
             $order->setAction('sales/orders');
+            $order->setPosition(10);
         }
 
         if ($sales->hasChildren()) {

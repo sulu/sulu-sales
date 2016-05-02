@@ -21,6 +21,7 @@ class SuluSalesOrderContentNavigation implements ContentNavigationProviderInterf
         // details
         $overview = new ContentNavigationItem('public.overview');
         $overview->setAction('overview');
+        $overview->setPosition(10);
         $overview->setComponent('orders@sulusalesorder');
         $overview->setComponentOptions(array('display'=>'form'));
 

@@ -16,14 +16,18 @@ use Sulu\Bundle\AdminBundle\Navigation\ContentNavigationProviderInterface;
 
 class OrderContentNavigationExtension implements ContentNavigationProviderInterface
 {
-    public function getNavigationItems(array $options = array())
+    /**
+     * {@inheritdoc}
+     */
+    public function getNavigationItems(array $options = [])
     {
         $shippings = new ContentNavigationItem('salesshipping.shippings.title');
         $shippings->setAction('shippings');
+        $shippings->setPosition(20);
         $shippings->setComponent('shippings@sulusalesshipping');
-        $shippings->setComponentOptions(array('display'=>'orderList'));
-        $shippings->setDisplay(array('edit'));
+        $shippings->setComponentOptions(['display'=>'orderList']);
+        $shippings->setDisplay(['edit']);
 
-        return array($shippings);
+        return [$shippings];
     }
 }
