@@ -31,7 +31,7 @@ class LoadOrderStatus extends AbstractFixture implements OrderedFixtureInterface
         $status->setId(OrderStatus::STATUS_CREATED);
         $this->createStatusTranslation($manager, $status, 'Created', 'en');
         $this->createStatusTranslation($manager, $status, 'Erfasst', 'de');
-        $this->createStatusTranslation($manager, $status, 'Erfasst', 'de_CH');
+        $this->createStatusTranslation($manager, $status, 'Erfasst', 'de_ch');
         $manager->persist($status);
 
         // cart
@@ -39,7 +39,7 @@ class LoadOrderStatus extends AbstractFixture implements OrderedFixtureInterface
         $status->setId(OrderStatus::STATUS_IN_CART);
         $this->createStatusTranslation($manager, $status, 'In Cart', 'en');
         $this->createStatusTranslation($manager, $status, 'Im Warenkorb', 'de');
-        $this->createStatusTranslation($manager, $status, 'Im Warenkorb', 'de_CH');
+        $this->createStatusTranslation($manager, $status, 'Im Warenkorb', 'de_ch');
         $manager->persist($status);
 
         // confirmed
@@ -47,7 +47,7 @@ class LoadOrderStatus extends AbstractFixture implements OrderedFixtureInterface
         $status->setId(OrderStatus::STATUS_CONFIRMED);
         $this->createStatusTranslation($manager, $status, 'Order confirmed', 'en');
         $this->createStatusTranslation($manager, $status, 'Bestätigt', 'de');
-        $this->createStatusTranslation($manager, $status, 'Bestätigt', 'de_CH');
+        $this->createStatusTranslation($manager, $status, 'Bestätigt', 'de_ch');
         $manager->persist($status);
 
         // confirmed
@@ -55,7 +55,7 @@ class LoadOrderStatus extends AbstractFixture implements OrderedFixtureInterface
         $status->setId(OrderStatus::STATUS_CLOSED_MANUALLY);
         $this->createStatusTranslation($manager, $status, 'Manually closed', 'en');
         $this->createStatusTranslation($manager, $status, 'Manuell geschlossen', 'de');
-        $this->createStatusTranslation($manager, $status, 'Manuell geschlossen', 'de_CH');
+        $this->createStatusTranslation($manager, $status, 'Manuell geschlossen', 'de_ch');
         $manager->persist($status);
 
         // canceled
@@ -63,7 +63,7 @@ class LoadOrderStatus extends AbstractFixture implements OrderedFixtureInterface
         $status->setId(OrderStatus::STATUS_CANCELED);
         $this->createStatusTranslation($manager, $status, 'Canceled', 'en');
         $this->createStatusTranslation($manager, $status, 'Abgebrochen', 'de');
-        $this->createStatusTranslation($manager, $status, 'Abgebrochen', 'de_CH');
+        $this->createStatusTranslation($manager, $status, 'Abgebrochen', 'de_ch');
         $manager->persist($status);
 
         // canceled
@@ -71,7 +71,7 @@ class LoadOrderStatus extends AbstractFixture implements OrderedFixtureInterface
         $status->setId(OrderStatus::STATUS_COMPLETED);
         $this->createStatusTranslation($manager, $status, 'Completed', 'en');
         $this->createStatusTranslation($manager, $status, 'Abgeschlossen', 'de');
-        $this->createStatusTranslation($manager, $status, 'Abgeschlossen', 'de_CH');
+        $this->createStatusTranslation($manager, $status, 'Abgeschlossen', 'de_ch');
         $manager->persist($status);
 
         // canceled
@@ -79,7 +79,7 @@ class LoadOrderStatus extends AbstractFixture implements OrderedFixtureInterface
         $status->setId(OrderStatus::STATUS_CART_PENDING);
         $this->createStatusTranslation($manager, $status, 'Cart order pending', 'en');
         $this->createStatusTranslation($manager, $status, 'Warenkorb in Bearbeitung', 'de');
-        $this->createStatusTranslation($manager, $status, 'Warenkorb in Bearbeitung', 'de_CH');
+        $this->createStatusTranslation($manager, $status, 'Warenkorb in Bearbeitung', 'de_ch');
         $manager->persist($status);
 
         $manager->flush();
