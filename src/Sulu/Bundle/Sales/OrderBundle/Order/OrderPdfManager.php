@@ -108,29 +108,29 @@ class OrderPdfManager
 
         $header = $this->pdfManager->renderTemplate(
             $this->templateHeaderPath,
-            array()
+            []
         );
 
         $footer = $this->pdfManager->renderTemplate(
             $this->templateFooterPath,
-            array()
+            []
         );
 
         $pdf = $this->pdfManager->convertToPdf(
             $this->templateConfirmationPath,
             $data,
             false,
-            array(
+            [
                 'footer-html' => $footer,
                 'header-html' => $header
-            )
+            ]
         );
 
         return $pdf;
     }
 
     /**
-     * Function that sets data array for pdf rendering
+     * Function that sets data array for pdf rendering.
      *
      * @param ApiOrderInterface $apiOrder
      *
@@ -144,10 +144,10 @@ class OrderPdfManager
         if ($order->getCustomerAccount()) {
             $customerNumber = $order->getCustomerAccount()->getNumber();
         } else {
-            $customerNumber = $order->getCustomerContact()->getNumber();
+            $customerNumber = sprintf('%05d', $order->getCustomerContact()->getId());
         }
 
-        $data = array(
+        $data = [
             'recipient' => $order->getDeliveryAddress(),
             'responsibleContact' => $order->getResponsibleContact(),
             'deliveryAddress' => $order->getDeliveryAddress(),
@@ -160,7 +160,7 @@ class OrderPdfManager
             'templateBasePath' => $this->templateBasePath,
             'templateMacrosPath' => $this->templateMacrosPath,
             'website_locale' => $this->websiteLocale,
-        );
+        ];
 
         return $data;
     }
