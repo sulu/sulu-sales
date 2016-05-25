@@ -31,7 +31,7 @@ class LoadOrderTypes extends AbstractFixture implements OrderedFixtureInterface
         $type->setId(OrderType::MANUAL);
         $this->createTypeTranslation($manager, $type, 'Manual', 'en');
         $this->createTypeTranslation($manager, $type, 'Manuell', 'de');
-        $this->createTypeTranslation($manager, $type, 'Manuell', 'de_CH');
+        $this->createTypeTranslation($manager, $type, 'Manuell', 'de_ch');
         $manager->persist($type);
 
         // shop
@@ -39,7 +39,7 @@ class LoadOrderTypes extends AbstractFixture implements OrderedFixtureInterface
         $type->setId(OrderType::SHOP);
         $this->createTypeTranslation($manager, $type, 'Shop order', 'en');
         $this->createTypeTranslation($manager, $type, 'Shopbestellung', 'de');
-        $this->createTypeTranslation($manager, $type, 'Shopbestellung', 'de_CH');
+        $this->createTypeTranslation($manager, $type, 'Shopbestellung', 'de_ch');
         $manager->persist($type);
 
         // anonymous
@@ -47,7 +47,7 @@ class LoadOrderTypes extends AbstractFixture implements OrderedFixtureInterface
         $type->setId(OrderType::ANONYMOUS);
         $this->createTypeTranslation($manager, $type, 'Anonymous order', 'en');
         $this->createTypeTranslation($manager, $type, 'Anonyme Bestellung', 'de');
-        $this->createTypeTranslation($manager, $type, 'Anonyme Bestellung', 'de_CH');
+        $this->createTypeTranslation($manager, $type, 'Anonyme Bestellung', 'de_ch');
         $manager->persist($type);
 
         $manager->flush();
