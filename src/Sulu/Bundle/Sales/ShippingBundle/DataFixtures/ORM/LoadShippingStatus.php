@@ -34,7 +34,7 @@ class LoadShippingStatus extends AbstractFixture implements OrderedFixtureInterf
         $status->setId(ShippingStatus::STATUS_CREATED);
         $this->createStatusTranslation($manager, $status, 'Created', 'en');
         $this->createStatusTranslation($manager, $status, 'Erfasst', 'de');
-        $this->createStatusTranslation($manager, $status, 'Erfasst', 'de_CH');
+        $this->createStatusTranslation($manager, $status, 'Erfasst', 'de_ch');
         $manager->persist($status);
         $statuses[ShippingStatus::STATUS_CREATED] = $status;
 
@@ -43,7 +43,7 @@ class LoadShippingStatus extends AbstractFixture implements OrderedFixtureInterf
         $status->setId(ShippingStatus::STATUS_DELIVERY_NOTE);
         $this->createStatusTranslation($manager, $status, 'Delivery note created', 'en');
         $this->createStatusTranslation($manager, $status, 'Lieferschein erstellt', 'de');
-        $this->createStatusTranslation($manager, $status, 'Lieferschein erstellt', 'de_CH');
+        $this->createStatusTranslation($manager, $status, 'Lieferschein erstellt', 'de_ch');
         $manager->persist($status);
         $statuses[ShippingStatus::STATUS_DELIVERY_NOTE] = $status;
 
@@ -52,7 +52,7 @@ class LoadShippingStatus extends AbstractFixture implements OrderedFixtureInterf
         $status->setId(ShippingStatus::STATUS_SHIPPED);
         $this->createStatusTranslation($manager, $status, 'Shipped', 'en');
         $this->createStatusTranslation($manager, $status, 'Versandt', 'de');
-        $this->createStatusTranslation($manager, $status, 'Versandt', 'de_CH');
+        $this->createStatusTranslation($manager, $status, 'Versandt', 'de_ch');
         $manager->persist($status);
         $statuses[ShippingStatus::STATUS_SHIPPED] = $status;
 
@@ -61,7 +61,7 @@ class LoadShippingStatus extends AbstractFixture implements OrderedFixtureInterf
         $status->setId(ShippingStatus::STATUS_CANCELED);
         $this->createStatusTranslation($manager, $status, 'Canceled', 'en');
         $this->createStatusTranslation($manager, $status, 'Storniert', 'de');
-        $this->createStatusTranslation($manager, $status, 'Storniert', 'de_CH');
+        $this->createStatusTranslation($manager, $status, 'Storniert', 'de_ch');
         $manager->persist($status);
         $statuses[ShippingStatus::STATUS_CANCELED] = $status;
 
