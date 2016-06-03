@@ -5,7 +5,7 @@ Feature: Manage shippings
     I want to be able to list, edit, delete and create shippings
 
     Background:
-        Given I am logged in as an administrator with locale 'de'
+        Given I am logged in as an administrator with default locale
 
     Scenario: List shippings
         Given I am on "/admin/#sales/shippings"
