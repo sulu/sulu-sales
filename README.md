@@ -4,7 +4,7 @@
 
 ### Sulu-sales order bundle
 
-The necessary configuration in `app/config.yml` is:
+The available configuration in `app/config.yml` is:
 ```
 sulu_sales_order:
     pdf_templates:
