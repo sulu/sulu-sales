@@ -68,7 +68,7 @@ class PdfController extends RestController
             200,
             array(
                 'Content-Type' => 'application/pdf',
-                'Content-Disposition' => 'attachment; filename="' . $pdfName . '"'
+                'Content-Disposition' => 'inline; filename="' . $pdfName . '"'
             )
         );
     }
