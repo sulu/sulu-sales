@@ -53,6 +53,10 @@ class SuluSalesOrderExtension extends Extension
             'sulu_sales_order.send_email_confirmation_to_shopowner',
             $config['send_email_confirmation_to_shopowner']
         );
+        $container->setParameter(
+            'sulu_sales_order.pdf_response_type',
+            $config['pdf_response_type']
+        );
     }
 
     /**
