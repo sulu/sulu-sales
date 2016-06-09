@@ -62,13 +62,14 @@ class PdfController extends RestController
         $pdf = $this->getPdfManager()->createOrderConfirmation($orderApiEntity);
 
         $pdfName = $this->getPdfManager()->getPdfName($order);
+        $responseType = $this->container->getParameter('sulu_sales_order.pdf_response_type');
 
         return new Response(
             $pdf,
             200,
             array(
                 'Content-Type' => 'application/pdf',
-                'Content-Disposition' => 'inline; filename="' . $pdfName . '"'
+                'Content-Disposition' => $responseType . '; ' . 'filename="' . $pdfName . '"'
             )
         );
     }

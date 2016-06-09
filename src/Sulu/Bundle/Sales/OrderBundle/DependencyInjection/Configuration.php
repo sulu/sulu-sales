@@ -35,6 +35,7 @@ class Configuration implements ConfigurationInterface
                     ->end()
                 ->end()
             ->end()
+            ->scalarNode('pdf_response_type')->defaultValue('inline')->end()
             ->arrayNode('email_templates')
                 ->addDefaultsIfNotSet()
                     ->children()
