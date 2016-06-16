@@ -168,7 +168,7 @@ define([
             }
         },
 
-        // event namespace
+        // Event namespace.
         eventNamespace = 'sulu.item-table.',
 
         /**
@@ -285,7 +285,7 @@ define([
         },
 
         /**
-         * bind custom events
+         * Bind custom events.
          */
         bindCustomEvents = function() {
             this.sandbox.on(EVENT_SET_DEFAULT_DATA.call(this), setDefaultData.bind(this));
@@ -409,7 +409,7 @@ define([
         /**
          * Set addresses of settings overlay.
          *
-         * @param {Function} addresses
+         * @param {Function} callback
          */
         getData= function(callback) {
             if (typeof callback === "function") {
@@ -425,10 +425,10 @@ define([
         resetItemAddresses = function(address) {
             var i, item;
 
-            // reset default address
+            // Reset default address.
             setDefaultData.call(this, 'address', address);
 
-            // reset addresses of all items
+            // Reset addresses of all items.
             for (i in this.items) {
                 if (this.items.hasOwnProperty(i)) {
                     item = this.items[i];
@@ -449,7 +449,7 @@ define([
 
             this.currency = currency;
 
-            // get all row-Ids
+            // Get all row-Ids.
             rowIds = Object.keys(this.items);
 
             if (!!rowIds && rowIds.length > 0) {
@@ -457,8 +457,8 @@ define([
 
                 dfdLoadedProducts = fetchPricesForRow.call(this, rowIds);
 
-                // go on when loader is fully loaded and product data retrieved
-                // dfdLoadedProducts needs to be the first param
+                // Go on when loader is fully loaded and product data retrieved.
+                // dfdLoadedProducts needs to be the first param.
                 this.sandbox.dom.when(dfdLoadedProducts, dfdLoaderStarted)
                     .done(function(data) {
                         updatePricesForEachProduct.call(this);
@@ -481,13 +481,13 @@ define([
          * Updates the price and total for every item.
          */
         updatePricesForEachProduct = function() {
-            // update price and input value
+            // Update price and input value.
             for (var rowId in this.items) {
                 if (this.items.hasOwnProperty(rowId)) {
-                    // set item's input
+                    // Set item's input.
                     setItemRowPriceInput.call(this, rowId);
 
-                    // update row total price
+                    // Update row total price.
                     updateOverallPrice.call(this, rowId);
                 }
             }
@@ -499,7 +499,7 @@ define([
          * @param {String} rowId
          */
         setItemRowPriceInput = function(rowId) {
-            // update input in dom
+            // Update input in dom.
             var item = this.items[rowId];
             var $el = this.sandbox.dom.find(constants.priceInput, getItemRowById.call(this, rowId));
             this.sandbox.dom.val($el, item.priceFormatted);
@@ -566,7 +566,7 @@ define([
          * @param {Object} event
          */
         rowClicked = function(event) {
-            // if input or link was clicked, do nothing
+            // If input or link was clicked, do nothing.
             if (event.target.tagName.toUpperCase() === 'INPUT' ||
                 event.target.tagName.toUpperCase() === 'A' ||
                 !this.options.isEditable
@@ -576,12 +576,12 @@ define([
 
             var rowId = this.sandbox.dom.attr(event.currentTarget, 'id'),
                 dataId = this.sandbox.dom.data(event.currentTarget, 'id');
-            // call rowCallback
+            // Call rowCallback.
             if (!!this.options.rowCallback) {
                 this.options.rowCallback.call(this, rowId, this.items[rowId]);
             }
 
-            // if settings are activated, show them
+            // If settings are activated, show them.
             if (!!this.options.settings
                 && this.options.settings !== 'false'
                 && this.items.hasOwnProperty(rowId)
@@ -610,7 +610,7 @@ define([
          */
         quantityChangedHandler = function(event) {
             var rowId = getRowData.call(this, event).id;
-            // update quantity
+            // Update quantity.
             this.items[rowId].quantity = this.sandbox.parseFloat(this.sandbox.dom.val(event.target));
 
             updateItemRowPrices.call(this, rowId);
@@ -625,7 +625,7 @@ define([
          */
         priceChangedHandler = function(event) {
             var rowId = getRowData.call(this, event).id;
-            // update price
+            // Update price.
             this.items[rowId].price = this.sandbox.parseFloat(this.sandbox.dom.val(event.target));
 
             updateItemRowPrices.call(this, rowId);
@@ -640,7 +640,7 @@ define([
          */
         discountChangedHandler = function(event) {
             var rowId = getRowData.call(this, event).id;
-            // update discount
+            // Update discount.
             this.items[rowId].discount = this.sandbox.parseFloat(this.sandbox.dom.val(event.target));
 
             updateItemRowPrices.call(this, rowId);
@@ -660,13 +660,13 @@ define([
                 return;
             }
             var isLoadedPromise = new this.sandbox.data.deferred();
-            // update API
+            // Update API.
             fetchPricesForRow.call(this, rowId).then(function() {
-                // update rows overall price
+                // Update rows overall price.
                 updateOverallPrice.call(this, rowId);
-                // update global price
+                // Update global price.
                 updateGlobalPrice.call(this);
-                // update items data in dom
+                // Update items data in dom.
                 refreshItemsData.call(this);
 
                 isLoadedPromise.resolve();
@@ -844,7 +844,7 @@ define([
 
             this.addedProductIds.push(product.id);
 
-            // show loader
+            // Show loader.
             this.sandbox.start([
                 {
                     name: 'loader@husky',
@@ -855,15 +855,15 @@ define([
                 }
             ]);
 
-            // load product details
+            // Load product details.
             this.sandbox.util.load(urls.product + product.id)
                 .then(function(response) {
-                    // set item to product
+                    // Set item to product.
                     itemData = setItemByProduct.call(this, response);
                     $row = updateItemRow.call(this, rowId, itemData);
-                    // fetch prices
+                    // Fetch prices.
                     updateItemRowPrices.call(this, rowId).then(function() {
-                        // update price input
+                        // Update price input.
                         setItemRowPriceInput.call(this, rowId);
                     }.bind(this));
                 }.bind(this))
@@ -889,25 +889,33 @@ define([
             var isLoadedPromise = new this.sandbox.data.deferred(),
                 items = [];
 
-            // if single object convert to array
+            // If single object convert to array.
             if (!this.sandbox.dom.isArray(rowIds)) {
                 rowIds = [rowIds];
             }
-            // iterate through items
+            // Iterate through items.
             this.sandbox.util.foreach(rowIds, function(rowId) {
                 items.push(this.items[rowId]);
             }.bind(this));
 
-            // load product price
+            // Load product price.
             this.sandbox.util.save(urls.pricing, 'POST', {
                 currency: this.currency,
                 taxfree: this.options.taxfree,
                 items: items
             }).then(function(response) {
-                // map each result of response back to rowIds
+                // Map each result of response back to rowIds.
                 for (var i = -1, len = response.items.length; ++i < len;) {
                     var rowId = rowIds[i];
-                    this.sandbox.util.extend(this.items[rowId], response.items[i]);
+                    // Extend items by results from price-calculation.
+                    // Also remove gross-price, since calculation always returns net prices.
+                    this.sandbox.util.extend(
+                        this.items[rowId],
+                        response.items[i],
+                        {
+                            isGrossPrice: false
+                        }
+                    );
                 }
 
                 isLoadedPromise.resolve();
@@ -957,7 +965,7 @@ define([
             options.limit = constants.autocompleteLimit;
             options.instanceName += this.rowCount;
 
-            // initialize auto-complete when adding a new Item
+            // Initialize auto-complete when adding a new Item.
             this.sandbox.start([
                 {
                     name: 'auto-complete@husky',
@@ -992,7 +1000,7 @@ define([
          * @param {String} rowId
          */
         removeItemData = function(rowId) {
-            // remove from items data
+            // Remove from items data.
             delete this.items[rowId];
 
             refreshItemsData.call(this);
@@ -1037,22 +1045,22 @@ define([
          * @param {Object} $row the row element
          */
         removeItemRow = function(rowId, $row) {
-            // remove from table
+            // Remove from table.
             this.sandbox.dom.remove($row);
 
-            // remove product id
+            // Remove product id.
             if (!!this.items[rowId] && !!this.items[rowId].product) {
                 var index = this.addedProductIds.indexOf(this.items[rowId].product.id);
                 this.addedProductIds.splice(index,1);
             }
 
-            // remove from data
+            // Remove from data.
             removeItemData.call(this, rowId);
 
-            // remove validation
+            // Remove validation.
             removeValidationFields.call(this, $row);
 
-            // refresh global price
+            // Refresh global price.
             updateGlobalPrice.call(this);
 
             this.sandbox.emit(EVENT_CHANGED.call(this));
@@ -1082,7 +1090,7 @@ define([
                         showItemCount: this.options.showItemCount
                     });
 
-            // handle address
+            // Handle address.
             if (!!data.address && typeof data.address === 'object') {
                 data.addressObject = data.address;
                 data.address = this.sandbox.sulu.createAddressString(data.address);
@@ -1091,7 +1099,7 @@ define([
             data.currency = this.currency;
             data.overallPrice = this.sandbox.numberFormat(getOverallPriceString.call(this, data));
 
-            // format numbers for cultural differences
+            // Format numbers for cultural differences.
             data.discount = this.sandbox.numberFormat(data.discount, 'n');
             data.price = this.sandbox.numberFormat(data.price, 'n');
             data.quantity = this.sandbox.numberFormat(data.quantity, 'n');
@@ -1111,8 +1119,7 @@ define([
          *
          * @param {Object} $row
          */
-        createNewItemRowWithData = function(itemData, shouldUpdatePrices)
-        {
+        createNewItemRowWithData = function(itemData, shouldUpdatePrices) {
             // Create row in dom.
             var $row = addItemRow.call(this, itemData);
             // Add to items array.
@@ -1134,15 +1141,15 @@ define([
          */
         addItemRow = function(itemData) {
             var $row, nested;
-            // if nested, then define item
+            // If nested, then define item.
             if (this.options.hasNestedItems) {
                 nested = itemData;
-                // get data and merge with data one level above
+                // Get data and merge with data one level above.
                 itemData = this.sandbox.util.extend({}, itemData.item, nested);
                 delete itemData.item;
             }
 
-            // create row
+            // Create row.
             $row = createItemRow.call(this, itemData);
             this.$lastAddedRow = $row;
             this.sandbox.dom.append(this.$find(constants.listClass), $row);
@@ -1160,13 +1167,13 @@ define([
             var $row = createItemRow.call(this, itemData, rowId);
             this.sandbox.dom.replaceWith(this.$find('#' + rowId), $row);
 
-            // add item to data
+            // Add item to data.
             addItemData.call(this, rowId, itemData);
 
-            // add to validation
+            // Add to validation.
             addValidationFields.call(this, $row);
 
-            // emit data change
+            // Emit data change.
             this.sandbox.emit(EVENT_CHANGED.call(this));
 
             return $row;
@@ -1235,7 +1242,7 @@ define([
          * @param {Array} items
          */
         renderItems = function(items) {
-            var i, length, $row;
+            var i, length;
             for (i = -1, length = items.length; ++i < length;) {
                 createNewItemRowWithData.call(this, items[i]);
             }
@@ -1265,7 +1272,7 @@ define([
          * @returns {Object}
          */
         setItemByProduct = function(productData) {
-            // merge with row defaults
+            // Merge with row defaults.
             var i, len,
                 itemData = this.sandbox.util.extend({}, rowDefaults, this.options.defaultData,
                     {
@@ -1273,11 +1280,12 @@ define([
                         number: productData.number,
                         description: productData.shortDescription,
                         product: productData,
-                        quantityUnit: !!productData.orderUnit ? productData.orderUnit.name : ''
+                        quantityUnit: !!productData.orderUnit ? productData.orderUnit.name : '',
+                        isGrossPrice: productData.areGrossPrices
                     }
                 );
 
-            // get prices
+            // Get prices.
             if (!!productData.prices && productData.prices.length > 0) {
                 for (i = -1, len = productData.prices.length; ++i < len;) {
                     if (productData.prices[i].currency.code === this.currency) {
@@ -1286,7 +1294,7 @@ define([
                 }
             }
 
-            // set supplierName as tooltip, if set
+            // Set supplierName as tooltip, if set.
             if (!!productData.supplierName) {
                 itemData.supplierName = productData.supplierName;
             }
@@ -1295,7 +1303,7 @@ define([
         },
 
         /**
-         * Inits the overlay with a specific template.
+         * Initalizes the overlay with a specific template.
          *
          * @param {Object} data
          * @param {Object} settings
@@ -1563,14 +1571,14 @@ define([
 
     return {
         initialize: function() {
-            // load defaults
+            // Load defaults.
             this.options = this.sandbox.util.extend({}, defaults, this.options);
 
             this.selectorFormId = '#'+ this.options.formId;
 
             this.checkOptions();
 
-            // variables
+            // Variables
             this.items = {};
             this.rowCount = 0;
             this.addedProductIds = [];
@@ -1579,22 +1587,22 @@ define([
 
             this.isEmpty = this.items.length;
 
-            // if data is not set, check if it's set in elements DATA
+            // If data is not set, check if it's set in elements DATA.
             var dataItems = this.sandbox.dom.data(this.$el, 'items');
             if (this.options.data.length === 0 && !!dataItems && dataItems.length > 0) {
                 this.options.data = dataItems;
             }
 
-            // render component
+            // Render component.
             this.render();
 
-            // event listener
+            // Event listener.
             bindCustomEvents.call(this);
             bindDomEvents.call(this);
         },
 
         render: function() {
-            // add translations for template
+            // Add translations for template.
             var templateData = this.sandbox.util.extend({},
                 {
                     formId: this.options.formId,
@@ -1610,20 +1618,20 @@ define([
                 }
             );
 
-            // init skeleton
+            // Init skeleton.
             this.table = this.sandbox.util.template(FormTpl, templateData);
             this.html(this.table);
 
-            // render header
+            // Render header.
             renderHeader.call(this);
 
-            // render items
+            // Render items.
             renderItems.call(this, this.options.data);
 
-            // init form
+            // Init form.
             initializeForm.call(this);
 
-            // set global price
+            // Set global price.
             updateGlobalPrice.call(this);
 
             this.sandbox.emit(EVENT_INITIALIZED.call(this));
@@ -1659,7 +1667,7 @@ define([
         getItems: function() {
             var i,
                 items = [];
-            // convert this.items to array
+            // Convert this.items to array.
             for (i in this.items) {
                 items.push(this.items[i]);
             }
