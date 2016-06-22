@@ -16,7 +16,6 @@ use Sulu\Bundle\AdminBundle\Widgets\WidgetParameterException;
 use Sulu\Bundle\AdminBundle\Widgets\WidgetEntityNotFoundException;
 use Doctrine\ORM\EntityManager;
 use Sulu\Bundle\ContactBundle\Entity\Account;
-use Sulu\Bundle\ContactBundle\Entity\Contact;
 
 /**
  * SimpleContact widget
@@ -28,7 +27,7 @@ class SimpleContact implements WidgetInterface
     protected $em;
 
     protected $widgetName = 'SimpleContact';
-    protected $contactEntityName = 'SuluContactBundle:Contact';
+    protected $contactEntityName = 'SuluContactExtensionBundle:Contact';
 
     function __construct(EntityManager $em)
     {

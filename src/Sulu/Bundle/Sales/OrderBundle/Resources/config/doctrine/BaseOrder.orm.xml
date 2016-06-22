@@ -34,7 +34,7 @@
         <field name="desiredDeliveryDate" type="datetime" column="desiredDeliveryDate" nullable="true"></field>
 
 
-        <many-to-one field="customerContact" target-entity="Sulu\Bundle\ContactBundle\Entity\Contact">
+        <many-to-one field="customerContact" target-entity="Sulu\Component\Contact\Model\ContactInterface">
             <join-columns>
                 <join-column name="idContactsCustomer" referenced-column-name="id" on-delete="SET NULL"/>
             </join-columns>

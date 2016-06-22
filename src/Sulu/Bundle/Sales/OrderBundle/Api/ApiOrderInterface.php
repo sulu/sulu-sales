@@ -13,13 +13,12 @@ namespace Sulu\Bundle\Sales\OrderBundle\Api;
 use DateTime;
 use Sulu\Bundle\ContactBundle\Entity\AccountInterface;
 use Sulu\Component\Security\Authentication\UserInterface;
-use Sulu\Bundle\ContactBundle\Entity\Contact;
 use Sulu\Bundle\ContactExtensionBundle\Entity\TermsOfPayment;
 use Sulu\Bundle\ContactExtensionBundle\Entity\TermsOfDelivery;
 use Sulu\Bundle\Sales\CoreBundle\Entity\OrderAddress as OrderAddressEntity;
 use Sulu\Bundle\Sales\CoreBundle\Entity\OrderAddressInterface;
 use Sulu\Bundle\Sales\CoreBundle\Entity\ItemInterface;
-
+use Sulu\Component\Contact\Model\ContactInterface;
 
 interface ApiOrderInterface
 {
@@ -270,32 +269,32 @@ interface ApiOrderInterface
     /**
      * Set contact
      *
-     * @param Contact $contact
+     * @param ContactInterface $contact
      *
      * @return Order
      */
-    public function setCustomerContact(Contact $contact = null);
+    public function setCustomerContact(ContactInterface $contact = null);
 
     /**
      * Get contact
      *
-     * @return Contact
+     * @return ContactInterface
      */
     public function getCustomerContact();
 
     /**
      * Set responsibleContact
      *
-     * @param Contact $responsibleContact
+     * @param ContactInterface $responsibleContact
      *
      * @return Order
      */
-    public function setResponsibleContact(Contact $responsibleContact = null);
+    public function setResponsibleContact(ContactInterface $responsibleContact = null);
 
     /**
      * Get responsibleContact
      *
-     * @return Contact
+     * @return ContactInterface
      */
     public function getResponsibleContact();
 

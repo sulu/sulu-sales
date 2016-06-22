@@ -14,7 +14,6 @@ use Doctrine\ORM\EntityManagerInterface;
 use Sulu\Component\Contact\Model\ContactInterface;
 use Sulu\Component\Rest\Exception\EntityNotFoundException;
 use Sulu\Bundle\ContactBundle\Entity\Address;
-use Sulu\Bundle\ContactBundle\Entity\Contact;
 use Sulu\Bundle\Sales\CoreBundle\Entity\OrderAddressInterface;
 use Sulu\Bundle\Sales\CoreBundle\Entity\OrderAddressRepository;
 use Sulu\Bundle\Sales\CoreBundle\Exceptions\MissingAttributeException;
@@ -61,7 +60,7 @@ class OrderAddressManager
      *
      * @param OrderAddressInterface $orderAddress
      * @param array $addressData
-     * @param Contact $contact
+     * @param ContactInterface $contact
      * @param Account|null $account
      *
      * @throws OrderDependencyNotFoundException
@@ -101,7 +100,7 @@ class OrderAddressManager
      * If order-address does not exist a new one is created.
      *
      * @param int $addressId
-     * @param null|Contact $contact
+     * @param null|ContactInterface $contact
      * @param null|Account $account
      * @param null|OrderAddressInterface $orderAddress
      *
@@ -129,7 +128,7 @@ class OrderAddressManager
      * If order-address does not exist a new one is created.
      *
      * @param Address $address
-     * @param null|Contact $contact
+     * @param null|ContactInterface $contact
      * @param null|Account $account
      * @param null|OrderAddressInterface $orderAddress
      *
@@ -244,13 +243,13 @@ class OrderAddressManager
      * Either by provided address or contact.
      *
      * @param array $addressData
-     * @param Contact $contact
+     * @param ContactInterface $contact
      *
      * @throws MissingAttributeException
      *
      * @return array
      */
-    public function getContactData($addressData, Contact $contact = null)
+    public function getContactData($addressData, ContactInterface $contact = null)
     {
         $result = array();
 

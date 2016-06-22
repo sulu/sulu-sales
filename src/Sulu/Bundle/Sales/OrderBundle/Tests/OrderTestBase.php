@@ -13,9 +13,9 @@ namespace Sulu\Bundle\Sales\OrderBundle\Tests;
 use Doctrine\ORM\EntityManager;
 use Sulu\Bundle\ContactBundle\Entity\AccountInterface;
 use Sulu\Bundle\ContactBundle\Entity\Address;
-use Sulu\Bundle\ContactBundle\Entity\Contact;
 use Sulu\Bundle\Sales\CoreBundle\Item\ItemFactoryInterface;
 use Sulu\Bundle\TestBundle\Testing\SuluTestCase;
+use Sulu\Component\Contact\Model\ContactInterface;
 
 class OrderTestBase extends SuluTestCase
 {
@@ -52,13 +52,13 @@ class OrderTestBase extends SuluTestCase
      *
      * @param $orderAddress
      * @param Address $address
-     * @param Contact $contact
+     * @param ContactInterface $contact
      * @param AccountInterface $account
      */
     protected function checkOrderAddress(
         $orderAddress,
         Address $address,
-        Contact $contact,
+        ContactInterface $contact,
         AccountInterface $account = null
     ) {
         // Contact

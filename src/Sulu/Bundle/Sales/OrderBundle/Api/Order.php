@@ -16,9 +16,7 @@ use JMS\Serializer\Annotation\VirtualProperty;
 use JMS\Serializer\Annotation\SerializedName;
 use JMS\Serializer\Annotation\Groups;
 use JMS\Serializer\Annotation\Exclude;
-use JMS\Serializer\Annotation\MaxDepth;
 use Sulu\Bundle\ContactBundle\Entity\AccountInterface;
-use Sulu\Bundle\ContactBundle\Entity\Contact;
 use Sulu\Bundle\ContactExtensionBundle\Entity\TermsOfDelivery;
 use Sulu\Bundle\ContactExtensionBundle\Entity\TermsOfPayment;
 use Sulu\Bundle\Sales\CoreBundle\Api\OrderAddress;
@@ -30,6 +28,7 @@ use Sulu\Bundle\PricingBundle\Pricing\PriceFormatter;
 use Sulu\Bundle\Sales\OrderBundle\Api\OrderStatus as ApiOrderStatus;
 use Sulu\Bundle\Sales\OrderBundle\Entity\OrderInterface;
 use Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatus;
+use Sulu\Component\Contact\Model\ContactInterface;
 use Sulu\Component\Rest\ApiWrapper;
 use Sulu\Component\Security\Authentication\UserInterface;
 
@@ -621,11 +620,11 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     }
 
     /**
-     * @param Contact $contact
+     * @param ContactInterface $contact
      *
      * @return Order
      */
-    public function setCustomerContact(Contact $contact = null)
+    public function setCustomerContact(ContactInterface $contact = null)
     {
         $this->entity->setCustomerContact($contact);
 
@@ -636,7 +635,7 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
      * @VirtualProperty
      * @SerializedName("customerContact")
      *
-     * @return Contact
+     * @return ContactInterface
      */
     public function getCustomerContact()
     {
@@ -652,11 +651,11 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     }
 
     /**
-     * @param Contact $responsibleContact
+     * @param ContactInterface $responsibleContact
      *
      * @return Order
      */
-    public function setResponsibleContact(Contact $responsibleContact = null)
+    public function setResponsibleContact(ContactInterface $responsibleContact = null)
     {
         $this->entity->setResponsibleContact($responsibleContact);
 
@@ -667,7 +666,7 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
      * @VirtualProperty
      * @SerializedName("responsibleContact")
      *
-     * @return Contact
+     * @return ContactInterface
      */
     public function getResponsibleContact()
     {

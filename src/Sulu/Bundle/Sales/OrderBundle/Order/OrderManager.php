@@ -14,6 +14,7 @@ use DateTime;
 use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\NoResultException;
+use Sulu\Component\Contact\Model\ContactInterface;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Sulu\Component\Security\Authentication\UserRepositoryInterface;
 use Sulu\Component\Security\Authentication\UserInterface;
@@ -24,7 +25,6 @@ use Sulu\Component\Rest\ListBuilder\Doctrine\FieldDescriptor\DoctrineFieldDescri
 use Sulu\Component\Rest\ListBuilder\Doctrine\FieldDescriptor\DoctrineJoinDescriptor;
 use Sulu\Component\Rest\ListBuilder\Metadata\FieldDescriptorFactoryInterface;
 use Sulu\Bundle\ContactBundle\Entity\AccountRepository;
-use Sulu\Bundle\ContactBundle\Entity\Contact;
 use Sulu\Bundle\ProductBundle\Product\ProductManagerInterface;
 use Sulu\Bundle\Sales\CoreBundle\Api\ApiItemInterface;
 use Sulu\Bundle\Sales\CoreBundle\Entity\ItemInterface;
@@ -52,7 +52,7 @@ class OrderManager
     use RelationTrait;
 
     protected static $orderEntityName = 'SuluSalesOrderBundle:Order';
-    protected static $contactEntityName = 'SuluContactBundle:Contact';
+    protected static $contactEntityName = 'SuluContactExtensionBundle:Contact';
     protected static $addressEntityName = 'SuluContactBundle:Address';
     protected static $orderStatusEntityName = 'SuluSalesOrderBundle:OrderStatus';
     protected static $orderTypeEntityName = 'SuluSalesOrderBundle:OrderType';
@@ -1221,7 +1221,7 @@ class OrderManager
      * @throws Exception\MissingOrderAttributeException
      * @throws Exception\OrderDependencyNotFoundException
      *
-     * @return Contact|null
+     * @return ContactInterface|null
      */
     private function addContactRelation(array $data, $key, $addCallback)
     {
@@ -1230,7 +1230,7 @@ class OrderManager
             is_array($data[$key]) &&
             array_key_exists('id', $data[$key])
         ) {
-            /** @var Contact $contact */
+            /** @var ContactInterface $contact */
             $contactId = $data[$key]['id'];
             $contact = $this->em->getRepository(static::$contactEntityName)->find($contactId);
             if (!$contact) {
