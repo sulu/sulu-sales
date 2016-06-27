@@ -601,12 +601,12 @@ class OrderDataSetup
      * Creates account contact relation.
      *
      * @param AccountInterface $account
-     * @param Contact $contact
+     * @param ContactInterface $contact
      * @param bool $isMain
      *
      * @return AccountContact
      */
-    protected function createAccountContact(AccountInterface $account, Contact $contact, $isMain = true)
+    protected function createAccountContact(AccountInterface $account, ContactInterface $contact, $isMain = true)
     {
         $accountContact = new AccountContact();
         $accountContact->setAccount($account);

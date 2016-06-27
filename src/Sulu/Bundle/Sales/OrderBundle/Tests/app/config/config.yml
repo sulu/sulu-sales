@@ -1,3 +1,7 @@
+fos_rest:
+    serializer:
+      serialize_null: true
+
 doctrine:
     orm:
         auto_generate_proxy_classes: %kernel.debug%
@@ -18,4 +22,5 @@ sulu_sales_order:
 parameters:
     mailer_from: test@test.com
     website_locale: en
+    shopowner: []
 

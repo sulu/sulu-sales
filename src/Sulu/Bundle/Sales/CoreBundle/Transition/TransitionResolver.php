@@ -223,7 +223,7 @@ class TransitionResolver
                 $hydrationMode
             );
 
-            if ($transitionResult) {
+            if (!$transitionResult) {
                 return;
             }
 

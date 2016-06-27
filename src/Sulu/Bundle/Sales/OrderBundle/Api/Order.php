@@ -223,7 +223,7 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
 
     /**
      * @VirtualProperty
-     * @SerializedName("changed")
+     * @SerializedName("sessionId")
      *
      * @return string
      */

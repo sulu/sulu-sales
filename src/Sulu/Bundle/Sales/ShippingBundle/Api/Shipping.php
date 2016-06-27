@@ -667,10 +667,7 @@ class Shipping extends ApiWrapper implements SalesDocument
      */
     public function getOrder()
     {
-        $productFactory = new ProductFactory(null, $this->priceFormatter);
-        $itemFactory = new ItemFactory($productFactory, $this->priceFormatter, 'EUR');
-
-        return new ApiOrder($this->entity->getOrder(), $this->locale, $itemFactory, $this->priceFormatter);
+        return new ApiOrder($this->entity->getOrder(), $this->locale, $this->itemFactory, $this->priceFormatter);
     }
 
     /**

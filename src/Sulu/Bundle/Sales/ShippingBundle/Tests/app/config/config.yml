@@ -13,3 +13,4 @@ doctrine:
 parameters:
     mailer_from: test@test.com
     website_locale: en
+    shopowner: []

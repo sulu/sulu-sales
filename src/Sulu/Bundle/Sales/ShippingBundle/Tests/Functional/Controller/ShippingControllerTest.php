@@ -8,26 +8,12 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Sulu\Bundle\ProductBundle\Tests\Functional\Controller;
+namespace Sulu\Bundle\Sales\ShippingBundle\Tests\Functional\Controller;
 
 use DateTime;
 use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\Mapping\ClassMetadata;
-use Sulu\Bundle\ContactBundle\Entity\Account;
-use Sulu\Bundle\ContactBundle\Entity\Address;
-use Sulu\Bundle\ContactBundle\Entity\AddressType;
-use Sulu\Bundle\ContactBundle\Entity\ContactTitle;
-use Sulu\Bundle\ContactBundle\Entity\Country;
-use Sulu\Bundle\ContactBundle\Entity\Phone;
-use Sulu\Bundle\ContactBundle\Entity\PhoneType;
 use Sulu\Bundle\ContactExtensionBundle\Entity\TermsOfDelivery;
 use Sulu\Bundle\ContactExtensionBundle\Entity\TermsOfPayment;
-use Sulu\Bundle\ProductBundle\Entity\Product;
-use Sulu\Bundle\ProductBundle\Entity\ProductTranslation;
-use Sulu\Bundle\ProductBundle\Entity\Status;
-use Sulu\Bundle\ProductBundle\Entity\StatusTranslation;
-use Sulu\Bundle\ProductBundle\Entity\Type;
-use Sulu\Bundle\ProductBundle\Entity\TypeTranslation;
 use Sulu\Bundle\Sales\CoreBundle\Entity\OrderAddress;
 use Sulu\Bundle\Sales\OrderBundle\Tests\OrderDataSetup;
 use Sulu\Bundle\Sales\ShippingBundle\DataFixtures\ORM\LoadShippingStatus;
@@ -35,12 +21,12 @@ use Sulu\Bundle\Sales\ShippingBundle\Entity\Shipping;
 use Sulu\Bundle\Sales\ShippingBundle\Entity\ShippingItem;
 use Sulu\Bundle\Sales\ShippingBundle\Entity\ShippingStatus;
 use Sulu\Bundle\TestBundle\Testing\SuluTestCase;
+use Sulu\Component\Contact\Model\ContactRepositoryInterface;
 
 class ShippingControllerTest extends SuluTestCase
 {
-
     /**
-     * @var object
+     * @var array
      */
     protected $data;
 
@@ -58,16 +44,6 @@ class ShippingControllerTest extends SuluTestCase
      * @var ShippingStatus
      */
     protected $statusCreated;
-
-    /**
-     * @var TermsOfDelivery
-     */
-    private $termsOfDelivery;
-
-    /**
-     * @var TermsOfPayment
-     */
-    private $termsOfPayment;
 
     /**
      * @var Shipping
@@ -96,7 +72,7 @@ class ShippingControllerTest extends SuluTestCase
 
     public function setUp()
     {
-        $this->em = $this->db('ORM')->getOm();
+        $this->em = $this->getEntityManager();
         $this->purgeDatabase();
         $this->setUpTestData();
         $this->em->flush();
@@ -112,7 +88,7 @@ class ShippingControllerTest extends SuluTestCase
     private function setUpTestData()
     {
         // initialize order data
-        $this->data = new OrderDataSetup($this->em, $this->getItemFactory());
+        $this->data = new OrderDataSetup($this->em, $this->getItemFactory(), $this->getContactRepository());
 
         // load order-statuses
         $statusFixtures = new LoadShippingStatus();
@@ -361,7 +337,7 @@ class ShippingControllerTest extends SuluTestCase
     }
 
     /**
-     * asserts equality if object's attribute exist
+     * Asserts equality if object's attribute exist.
      */
     private function assertEqualsArrayClass($firstValue, $secondObject, $value)
     {
@@ -371,8 +347,8 @@ class ShippingControllerTest extends SuluTestCase
     }
 
     /**
-     * @param $response
-     * @param $data
+     * @param \stdClass $response
+     * @param array $data
      */
     private function compareDataWithAddress($data, $response)
     {
@@ -392,5 +368,13 @@ class ShippingControllerTest extends SuluTestCase
         $this->assertEqualsArrayClass($data, $response, 'uid');
         $this->assertEqualsArrayClass($data, $response, 'phone');
         $this->assertEqualsArrayClass($data, $response, 'phoneMobile');
+    }
+
+    /**
+     * @return ContactRepositoryInterface
+     */
+    private function getContactRepository()
+    {
+        return $this->getContainer()->get('sulu.repository.contact');
     }
 }

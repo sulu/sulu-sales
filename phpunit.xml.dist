@@ -3,7 +3,8 @@
 
     <testsuites>
         <testsuite name="Sulu-Sales Test Suite">
-            <directory suffix="Test.php">./tests</directory>
+            <directory suffix="Test.php">./src/Sulu/Bundle/Sales/CoreBundle/Tests</directory>
+            <directory suffix="Test.php">./src/Sulu/Bundle/Sales/OrderBundle/Tests</directory>
         </testsuite>
     </testsuites>
 
@@ -20,5 +21,6 @@
     <php>
         <server name="KERNEL_DIR" value="tests/app"/>
         <var name="APP_DB" value="mysql"/>
+        <env name="SYMFONY_DEPRECATIONS_HELPER" value="weak"/>
     </php>
 </phpunit>
