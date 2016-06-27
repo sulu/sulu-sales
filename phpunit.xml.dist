@@ -5,6 +5,7 @@
         <testsuite name="Sulu-Sales Test Suite">
             <directory suffix="Test.php">./src/Sulu/Bundle/Sales/CoreBundle/Tests</directory>
             <directory suffix="Test.php">./src/Sulu/Bundle/Sales/OrderBundle/Tests</directory>
+            <directory suffix="Test.php">./src/Sulu/Bundle/Sales/ShippingBundle/Tests</directory>
         </testsuite>
     </testsuites>
 

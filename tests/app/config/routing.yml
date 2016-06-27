@@ -1,6 +1,11 @@
-import:
+sulu_sales_order_api:
     type: rest
     resource: Sulu\Bundle\Sales\OrderBundle\Controller\OrderController
+    prefix: /api
+
+sulu_sales_shipping_api:
+    type: rest
+    resource: Sulu\Bundle\Sales\ShippingBundle\Controller\ShippingController
     prefix: /api
 
 sulu_product_api:
