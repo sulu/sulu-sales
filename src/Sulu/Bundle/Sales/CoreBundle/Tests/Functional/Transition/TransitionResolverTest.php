@@ -36,9 +36,6 @@ class TransitionResolverTest extends SuluSalesTestCase
         parent::setUp();
         $this->purgeDatabase();
 
-//        self::bootKernel();
-//        $this->container = self::$kernel->getContainer();
-
         $this->em = $this->getContainer()->get('doctrine.orm.default_entity_manager');
         $this->dependencyManager = $this->getContainer()->get('sulu_sales_core.dependency_manager');
 

@@ -11,12 +11,12 @@
 namespace Sulu\Bundle\Sales\CoreBundle\Manager;
 
 use Doctrine\ORM\EntityManagerInterface;
-use Sulu\Component\Contact\Model\ContactInterface;
-use Sulu\Component\Rest\Exception\EntityNotFoundException;
 use Sulu\Bundle\ContactBundle\Entity\Address;
 use Sulu\Bundle\Sales\CoreBundle\Entity\OrderAddressInterface;
 use Sulu\Bundle\Sales\CoreBundle\Entity\OrderAddressRepository;
 use Sulu\Bundle\Sales\CoreBundle\Exceptions\MissingAttributeException;
+use Sulu\Component\Contact\Model\ContactInterface;
+use Sulu\Component\Rest\Exception\EntityNotFoundException;
 
 class OrderAddressManager
 {
@@ -251,7 +251,7 @@ class OrderAddressManager
      */
     public function getContactData($addressData, ContactInterface $contact = null)
     {
-        $result = array();
+        $result = [];
 
         if ($contact) {
             $this->mergeContactIntoAddressData($result, $contact);
