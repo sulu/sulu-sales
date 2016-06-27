@@ -4,7 +4,7 @@
 VENDORNAME='vendor'
 CURRENT=$(pwd)'/'
 
-function createSymlink {
+createSymlink () {
   if [ ! -d $1$VENDORNAME ]; then
     echo "create symlink for $1$VENDORNAME"
      ln -s $CURRENT$VENDORNAME $1$VENDORNAME
