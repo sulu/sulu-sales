@@ -263,7 +263,7 @@
                 <target>Folgebeleg erstellt</target>
             </trans-unit>
             <trans-unit id="28" resname="salescore.item.is-recurring-price">
-                <source>salescore.item.isRecurringPrice</source>
+                <source>salescore.item.is-recurring-price</source>
                 <target>Wiederkehrender Preis</target>
             </trans-unit>
         </body>
