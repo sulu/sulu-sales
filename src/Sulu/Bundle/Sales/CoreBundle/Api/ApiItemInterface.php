@@ -386,10 +386,6 @@ interface ApiItemInterface
     public function setIsRecurringPrice($isRecurringPrice);
 
     /**
-     * @VirtualProperty
-     * @SerializedName("isRecurringPrice")
-     * @Groups({"Default","cart"})
-     *
      * @return string
      */
     public function isRecurringPrice();

@@ -363,7 +363,7 @@ interface ItemInterface
     public function getCostCentre();
 
     /**
-     * @param $isRecurringPrice
+     * @param bool $isRecurringPrice
      *
      * @return bool
      */
