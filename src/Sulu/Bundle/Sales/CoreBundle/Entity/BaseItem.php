@@ -144,6 +144,11 @@ abstract class BaseItem implements ItemInterface
     private $deliveryDate;
 
     /**
+     * @var bool
+     */
+    protected $isRecurringPrice = false;
+
+    /**
      * Set name
      *
      * @param string $name
@@ -679,5 +684,25 @@ abstract class BaseItem implements ItemInterface
     public function getDeliveryDate()
     {
         return $this->deliveryDate;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isRecurringPrice()
+    {
+        return $this->isRecurringPrice;
+    }
+
+    /**
+     * @param bool $isRecurringPrice
+     *
+     * @return self
+     */
+    public function setIsRecurringPrice($isRecurringPrice)
+    {
+        $this->isRecurringPrice = $isRecurringPrice;
+
+        return $this;
     }
 }

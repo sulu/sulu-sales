@@ -3,6 +3,9 @@
 namespace Sulu\Bundle\Sales\CoreBundle\Api;
 
 use DateTime;
+use JMS\Serializer\Annotation\SerializedName;
+use JMS\Serializer\Annotation\VirtualProperty;
+use JMS\Serializer\Annotation\Groups;
 use Sulu\Component\Security\Authentication\UserInterface;
 use Sulu\Bundle\Sales\CoreBundle\Entity\OrderAddressInterface;
 
@@ -374,4 +377,20 @@ interface ApiItemInterface
      * @return self
      */
     public function setCostCentre($costCentre);
+
+    /**
+     * @param bool $isRecurringPrice
+     *
+     * @return bool
+     */
+    public function setIsRecurringPrice($isRecurringPrice);
+
+    /**
+     * @VirtualProperty
+     * @SerializedName("isRecurringPrice")
+     * @Groups({"Default","cart"})
+     *
+     * @return string
+     */
+    public function isRecurringPrice();
 }

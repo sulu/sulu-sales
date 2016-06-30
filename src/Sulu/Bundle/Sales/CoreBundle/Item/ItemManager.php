@@ -231,6 +231,7 @@ class ItemManager
         $this->updatePrices($item, $data);
 
         $item->setDiscount($this->getProperty($data, 'discount', $item->getDiscount()));
+        $item->setIsRecurringPrice($this->getProperty($data, 'isRecurringPrice', $item->isRecurringPrice()));
 
         $item->setCostCentre($this->getProperty($data, 'costCentre'));
 

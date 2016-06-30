@@ -262,6 +262,10 @@
                 <source>salescore.transition.successful</source>
                 <target>Folgebeleg erstellt</target>
             </trans-unit>
+            <trans-unit id="28" resname="salescore.item.isRecurringPrice">
+                <source>salescore.item.isRecurringPrice</source>
+                <target>Wiederkehrender Preis</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>
