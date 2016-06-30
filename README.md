@@ -1,4 +1,4 @@
-# sulu-sales ![alt text](https://travis-ci.org/sulu/sulu-sales.svg?branch=develop)
+# sulu-sales [![Build Status](https://travis-ci.org/sulu/sulu-sales.svg?branch=develop)](https://travis-ci.org/sulu/sulu-sales)
 
 ## Configuration
 
