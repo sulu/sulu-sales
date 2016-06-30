@@ -1,4 +1,4 @@
-# sulu-sales
+# sulu-sales ![alt text](https://travis-ci.org/sulu/sulu-sales.svg?branch=develop)
 
 ## Configuration
 
@@ -31,3 +31,16 @@ These configurations can be set in the `parameters.yml`-file of your application
 sulu_sales_orderbundle_pdf_responsetype: inline
 ```
 The bundle-sided configuration for this key defaults to `inline`.
+
+
+#### How to run tests
+
+The following command is going to run tests for all sales bundles:
+
+```
+composer install
+
+tests/app/console doctrine:schema:update --force
+
+phpunit
+```
