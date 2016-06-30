@@ -3,30 +3,27 @@
 namespace Sulu\Bundle\Sales\ShippingBundle\Api;
 
 use DateTime;
-use JMS\Serializer\Annotation\ExclusionPolicy;
-use JMS\Serializer\Annotation\VirtualProperty;
 use Hateoas\Configuration\Annotation\Relation;
-use JMS\Serializer\Annotation\SerializedName;
 use JMS\Serializer\Annotation\Exclude;
+use JMS\Serializer\Annotation\ExclusionPolicy;
+use JMS\Serializer\Annotation\SerializedName;
+use JMS\Serializer\Annotation\VirtualProperty;
 use Sulu\Bundle\PricingBundle\Pricing\PriceFormatter;
-use Sulu\Component\Rest\ApiWrapper;
-use Sulu\Component\Security\Authentication\UserInterface;
-use Sulu\Bundle\ProductBundle\Product\ProductFactory;
 use Sulu\Bundle\Sales\CoreBundle\Core\SalesDocument;
 use Sulu\Bundle\Sales\CoreBundle\Entity\OrderAddress;
 use Sulu\Bundle\Sales\CoreBundle\Item\ItemFactoryInterface;
-use Sulu\Bundle\Sales\CoreBundle\Item\ItemFactory;
 use Sulu\Bundle\Sales\OrderBundle\Api\Order as ApiOrder;
 use Sulu\Bundle\Sales\OrderBundle\Entity\Order;
+use Sulu\Bundle\Sales\ShippingBundle\Api\ShippingStatus as ApiShippingStatus;
 use Sulu\Bundle\Sales\ShippingBundle\Entity\Shipping as ShippingEntity;
 use Sulu\Bundle\Sales\ShippingBundle\Entity\ShippingItem as ShippingItemEntity;
 use Sulu\Bundle\Sales\ShippingBundle\Entity\ShippingStatus;
-use Sulu\Bundle\Sales\ShippingBundle\Api\ShippingStatus as ApiShippingStatus;
+use Sulu\Component\Rest\ApiWrapper;
+use Sulu\Component\Security\Authentication\UserInterface;
 
 /**
  * The Shipping class which will be exported to the API
  *
- * @package Sulu\Bundle\Sales\ShippingBundle\Api
  * @Relation("self", href="expr('/api/admin/shippings/' ~ object.getId())")
  * @ExclusionPolicy("all")
  */
@@ -68,11 +65,9 @@ class Shipping extends ApiWrapper implements SalesDocument
     }
 
     /**
-     * Set number
-     *
      * @param string $number
      *
-     * @return Shipping
+     * @return self
      */
     public function setNumber($number)
     {
@@ -93,11 +88,9 @@ class Shipping extends ApiWrapper implements SalesDocument
     }
 
     /**
-     * Set shippingNumber
-     *
      * @param string $shippingNumber
      *
-     * @return Shipping
+     * @return self
      */
     public function setShippingNumber($shippingNumber)
     {
@@ -107,8 +100,6 @@ class Shipping extends ApiWrapper implements SalesDocument
     }
 
     /**
-     * Get shippingNumber
-     *
      * @VirtualProperty
      * @SerializedName("shippingNumber")
      *
@@ -120,11 +111,9 @@ class Shipping extends ApiWrapper implements SalesDocument
     }
 
     /**
-     * Set customerName
-     *
      * @param string $customerName
      *
-     * @return Shipping
+     * @return self
      */
     public function setCustomerName($customerName)
     {
@@ -134,8 +123,6 @@ class Shipping extends ApiWrapper implements SalesDocument
     }
 
     /**
-     * Get customerName
-     *
      * @VirtualProperty
      * @SerializedName("customerName")
      *
@@ -147,11 +134,9 @@ class Shipping extends ApiWrapper implements SalesDocument
     }
 
     /**
-     * Set termsOfDeliveryContent
-     *
      * @param string $termsOfDeliveryContent
      *
-     * @return Shipping
+     * @return self
      */
     public function setTermsOfDeliveryContent($termsOfDeliveryContent)
     {
@@ -161,8 +146,6 @@ class Shipping extends ApiWrapper implements SalesDocument
     }
 
     /**
-     * Get termsOfDeliveryContent
-     *
      * @VirtualProperty
      * @SerializedName("termsOfDeliveryContent")
      *
@@ -174,11 +157,9 @@ class Shipping extends ApiWrapper implements SalesDocument
     }
 
     /**
-     * Set termsOfPaymentContent
-     *
      * @param string $termsOfPaymentContent
      *
-     * @return Shipping
+     * @return self
      */
     public function setTermsOfPaymentContent($termsOfPaymentContent)
     {
@@ -188,8 +169,6 @@ class Shipping extends ApiWrapper implements SalesDocument
     }
 
     /**
-     * Get termsOfPaymentContent
-     *
      * @VirtualProperty
      * @SerializedName("termsOfPaymentContent")
      *
@@ -201,11 +180,9 @@ class Shipping extends ApiWrapper implements SalesDocument
     }
 
     /**
-     * Set width
-     *
      * @param float $width
      *
-     * @return Shipping
+     * @return self
      */
     public function setWidth($width)
     {
@@ -215,8 +192,6 @@ class Shipping extends ApiWrapper implements SalesDocument
     }
 
     /**
-     * Get width
-     *
      * @VirtualProperty
      * @SerializedName("width")
      *
@@ -228,11 +203,9 @@ class Shipping extends ApiWrapper implements SalesDocument
     }
 
     /**
-     * Set height
-     *
      * @param float $height
      *
-     * @return Shipping
+     * @return self
      */
     public function setHeight($height)
     {
@@ -242,8 +215,6 @@ class Shipping extends ApiWrapper implements SalesDocument
     }
 
     /**
-     * Get height
-     *
      * @VirtualProperty
      * @SerializedName("height")
      *
@@ -255,11 +226,9 @@ class Shipping extends ApiWrapper implements SalesDocument
     }
 
     /**
-     * Set length
-     *
      * @param float $length
      *
-     * @return Shipping
+     * @return self
      */
     public function setLength($length)
     {
@@ -269,8 +238,6 @@ class Shipping extends ApiWrapper implements SalesDocument
     }
 
     /**
-     * Get length
-     *
      * @VirtualProperty
      * @SerializedName("length")
      *
@@ -282,11 +249,9 @@ class Shipping extends ApiWrapper implements SalesDocument
     }
 
     /**
-     * Set weight
-     *
      * @param float $weight
      *
-     * @return Shipping
+     * @return self
      */
     public function setWeight($weight)
     {
@@ -296,8 +261,6 @@ class Shipping extends ApiWrapper implements SalesDocument
     }
 
     /**
-     * Get weight
-     *
      * @VirtualProperty
      * @SerializedName("weight")
      *
@@ -309,11 +272,9 @@ class Shipping extends ApiWrapper implements SalesDocument
     }
 
     /**
-     * Set trackingId
-     *
      * @param string $trackingId
      *
-     * @return Shipping
+     * @return self
      */
     public function setTrackingId($trackingId)
     {
@@ -323,8 +284,6 @@ class Shipping extends ApiWrapper implements SalesDocument
     }
 
     /**
-     * Get trackingId
-     *
      * @VirtualProperty
      * @SerializedName("trackingId")
      *
@@ -336,11 +295,9 @@ class Shipping extends ApiWrapper implements SalesDocument
     }
 
     /**
-     * Set trackingUrl
-     *
      * @param string $trackingUrl
      *
-     * @return Shipping
+     * @return self
      */
     public function setTrackingUrl($trackingUrl)
     {
@@ -350,8 +307,6 @@ class Shipping extends ApiWrapper implements SalesDocument
     }
 
     /**
-     * Get trackingUrl
-     *
      * @VirtualProperty
      * @SerializedName("trackingUrl")
      *
@@ -363,11 +318,9 @@ class Shipping extends ApiWrapper implements SalesDocument
     }
 
     /**
-     * Set commission
-     *
      * @param string $commission
      *
-     * @return Shipping
+     * @return self
      */
     public function setCommission($commission)
     {
@@ -377,8 +330,6 @@ class Shipping extends ApiWrapper implements SalesDocument
     }
 
     /**
-     * Get commission
-     *
      * @VirtualProperty
      * @SerializedName("commission")
      *
@@ -390,11 +341,9 @@ class Shipping extends ApiWrapper implements SalesDocument
     }
 
     /**
-     * Set note
-     *
      * @param string $note
      *
-     * @return Shipping
+     * @return self
      */
     public function setNote($note)
     {
@@ -404,8 +353,6 @@ class Shipping extends ApiWrapper implements SalesDocument
     }
 
     /**
-     * Get note
-     *
      * @VirtualProperty
      * @SerializedName("note")
      *
@@ -417,11 +364,9 @@ class Shipping extends ApiWrapper implements SalesDocument
     }
 
     /**
-     * Set created
-     *
      * @param \DateTime $created
      *
-     * @return Shipping
+     * @return self
      */
     public function setCreated($created)
     {
@@ -431,8 +376,6 @@ class Shipping extends ApiWrapper implements SalesDocument
     }
 
     /**
-     * Get created
-     *
      * @VirtualProperty
      * @SerializedName("created")
      *
@@ -444,11 +387,9 @@ class Shipping extends ApiWrapper implements SalesDocument
     }
 
     /**
-     * Set changed
-     *
      * @param \DateTime $changed
      *
-     * @return Shipping
+     * @return self
      */
     public function setChanged($changed)
     {
@@ -458,8 +399,6 @@ class Shipping extends ApiWrapper implements SalesDocument
     }
 
     /**
-     * Get changed
-     *
      * @VirtualProperty
      * @SerializedName("changed")
      *
@@ -471,11 +410,9 @@ class Shipping extends ApiWrapper implements SalesDocument
     }
 
     /**
-     * Set expectedDeliveryDate
-     *
      * @param \DateTime $expectedDeliveryDate
      *
-     * @return Shipping
+     * @return self
      */
     public function setExpectedDeliveryDate($expectedDeliveryDate)
     {
@@ -485,8 +422,6 @@ class Shipping extends ApiWrapper implements SalesDocument
     }
 
     /**
-     * Get expectedDeliveryDate
-     *
      * @VirtualProperty
      * @SerializedName("expectedDeliveryDate")
      *
@@ -498,12 +433,10 @@ class Shipping extends ApiWrapper implements SalesDocument
     }
 
     /**
-     * Get id
-     *
      * @VirtualProperty
      * @SerializedName("id")
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -511,11 +444,9 @@ class Shipping extends ApiWrapper implements SalesDocument
     }
 
     /**
-     * Set deliveryAddress
-     *
      * @param OrderAddress $deliveryAddress
      *
-     * @return Shipping
+     * @return self
      */
     public function setDeliveryAddress(OrderAddress $deliveryAddress = null)
     {
@@ -525,8 +456,6 @@ class Shipping extends ApiWrapper implements SalesDocument
     }
 
     /**
-     * Get deliveryAddress
-     *
      * @VirtualProperty
      * @SerializedName("deliveryAddress")
      *
@@ -538,11 +467,9 @@ class Shipping extends ApiWrapper implements SalesDocument
     }
 
     /**
-     * Add shippingItems
-     *
      * @param ShippingItemEntity $shippingItems
      *
-     * @return Shipping
+     * @return self
      */
     public function addShippingItem(ShippingItemEntity $shippingItems)
     {
@@ -552,8 +479,6 @@ class Shipping extends ApiWrapper implements SalesDocument
     }
 
     /**
-     * Remove shippingItems
-     *
      * @param ShippingItemEntity $shippingItems
      */
     public function removeShippingItem(ShippingItemEntity $shippingItems)
@@ -562,8 +487,6 @@ class Shipping extends ApiWrapper implements SalesDocument
     }
 
     /**
-     * Get shippingItems
-     *
      * @VirtualProperty
      * @SerializedName("items")
      *
@@ -587,10 +510,9 @@ class Shipping extends ApiWrapper implements SalesDocument
     }
 
     /**
-     * Set status
-     *
      * @param ShippingStatus $status
-     * @return Shipping
+     *
+     * @return self
      */
     public function setStatus(ShippingStatus $status)
     {
@@ -600,8 +522,6 @@ class Shipping extends ApiWrapper implements SalesDocument
     }
 
     /**
-     * Get status
-     *
      * @VirtualProperty
      * @SerializedName("status")
      *
@@ -617,11 +537,9 @@ class Shipping extends ApiWrapper implements SalesDocument
     }
 
     /**
-     * Set bitmaskStatus
+     * @param int $bitmaskStatus
      *
-     * @param integer $bitmaskStatus
-     *
-     * @return Shipping
+     * @return self
      */
     public function setBitmaskStatus($bitmaskStatus)
     {
@@ -631,12 +549,10 @@ class Shipping extends ApiWrapper implements SalesDocument
     }
 
     /**
-     * Get bitmaskStatus
-     *
      * @VirtualProperty
      * @SerializedName("bitmaskStatus")
      *
-     * @return integer
+     * @return int
      */
     public function getBitmaskStatus()
     {
@@ -644,11 +560,9 @@ class Shipping extends ApiWrapper implements SalesDocument
     }
 
     /**
-     * Set order
-     *
      * @param Order $order
      *
-     * @return Shipping
+     * @return self
      */
     public function setOrder(Order $order = null)
     {
@@ -658,8 +572,6 @@ class Shipping extends ApiWrapper implements SalesDocument
     }
 
     /**
-     * Get order
-     *
      * @VirtualProperty
      * @SerializedName("order")
      *
@@ -671,10 +583,9 @@ class Shipping extends ApiWrapper implements SalesDocument
     }
 
     /**
-     * Set changer
-     *
      * @param UserInterface $changer
-     * @return Shipping
+     *
+     * @return self
      */
     public function setChanger(UserInterface $changer = null)
     {
@@ -684,8 +595,6 @@ class Shipping extends ApiWrapper implements SalesDocument
     }
 
     /**
-     * Get changer
-     *
      * @return UserInterface
      */
     public function getChanger()
@@ -694,10 +603,9 @@ class Shipping extends ApiWrapper implements SalesDocument
     }
 
     /**
-     * Set creator
-     *
      * @param UserInterface $creator
-     * @return Shipping
+     *
+     * @return self
      */
     public function setCreator(UserInterface $creator = null)
     {
@@ -707,8 +615,6 @@ class Shipping extends ApiWrapper implements SalesDocument
     }
 
     /**
-     * Get creator
-     *
      * @return UserInterface
      */
     public function getCreator()
@@ -730,7 +636,7 @@ class Shipping extends ApiWrapper implements SalesDocument
     /**
      * @param string $note
      *
-     * @return Inquiry
+     * @return self
      */
     public function setInternalNote($note)
     {
@@ -741,7 +647,7 @@ class Shipping extends ApiWrapper implements SalesDocument
 
 
     /**
-     * returns the entities locale
+     * Returns the entities locale.
      *
      * @return string
      */
@@ -751,13 +657,13 @@ class Shipping extends ApiWrapper implements SalesDocument
     }
 
     /**
-     * Returns the data needed for the sales document widget as array
+     * Returns the data needed for the sales document widget as array.
      *
      * @return array
      */
     public function getSalesDocumentData()
     {
-        return array(
+        return [
             'number' => $this->getNumber(),
             'type' => 'shipping',
             'icon' => 'fa-truck',
@@ -765,11 +671,11 @@ class Shipping extends ApiWrapper implements SalesDocument
             'id' => $this->getId(),
             'pdfBaseUrl' => null,
             'translationKey' => 'salescore.shipping',
-        );
+        ];
     }
 
     /**
-     * Returns url for generating the documents pdf
+     * Returns url for generating the documents pdf.
      *
      * @return string
      */

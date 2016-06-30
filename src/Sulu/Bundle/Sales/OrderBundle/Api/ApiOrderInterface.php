@@ -12,13 +12,13 @@ namespace Sulu\Bundle\Sales\OrderBundle\Api;
 
 use DateTime;
 use Sulu\Bundle\ContactBundle\Entity\AccountInterface;
-use Sulu\Component\Security\Authentication\UserInterface;
-use Sulu\Bundle\ContactExtensionBundle\Entity\TermsOfPayment;
 use Sulu\Bundle\ContactExtensionBundle\Entity\TermsOfDelivery;
+use Sulu\Bundle\ContactExtensionBundle\Entity\TermsOfPayment;
+use Sulu\Bundle\Sales\CoreBundle\Entity\ItemInterface;
 use Sulu\Bundle\Sales\CoreBundle\Entity\OrderAddress as OrderAddressEntity;
 use Sulu\Bundle\Sales\CoreBundle\Entity\OrderAddressInterface;
-use Sulu\Bundle\Sales\CoreBundle\Entity\ItemInterface;
 use Sulu\Component\Contact\Model\ContactInterface;
+use Sulu\Component\Security\Authentication\UserInterface;
 
 interface ApiOrderInterface
 {

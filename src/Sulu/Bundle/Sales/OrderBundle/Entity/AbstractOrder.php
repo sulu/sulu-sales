@@ -3,10 +3,10 @@
 namespace Sulu\Bundle\Sales\OrderBundle\Entity;
 
 use Sulu\Bundle\ContactBundle\Entity\AccountInterface;
-use Sulu\Bundle\Sales\CoreBundle\Entity\ItemInterface;
-use Sulu\Bundle\Sales\CoreBundle\Entity\OrderAddressInterface;
 use Sulu\Bundle\ContactExtensionBundle\Entity\TermsOfDelivery;
 use Sulu\Bundle\ContactExtensionBundle\Entity\TermsOfPayment;
+use Sulu\Bundle\Sales\CoreBundle\Entity\ItemInterface;
+use Sulu\Bundle\Sales\CoreBundle\Entity\OrderAddressInterface;
 use Sulu\Component\Contact\Model\ContactInterface;
 
 abstract class AbstractOrder extends BaseOrder

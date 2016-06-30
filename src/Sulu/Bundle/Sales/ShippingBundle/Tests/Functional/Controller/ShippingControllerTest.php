@@ -347,27 +347,27 @@ class ShippingControllerTest extends SuluTestCase
     }
 
     /**
-     * @param \stdClass $response
      * @param array $data
+     * @param \stdClass $serverResponse
      */
-    private function compareDataWithAddress($data, $response)
+    private function compareDataWithAddress(array $data, $serverResponse)
     {
-        $this->assertEqualsArrayClass($data, $response, 'firstName');
-        $this->assertEqualsArrayClass($data, $response, 'lastName');
-        $this->assertEqualsArrayClass($data, $response, 'accountName');
-        $this->assertEqualsArrayClass($data, $response, 'title');
-        $this->assertEqualsArrayClass($data, $response, 'addition');
-        $this->assertEqualsArrayClass($data, $response, 'number');
-        $this->assertEqualsArrayClass($data, $response, 'city');
-        $this->assertEqualsArrayClass($data, $response, 'zip');
-        $this->assertEqualsArrayClass($data, $response, 'state');
-        $this->assertEqualsArrayClass($data, $response, 'country');
-//        $this->assertEqualsArrayClass($data, $response, 'postboxPostcode');
-//        $this->assertEqualsArrayClass($data, $response, 'postboxNumber');
-//        $this->assertEqualsArrayClass($data, $response, 'postboxCity');
-        $this->assertEqualsArrayClass($data, $response, 'uid');
-        $this->assertEqualsArrayClass($data, $response, 'phone');
-        $this->assertEqualsArrayClass($data, $response, 'phoneMobile');
+        $this->assertEqualsArrayClass($data, $serverResponse, 'firstName');
+        $this->assertEqualsArrayClass($data, $serverResponse, 'lastName');
+        $this->assertEqualsArrayClass($data, $serverResponse, 'accountName');
+        $this->assertEqualsArrayClass($data, $serverResponse, 'title');
+        $this->assertEqualsArrayClass($data, $serverResponse, 'addition');
+        $this->assertEqualsArrayClass($data, $serverResponse, 'number');
+        $this->assertEqualsArrayClass($data, $serverResponse, 'city');
+        $this->assertEqualsArrayClass($data, $serverResponse, 'zip');
+        $this->assertEqualsArrayClass($data, $serverResponse, 'state');
+        $this->assertEqualsArrayClass($data, $serverResponse, 'country');
+        $this->assertEqualsArrayClass($data, $serverResponse, 'postboxPostcode');
+        $this->assertEqualsArrayClass($data, $serverResponse, 'postboxNumber');
+        $this->assertEqualsArrayClass($data, $serverResponse, 'postboxCity');
+        $this->assertEqualsArrayClass($data, $serverResponse, 'uid');
+        $this->assertEqualsArrayClass($data, $serverResponse, 'phone');
+        $this->assertEqualsArrayClass($data, $serverResponse, 'phoneMobile');
     }
 
     /**
