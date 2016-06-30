@@ -19,7 +19,7 @@ class SuluSalesTestCase extends SuluTestCase
     protected function purgeDatabase()
     {
         /** @var EntityManager $em */
-        $em = $this->db('ORM')->getOm();
+        $em = $this->getEntityManager();
 
         try {
             $connection = $em->getConnection();

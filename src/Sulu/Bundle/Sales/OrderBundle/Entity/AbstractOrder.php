@@ -3,11 +3,11 @@
 namespace Sulu\Bundle\Sales\OrderBundle\Entity;
 
 use Sulu\Bundle\ContactBundle\Entity\AccountInterface;
-use Sulu\Bundle\ContactBundle\Entity\Contact;
-use Sulu\Bundle\Sales\CoreBundle\Entity\ItemInterface;
-use Sulu\Bundle\Sales\CoreBundle\Entity\OrderAddressInterface;
 use Sulu\Bundle\ContactExtensionBundle\Entity\TermsOfDelivery;
 use Sulu\Bundle\ContactExtensionBundle\Entity\TermsOfPayment;
+use Sulu\Bundle\Sales\CoreBundle\Entity\ItemInterface;
+use Sulu\Bundle\Sales\CoreBundle\Entity\OrderAddressInterface;
+use Sulu\Component\Contact\Model\ContactInterface;
 
 abstract class AbstractOrder extends BaseOrder
 {
@@ -37,7 +37,7 @@ abstract class AbstractOrder extends BaseOrder
     protected $customerAccount;
 
     /**
-     * @var Contact
+     * @var ContactInterface
      */
     protected $responsibleContact;
 
@@ -192,11 +192,11 @@ abstract class AbstractOrder extends BaseOrder
     /**
      * Set responsibleContact
      *
-     * @param Contact $responsibleContact
+     * @param ContactInterface $responsibleContact
      *
      * @return Order
      */
-    public function setResponsibleContact(Contact $responsibleContact = null)
+    public function setResponsibleContact(ContactInterface $responsibleContact = null)
     {
         $this->responsibleContact = $responsibleContact;
 
@@ -206,7 +206,7 @@ abstract class AbstractOrder extends BaseOrder
     /**
      * Get responsibleContact
      *
-     * @return Contact
+     * @return ContactInterface
      */
     public function getResponsibleContact()
     {

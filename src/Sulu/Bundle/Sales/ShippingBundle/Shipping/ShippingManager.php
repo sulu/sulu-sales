@@ -193,9 +193,9 @@ class ShippingManager
             $deliveryAddress->setZip($this->getProperty($addressData, 'zip', $deliveryAddress->getZip()));
             $deliveryAddress->setState($this->getProperty($addressData, 'state', $deliveryAddress->getState()));
             $deliveryAddress->setCountry($this->getProperty($addressData, 'country', $deliveryAddress->getCountry()));
-            $deliveryAddress->setPostboxNumber($this->getProperty($addressData, 'boxNumber', $deliveryAddress->getPostboxNumber()));
-            $deliveryAddress->setPostboxCity($this->getProperty($addressData, 'boxCity', $deliveryAddress->getPostboxCity()));
-            $deliveryAddress->setPostboxPostcode($this->getProperty($addressData, 'boxZip', $deliveryAddress->getPostboxPostcode()));
+            $deliveryAddress->setPostboxNumber($this->getProperty($addressData, 'postboxNumber', $deliveryAddress->getPostboxNumber()));
+            $deliveryAddress->setPostboxCity($this->getProperty($addressData, 'postboxCity', $deliveryAddress->getPostboxCity()));
+            $deliveryAddress->setPostboxPostcode($this->getProperty($addressData, 'postboxPostcode', $deliveryAddress->getPostboxPostcode()));
 
             $deliveryAddress->setTitle($this->getProperty($addressData, 'title', $deliveryAddress->getTitle()));
             $deliveryAddress->setFirstName($this->getProperty($addressData, 'firstName', $deliveryAddress->getFirstName()));

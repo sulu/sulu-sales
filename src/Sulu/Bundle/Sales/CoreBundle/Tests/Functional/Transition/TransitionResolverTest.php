@@ -36,13 +36,11 @@ class TransitionResolverTest extends SuluSalesTestCase
         parent::setUp();
         $this->purgeDatabase();
 
-        self::bootKernel();
-        $this->container = self::$kernel->getContainer();
-        $this->em = $this->container->get('doctrine.orm.default_entity_manager');
-        $this->dependencyManager = $this->container->get('sulu_sales_core.dependency_manager');
+        $this->em = $this->getContainer()->get('doctrine.orm.default_entity_manager');
+        $this->dependencyManager = $this->getContainer()->get('sulu_sales_core.dependency_manager');
 
         $this->dependencyManager->addMapping(OrderAddress::class, ['icon' => 'fa_icon_bug', 'alias' => 'orderAddress']);
-        $this->transitionResolver = $this->container->get('sulu_sales_core.transition_resolver');
+        $this->transitionResolver = $this->getContainer()->get('sulu_sales_core.transition_resolver');
         $this->createFixtures();
     }
 

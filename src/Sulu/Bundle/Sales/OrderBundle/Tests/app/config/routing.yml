@@ -1,4 +1,4 @@
-import:
+sulu_sales_order_api:
     type: rest
     resource: Sulu\Bundle\Sales\OrderBundle\Controller\OrderController
     prefix: /api

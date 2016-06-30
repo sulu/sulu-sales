@@ -9,14 +9,36 @@
  * with this source code in the file LICENSE.
  */
 
-use Symfony\Component\Config\Loader\LoaderInterface;
 use Sulu\Bundle\TestBundle\Kernel\SuluTestKernel;
+use Symfony\Component\Config\Loader\LoaderInterface;
 
 class AppKernel extends SuluTestKernel
 {
     public function registerBundles()
     {
         $bundles = parent::registerBundles();
+
+        $bundles = array_merge(
+            $bundles,
+            [
+                // Sales bundles.
+                new Sulu\Bundle\Sales\CoreBundle\SuluSalesCoreBundle(),
+                new Sulu\Bundle\Sales\OrderBundle\SuluSalesOrderBundle(),
+                new Sulu\Bundle\Sales\ShippingBundle\SuluSalesShippingBundle(),
+
+                // Sulu dependencies.
+                new Sulu\Bundle\ProductBundle\SuluProductBundle(),
+                new Sulu\Bundle\ContactExtensionBundle\SuluContactExtensionBundle(),
+                new Sulu\Bundle\PricingBundle\SuluPricingBundle(),
+
+                // Mailer dependencies.
+                new Symfony\Bundle\SwiftmailerBundle\SwiftmailerBundle(),
+
+                // Pdf dependencies.
+                new Knp\Bundle\SnappyBundle\KnpSnappyBundle(),
+                new Massive\Bundle\PdfBundle\MassivePdfBundle(),
+            ]
+        );
 
         return $bundles;
     }

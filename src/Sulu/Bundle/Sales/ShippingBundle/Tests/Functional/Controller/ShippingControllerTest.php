@@ -8,27 +8,12 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Sulu\Bundle\ProductBundle\Tests\Functional\Controller;
+namespace Sulu\Bundle\Sales\ShippingBundle\Tests\Functional\Controller;
 
 use DateTime;
 use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\Mapping\ClassMetadata;
-use Sulu\Bundle\ContactBundle\Entity\Account;
-use Sulu\Bundle\ContactBundle\Entity\Address;
-use Sulu\Bundle\ContactBundle\Entity\AddressType;
-use Sulu\Bundle\ContactBundle\Entity\Contact;
-use Sulu\Bundle\ContactBundle\Entity\ContactTitle;
-use Sulu\Bundle\ContactBundle\Entity\Country;
-use Sulu\Bundle\ContactBundle\Entity\Phone;
-use Sulu\Bundle\ContactBundle\Entity\PhoneType;
 use Sulu\Bundle\ContactExtensionBundle\Entity\TermsOfDelivery;
 use Sulu\Bundle\ContactExtensionBundle\Entity\TermsOfPayment;
-use Sulu\Bundle\ProductBundle\Entity\Product;
-use Sulu\Bundle\ProductBundle\Entity\ProductTranslation;
-use Sulu\Bundle\ProductBundle\Entity\Status;
-use Sulu\Bundle\ProductBundle\Entity\StatusTranslation;
-use Sulu\Bundle\ProductBundle\Entity\Type;
-use Sulu\Bundle\ProductBundle\Entity\TypeTranslation;
 use Sulu\Bundle\Sales\CoreBundle\Entity\OrderAddress;
 use Sulu\Bundle\Sales\OrderBundle\Tests\OrderDataSetup;
 use Sulu\Bundle\Sales\ShippingBundle\DataFixtures\ORM\LoadShippingStatus;
@@ -36,12 +21,12 @@ use Sulu\Bundle\Sales\ShippingBundle\Entity\Shipping;
 use Sulu\Bundle\Sales\ShippingBundle\Entity\ShippingItem;
 use Sulu\Bundle\Sales\ShippingBundle\Entity\ShippingStatus;
 use Sulu\Bundle\TestBundle\Testing\SuluTestCase;
+use Sulu\Component\Contact\Model\ContactRepositoryInterface;
 
 class ShippingControllerTest extends SuluTestCase
 {
-
     /**
-     * @var object
+     * @var array
      */
     protected $data;
 
@@ -59,16 +44,6 @@ class ShippingControllerTest extends SuluTestCase
      * @var ShippingStatus
      */
     protected $statusCreated;
-
-    /**
-     * @var TermsOfDelivery
-     */
-    private $termsOfDelivery;
-
-    /**
-     * @var TermsOfPayment
-     */
-    private $termsOfPayment;
 
     /**
      * @var Shipping
@@ -97,7 +72,7 @@ class ShippingControllerTest extends SuluTestCase
 
     public function setUp()
     {
-        $this->em = $this->db('ORM')->getOm();
+        $this->em = $this->getEntityManager();
         $this->purgeDatabase();
         $this->setUpTestData();
         $this->em->flush();
@@ -113,7 +88,7 @@ class ShippingControllerTest extends SuluTestCase
     private function setUpTestData()
     {
         // initialize order data
-        $this->data = new OrderDataSetup($this->em, $this->getItemFactory());
+        $this->data = new OrderDataSetup($this->em, $this->getItemFactory(), $this->getContactRepository());
 
         // load order-statuses
         $statusFixtures = new LoadShippingStatus();
@@ -362,7 +337,7 @@ class ShippingControllerTest extends SuluTestCase
     }
 
     /**
-     * asserts equality if object's attribute exist
+     * Asserts equality if object's attribute exist.
      */
     private function assertEqualsArrayClass($firstValue, $secondObject, $value)
     {
@@ -372,26 +347,34 @@ class ShippingControllerTest extends SuluTestCase
     }
 
     /**
-     * @param $response
-     * @param $data
+     * @param array $data
+     * @param \stdClass $serverResponse
      */
-    private function compareDataWithAddress($data, $response)
+    private function compareDataWithAddress(array $data, $serverResponse)
     {
-        $this->assertEqualsArrayClass($data, $response, 'firstName');
-        $this->assertEqualsArrayClass($data, $response, 'lastName');
-        $this->assertEqualsArrayClass($data, $response, 'accountName');
-        $this->assertEqualsArrayClass($data, $response, 'title');
-        $this->assertEqualsArrayClass($data, $response, 'addition');
-        $this->assertEqualsArrayClass($data, $response, 'number');
-        $this->assertEqualsArrayClass($data, $response, 'city');
-        $this->assertEqualsArrayClass($data, $response, 'zip');
-        $this->assertEqualsArrayClass($data, $response, 'state');
-        $this->assertEqualsArrayClass($data, $response, 'country');
-//        $this->assertEqualsArrayClass($data, $response, 'postboxPostcode');
-//        $this->assertEqualsArrayClass($data, $response, 'postboxNumber');
-//        $this->assertEqualsArrayClass($data, $response, 'postboxCity');
-        $this->assertEqualsArrayClass($data, $response, 'uid');
-        $this->assertEqualsArrayClass($data, $response, 'phone');
-        $this->assertEqualsArrayClass($data, $response, 'phoneMobile');
+        $this->assertEqualsArrayClass($data, $serverResponse, 'firstName');
+        $this->assertEqualsArrayClass($data, $serverResponse, 'lastName');
+        $this->assertEqualsArrayClass($data, $serverResponse, 'accountName');
+        $this->assertEqualsArrayClass($data, $serverResponse, 'title');
+        $this->assertEqualsArrayClass($data, $serverResponse, 'addition');
+        $this->assertEqualsArrayClass($data, $serverResponse, 'number');
+        $this->assertEqualsArrayClass($data, $serverResponse, 'city');
+        $this->assertEqualsArrayClass($data, $serverResponse, 'zip');
+        $this->assertEqualsArrayClass($data, $serverResponse, 'state');
+        $this->assertEqualsArrayClass($data, $serverResponse, 'country');
+        $this->assertEqualsArrayClass($data, $serverResponse, 'postboxPostcode');
+        $this->assertEqualsArrayClass($data, $serverResponse, 'postboxNumber');
+        $this->assertEqualsArrayClass($data, $serverResponse, 'postboxCity');
+        $this->assertEqualsArrayClass($data, $serverResponse, 'uid');
+        $this->assertEqualsArrayClass($data, $serverResponse, 'phone');
+        $this->assertEqualsArrayClass($data, $serverResponse, 'phoneMobile');
+    }
+
+    /**
+     * @return ContactRepositoryInterface
+     */
+    private function getContactRepository()
+    {
+        return $this->getContainer()->get('sulu.repository.contact');
     }
 }

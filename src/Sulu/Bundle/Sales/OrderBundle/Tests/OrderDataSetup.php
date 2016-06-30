@@ -18,7 +18,6 @@ use Sulu\Bundle\ContactBundle\Entity\AccountAddress;
 use Sulu\Bundle\ContactBundle\Entity\AccountInterface;
 use Sulu\Bundle\ContactBundle\Entity\Address;
 use Sulu\Bundle\ContactBundle\Entity\AddressType;
-use Sulu\Bundle\ContactBundle\Entity\Contact;
 use Sulu\Bundle\ContactBundle\Entity\ContactTitle;
 use Sulu\Bundle\ContactBundle\Entity\Country;
 use Sulu\Bundle\ContactBundle\Entity\Phone;
@@ -44,6 +43,8 @@ use Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatus;
 use Sulu\Bundle\Sales\OrderBundle\Entity\OrderType;
 use Sulu\Bundle\Sales\OrderBundle\Entity\OrderTypeTranslation;
 use Sulu\Bundle\SecurityBundle\Entity\User;
+use Sulu\Component\Contact\Model\ContactInterface;
+use Sulu\Component\Contact\Model\ContactRepositoryInterface;
 
 class OrderDataSetup
 {
@@ -84,11 +85,11 @@ class OrderDataSetup
      */
     public $address2;
     /**
-     * @var Contact
+     * @var ContactInterface
      */
     public $contact;
     /**
-     * @var Contact
+     * @var ContactInterface
      */
     public $contact2;
     /**
@@ -174,22 +175,30 @@ class OrderDataSetup
     protected $productEntity;
 
     /**
+     * @var ContactRepositoryInterface
+     */
+    protected $contactRepository;
+
+    /**
      * OrderDataSetup constructor.
      *
      * @param EntityManager $entityManager
      * @param ItemFactoryInterface $itemFactory
+     * @param ContactRepositoryInterface $contactRepository
      * @param string $productEntity
      * @param string $defaultCurrencyCode
      */
     public function __construct(
         EntityManager $entityManager,
         ItemFactoryInterface $itemFactory,
+        ContactRepositoryInterface $contactRepository,
         $productEntity = 'Sulu\Bundle\ProductBundle\Entity\Product',
         $defaultCurrencyCode = 'EUR'
     ) {
         $this->productEntity = $productEntity;
         $this->itemFactory = $itemFactory;
         $this->defaultCurrencyCode = $defaultCurrencyCode;
+        $this->contactRepository = $contactRepository;
 
         $this->em = $entityManager;
 
@@ -285,18 +294,18 @@ class OrderDataSetup
         $title->setTitle('Dr');
 
         // Contact
-        $this->contact = new Contact();
+        $this->contact = $this->contactRepository->createNew();
         $this->contact->setFirstName('John');
         $this->contact->setLastName('Doe');
         $this->contact->setTitle($title);
         $this->contact->setMainEmail('test@test.com');
         // Second Contact
-        $this->contact2 = new Contact();
+        $this->contact2 = $this->contactRepository->createNew();
         $this->contact2->setFirstName('Johanna');
         $this->contact2->setLastName('Dole');
         $this->contact2->setMainEmail('test@test.com');
 
-        $contact = new Contact();
+        $contact = $this->contactRepository->createNew();
         $contact->setFirstName('Max');
         $contact->setLastName('Mustermann');
         $this->em->persist($contact);
@@ -592,12 +601,12 @@ class OrderDataSetup
      * Creates account contact relation.
      *
      * @param AccountInterface $account
-     * @param Contact $contact
+     * @param ContactInterface $contact
      * @param bool $isMain
      *
      * @return AccountContact
      */
-    protected function createAccountContact(AccountInterface $account, Contact $contact, $isMain = true)
+    protected function createAccountContact(AccountInterface $account, ContactInterface $contact, $isMain = true)
     {
         $accountContact = new AccountContact();
         $accountContact->setAccount($account);

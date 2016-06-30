@@ -538,7 +538,7 @@ class OrderAddress extends ApiWrapper
      *
      * @return string
      * @VirtualProperty
-     * @SerializedName("postboxCode")
+     * @SerializedName("postboxPostcode")
      * @Groups({"Default","cart"})
      */
     public function getPostboxPostcode()
