@@ -33,7 +33,7 @@ sulu_sales_orderbundle_pdf_responsetype: inline
 The bundle-sided configuration for this key defaults to `inline`.
 
 
-#### How to run tests
+## How to run tests
 
 The following command is going to run tests for all sales bundles:
 
