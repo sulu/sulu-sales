@@ -10,7 +10,7 @@
 
 namespace Sulu\Bundle\Sales\OrderBundle\Entity;
 
-use Sulu\Bundle\ContactBundle\Entity\Contact;
+use Sulu\Component\Contact\Model\ContactInterface;
 use Sulu\Component\Security\Authentication\UserInterface;
 
 abstract class BaseOrder implements OrderInterface
@@ -71,7 +71,7 @@ abstract class BaseOrder implements OrderInterface
     protected $id;
 
     /**
-     * @var Contact
+     * @var ContactInterface
      */
     protected $customerContact;
 
@@ -291,7 +291,7 @@ abstract class BaseOrder implements OrderInterface
     /**
      * {@inheritDoc}
      */
-    public function setCustomerContact(Contact $contact = null)
+    public function setCustomerContact(ContactInterface $contact = null)
     {
         $this->customerContact = $contact;
 

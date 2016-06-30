@@ -14,45 +14,46 @@ use DateTime;
 use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\NoResultException;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
-use Sulu\Component\Security\Authentication\UserRepositoryInterface;
-use Sulu\Component\Security\Authentication\UserInterface;
+use Sulu\Bundle\ContactBundle\Entity\AccountRepository;
+use Sulu\Bundle\PricingBundle\Pricing\GroupedItemsPriceCalculatorInterface;
+use Sulu\Bundle\ProductBundle\Product\ProductManagerInterface;
+use Sulu\Bundle\Sales\CoreBundle\Api\ApiItemInterface;
+use Sulu\Bundle\Sales\CoreBundle\Api\Item;
+use Sulu\Bundle\Sales\CoreBundle\Entity\ItemInterface;
+use Sulu\Bundle\Sales\CoreBundle\Entity\OrderAddress;
+use Sulu\Bundle\Sales\CoreBundle\Item\Exception\ItemNotFoundException;
+use Sulu\Bundle\Sales\CoreBundle\Item\ItemManager;
+use Sulu\Bundle\Sales\CoreBundle\Manager\OrderAddressManager;
+use Sulu\Bundle\Sales\OrderBundle\Api\ApiOrderInterface;
+use Sulu\Bundle\Sales\OrderBundle\Api\Order;
+use Sulu\Bundle\Sales\OrderBundle\Entity\Order as OrderEntity;
+use Sulu\Bundle\Sales\OrderBundle\Entity\OrderActivityLog;
+use Sulu\Bundle\Sales\OrderBundle\Entity\OrderInterface;
+use Sulu\Bundle\Sales\OrderBundle\Entity\OrderRepository;
+use Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatus;
+use Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatus as OrderStatusEntity;
+use Sulu\Bundle\Sales\OrderBundle\Entity\OrderType;
+use Sulu\Bundle\Sales\OrderBundle\Order\Exception\MissingOrderAttributeException;
+use Sulu\Bundle\Sales\OrderBundle\Order\Exception\OrderDependencyNotFoundException;
+use Sulu\Bundle\Sales\OrderBundle\Order\Exception\OrderException;
+use Sulu\Bundle\Sales\OrderBundle\Order\Exception\OrderNotFoundException;
+use Sulu\Component\Contact\Model\ContactInterface;
+use Sulu\Component\Contact\Model\ContactRepositoryInterface;
 use Sulu\Component\Persistence\RelationTrait;
 use Sulu\Component\Rest\Exception\EntityNotFoundException;
 use Sulu\Component\Rest\ListBuilder\Doctrine\FieldDescriptor\DoctrineConcatenationFieldDescriptor;
 use Sulu\Component\Rest\ListBuilder\Doctrine\FieldDescriptor\DoctrineFieldDescriptor;
 use Sulu\Component\Rest\ListBuilder\Doctrine\FieldDescriptor\DoctrineJoinDescriptor;
 use Sulu\Component\Rest\ListBuilder\Metadata\FieldDescriptorFactoryInterface;
-use Sulu\Bundle\ContactBundle\Entity\AccountRepository;
-use Sulu\Bundle\ContactBundle\Entity\Contact;
-use Sulu\Bundle\ProductBundle\Product\ProductManagerInterface;
-use Sulu\Bundle\Sales\CoreBundle\Api\ApiItemInterface;
-use Sulu\Bundle\Sales\CoreBundle\Entity\ItemInterface;
-use Sulu\Bundle\Sales\CoreBundle\Manager\OrderAddressManager;
-use Sulu\Bundle\Sales\CoreBundle\Item\Exception\ItemNotFoundException;
-use Sulu\Bundle\Sales\CoreBundle\Item\ItemManager;
-use Sulu\Bundle\PricingBundle\Pricing\GroupedItemsPriceCalculatorInterface;
-use Sulu\Bundle\Sales\CoreBundle\Entity\OrderAddress;
-use Sulu\Bundle\Sales\OrderBundle\Entity\Order as OrderEntity;
-use Sulu\Bundle\Sales\OrderBundle\Entity\OrderActivityLog;
-use Sulu\Bundle\Sales\OrderBundle\Entity\OrderInterface;
-use Sulu\Bundle\Sales\OrderBundle\Entity\OrderRepository;
-use Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatus as OrderStatusEntity;
-use Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatus;
-use Sulu\Bundle\Sales\OrderBundle\Entity\OrderType;
-use Sulu\Bundle\Sales\OrderBundle\Order\Exception\MissingOrderAttributeException;
-use Sulu\Bundle\Sales\OrderBundle\Order\Exception\OrderDependencyNotFoundException;
-use Sulu\Bundle\Sales\OrderBundle\Order\Exception\OrderException;
-use Sulu\Bundle\Sales\OrderBundle\Order\Exception\OrderNotFoundException;
-use Sulu\Bundle\Sales\OrderBundle\Api\Order;
-use Sulu\Bundle\Sales\OrderBundle\Api\ApiOrderInterface;
+use Sulu\Component\Security\Authentication\UserInterface;
+use Sulu\Component\Security\Authentication\UserRepositoryInterface;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 class OrderManager
 {
     use RelationTrait;
 
     protected static $orderEntityName = 'SuluSalesOrderBundle:Order';
-    protected static $contactEntityName = 'SuluContactBundle:Contact';
     protected static $addressEntityName = 'SuluContactBundle:Address';
     protected static $orderStatusEntityName = 'SuluSalesOrderBundle:OrderStatus';
     protected static $orderTypeEntityName = 'SuluSalesOrderBundle:OrderType';
@@ -96,7 +97,7 @@ class OrderManager
     private $userRepository;
 
     /**
-     * Describes the fields, which are handled by this controller
+     * Describes the fields, which are handled by this controller.
      *
      * @var DoctrineFieldDescriptor[]
      */
@@ -143,6 +144,11 @@ class OrderManager
     private $defaultCurrency;
 
     /**
+     * @var ContactRepositoryInterface
+     */
+    private $contactRepository;
+
+    /**
      * @param ObjectManager $em
      * @param OrderRepository $orderRepository
      * @param UserRepositoryInterface $userRepository
@@ -157,6 +163,7 @@ class OrderManager
      * @param OrderAddressManager $orderAddressManager
      * @param FieldDescriptorFactoryInterface $fieldDescriptorFactory
      * @param string $defaultCurrency
+     * @param ContactRepositoryInterface $contactRepository
      */
     public function __construct(
         ObjectManager $em,
@@ -172,7 +179,8 @@ class OrderManager
         OrderFactoryInterface $orderFactory,
         OrderAddressManager $orderAddressManager,
         FieldDescriptorFactoryInterface $fieldDescriptorFactory,
-        $defaultCurrency
+        $defaultCurrency,
+        ContactRepositoryInterface $contactRepository
     ) {
         $this->orderRepository = $orderRepository;
         $this->userRepository = $userRepository;
@@ -188,6 +196,7 @@ class OrderManager
         $this->orderAddressManager = $orderAddressManager;
         $this->fieldDescriptorFactory = $fieldDescriptorFactory;
         $this->defaultCurrency = $defaultCurrency;
+        $this->contactRepository = $contactRepository;
 
         static::$orderEntityName = $this->orderRepository->getClassName();
     }
@@ -209,7 +218,7 @@ class OrderManager
      * @throws OrderException
      * @throws OrderNotFoundException
      *
-     * @return null|Order|\Sulu\Bundle\Sales\OrderBundle\Entity\Order
+     * @return null|Order
      */
     public function save(
         array $data,
@@ -257,7 +266,7 @@ class OrderManager
             $this->getPropertyBasedOnPatch($data, 'internalNote', $order->getInternalNote(), $patch)
         );
 
-        // set type of order (if set)
+        // Set type of order (if set).
         $this->setOrderType($data, $order, $patch);
 
         $this->setDate(
@@ -278,11 +287,11 @@ class OrderManager
 
         $account = $this->setCustomerAccount($data, $order, $patch);
 
-        // set session - id
+        // Set session - id.
         $sessionId = $this->session->getId();
         $order->setSessionId($sessionId);
 
-        // add contact
+        // Add contact.
         $contact = $this->addContactRelation(
             $data,
             'customerContact',
@@ -291,7 +300,7 @@ class OrderManager
             }
         );
 
-        // add contact
+        // Add contact.
         $this->addContactRelation(
             $data,
             'responsibleContact',
@@ -300,34 +309,34 @@ class OrderManager
             }
         );
 
-        // create order (POST)
+        // Create order (POST).
         if ($order->getId() == null) {
             $order->setCreated(new DateTime());
             $order->setCreator($user);
             $this->em->persist($order->getEntity());
 
-            // set status to created if not defined
+            // Set status to created if not defined.
             if ($statusId === null) {
                 $statusId = OrderStatus::STATUS_CREATED;
             }
 
-            // create OrderAddress
+            // Create OrderAddress.
             $deliveryAddress = new OrderAddress();
             $invoiceAddress = new OrderAddress();
-            // persist entities
+            // Persist entities.
             $this->em->persist($deliveryAddress);
             $this->em->persist($invoiceAddress);
-            // assign to order
+            // Assign to order.
             $order->setDeliveryAddress($deliveryAddress);
             $order->setInvoiceAddress($invoiceAddress);
         }
 
-        // set order status
+        // Set order status.
         if ($statusId !== null) {
             $this->convertStatus($order, $statusId);
         }
 
-        // if not new and contact is not set, use old contact
+        // If not new and contact is not set, use old contact.
         if (!$isNewOrder && !$contact) {
             $contact = $order->getEntity()->getCustomerContact();
         }
@@ -337,10 +346,13 @@ class OrderManager
         }
 
         if (isset($data['invoiceAddress'])) {
-            // set customer name to account if set, otherwise to contact
-            $contactFullName = $this->orderAddressManager->getContactData($data['invoiceAddress'], $contact)['fullName'];
+            // Set customer name to account if set, otherwise to contact.
+            $contactFullName = $this->orderAddressManager->getContactData(
+                $data['invoiceAddress'],
+                $contact
+            )['fullName'];
 
-            // set OrderAddress data
+            // Set OrderAddress data.
             $this->orderAddressManager->setOrderAddress(
                 $order->getEntity()->getInvoiceAddress(),
                 $data['invoiceAddress'],
@@ -357,13 +369,13 @@ class OrderManager
             );
         }
 
-        // set customer name
+        // Set customer name.
         $customerName = $account !== null ? $account->getName() : $contactFullName;
         if ($customerName) {
             $order->setCustomerName($customerName);
         }
 
-        // handle items
+        // Handle items.
         if (!$this->processItems($data, $order, $locale, $userId)) {
             throw new OrderException('Error while processing items');
         }
@@ -438,7 +450,7 @@ class OrderManager
     }
 
     /**
-     * Returns OrderType entity with given id
+     * Returns OrderType entity with given id.
      *
      * @param int $typeId
      *
@@ -448,7 +460,7 @@ class OrderManager
      */
     public function getOrderTypeEntityById($typeId)
     {
-        // get desired status
+        // Get desired status.
         $typeEntity = $this->orderTypeRepository->find($typeId);
         if (!$typeEntity) {
             throw new EntityNotFoundException($this->orderTypeRepository->getClassName(), $typeId);
@@ -458,7 +470,7 @@ class OrderManager
     }
 
     /**
-     * Converts the status of an order
+     * Converts the status of an order.
      *
      * @param ApiOrderInterface|OrderInterface $order
      * @param int $statusId
@@ -473,20 +485,20 @@ class OrderManager
             $order = $order->getEntity();
         }
 
-        // get current status
+        // Get current status.
         $currentStatus = $order->getStatus();
         if ($currentStatus) {
             if ($currentStatus instanceof \Massive\Bundle\Purchase\OrderBundle\Api\OrderStatus) {
                 $currentStatus = $order->getStatus()->getEntity();
             }
 
-            // if status has not changed, skip
+            // If status has not changed, skip.
             if ($currentStatus->getId() === $statusId) {
                 return;
             }
         }
 
-        // get desired status
+        // Get desired status.
         $statusEntity = $this->em
             ->getRepository(self::$orderStatusEntityName)
             ->find($statusId);
@@ -494,7 +506,7 @@ class OrderManager
             throw new EntityNotFoundException(self::$orderStatusEntityName, $statusId);
         }
 
-        // ACTIVITY LOG
+        // ACTIVITY LOG.
         $orderActivity = new OrderActivityLog();
         $orderActivity->setOrder($order);
         if ($currentStatus) {
@@ -508,16 +520,16 @@ class OrderManager
 
         // BITMASK
         $currentBitmaskStatus = $order->getBitmaskStatus();
-        // if desired status already is in bitmask, remove current state
-        // since this is a step back
+        // If desired status already is in bitmask, remove current state
+        // since this is a step back.
         if ($currentBitmaskStatus && $currentBitmaskStatus & $statusEntity->getId()) {
             $order->setBitmaskStatus($currentBitmaskStatus & ~$currentStatus->getId());
         } else {
-            // else increment bitmask status
+            // Else increment bitmask status.
             $order->setBitmaskStatus($currentBitmaskStatus | $statusEntity->getId());
         }
 
-        // check if status has changed
+        // Check if status has changed.
         if ($statusId === OrderStatusEntity::STATUS_CREATED) {
             // TODO: re-edit - do some business logic
         }
@@ -529,9 +541,9 @@ class OrderManager
     }
 
     /**
-     * Finds a status by id
+     * Finds a status by id.
      *
-     * @param $statusId
+     * @param int $statusId
      *
      * @throws \Sulu\Component\Rest\Exception\EntityNotFoundException
      *
@@ -549,7 +561,7 @@ class OrderManager
     }
 
     /**
-     * Find order entity by id
+     * Find order entity by id.
      *
      * @param $id
      *
@@ -569,7 +581,7 @@ class OrderManager
     }
 
     /**
-     * Find order for item with id
+     * Find order for item with id.
      *
      * @param int $id
      *
@@ -591,7 +603,7 @@ class OrderManager
     /**
      * @param string $locale
      *
-     * @return \Sulu\Component\Rest\ListBuilder\Doctrine\FieldDescriptor\DoctrineFieldDescriptor[]
+     * @return DoctrineFieldDescriptor[]
      */
     public function getFieldDescriptors($locale)
     {
@@ -603,7 +615,7 @@ class OrderManager
     }
 
     /**
-     * returns a specific field descriptor by key
+     * Returns a specific field descriptor by key.
      *
      * @param string $key
      *
@@ -615,7 +627,7 @@ class OrderManager
     }
 
     /**
-     * Finds an order by id and locale
+     * Finds an order by id and locale.
      *
      * @param int $id
      * @param string $locale
@@ -664,7 +676,7 @@ class OrderManager
     }
 
     /**
-     * Finds orders by statusId and user
+     * Finds orders by statusId and user.
      *
      * @param string $locale
      * @param int $statusId
@@ -706,7 +718,7 @@ class OrderManager
      * @param int $userId
      * @param OrderEntity $order
      *
-     * @return null|\Sulu\Bundle\Sales\CoreBundle\Api\Item
+     * @return null|Item
      */
     public function updateItem(ItemInterface $item, $itemData, $locale, $userId, OrderEntity $order)
     {
@@ -720,16 +732,16 @@ class OrderManager
      */
     public function removeItem(ItemInterface $item, OrderInterface $order, $deleteEntity = true)
     {
-        // remove from order
+        // Remove from order.
         $order->removeItem($item);
         if ($deleteEntity) {
-            // delete item
+            // Delete item.
             $this->em->remove($item);
         }
     }
 
     /**
-     * Get order item by id and checks if item belongs to the order
+     * Get order item by id and checks if item belongs to the order.
      *
      * @param int $itemId
      * @param OrderInterface $order
@@ -739,7 +751,7 @@ class OrderManager
      * @throws ItemNotFoundException
      * @throws OrderException
      *
-     * @return null|\Sulu\Bundle\Sales\CoreBundle\Api\Item
+     * @return null|Item
      */
     public function getOrderItemById($itemId, OrderInterface $order, &$hasMultiple = false)
     {
@@ -768,7 +780,7 @@ class OrderManager
     }
 
     /**
-     * Creates correct media-api for supplier-items array
+     * Creates correct media-api for supplier-items array.
      *
      * @param array $items
      * @param string $locale
@@ -776,14 +788,14 @@ class OrderManager
     protected function createMediaForSupplierItems($items, $locale)
     {
         foreach ($items as $item) {
-            if (isset($item['items']) && count($item['items'] > 0)) {
+            if (isset($item['items']) && count($item['items']) > 0) {
                 $this->createMediaForItems($item['items'], $locale);
             }
         }
     }
 
     /**
-     * Creates correct media-api for items array
+     * Creates correct media-api for items array.
      *
      * @param array $items
      * @param string $locale
@@ -795,13 +807,14 @@ class OrderManager
             if ($product) {
                 $this->productManager->createProductMedia($product, $locale);
             }
-            // Set api product for returning media-urls
+            // Set api product for returning media-urls.
             $item->setProduct($product);
         }
     }
 
     /**
-     * Returns the entry from the data with the given key, or the given default value, if the key does not exist
+     * Returns the entry from the data with the given key, or the given default value,
+     * if the key does not exist.
      *
      * @param array $data
      * @param string $key
@@ -829,30 +842,31 @@ class OrderManager
         if (!$patch) {
             $default = null;
         }
+
         return $this->getProperty($data, $key, $default);
     }
 
     /**
-     * Check if necessary data is set
+     * Check if necessary data is set.
      *
      * @param array $data
      * @param bool $isNew
      */
-    private function checkRequiredData($data, $isNew)
+    private function checkRequiredData(array $data, $isNew)
     {
         $this->checkDataSet($data, 'deliveryAddress', $isNew);
         $this->checkDataSet($data, 'invoiceAddress', $isNew);
     }
 
     /**
-     * Sets a date if it's set in data
+     * Sets a date if it's set in data.
      *
      * @param array $data
      * @param string $key
      * @param DateTime $currentDate
      * @param callable $setCallback
      */
-    private function setDate($data, $key, $currentDate, callable $setCallback)
+    private function setDate(array $data, $key, $currentDate, callable $setCallback)
     {
         if (($date = $this->getProperty($data, $key, $currentDate)) !== null) {
             if (is_string($date)) {
@@ -863,49 +877,50 @@ class OrderManager
     }
 
     /**
-     * Sets OrderType on an order
+     * Sets OrderType on an order.
      *
      * @param array $data
      * @param ApiOrderInterface $order
+     * @param bool $patch
      *
      * @throws EntityNotFoundException
      * @throws OrderException
      */
-    private function setOrderType($data, ApiOrderInterface $order, $patch = false)
+    private function setOrderType(array $data, ApiOrderInterface $order, $patch = false)
     {
-        // get OrderType
+        // Get OrderType.
         $type = $this->getProperty($data, 'type', $order->getType());
-        // set order type
+        // Set order type.
         if (isset($data['type'])) {
             if (is_array($type) && isset($type['id'])) {
-                // if provided as array
+                // If provided as array.
                 $typeId = $type['id'];
             } elseif (is_numeric($type)) {
-                // if is numeric
+                // If is numeric.
                 $typeId = $type;
             } else {
                 throw new OrderException('No typeid given');
             }
         } elseif (!$patch) {
-            // default type is manual
+            // Default type is manual.
             $typeId = OrderType::MANUAL;
         } else {
-            // keep current type
+            // Keep current type.
             return;
         }
 
-        // get entity
+        // Get entity.
         $orderType = $this->getOrderTypeEntityById($typeId);
         if (!$orderType) {
             throw new EntityNotFoundException(static::$orderTypeEntityName, $typeId);
         }
 
-        // set order type
+        // Set order type.
         $order->setType($orderType);
     }
 
     /**
-     * Initializes field descriptors
+     * Initializes field descriptors.
      *
      * @param string $locale
      */
@@ -1138,8 +1153,8 @@ class OrderManager
         );
 
         $contactJoin = array(
-            self::$contactEntityName => new DoctrineJoinDescriptor(
-                static::$contactEntityName,
+            $this->getContactEntityName() => new DoctrineJoinDescriptor(
+                $this->getContactEntityName(),
                 static::$orderEntityName . '.responsibleContact'
             )
         );
@@ -1149,14 +1164,14 @@ class OrderManager
                 new DoctrineFieldDescriptor(
                     'firstName',
                     'contact',
-                    self::$contactEntityName,
+                    $this->getContactEntityName(),
                     'contact.contacts.contact',
                     $contactJoin
                 ),
                 new DoctrineFieldDescriptor(
                     'lastName',
                     'contact',
-                    self::$contactEntityName,
+                    $this->getContactEntityName(),
                     'contact.contacts.contact',
                     $contactJoin
                 )
@@ -1175,7 +1190,7 @@ class OrderManager
 
 
     /**
-     * Checks data for attributes
+     * Checks data for attributes.
      *
      * @param array $data
      * @param string $key
@@ -1197,14 +1212,14 @@ class OrderManager
     }
 
     /**
-     * Checks if data is set
+     * Checks if data is set.
      *
      * @param string $key
      * @param array $data
      *
      * @return bool
      */
-    private function checkIfSet($key, $data)
+    private function checkIfSet($key, array $data)
     {
         $keyExists = array_key_exists($key, $data);
 
@@ -1212,7 +1227,7 @@ class OrderManager
     }
 
     /**
-     * Searches for contact in specified data and calls callback function
+     * Searches for contact in specified data and calls callback function.
      *
      * @param array $data
      * @param string $key
@@ -1221,7 +1236,7 @@ class OrderManager
      * @throws Exception\MissingOrderAttributeException
      * @throws Exception\OrderDependencyNotFoundException
      *
-     * @return Contact|null
+     * @return ContactInterface|null
      */
     private function addContactRelation(array $data, $key, $addCallback)
     {
@@ -1230,11 +1245,11 @@ class OrderManager
             is_array($data[$key]) &&
             array_key_exists('id', $data[$key])
         ) {
-            /** @var Contact $contact */
+            /** @var ContactInterface $contact */
             $contactId = $data[$key]['id'];
-            $contact = $this->em->getRepository(static::$contactEntityName)->find($contactId);
+            $contact = $this->contactRepository->find($contactId);
             if (!$contact) {
-                throw new OrderDependencyNotFoundException(static::$contactEntityName, $contactId);
+                throw new OrderDependencyNotFoundException($this->getContactEntityName(), $contactId);
             }
             $addCallback($contact);
         }
@@ -1255,7 +1270,7 @@ class OrderManager
     private function setTermsOfDelivery($data, Order $order, $patch = false)
     {
         $terms = null;
-        // terms of delivery
+        // Terms of delivery.
         $termsOfDeliveryData = $this->getProperty($data, 'termsOfDelivery');
         $termsOfDeliveryContentData = $this->getProperty($data, 'termsOfDeliveryContent');
         if ($termsOfDeliveryData) {
@@ -1276,7 +1291,7 @@ class OrderManager
             $order->setTermsOfDelivery(null);
             $order->setTermsOfDeliveryContent(null);
         }
-        // set content data
+        // Set content data.
         if ($termsOfDeliveryContentData) {
             $order->setTermsOfDeliveryContent($termsOfDeliveryContentData);
         }
@@ -1297,7 +1312,7 @@ class OrderManager
     private function setTermsOfPayment($data, Order $order, $patch = false)
     {
         $terms = null;
-        // terms of delivery
+        // Terms of delivery.
         $termsOfPaymentData = $this->getProperty($data, 'termsOfPayment');
         $termsOfPaymentContentData = $this->getProperty($data, 'termsOfPaymentContent');
         if ($termsOfPaymentData) {
@@ -1318,7 +1333,7 @@ class OrderManager
             $order->setTermsOfPayment(null);
             $order->setTermsOfPaymentContent(null);
         }
-        // set content data
+        // Set content data.
         if ($termsOfPaymentContentData) {
             $order->setTermsOfPaymentContent($termsOfPaymentContentData);
         }
@@ -1327,17 +1342,18 @@ class OrderManager
     }
 
     /**
-     * Sets the customer account of an order
+     * Sets the customer account of an order.
      *
      * @param array $data
      * @param Order $order
      * @param bool $patch
      *
-     * @return null|object
      * @throws MissingOrderAttributeException
      * @throws OrderDependencyNotFoundException
+     *
+     * @return null|object
      */
-    private function setCustomerAccount($data, Order $order, $patch = false)
+    private function setCustomerAccount(array $data, Order $order, $patch = false)
     {
         $accountData = $this->getProperty($data, 'customerAccount');
         if ($accountData) {
@@ -1359,7 +1375,7 @@ class OrderManager
     }
 
     /**
-     * Processes items defined in an order and creates item entities
+     * Processes items defined in an order and creates item entities.
      *
      * @param array $data
      * @param Order $order
@@ -1370,7 +1386,7 @@ class OrderManager
      *
      * @return bool
      */
-    private function processItems($data, Order $order, $locale, $userId = null)
+    private function processItems(array $data, Order $order, $locale, $userId = null)
     {
         $result = true;
         try {
@@ -1415,5 +1431,13 @@ class OrderManager
         }
 
         return $result;
+    }
+
+    /**
+     * @return string
+     */
+    public function getContactEntityName()
+    {
+        return $this->contactRepository->getClassName();
     }
 }

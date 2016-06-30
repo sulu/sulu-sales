@@ -14,7 +14,6 @@ use DateTime;
 use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\ORM\EntityRepository;
 use Sulu\Bundle\ContactBundle\Entity\AccountInterface;
-use Sulu\Bundle\ContactBundle\Entity\Contact;
 use Sulu\Bundle\ProductBundle\Entity\Product;
 use Sulu\Bundle\ProductBundle\Entity\ProductInterface;
 use Sulu\Bundle\ProductBundle\Product\Exception\ProductException;
@@ -156,7 +155,7 @@ class ItemManager
      * @param int|null $userId
      * @param ApiItemInterface|ItemInterface|null $item
      * @param int|null $itemStatusId
-     * @param Contact|null $contact The contact that should be used for order-address
+     * @param ContactInterface|null $contact The contact that should be used for order-address
      *
      * @return ApiItemInterface|null
      */
@@ -414,7 +413,7 @@ class ItemManager
      *
      * @param array|int $addressData
      * @param ApiItemInterface $item
-     * @param Contact $contact
+     * @param ContactInterface $contact
      * @param AccountInterface $account
      *
      * @throws ItemDependencyNotFoundException
@@ -423,7 +422,7 @@ class ItemManager
     protected function setItemDeliveryAddress(
         $addressData,
         ApiItemInterface $item,
-        Contact $contact = null,
+        ContactInterface $contact = null,
         AccountInterface $account = null
     ) {
         if ($item->getDeliveryAddress() === null) {

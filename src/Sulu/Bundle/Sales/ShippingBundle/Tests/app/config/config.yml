@@ -1,6 +1,6 @@
 doctrine:
     orm:
-        auto_generate_proxy_classes: %kernel.debug%
+        auto_generate_proxy_classes: "%kernel.debug%"
         auto_mapping: true
         resolve_target_entities:
             Sulu\Bundle\ProductBundle\Entity\ProductInterface: Sulu\Bundle\ProductBundle\Entity\Product
@@ -13,3 +13,4 @@ doctrine:
 parameters:
     mailer_from: test@test.com
     website_locale: en
+    shopowner: []

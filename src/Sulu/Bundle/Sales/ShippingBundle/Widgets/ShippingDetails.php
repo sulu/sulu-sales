@@ -10,13 +10,8 @@
 
 namespace Sulu\Bundle\Sales\ShippingBundle\Widgets;
 
-use Doctrine\ORM\EntityManager;
-use Sulu\Bundle\AdminBundle\Widgets\WidgetException;
 use Sulu\Bundle\AdminBundle\Widgets\WidgetInterface;
-use Sulu\Bundle\ContactBundle\Entity\Contact;
-use Sulu\Bundle\ContactBundle\Entity\Address;
 use Sulu\Bundle\AdminBundle\Widgets\WidgetParameterException;
-use Sulu\Bundle\AdminBundle\Widgets\WidgetEntityNotFoundException;
 
 /**
  * Shippingdetails widget

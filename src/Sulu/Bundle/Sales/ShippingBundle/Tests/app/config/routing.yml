@@ -1,4 +1,4 @@
-import:
+sulu_sales_shipping_api:
     type: rest
     resource: Sulu\Bundle\Sales\ShippingBundle\Controller\ShippingController
     prefix: /api

@@ -132,6 +132,7 @@
         <service id="sulu_sales_core.widget.simple_contact" class="%sulu_sales_core.widgets.simple_contact.class%">
             <tag name="sulu.widget" alias="sulu-sales-core-simple-contact"/>
             <argument type="service" id="doctrine.orm.entity_manager"/>
+            <argument type="service" id="sulu.repository.contact"/>
         </service>
 
         <service id="sulu_sales_core.sales_config_parameter_service" class="%sulu_sales_core.sales_config_parameter_service.class%">
@@ -141,7 +142,7 @@
         <service id="sulu_sales_core.jsconfig" class="%sulu_sales_core.jsconfig.class%">
             <argument type="string">sulu_sales_core</argument>
             <argument type="collection">
-                <argument key="default_currency" type="string">%default_currency%</argument>
+                <argument key="default_currency" type="string">%sulu_product.default_currency%</argument>
             </argument>
             <tag name="sulu.js_config"/>
         </service>
