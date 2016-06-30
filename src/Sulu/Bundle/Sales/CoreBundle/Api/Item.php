@@ -914,4 +914,26 @@ class Item extends ApiWrapper implements
 
         return $this;
     }
+
+    /**
+     * @VirtualProperty
+     * @SerializedName("isRecurringPrice")
+     * @Groups({"Default","cart"})
+     *
+     * @return string
+     */
+    public function isRecurringPrice()
+    {
+        return $this->entity->isRecurringPrice();
+    }
+
+    /**
+     * @param bool $isRecurringPrice
+     *
+     * @return bool
+     */
+    public function setIsRecurringPrice($isRecurringPrice)
+    {
+        return $this->entity->setIsRecurringPrice($isRecurringPrice);
+    }
 }

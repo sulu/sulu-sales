@@ -262,6 +262,10 @@
                 <source>salescore.transition.successful</source>
                 <target>Transistion created</target>
             </trans-unit>
+            <trans-unit id="28" resname="salescore.item.is-recurring-price">
+                <source>salescore.item.is-recurring-price</source>
+                <target>Recurring price</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>

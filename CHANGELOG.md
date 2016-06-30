@@ -1,6 +1,9 @@
 CHANGELOG for Sulu Sales
 ========================
 
+* dev-develop
+    * FEATURE     [CoreBundle]    Added recurring price for items
+
 * 0.3.0 (2016-06-30)
 
     * BUGFIX      [ShippingBundle] Fixed postbox addresses in ShippingBundle

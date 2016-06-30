@@ -257,7 +257,7 @@ define([
          *
          * @param {String} suffix
          *
-         * @returns {String}
+         * @return {String}
          */
         getEventName = function(suffix) {
             return eventNamespace + this.options.instanceName + '.' + suffix;
@@ -389,7 +389,7 @@ define([
          *
          * @param {String} rowId
          *
-         * @returns {Object}
+         * @return {Object}
          */
         getItemRowById = function(rowId) {
             return this.sandbox.dom.find('#' + rowId, this.$list);
@@ -653,7 +653,7 @@ define([
          *
          * @param {String} rowId
          *
-         * @returns {Object} Deferred
+         * @return {Object} Deferred
          */
         updateItemRowPrices = function(rowId) {
             if (!this.options.calculatePrices) {
@@ -680,7 +680,7 @@ define([
          *
          * @param {Object} event
          *
-         * @returns {{row: *, id: *}}
+         * @return {{row: *, id: *}}
          */
         getRowData = function(event) {
             var $row = this.sandbox.dom.closest(event.target, '.item-table-row'),
@@ -787,7 +787,7 @@ define([
          *
          * @param {Object} item
          *
-         * @returns {String}
+         * @return {String}
          */
         getOverallPriceString = function(item) {
             setItemDefaults(item);
@@ -815,7 +815,7 @@ define([
          *
          * @param {Object} item
          *
-         * @returns {String}
+         * @return {String}
          */
         getCurrency = function(item) {
             return !!item.currency ? item.currency : this.currency;
@@ -940,7 +940,7 @@ define([
          *
          * @param {String|Int} productId
          *
-         * @returns {Bool}
+         * @return {Bool}
          */
         productIsForbiddenDuplicate = function(productId) {
             return !this.options.allowDuplicatedProducts && this.addedProductIds.indexOf(productId) !== -1;
@@ -1072,7 +1072,7 @@ define([
          * @param {Object} itemData
          * @param {String} rowId
          *
-         * @returns {Object}
+         * @return {Object}
          */
         createItemRow = function(itemData, rowId) {
             if (!rowId) {
@@ -1255,7 +1255,7 @@ define([
          *
          * @param {Object} $row
          *
-         * @returns {String} rowId
+         * @return {String} rowId
          */
         addItemDataEntryByObject = function($row, itemData) {
             var rowId = this.sandbox.dom.attr($row, 'id');
@@ -1269,7 +1269,7 @@ define([
          *
          * @param {Object} productData
          *
-         * @returns {Object}
+         * @return {Object}
          */
         setItemByProduct = function(productData) {
             // Merge with row defaults.
@@ -1452,7 +1452,7 @@ define([
         /**
          * Retrieves all data from settings overlay.
          *
-         * @returns {Object}
+         * @return {Object}
          */
         retrieveDataFromSettingsOverlay = function() {
             var data = {};
@@ -1487,6 +1487,7 @@ define([
             data.description = getDataMapperPropertyValFromOverlay.call(this, 'description');
             data.quantity = this.sandbox.parseFloat(getDataMapperPropertyValFromOverlay.call(this, 'quantity'));
             data.price = this.sandbox.parseFloat(getDataMapperPropertyValFromOverlay.call(this, 'price'));
+            data.isRecurringPrice = this.sandbox.dom.find('#is-recurring-price')[0].checked;
 
             // Set address
             if (deliveryAddress !== '-1') {
@@ -1662,7 +1663,7 @@ define([
         /**
          * Returns current items.
          *
-         * @returns {Array}
+         * @return {Array}
          */
         getItems: function() {
             var i,

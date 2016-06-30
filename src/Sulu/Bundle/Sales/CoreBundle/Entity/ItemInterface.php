@@ -361,4 +361,16 @@ interface ItemInterface
      * @return string
      */
     public function getCostCentre();
+
+    /**
+     * @param bool $isRecurringPrice
+     *
+     * @return bool
+     */
+    public function setIsRecurringPrice($isRecurringPrice);
+
+    /**
+     * @return bool
+     */
+    public function isRecurringPrice();
 }

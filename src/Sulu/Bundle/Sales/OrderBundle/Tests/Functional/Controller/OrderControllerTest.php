@@ -297,6 +297,7 @@ class OrderControllerTest extends OrderTestBase
                     'height' => 14,
                     'length' => 15,
                     'supplierName' => 'supplier',
+                    'isRecurringPrice' => true,
                     'product' => [
                         'id' => $this->data->product->getId()
                     ]
@@ -311,6 +312,8 @@ class OrderControllerTest extends OrderTestBase
 
         $client->request('GET', '/api/orders/' . $response->id);
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
+
+        $this->assertTrue($response->items[0]->isRecurringPrice);
     }
 
 

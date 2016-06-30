@@ -78,7 +78,7 @@
         </div>
         <% } %>
         <% if (settings.columns.indexOf('single-price') > -1) { %>
-        <div class="grid-col-6">
+        <div class="grid-col-3">
             <div class="form-group-vertical">
                 <label><%= translate('salescore.item.price') %></label>
                 <input class="form-element js-price"
@@ -87,6 +87,16 @@
                        data-type="decimal"
                        data-validation-required="true"
                        value="<%= numberFormat(price) %>"/>
+            </div>
+        </div>
+        <div class="grid-col-3">
+            <div class="form-group-vertical">
+                <label><%= translate('salescore.item.is-recurring-price') %></label>
+                <input class="form-element husky-validate"
+                       type="checkbox"
+                       id="is-recurring-price"
+                        <%= isRecurringPrice ? 'checked' : '' %>
+                       data-mapper-property="isRecurringPrice"/>
             </div>
         </div>
         <% } %>

@@ -24,12 +24,13 @@
         <field name="width" type="float" column="width" nullable="true"/>
         <field name="height" type="float" column="height" nullable="true"/>
         <field name="length" type="float" column="length" nullable="true"/>
-        <field name="created" type="datetime" column="created"></field>
-        <field name="changed" type="datetime" column="changed"></field>
+        <field name="created" type="datetime" column="created"/>
+        <field name="changed" type="datetime" column="changed"/>
         <field name="bitmaskStatus" type="integer" column="bitmaskStatus" nullable="true"/>
-        <field name="totalNetPrice" type="float" column="totalNetPrice" nullable="true"></field>
+        <field name="totalNetPrice" type="float" column="totalNetPrice" nullable="true"/>
         <field name="costCentre" type="string" column="costCentre" nullable="true"/>
         <field name="deliveryDate" type="datetime" column="deliveryDate" nullable="true"/>
+        <field name="isRecurringPrice" type="boolean" column="isRecurringPrice" />
 
         <many-to-one field="product" target-entity="Sulu\Bundle\ProductBundle\Entity\ProductInterface">
             <join-columns>
