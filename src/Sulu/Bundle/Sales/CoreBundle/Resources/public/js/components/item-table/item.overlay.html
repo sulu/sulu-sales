@@ -95,7 +95,7 @@
                 <input class="form-element husky-validate"
                        type="checkbox"
                        id="is-recurring-price"
-                        <%= isRecurringPrice ? 'checked' : '' %>
+                        <%= typeof isRecurringPrice !== 'undefined' && isRecurringPrice ? 'checked' : '' %>
                        data-mapper-property="isRecurringPrice"/>
             </div>
         </div>
