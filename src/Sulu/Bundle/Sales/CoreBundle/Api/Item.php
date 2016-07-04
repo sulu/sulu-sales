@@ -952,6 +952,10 @@ class Item extends ApiWrapper implements
 
     /**
      * {@inheritdoc}
+     *
+     * @VirtualProperty
+     * @SerializedName("type")
+     * @Groups({"Default","cart"})
      */
     public function getType()
     {

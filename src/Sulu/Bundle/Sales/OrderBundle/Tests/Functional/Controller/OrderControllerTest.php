@@ -303,19 +303,41 @@ class OrderControllerTest extends OrderTestBase
                     'product' => [
                         'id' => $this->data->product->getId()
                     ]
-                ]
+                ],
+                [
+                    'name' => $this->data->productTranslation->getName(),
+                    'number' => $this->data->addon->getAddon()->getNumber(),
+                    'quantity' => 2,
+                    'quantityUnit' => 'pc',
+                    'price' => 1000,
+                    'discount' => 10,
+                    'tax' => 20,
+                    'description' => $this->data->productTranslation->getLongDescription(),
+                    'useProductsPrice' => false,
+                    'weight' => 12,
+                    'width' => 13,
+                    'height' => 14,
+                    'length' => 15,
+                    'supplierName' => 'supplier',
+                    'isRecurringPrice' => true,
+                    'type' => Item::TYPE_ADDON,
+                    'addon' => [
+                        'id' => $this->data->addon->getId()
+                    ]
+                ],
             ]
         ];
         $client = $this->createAuthenticatedClient();
 
         $client->request('POST', '/api/orders', $data);
         $response = json_decode($client->getResponse()->getContent());
-        $this->assertEquals(200, $client->getResponse()->getStatusCode(), $response);
+        $this->assertEquals(200, $client->getResponse()->getStatusCode(), $client->getResponse());
 
         $client->request('GET', '/api/orders/' . $response->id);
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
 
         $this->assertTrue($response->items[0]->isRecurringPrice);
+        $this->assertEquals(Item::TYPE_ADDON, $response->items[1]->type);
     }
 
 

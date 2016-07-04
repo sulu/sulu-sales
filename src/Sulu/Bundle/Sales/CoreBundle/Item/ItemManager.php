@@ -115,6 +115,7 @@ class ItemManager
      * @param OrderAddressManager $orderAddressManager
      * @param CountryTaxRepository $countryTaxRepository
      * @param ItemFactoryInterface $itemFactory
+     * @param ProductAddonRepository $addonRepository
      * @param string $orderAddressEntity
      * @param string $shopLocation
      */

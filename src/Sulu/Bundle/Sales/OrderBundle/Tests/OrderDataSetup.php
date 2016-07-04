@@ -7,6 +7,7 @@
  * This source file is subject to the MIT license that is bundled
  * with this source code in the file LICENSE.
  */
+
 namespace Sulu\Bundle\Sales\OrderBundle\Tests;
 
 use DateTime;
@@ -24,6 +25,8 @@ use Sulu\Bundle\ContactBundle\Entity\Phone;
 use Sulu\Bundle\ContactBundle\Entity\PhoneType;
 use Sulu\Bundle\ContactExtensionBundle\Entity\TermsOfDelivery;
 use Sulu\Bundle\ContactExtensionBundle\Entity\TermsOfPayment;
+use Sulu\Bundle\ProductBundle\Entity\Addon;
+use Sulu\Bundle\ProductBundle\Entity\AddonPrice;
 use Sulu\Bundle\ProductBundle\Entity\Currency;
 use Sulu\Bundle\ProductBundle\Entity\Product;
 use Sulu\Bundle\ProductBundle\Entity\ProductPrice;
@@ -68,66 +71,82 @@ class OrderDataSetup
      * @var Account
      */
     public $account2;
+
     /**
      * @var AccountContact
      */
     public $accountContact;
+
     /**
      * @var AccountContact
      */
     public $accountContact2;
+
     /**
      * @var Address
      */
     public $address;
+
     /**
      * @var Address
      */
     public $address2;
+
     /**
      * @var ContactInterface
      */
     public $contact;
+
     /**
      * @var ContactInterface
      */
     public $contact2;
+
     /**
      * @var Order
      */
     public $order;
+
     /**
      * @var OrderAddress
      */
     public $orderAddressDelivery;
+
     /**
      * @var OrderAddress
      */
     public $orderAddressInvoice;
+
     /**
      * @var OrderStatus
      */
     public $orderStatus;
+
     /**
      * @var TermsOfDelivery
      */
     public $termsOfDelivery;
+
     /**
      * @var TermsOfPayment
      */
     public $termsOfPayment;
+
     /**
      * @var Item
      */
     public $item;
+
     /**
      * @var Item
      */
     public $item2;
+
     /**
      * @var Product
      */
     public $product;
+
     /**
      * @var Product
      */
@@ -137,18 +156,22 @@ class OrderDataSetup
      * @var ProductTranslation
      */
     public $productTranslation;
+
     /**
      * @var Phone
      */
     public $phone;
+
     /**
      * @var User
      */
     public $user;
+
     /**
      * @var Currency
      */
     public $currency;
+
     /**
      * @var ProductPrice
      */
@@ -158,6 +181,16 @@ class OrderDataSetup
      * @var string
      */
     public $defaultCurrencyCode;
+
+    /**
+     * @var Addon
+     */
+    public $addon;
+
+    /**
+     * @var AddonPrice
+     */
+    public $addonPrice;
 
     /**
      * @var EntityManager
@@ -227,7 +260,7 @@ class OrderDataSetup
      */
     protected function loadFixtures()
     {
-        // load order-status
+        // Load order-status
         $statusFixtures = new LoadOrderStatus();
         $statusFixtures->load($this->em);
     }
@@ -379,8 +412,8 @@ class OrderDataSetup
         // Product status
         $productStatus = new Status();
         $productStatus->setId(Status::ACTIVE);
-        $metadata = $this->em->getClassMetaData(get_class(new Status()));
-        $metadata->setIdGeneratorType(\Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_NONE);
+        $metadata = $this->em->getClassMetadata(Status::class);
+        $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_NONE);
         $productStatusTranslation = new StatusTranslation();
         $productStatusTranslation->setLocale($this->locale);
         $productStatusTranslation->setName('EnglishProductStatus-1');
@@ -452,7 +485,7 @@ class OrderDataSetup
         $orderTypeTranslationAnon->setName('order type translation anon');
 
         $this->orderTypeManual = new OrderType();
-        $metadata = $this->em->getClassMetaData(get_class($this->orderTypeManual));
+        $metadata = $this->em->getClassMetadata(get_class($this->orderTypeManual));
         $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_NONE);
 
         $this->orderTypeManual->setId(OrderType::MANUAL);
@@ -460,7 +493,7 @@ class OrderDataSetup
         $orderTypeTranslationManual->setType($this->orderTypeManual);
 
         $this->orderTypeShop = new OrderType();
-        $metadata = $this->em->getClassMetaData(get_class($this->orderTypeShop));
+        $metadata = $this->em->getClassMetadata(get_class($this->orderTypeShop));
         $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_NONE);
 
         $this->orderTypeShop->setId(OrderType::SHOP);
@@ -468,7 +501,7 @@ class OrderDataSetup
         $orderTypeTranslationShop->setType($this->orderTypeShop);
 
         $this->orderTypeAnon = new OrderType();
-        $metadata = $this->em->getClassMetaData(get_class($this->orderTypeAnon));
+        $metadata = $this->em->getClassMetadata(get_class($this->orderTypeAnon));
         $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_NONE);
 
         $this->orderTypeAnon->setId(OrderType::ANONYMOUS);
@@ -484,6 +517,19 @@ class OrderDataSetup
         $item2 = $this->createNewTestItem();
         $order2->addItem($item);
         $order2->addItem($item2);
+
+        $this->addonPrice = new AddonPrice();
+        $this->addonPrice->setPrice(123.56);
+        $this->addonPrice->setCurrency($this->currency);
+
+        $this->addon = new Addon();
+        $this->addon->setProduct($this->product);
+        $this->addon->setAddon($this->product2);
+        $this->addonPrice->setAddon($this->addon);
+        $this->addon->addAddonPrice($this->addonPrice);
+
+        $this->em->persist($this->addon);
+        $this->em->persist($this->addonPrice);
 
         $this->em->persist($item);
         $this->em->persist($item2);
