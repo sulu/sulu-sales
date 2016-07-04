@@ -634,6 +634,17 @@ class ItemManager
         return $product;
     }
 
+    /**
+     * @param array $addonData
+     * @param ApiItemInterface $item
+     * @param string $locale
+     *
+     * @return Addon
+     *
+     * @throws MissingItemAttributeException
+     * @throws ProductException
+     * @throws \Exception
+     */
     protected function setItemByAddonData($addonData, ApiItemInterface $item, $locale)
     {
         $addonId = $this->getProductId($addonData, 'addon.id');
