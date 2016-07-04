@@ -3,13 +3,16 @@
 namespace Sulu\Bundle\Sales\CoreBundle\Api;
 
 use DateTime;
-use Hateoas\Configuration\Annotation\Relation;
 use JMS\Serializer\Annotation\VirtualProperty;
 use JMS\Serializer\Annotation\SerializedName;
 use JMS\Serializer\Annotation\Groups;
 use JMS\Serializer\Annotation\Exclude;
+use Sulu\Bundle\ContactBundle\Entity\AccountInterface;
+use Sulu\Bundle\PricingBundle\Pricing\Exceptions\PriceFormatterException;
+use Sulu\Bundle\ProductBundle\Entity\ProductInterface;
 use Sulu\Bundle\ProductBundle\Product\ProductFactoryInterface;
 use Sulu\Bundle\ProductBundle\Api\ApiProductInterface;
+use Sulu\Bundle\Sales\CoreBundle\Entity\ItemAttribute;
 use Sulu\Bundle\Sales\CoreBundle\Entity\ItemAttributeInterface;
 use Sulu\Bundle\PricingBundle\Pricing\PriceFormatter;
 use Sulu\Component\Rest\ApiWrapper;
@@ -22,8 +25,6 @@ use Sulu\Bundle\Sales\CoreBundle\Entity\OrderAddressInterface as OrderAddressEnt
 
 /**
  * The item class which will be exported to the API
- *
- * @package Sulu\Bundle\Sales\CoreBundle\Api
  */
 class Item extends ApiWrapper implements
     ApiItemInterface,
@@ -121,7 +122,7 @@ class Item extends ApiWrapper implements
     }
 
     /**
-     * @param $name
+     * @param string $name
      *
      * @return Item
      */
@@ -144,7 +145,7 @@ class Item extends ApiWrapper implements
     }
 
     /**
-     * @param $number
+     * @param string $number
      *
      * @return Item
      */
@@ -410,7 +411,11 @@ class Item extends ApiWrapper implements
      * @SerializedName("priceFormatted")
      * @Groups({"Default","cart"})
      *
+     * @param string $locale
+     *
      * @return string
+     *
+     * @throws PriceFormatterException
      */
     public function getPriceFormatted($locale = null)
     {
@@ -445,7 +450,11 @@ class Item extends ApiWrapper implements
      * @SerializedName("unitPriceFormatted")
      * @Groups({"Default","cart"})
      *
+     * @param string $locale
+     *
      * @return string
+     *
+     * @throws PriceFormatterException
      */
     public function getUnitPriceFormatted($locale = null)
     {
@@ -457,7 +466,11 @@ class Item extends ApiWrapper implements
      * @SerializedName("totalNetPriceFormatted")
      * @Groups({"Default","cart"})
      *
+     * @param string $locale
+     *
      * @return string
+     *
+     * @throws PriceFormatterException
      */
     public function getTotalNetPriceFormatted($locale = null)
     {
@@ -720,7 +733,7 @@ class Item extends ApiWrapper implements
     }
 
     /**
-     * @param $product
+     * @param ProductInterface|ApiProductInterface $product
      *
      * @return Item
      */
@@ -935,5 +948,59 @@ class Item extends ApiWrapper implements
     public function setIsRecurringPrice($isRecurringPrice)
     {
         return $this->entity->setIsRecurringPrice($isRecurringPrice);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getType()
+    {
+        return $this->entity->getType();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setType($type)
+    {
+        $this->entity->setType($type);
+        
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getAddon()
+    {
+        return $this->entity->getAddon();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setAddon($addon)
+    {
+        $this->entity->setAddon($addon);
+
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getParent()
+    {
+        return $this->entity->getParent();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setParent($parent)
+    {
+        $this->entity->setParent($parent);
+
+        return $this;
     }
 }

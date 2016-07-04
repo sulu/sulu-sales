@@ -72,6 +72,7 @@
             <argument type="service" id="sulu_sales_core.order_address_manager" />
             <argument type="service" id="sulu_product.country_tax_repository" />
             <argument type="service" id="sulu_sales_core.item_factory" />
+            <argument type="service" id="sulu_product.product_addon_repository"/>
             <argument>%sulu_sales_core.order_address_entity%</argument>
             <argument>%sulu_sales_core.shop_location%</argument>
         </service>

@@ -11,6 +11,8 @@
 namespace Sulu\Bundle\Sales\OrderBundle\Tests\Functional\Controller;
 
 use DateTime;
+use Sulu\Bundle\Sales\CoreBundle\Entity\Item;
+use Sulu\Bundle\Sales\CoreBundle\Entity\ItemInterface;
 use Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatus;
 use Sulu\Bundle\Sales\OrderBundle\Tests\OrderTestBase;
 
@@ -355,6 +357,7 @@ class OrderControllerTest extends OrderTestBase
                     'price' => 1000,
                     'discount' => 10,
                     'tax' => 20,
+                    'type' => Item::TYPE_CUSTOM,
                     'description' => $this->data->productTranslation->getLongDescription(),
                 ]
             ]
@@ -363,7 +366,7 @@ class OrderControllerTest extends OrderTestBase
 
         $client->request('POST', '/api/orders', $data);
         $response = json_decode($client->getResponse()->getContent());
-        $this->assertEquals(200, $client->getResponse()->getStatusCode(), $response);
+        $this->assertEquals(200, $client->getResponse()->getStatusCode(), $client->getResponse());
 
         $client->request('GET', '/api/orders/' . $response->id);
         $this->assertEquals(200, $client->getResponse()->getStatusCode());

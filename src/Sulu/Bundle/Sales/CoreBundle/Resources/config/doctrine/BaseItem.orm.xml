@@ -31,6 +31,11 @@
         <field name="costCentre" type="string" column="costCentre" nullable="true"/>
         <field name="deliveryDate" type="datetime" column="deliveryDate" nullable="true"/>
         <field name="isRecurringPrice" type="boolean" column="isRecurringPrice" />
+        <field name="type" type="integer" column="type">
+            <options>
+                <option name="default">0</option>
+            </options>
+        </field>
 
         <many-to-one field="product" target-entity="Sulu\Bundle\ProductBundle\Entity\ProductInterface">
             <join-columns>
@@ -45,6 +50,16 @@
         <many-to-one field="creator" target-entity="Sulu\Component\Security\Authentication\UserInterface">
             <join-columns>
                 <join-column name="idUsersCreator" referenced-column-name="id" on-delete="SET NULL" nullable="true"/>
+            </join-columns>
+        </many-to-one>
+        <many-to-one target-entity="Sulu\Bundle\Sales\CoreBundle\Entity\BaseItem" field="parent">
+            <join-columns>
+                <join-column name="idItemsParent" referenced-column-name="id" on-delete="SET NULL" nullable="true"/>
+            </join-columns>
+        </many-to-one>
+        <many-to-one target-entity="Sulu\Bundle\ProductBundle\Entity\Addon" field="addon">
+            <join-columns>
+                <join-column name="idAddons" referenced-column-name="id" on-delete="SET NULL" nullable="true"/>
             </join-columns>
         </many-to-one>
     </mapped-superclass>

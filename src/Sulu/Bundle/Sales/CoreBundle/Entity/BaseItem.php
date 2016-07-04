@@ -10,6 +10,7 @@
 
 namespace Sulu\Bundle\Sales\CoreBundle\Entity;
 
+use Sulu\Bundle\ProductBundle\Entity\Addon;
 use Sulu\Bundle\ProductBundle\Entity\ProductInterface;
 use Sulu\Component\Security\Authentication\UserInterface;
 
@@ -27,6 +28,10 @@ abstract class BaseItem implements ItemInterface
     const STATUS_DECLINED = 512;
     const STATUS_CANCELED = 1024;
     const STATUS_RETURNED = 2048;
+
+    const TYPE_PRODUCT = 0;
+    const TYPE_CUSTOM = 1;
+    const TYPE_ADDON = 2;
 
     /**
      * @var string
@@ -147,6 +152,21 @@ abstract class BaseItem implements ItemInterface
      * @var bool
      */
     protected $isRecurringPrice = false;
+
+    /**
+     * @var int
+     */
+    protected $type = self::TYPE_PRODUCT;
+
+    /**
+     * @var Addon
+     */
+    protected $addon;
+
+    /**
+     * @var ItemInterface
+     */
+    protected $parent;
 
     /**
      * Set name
@@ -702,6 +722,66 @@ abstract class BaseItem implements ItemInterface
     public function setIsRecurringPrice($isRecurringPrice)
     {
         $this->isRecurringPrice = $isRecurringPrice;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getType()
+    {
+        return $this->type;
+    }
+
+    /**
+     * @param int $type
+     *
+     * @return self
+     */
+    public function setType($type)
+    {
+        $this->type = $type;
+
+        return $this;
+    }
+
+    /**
+     * @return Addon
+     */
+    public function getAddon()
+    {
+        return $this->addon;
+    }
+
+    /**
+     * @param Addon $addon
+     *
+     * @return self
+     */
+    public function setAddon($addon)
+    {
+        $this->addon = $addon;
+
+        return $this;
+    }
+
+    /**
+     * @return ItemInterface
+     */
+    public function getParent()
+    {
+        return $this->parent;
+    }
+
+    /**
+     * @param ItemInterface $parent
+     *
+     * @return self
+     */
+    public function setParent($parent)
+    {
+        $this->parent = $parent;
 
         return $this;
     }

@@ -14,13 +14,16 @@ use DateTime;
 use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\ORM\EntityRepository;
 use Sulu\Bundle\ContactBundle\Entity\AccountInterface;
+use Sulu\Bundle\ProductBundle\Entity\Addon;
 use Sulu\Bundle\ProductBundle\Entity\Product;
+use Sulu\Bundle\ProductBundle\Entity\ProductAddonRepository;
 use Sulu\Bundle\ProductBundle\Entity\ProductInterface;
 use Sulu\Bundle\ProductBundle\Product\Exception\ProductException;
 use Sulu\Bundle\ProductBundle\Product\Exception\ProductNotFoundException;
 use Sulu\Bundle\ProductBundle\Product\ProductPriceManagerInterface;
 use Sulu\Bundle\ProductBundle\Product\ProductRepositoryInterface;
 use Sulu\Bundle\Sales\CoreBundle\Api\ApiItemInterface;
+use Sulu\Bundle\Sales\CoreBundle\Entity\BaseItem;
 use Sulu\Bundle\Sales\CoreBundle\Entity\ItemAttribute;
 use Sulu\Bundle\Sales\CoreBundle\Entity\ItemInterface;
 use Sulu\Bundle\Sales\CoreBundle\Entity\ItemRepository;
@@ -98,6 +101,11 @@ class ItemManager
     protected $shopLocation;
 
     /**
+     * @var ProductAddonRepository
+     */
+    protected $addonRepository;
+
+    /**
      * @param ObjectManager $em
      * @param EntityRepository|ItemRepository $itemRepository
      * @param UserRepositoryInterface $userRepository
@@ -120,6 +128,7 @@ class ItemManager
         OrderAddressManager $orderAddressManager,
         CountryTaxRepository $countryTaxRepository,
         ItemFactoryInterface $itemFactory,
+        ProductAddonRepository $addonRepository,
         $orderAddressEntity,
         $shopLocation
     ) {
@@ -132,6 +141,7 @@ class ItemManager
         $this->orderAddressManager = $orderAddressManager;
         $this->countryTaxRepository = $countryTaxRepository;
         $this->itemFactory = $itemFactory;
+        $this->addonRepository = $addonRepository;
         $this->orderAddressEntity = $orderAddressEntity;
         $this->shopLocation = $shopLocation;
     }
@@ -157,7 +167,12 @@ class ItemManager
      * @param int|null $itemStatusId
      * @param ContactInterface|null $contact The contact that should be used for order-address
      *
-     * @return ApiItemInterface|null
+     * @return ApiItemInterface
+     *
+     * @throws ItemException
+     * @throws ProductException
+     * @throws ProductNotFoundException
+     * @throws \Exception
      */
     public function save(
         array $data,
@@ -200,26 +215,42 @@ class ItemManager
             [$item, 'setDeliveryDate']
         );
 
-        // Set terms of delivery.
-        $product = null;
-        if ($isNewItem) {
-            $productData = $this->getProperty($data, 'product');
-            if ($productData) {
-                // get product and set Product's data to item
-                $product = $this->setItemByProductData($productData, $item, $locale);
-            }
-        }
+        $item->setType($this->getProperty($data, 'type', BaseItem::TYPE_PRODUCT));
 
-        // If product is not set, set data manually.
-        if (!$product) {
-            if ($isNewItem) {
-                $item->setUseProductsPrice(false);
-            }
-            $item->setName($this->getProperty($data, 'name', $item->getName()));
-            $item->setTax($this->getProperty($data, 'tax', $item->getTax()));
-            $item->setNumber($this->getProperty($data, 'number', $item->getNumber()));
-            $item->setDescription($this->getProperty($data, 'description', $item->getDescription()));
-            $item->setQuantityUnit($this->getProperty($data, 'quantityUnit', $item->getQuantityUnit()));
+        switch ($item->getType()) {
+            case BaseItem::TYPE_PRODUCT:
+                if ($isNewItem) {
+                    $productData = $this->getProperty($data, 'product');
+                    if ($productData) {
+                        // Set Product's data to item
+                        $this->setItemByProductData($productData, $item, $locale);
+                    }
+                }
+
+                break;
+            case BaseItem::TYPE_CUSTOM:
+                if ($isNewItem) {
+                    $item->setUseProductsPrice(false);
+                }
+                $item->setName($this->getProperty($data, 'name', $item->getName()));
+                $item->setTax($this->getProperty($data, 'tax', $item->getTax()));
+                $item->setNumber($this->getProperty($data, 'number', $item->getNumber()));
+                $item->setDescription($this->getProperty($data, 'description', $item->getDescription()));
+                $item->setQuantityUnit($this->getProperty($data, 'quantityUnit', $item->getQuantityUnit()));
+
+                break;
+            case BaseItem::TYPE_ADDON:
+                if ($isNewItem) {
+                    $addonData = $this->getProperty($data, 'addon');
+                    if ($addonData) {
+                        $this->setItemByAddonData($addonData, $item, $locale);
+                    }
+                }
+                break;
+
+            default:
+                throw new ItemException('Unhandled item type found');
+                break;
         }
 
         if (method_exists($item, 'getSupplierName')) {
@@ -477,7 +508,7 @@ class ItemManager
         // either name or products must be set
         if (array_key_exists('product', $data)) {
             // product-id must be defined
-            $this->getProductId($data['product']);
+            $this->getProductId($data['product'], 'product.id');
         } else {
             $this->checkDataSet($data, 'name', $isNew);
             $this->checkDataSet($data, 'quantityUnit', $isNew);
@@ -521,25 +552,25 @@ class ItemManager
     }
 
     /**
-     * Returns productid - if not defined, throw an exception
-     *
-     * @param $data
+     * @param array $data
+     * @param string $exceptionKey
      *
      * @return int
+     *
      * @throws MissingItemAttributeException
      */
-    private function getProductId($data)
+    private function getProductId($data, $exceptionKey)
     {
         // if data is array, id must be a key
         if (is_array($data)) {
             if (!isset($data['id'])) {
-                throw new MissingItemAttributeException('product.id');
+                throw new MissingItemAttributeException($exceptionKey);
             }
 
             return $data['id'];
             // data must be an int
         } elseif (!is_int($data)) {
-            throw new MissingItemAttributeException('product.id');
+            throw new MissingItemAttributeException($exceptionKey);
         }
 
         return $data;
@@ -560,7 +591,7 @@ class ItemManager
      */
     protected function setItemByProductData($productData, ApiItemInterface $item, $locale)
     {
-        $productId = $this->getProductId($productData);
+        $productId = $this->getProductId($productData, 'product.id');
 
         /** @var Product $product */
         $product = $this->productRepository->find($productId);
@@ -603,22 +634,61 @@ class ItemManager
         return $product;
     }
 
+    protected function setItemByAddonData($addonData, ApiItemInterface $item, $locale)
+    {
+        $addonId = $this->getProductId($addonData, 'addon.id');
+
+        /** @var Addon $addon */
+        $addon = $this->addonRepository->find($addonId);
+        if (!$addon) {
+            throw new \Exception('Addon with id ' . $addonId . ' not found.');
+        }
+
+        $item->setAddon($addon);
+        $addonProduct = $addon->getAddon();
+
+        $translation = $addonProduct->getTranslation($locale);
+        if (is_null($translation) && count($addonProduct->getTranslations()) === 0) {
+            throw new ProductException('Product ' . $addonProduct->getId() . ' has no translations!');
+        }
+        $translation = $addonProduct->getTranslations()[0];
+
+        $item->setName($translation->getName());
+        $item->setDescription($translation->getLongDescription());
+        $item->setNumber($addonProduct->getNumber());
+
+        // set order unit
+        if ($addonProduct->getOrderUnit()) {
+            $item->setQuantityUnit($addonProduct->getOrderUnit()->getTranslation($locale)->getName());
+        }
+
+        $tax = 0;
+        $taxClass = $addonProduct->getTaxClass();
+        if ($taxClass) {
+            $tax = $this->retrieveTaxForClass($taxClass);
+        }
+        $item->setTax($tax);
+
+        return $addon;
+    }
+
     /**
      * Set supplier of an item
      *
-     * @param $item
-     * @param $product
+     * @param ItemInterface $item
+     * @param ProductInterface $product
      */
     protected function setItemSupplier($item, $product)
     {
+        $supplier = null;
+        $supplierName = '';
         // get products supplier
         if ($product->getSupplier()) {
-            $item->setSupplier($product->getSupplier());
-            $item->setSupplierName($product->getSupplier()->getName());
-        } else {
-            $item->setSupplier(null);
-            $item->setSupplierName('');
+            $supplier = $product->getSupplier();
+            $supplierName = $product->getSupplier()->getName();
         }
+        $item->setSupplier($supplier);
+        $item->setSupplierName($supplierName);
     }
 
     /**

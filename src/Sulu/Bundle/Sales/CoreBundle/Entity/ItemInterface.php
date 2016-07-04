@@ -2,6 +2,7 @@
 
 namespace Sulu\Bundle\Sales\CoreBundle\Entity;
 
+use Sulu\Bundle\ProductBundle\Entity\Addon;
 use Sulu\Bundle\ProductBundle\Entity\ProductInterface;
 use Sulu\Component\Security\Authentication\UserInterface;
 
@@ -373,4 +374,40 @@ interface ItemInterface
      * @return bool
      */
     public function isRecurringPrice();
+
+    /**
+     * @return int
+     */
+    public function getType();
+
+    /**
+     * @param int $type
+     *
+     * @return self
+     */
+    public function setType($type);
+
+    /**
+     * @return Addon
+     */
+    public function getAddon();
+
+    /**
+     * @param Addon $addon
+     *
+     * @return self
+     */
+    public function setAddon($addon);
+
+    /**
+     * @return ItemInterface
+     */
+    public function getParent();
+
+    /**
+     * @param ItemInterface $parent
+     *
+     * @return self
+     */
+    public function setParent($parent);
 }

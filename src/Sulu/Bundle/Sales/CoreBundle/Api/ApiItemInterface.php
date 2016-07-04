@@ -6,6 +6,7 @@ use DateTime;
 use JMS\Serializer\Annotation\SerializedName;
 use JMS\Serializer\Annotation\VirtualProperty;
 use JMS\Serializer\Annotation\Groups;
+use Sulu\Bundle\ProductBundle\Entity\Addon;
 use Sulu\Component\Security\Authentication\UserInterface;
 use Sulu\Bundle\Sales\CoreBundle\Entity\OrderAddressInterface;
 
@@ -389,4 +390,40 @@ interface ApiItemInterface
      * @return string
      */
     public function isRecurringPrice();
+
+    /**
+     * @return int
+     */
+    public function getType();
+
+    /**
+     * @param int $type
+     *
+     * @return self
+     */
+    public function setType($type);
+
+    /**
+     * @return Addon
+     */
+    public function getAddon();
+
+    /**
+     * @param Addon $addon
+     *
+     * @return self
+     */
+    public function setAddon($addon);
+
+    /**
+     * @return ApiItemInterface
+     */
+    public function getParent();
+
+    /**
+     * @param ApiItemInterface $parent
+     *
+     * @return self
+     */
+    public function setParent($parent);
 }
