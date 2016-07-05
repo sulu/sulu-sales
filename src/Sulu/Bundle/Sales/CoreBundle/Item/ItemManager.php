@@ -227,7 +227,6 @@ class ItemManager
                         $this->setItemByProductData($productData, $item, $locale);
                     }
                 }
-
                 break;
             case BaseItem::TYPE_CUSTOM:
                 if ($isNewItem) {
@@ -248,7 +247,6 @@ class ItemManager
                     }
                 }
                 break;
-
             default:
                 throw new ItemException('Unhandled item type found');
                 break;
