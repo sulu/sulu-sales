@@ -52,12 +52,12 @@
                 <join-column name="idUsersCreator" referenced-column-name="id" on-delete="SET NULL" nullable="true"/>
             </join-columns>
         </many-to-one>
-        <many-to-one target-entity="Sulu\Bundle\Sales\CoreBundle\Entity\BaseItem" field="parent">
+        <many-to-one field="parent" target-entity="Sulu\Bundle\Sales\CoreBundle\Entity\BaseItem">
             <join-columns>
                 <join-column name="idItemsParent" referenced-column-name="id" on-delete="SET NULL" nullable="true"/>
             </join-columns>
         </many-to-one>
-        <many-to-one target-entity="Sulu\Bundle\ProductBundle\Entity\Addon" field="addon">
+        <many-to-one field="addon" target-entity="Sulu\Bundle\ProductBundle\Entity\Addon">
             <join-columns>
                 <join-column name="idAddons" referenced-column-name="id" on-delete="SET NULL" nullable="true"/>
             </join-columns>
