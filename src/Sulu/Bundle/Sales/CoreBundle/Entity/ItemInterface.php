@@ -409,5 +409,5 @@ interface ItemInterface
      *
      * @return self
      */
-    public function setParent($parent);
+    public function setParent(ItemInterface $parent = null);
 }

@@ -779,7 +779,7 @@ abstract class BaseItem implements ItemInterface
      *
      * @return self
      */
-    public function setParent($parent)
+    public function setParent(ItemInterface $parent = null)
     {
         $this->parent = $parent;
 
