@@ -7,6 +7,7 @@ use JMS\Serializer\Annotation\SerializedName;
 use JMS\Serializer\Annotation\VirtualProperty;
 use JMS\Serializer\Annotation\Groups;
 use Sulu\Bundle\ProductBundle\Entity\Addon;
+use Sulu\Bundle\ProductBundle\Entity\ProductInterface;
 use Sulu\Component\Security\Authentication\UserInterface;
 use Sulu\Bundle\Sales\CoreBundle\Entity\OrderAddressInterface;
 
@@ -262,16 +263,16 @@ interface ApiItemInterface
     /**
      * Set product
      *
-     * @param $product
+     * @param ProductInterface $product
      *
      * @return self
      */
-    public function setProduct($product = null);
+    public function setProduct($product);
 
     /**
      * Get product
      *
-     * @return \Sulu\Bundle\ProductBundle\Entity\Product
+     * @return ProductInterface
      */
     public function getProduct();
 
@@ -413,7 +414,7 @@ interface ApiItemInterface
      *
      * @return self
      */
-    public function setAddon($addon);
+    public function setAddon(Addon $addon = null);
 
     /**
      * @return ApiItemInterface
@@ -425,5 +426,5 @@ interface ApiItemInterface
      *
      * @return self
      */
-    public function setParent($parent);
+    public function setParent(ApiItemInterface $parent = null);
 }

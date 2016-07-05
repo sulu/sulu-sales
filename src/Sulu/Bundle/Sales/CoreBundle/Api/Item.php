@@ -413,9 +413,9 @@ class Item extends ApiWrapper implements
      *
      * @param string $locale
      *
-     * @return string
-     *
      * @throws PriceFormatterException
+     *
+     * @return string
      */
     public function getPriceFormatted($locale = null)
     {
@@ -452,9 +452,9 @@ class Item extends ApiWrapper implements
      *
      * @param string $locale
      *
-     * @return string
-     *
      * @throws PriceFormatterException
+     *
+     * @return string
      */
     public function getUnitPriceFormatted($locale = null)
     {
@@ -468,9 +468,9 @@ class Item extends ApiWrapper implements
      *
      * @param string $locale
      *
-     * @return string
-     *
      * @throws PriceFormatterException
+     *
+     * @return string
      */
     public function getTotalNetPriceFormatted($locale = null)
     {
@@ -494,7 +494,7 @@ class Item extends ApiWrapper implements
     /**
      * Set total net price of an item
      *
-     * @param $price
+     * @param float $price
      *
      * @return Item
      */
@@ -737,7 +737,7 @@ class Item extends ApiWrapper implements
      *
      * @return Item
      */
-    public function setProduct($product = null)
+    public function setProduct($product)
     {
         $productEntity = $product;
         // if api-product - temporarily save
@@ -968,7 +968,7 @@ class Item extends ApiWrapper implements
     public function setType($type)
     {
         $this->entity->setType($type);
-        
+
         return $this;
     }
 

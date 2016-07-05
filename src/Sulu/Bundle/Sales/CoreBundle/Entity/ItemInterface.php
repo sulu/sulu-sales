@@ -223,7 +223,7 @@ interface ItemInterface
      *
      * @return self
      */
-    public function setCreated($created);
+    public function setCreated(\DateTime $created = null);
 
     /**
      * Get created
@@ -239,7 +239,7 @@ interface ItemInterface
      *
      * @return self
      */
-    public function setChanged($changed);
+    public function setChanged(\DateTime $changed = null);
 
     /**
      * Get changed
@@ -342,7 +342,7 @@ interface ItemInterface
      *
      * @return self
      */
-    public function setDeliveryDate($deliveryDate);
+    public function setDeliveryDate(\DateTime $deliveryDate = null);
 
     /**
      * Get deliveryDate
@@ -397,7 +397,7 @@ interface ItemInterface
      *
      * @return self
      */
-    public function setAddon($addon);
+    public function setAddon(Addon $addon = null);
 
     /**
      * @return ItemInterface

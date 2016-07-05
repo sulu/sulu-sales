@@ -487,7 +487,7 @@ abstract class BaseItem implements ItemInterface
      *
      * @return Item
      */
-    public function setCreated($created)
+    public function setCreated(\DateTime $created = null)
     {
         $this->created = $created;
 
@@ -511,7 +511,7 @@ abstract class BaseItem implements ItemInterface
      *
      * @return Item
      */
-    public function setChanged($changed)
+    public function setChanged(\DateTime $changed = null)
     {
         $this->changed = $changed;
 
@@ -689,7 +689,7 @@ abstract class BaseItem implements ItemInterface
      *
      * @return Item
      */
-    public function setDeliveryDate($deliveryDate)
+    public function setDeliveryDate(\DateTime $deliveryDate = null)
     {
         $this->deliveryDate = $deliveryDate;
 
@@ -759,7 +759,7 @@ abstract class BaseItem implements ItemInterface
      *
      * @return self
      */
-    public function setAddon($addon)
+    public function setAddon(Addon $addon = null)
     {
         $this->addon = $addon;
 
