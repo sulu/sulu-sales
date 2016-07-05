@@ -9,12 +9,14 @@ use JMS\Serializer\Annotation\Groups;
 use JMS\Serializer\Annotation\Exclude;
 use Sulu\Bundle\ContactBundle\Entity\AccountInterface;
 use Sulu\Bundle\PricingBundle\Pricing\Exceptions\PriceFormatterException;
+use Sulu\Bundle\ProductBundle\Entity\Addon;
 use Sulu\Bundle\ProductBundle\Entity\ProductInterface;
 use Sulu\Bundle\ProductBundle\Product\ProductFactoryInterface;
 use Sulu\Bundle\ProductBundle\Api\ApiProductInterface;
 use Sulu\Bundle\Sales\CoreBundle\Entity\ItemAttribute;
 use Sulu\Bundle\Sales\CoreBundle\Entity\ItemAttributeInterface;
 use Sulu\Bundle\PricingBundle\Pricing\PriceFormatter;
+use Sulu\Bundle\Sales\CoreBundle\Entity\ItemInterface;
 use Sulu\Component\Rest\ApiWrapper;
 use Sulu\Component\Security\Authentication\UserInterface;
 use Sulu\Bundle\ProductBundle\Api\Product;
@@ -983,7 +985,7 @@ class Item extends ApiWrapper implements
     /**
      * {@inheritdoc}
      */
-    public function setAddon($addon)
+    public function setAddon(Addon $addon = null)
     {
         $this->entity->setAddon($addon);
 
@@ -1001,7 +1003,7 @@ class Item extends ApiWrapper implements
     /**
      * {@inheritdoc}
      */
-    public function setParent($parent)
+    public function setParent(ItemInterface $parent = null)
     {
         $this->entity->setParent($parent);
 

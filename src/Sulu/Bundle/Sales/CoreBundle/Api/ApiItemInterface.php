@@ -3,11 +3,9 @@
 namespace Sulu\Bundle\Sales\CoreBundle\Api;
 
 use DateTime;
-use JMS\Serializer\Annotation\SerializedName;
-use JMS\Serializer\Annotation\VirtualProperty;
-use JMS\Serializer\Annotation\Groups;
 use Sulu\Bundle\ProductBundle\Entity\Addon;
 use Sulu\Bundle\ProductBundle\Entity\ProductInterface;
+use Sulu\Bundle\Sales\CoreBundle\Entity\ItemInterface;
 use Sulu\Component\Security\Authentication\UserInterface;
 use Sulu\Bundle\Sales\CoreBundle\Entity\OrderAddressInterface;
 
@@ -422,9 +420,9 @@ interface ApiItemInterface
     public function getParent();
 
     /**
-     * @param ApiItemInterface $parent
+     * @param ItemInterface $parent
      *
      * @return self
      */
-    public function setParent(ApiItemInterface $parent = null);
+    public function setParent(ItemInterface $parent = null);
 }
