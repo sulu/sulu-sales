@@ -10,6 +10,7 @@
 
 namespace Sulu\Bundle\Sales\CoreBundle\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Sulu\Bundle\ContactBundle\Entity\AccountInterface;
 
 class AbstractItem extends BaseItem implements ItemInterface
@@ -20,7 +21,7 @@ class AbstractItem extends BaseItem implements ItemInterface
     protected $supplierName;
 
     /**
-     * @var \Doctrine\Common\Collections\Collection
+     * @var ArrayCollection
      */
     protected $attributes;
 
@@ -39,7 +40,7 @@ class AbstractItem extends BaseItem implements ItemInterface
      */
     public function __construct()
     {
-        $this->attributes = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->attributes = new ArrayCollection();
     }
 
     /**
@@ -93,7 +94,7 @@ class AbstractItem extends BaseItem implements ItemInterface
     /**
      * Get attributes
      *
-     * @return \Doctrine\Common\Collections\Collection
+     * @return ArrayCollection
      */
     public function getAttributes()
     {

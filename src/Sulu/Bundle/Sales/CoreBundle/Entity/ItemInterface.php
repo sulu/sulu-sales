@@ -2,6 +2,7 @@
 
 namespace Sulu\Bundle\Sales\CoreBundle\Entity;
 
+use Sulu\Bundle\ProductBundle\Entity\Addon;
 use Sulu\Bundle\ProductBundle\Entity\ProductInterface;
 use Sulu\Component\Security\Authentication\UserInterface;
 
@@ -222,7 +223,7 @@ interface ItemInterface
      *
      * @return self
      */
-    public function setCreated($created);
+    public function setCreated(\DateTime $created = null);
 
     /**
      * Get created
@@ -238,7 +239,7 @@ interface ItemInterface
      *
      * @return self
      */
-    public function setChanged($changed);
+    public function setChanged(\DateTime $changed = null);
 
     /**
      * Get changed
@@ -341,7 +342,7 @@ interface ItemInterface
      *
      * @return self
      */
-    public function setDeliveryDate($deliveryDate);
+    public function setDeliveryDate(\DateTime $deliveryDate = null);
 
     /**
      * Get deliveryDate
@@ -373,4 +374,40 @@ interface ItemInterface
      * @return bool
      */
     public function isRecurringPrice();
+
+    /**
+     * @return int
+     */
+    public function getType();
+
+    /**
+     * @param int $type
+     *
+     * @return self
+     */
+    public function setType($type);
+
+    /**
+     * @return Addon
+     */
+    public function getAddon();
+
+    /**
+     * @param Addon $addon
+     *
+     * @return self
+     */
+    public function setAddon(Addon $addon = null);
+
+    /**
+     * @return ItemInterface
+     */
+    public function getParent();
+
+    /**
+     * @param ItemInterface $parent
+     *
+     * @return self
+     */
+    public function setParent(ItemInterface $parent = null);
 }

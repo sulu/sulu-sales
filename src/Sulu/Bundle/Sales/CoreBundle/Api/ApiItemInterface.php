@@ -3,9 +3,9 @@
 namespace Sulu\Bundle\Sales\CoreBundle\Api;
 
 use DateTime;
-use JMS\Serializer\Annotation\SerializedName;
-use JMS\Serializer\Annotation\VirtualProperty;
-use JMS\Serializer\Annotation\Groups;
+use Sulu\Bundle\ProductBundle\Entity\Addon;
+use Sulu\Bundle\ProductBundle\Entity\ProductInterface;
+use Sulu\Bundle\Sales\CoreBundle\Entity\ItemInterface;
 use Sulu\Component\Security\Authentication\UserInterface;
 use Sulu\Bundle\Sales\CoreBundle\Entity\OrderAddressInterface;
 
@@ -261,16 +261,16 @@ interface ApiItemInterface
     /**
      * Set product
      *
-     * @param $product
+     * @param ProductInterface $product
      *
      * @return self
      */
-    public function setProduct($product = null);
+    public function setProduct($product);
 
     /**
      * Get product
      *
-     * @return \Sulu\Bundle\ProductBundle\Entity\Product
+     * @return ProductInterface
      */
     public function getProduct();
 
@@ -389,4 +389,40 @@ interface ApiItemInterface
      * @return string
      */
     public function isRecurringPrice();
+
+    /**
+     * @return int
+     */
+    public function getType();
+
+    /**
+     * @param int $type
+     *
+     * @return self
+     */
+    public function setType($type);
+
+    /**
+     * @return Addon
+     */
+    public function getAddon();
+
+    /**
+     * @param Addon $addon
+     *
+     * @return self
+     */
+    public function setAddon(Addon $addon = null);
+
+    /**
+     * @return ApiItemInterface
+     */
+    public function getParent();
+
+    /**
+     * @param ItemInterface $parent
+     *
+     * @return self
+     */
+    public function setParent(ItemInterface $parent = null);
 }

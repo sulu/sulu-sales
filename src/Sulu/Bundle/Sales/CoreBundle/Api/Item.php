@@ -3,15 +3,20 @@
 namespace Sulu\Bundle\Sales\CoreBundle\Api;
 
 use DateTime;
-use Hateoas\Configuration\Annotation\Relation;
 use JMS\Serializer\Annotation\VirtualProperty;
 use JMS\Serializer\Annotation\SerializedName;
 use JMS\Serializer\Annotation\Groups;
 use JMS\Serializer\Annotation\Exclude;
+use Sulu\Bundle\ContactBundle\Entity\AccountInterface;
+use Sulu\Bundle\PricingBundle\Pricing\Exceptions\PriceFormatterException;
+use Sulu\Bundle\ProductBundle\Entity\Addon;
+use Sulu\Bundle\ProductBundle\Entity\ProductInterface;
 use Sulu\Bundle\ProductBundle\Product\ProductFactoryInterface;
 use Sulu\Bundle\ProductBundle\Api\ApiProductInterface;
+use Sulu\Bundle\Sales\CoreBundle\Entity\ItemAttribute;
 use Sulu\Bundle\Sales\CoreBundle\Entity\ItemAttributeInterface;
 use Sulu\Bundle\PricingBundle\Pricing\PriceFormatter;
+use Sulu\Bundle\Sales\CoreBundle\Entity\ItemInterface;
 use Sulu\Component\Rest\ApiWrapper;
 use Sulu\Component\Security\Authentication\UserInterface;
 use Sulu\Bundle\ProductBundle\Api\Product;
@@ -22,8 +27,6 @@ use Sulu\Bundle\Sales\CoreBundle\Entity\OrderAddressInterface as OrderAddressEnt
 
 /**
  * The item class which will be exported to the API
- *
- * @package Sulu\Bundle\Sales\CoreBundle\Api
  */
 class Item extends ApiWrapper implements
     ApiItemInterface,
@@ -121,7 +124,7 @@ class Item extends ApiWrapper implements
     }
 
     /**
-     * @param $name
+     * @param string $name
      *
      * @return Item
      */
@@ -144,7 +147,7 @@ class Item extends ApiWrapper implements
     }
 
     /**
-     * @param $number
+     * @param string $number
      *
      * @return Item
      */
@@ -410,6 +413,10 @@ class Item extends ApiWrapper implements
      * @SerializedName("priceFormatted")
      * @Groups({"Default","cart"})
      *
+     * @param string $locale
+     *
+     * @throws PriceFormatterException
+     *
      * @return string
      */
     public function getPriceFormatted($locale = null)
@@ -445,6 +452,10 @@ class Item extends ApiWrapper implements
      * @SerializedName("unitPriceFormatted")
      * @Groups({"Default","cart"})
      *
+     * @param string $locale
+     *
+     * @throws PriceFormatterException
+     *
      * @return string
      */
     public function getUnitPriceFormatted($locale = null)
@@ -456,6 +467,10 @@ class Item extends ApiWrapper implements
      * @VirtualProperty
      * @SerializedName("totalNetPriceFormatted")
      * @Groups({"Default","cart"})
+     *
+     * @param string $locale
+     *
+     * @throws PriceFormatterException
      *
      * @return string
      */
@@ -481,7 +496,7 @@ class Item extends ApiWrapper implements
     /**
      * Set total net price of an item
      *
-     * @param $price
+     * @param float $price
      *
      * @return Item
      */
@@ -720,11 +735,11 @@ class Item extends ApiWrapper implements
     }
 
     /**
-     * @param $product
+     * @param ProductInterface|ApiProductInterface $product
      *
      * @return Item
      */
-    public function setProduct($product = null)
+    public function setProduct($product)
     {
         $productEntity = $product;
         // if api-product - temporarily save
@@ -935,5 +950,63 @@ class Item extends ApiWrapper implements
     public function setIsRecurringPrice($isRecurringPrice)
     {
         return $this->entity->setIsRecurringPrice($isRecurringPrice);
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @VirtualProperty
+     * @SerializedName("type")
+     * @Groups({"Default","cart"})
+     */
+    public function getType()
+    {
+        return $this->entity->getType();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setType($type)
+    {
+        $this->entity->setType($type);
+
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getAddon()
+    {
+        return $this->entity->getAddon();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setAddon(Addon $addon = null)
+    {
+        $this->entity->setAddon($addon);
+
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getParent()
+    {
+        return $this->entity->getParent();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setParent(ItemInterface $parent = null)
+    {
+        $this->entity->setParent($parent);
+
+        return $this;
     }
 }

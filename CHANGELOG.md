@@ -1,6 +1,10 @@
 CHANGELOG for Sulu Sales
 ========================
 
+* dev-develop
+
+    * FEATURE     [CoreBundle]    Added type and addon to items
+
 * 0.3.1 (2016-06-30)
 
     * FEATURE     [CoreBundle]    Added recurring price for items
