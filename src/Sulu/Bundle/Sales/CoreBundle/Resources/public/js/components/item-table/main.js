@@ -1332,6 +1332,7 @@ define([
                 defaultAddressLabel: defaultAddressLabel,
                 discount: 0,
                 deliveryDate: null,
+                description: '',
                 numberFormat: this.sandbox.numberFormat,
                 settings: settings,
                 translate: this.sandbox.translate
@@ -1442,6 +1443,10 @@ define([
                 updateGlobalPrice.call(this, rowId);
                 refreshItemsData.call(this);
             } else {
+                // Add default for using products price.
+                if (typeof data.useProductsPrice === 'undefined') {
+                    data.useProductsPrice = false;
+                }
                 createNewItemRowWithData.call(this, data, true);
 
                 // Emit data change.

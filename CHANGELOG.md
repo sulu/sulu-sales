@@ -1,6 +1,11 @@
 CHANGELOG for Sulu Sales
 ========================
 
+* dev-develop
+
+    * BUGFIX      [CoreBundle]    Fixed creating independent items in item table caused by 
+                                  changes in pricing bundle 
+
 * 0.4.0 (2016-07-06)
 
     * FEATURE     [CoreBundle]    Added type and addon to items
