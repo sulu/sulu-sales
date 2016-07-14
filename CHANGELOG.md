@@ -1,6 +1,10 @@
 CHANGELOG for Sulu Sales
 ========================
 
+* dev-develop    
+
+    * ENHANCEMENT [General]       Moved db diagram from sulu/docs to sales
+
 * 0.4.0 (2016-07-06)
 
     * FEATURE     [CoreBundle]    Added type and addon to items
