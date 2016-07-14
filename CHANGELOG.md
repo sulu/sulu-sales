@@ -1,9 +1,11 @@
 CHANGELOG for Sulu Sales
 ========================
 
-* dev-develop    
+* dev-develop
 
     * FEATURE     [General]       Updated for usage with recurring price calculation
+    * BUGFIX      [CoreBundle]    Fixed creating independent items in item table caused by 
+                                  changes in pricing bundle 
     * ENHANCEMENT [General]       Moved db diagram from sulu/docs to sales
 
 * 0.4.0 (2016-07-06)

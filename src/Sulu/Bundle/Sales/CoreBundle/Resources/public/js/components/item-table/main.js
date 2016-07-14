@@ -92,6 +92,12 @@ define([
             urlFilter: {}
         },
 
+        TYPES = {
+            PRODUCT: 0,
+            CUSTOM: 1,
+            ADDON: 2
+        },
+
         urls = {
             products: '/admin/api/products{?filter*}',
             product: '/admin/api/products/',
@@ -147,7 +153,8 @@ define([
             currency: Config.get('sulu_sales_core').default_currency,
             useProductsPrice: false,
             tax: 0,
-            supplierName: ''
+            supplierName: '',
+            type: TYPES.PRODUCT
         },
 
         templates = {
@@ -1332,6 +1339,7 @@ define([
                 defaultAddressLabel: defaultAddressLabel,
                 discount: 0,
                 deliveryDate: null,
+                description: '',
                 numberFormat: this.sandbox.numberFormat,
                 settings: settings,
                 translate: this.sandbox.translate
@@ -1442,6 +1450,13 @@ define([
                 updateGlobalPrice.call(this, rowId);
                 refreshItemsData.call(this);
             } else {
+                // Given product has to be of type custom.
+                data.type = TYPES.CUSTOM;
+
+                // Add default for using products price.
+                if (typeof data.useProductsPrice === 'undefined') {
+                    data.useProductsPrice = false;
+                }
                 createNewItemRowWithData.call(this, data, true);
 
                 // Emit data change.
