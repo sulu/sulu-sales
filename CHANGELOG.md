@@ -3,6 +3,7 @@ CHANGELOG for Sulu Sales
 
 * dev-develop    
 
+    * FEATURE     [General]       Updated for usage with recurring price calculation
     * ENHANCEMENT [General]       Moved db diagram from sulu/docs to sales
 
 * 0.4.0 (2016-07-06)

@@ -743,7 +743,7 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     /**
      * @param $supplierItems
      *
-     * @return $this
+     * @return self
      */
     public function setSupplierItems($supplierItems)
     {
@@ -888,9 +888,9 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     }
 
     /**
-     * @param $totalNetPrice
+     * @param float $totalNetPrice
      *
-     * @return $this
+     * @return self
      */
     public function setTotalNetPrice($totalNetPrice)
     {
@@ -1140,7 +1140,7 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     /**
      * @param string $note
      *
-     * @return Inquiry
+     * @return self
      */
     public function setInternalNote($note)
     {
@@ -1152,7 +1152,7 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     /**
      * @param float $totalRecurringNetPrice
      *
-     * @return $this
+     * @return self
      */
     public function setTotalRecurringNetPrice($totalRecurringNetPrice)
     {
