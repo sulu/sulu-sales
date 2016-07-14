@@ -1148,4 +1148,28 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
 
         return $this;
     }
+
+    /**
+     * @param float $totalRecurringNetPrice
+     *
+     * @return $this
+     */
+    public function setTotalRecurringNetPrice($totalRecurringNetPrice)
+    {
+        $this->entity->setTotalRecurringNetPrice($totalRecurringNetPrice);
+
+        return $this;
+    }
+
+    /**
+     * @VirtualProperty
+     * @SerializedName("totalRecurringNetPrice")
+     * @Groups({"Default","cart"})
+     *
+     * @return float
+     */
+    public function getTotalRecurringNetPrice()
+    {
+        return $this->entity->getTotalRecurringNetPrice();
+    }
 }

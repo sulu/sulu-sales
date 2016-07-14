@@ -403,7 +403,10 @@ class OrderManager
 
         // Perform price calculation.
         $prices = $supplierItems = null;
-        $totalPrice = $this->priceCalculator->calculate($items, $prices, $supplierItems, $this->defaultCurrency);
+        $totalPrices = $this->priceCalculator->calculate($items, $prices, $supplierItems, $this->defaultCurrency);
+
+        $totalPrice = $totalPrices['totalPrice'];
+        $totalRecurringPrice = $totalPrices['totalRecurringPrice'];
 
         if ($supplierItems) {
             $supplierItems = array_values($supplierItems);
@@ -427,6 +430,7 @@ class OrderManager
 
         // Set total price.
         $apiOrder->setTotalNetPrice($totalPrice);
+        $apiOrder->setTotalRecurringNetPrice($totalRecurringPrice);
     }
 
     /**
