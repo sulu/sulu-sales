@@ -1103,6 +1103,9 @@ define([
                 data.address = this.sandbox.sulu.createAddressString(data.address);
             }
 
+            // If item is of type addon - it should not be editable
+            if (data.type ===)
+
             data.currency = this.currency;
             data.overallPrice = this.sandbox.numberFormat(getOverallPriceString.call(this, data));
 
