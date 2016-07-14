@@ -481,7 +481,7 @@ class OrderManager
      * @param bool $flush
      * @param bool $persist
      *
-     * @throws \Sulu\Component\Rest\Exception\EntityNotFoundException
+     * @throws EntityNotFoundException
      */
     public function convertStatus($order, $statusId, $flush = false, $persist = true)
     {
@@ -549,7 +549,7 @@ class OrderManager
      *
      * @param int $statusId
      *
-     * @throws \Sulu\Component\Rest\Exception\EntityNotFoundException
+     * @throws EntityNotFoundException
      *
      * @return OrderStatus
      */
@@ -569,7 +569,7 @@ class OrderManager
      *
      * @param $id
      *
-     * @throws \Sulu\Component\Rest\Exception\EntityNotFoundException
+     * @throws EntityNotFoundException
      *
      * @return OrderInterface
      */
@@ -589,7 +589,7 @@ class OrderManager
      *
      * @param int $id
      *
-     * @throws \Sulu\Component\Rest\Exception\EntityNotFoundException
+     * @throws EntityNotFoundException
      *
      * @return OrderInterface
      */
@@ -647,9 +647,9 @@ class OrderManager
             $this->updateApiEntity($order, $locale);
 
             return $order;
-        } else {
-            return null;
         }
+
+        return null;
     }
 
     /**
@@ -689,7 +689,8 @@ class OrderManager
      *
      * @return array|null
      */
-    public function findByStatusIdAndUser($locale, $statusId, $user, $limit = null) {
+    public function findByStatusIdAndUser($locale, $statusId, $user, $limit = null)
+    {
         return $this->orderRepository->findByStatusIdAndUser(
             $locale,
             $statusId,
@@ -767,7 +768,7 @@ class OrderManager
         $match = false;
         $orders = $this->findOrderEntityForItemWithId($itemId, true);
         if ($orders) {
-            if (count($orders > 1)) {
+            if (count($orders) > 1) {
                 $hasMultiple = true;
             }
             foreach ($orders as $itemOrders) {

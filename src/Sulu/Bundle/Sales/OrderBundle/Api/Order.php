@@ -927,6 +927,20 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
 
     /**
      * @VirtualProperty
+     * @SerializedName("totalRecurringNetPriceFormatted")
+     * @Groups({"Default","cart"})
+     *
+     * @param string $locale
+     *
+     * @return string
+     */
+    public function getTotalRecurringNetPriceFormatted($locale = null)
+    {
+        return $this->priceFormatter->format((float)$this->entity->getTotalRecurringNetPrice(), null, $locale);
+    }
+
+    /**
+     * @VirtualProperty
      * @SerializedName("deliveryCostFormatted")
      * @Groups({"Default","cart"})
      *

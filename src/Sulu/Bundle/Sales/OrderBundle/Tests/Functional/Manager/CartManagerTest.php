@@ -10,13 +10,10 @@
 
 namespace Sulu\Bundle\Sales\OrderBundle\Tests\Functional\Manager;
 
+use Sulu\Bundle\ProductBundle\Entity\ProductPrice;
+use Sulu\Bundle\Sales\CoreBundle\Entity\ItemInterface;
 use Sulu\Bundle\Sales\OrderBundle\Cart\CartManager;
-use Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatus;
 use Sulu\Bundle\Sales\OrderBundle\Tests\OrderTestBase;
-use Sulu\Bundle\SecurityBundle\Entity\UserRepository;
-use Symfony\Component\HttpFoundation\Session\Session;
-use Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage;
-use Symfony\Component\HttpFoundation\Session\Storage\MockFileSessionStorage;
 
 class CartManagerTest extends OrderTestBase
 {
@@ -77,8 +74,8 @@ class CartManagerTest extends OrderTestBase
     /**
      * Simple helper function for calculating item-price
      *
-     * @param $item
-     * @param $productPriceEntity
+     * @param ItemInterface $item
+     * @param ProductPrice $productPriceEntity
      *
      * @return float
      */
