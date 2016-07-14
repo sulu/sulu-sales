@@ -5,6 +5,7 @@ CHANGELOG for Sulu Sales
 
     * BUGFIX      [CoreBundle]    Fixed creating independent items in item table caused by 
                                   changes in pricing bundle 
+    * ENHANCEMENT [General]       Moved db diagram from sulu/docs to sales
 
 * 0.4.0 (2016-07-06)
 
