@@ -11,20 +11,18 @@
 namespace Sulu\Bundle\Sales\OrderBundle\Cart;
 
 use Doctrine\Common\Persistence\ObjectManager;
-use Sulu\Bundle\ContactBundle\Contact\AccountManager;
-use Sulu\Bundle\Sales\CoreBundle\Entity\Item;
-use Sulu\Bundle\Sales\CoreBundle\Item\Exception\ItemNotFoundException;
-use Sulu\Bundle\Sales\OrderBundle\Order\Exception\OrderNotFoundException;
 use Sulu\Component\Contact\Model\ContactInterface;
 use Sulu\Component\Rest\Exception\EntityNotFoundException;
-use Symfony\Component\Config\Definition\Exception\Exception;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Sulu\Component\Security\Authentication\UserInterface;
 use Sulu\Component\Persistence\RelationTrait;
+use Sulu\Bundle\ContactBundle\Contact\AccountManager;
+use Sulu\Bundle\PricingBundle\Pricing\GroupedItemsPriceCalculatorInterface;
 use Sulu\Bundle\ProductBundle\Product\Exception\ProductNotFoundException;
 use Sulu\Bundle\ProductBundle\Product\Exception\ProductNotValidException;
+use Sulu\Bundle\Sales\OrderBundle\Order\Exception\OrderNotFoundException;
+use Sulu\Bundle\Sales\CoreBundle\Entity\Item;
 use Sulu\Bundle\Sales\CoreBundle\Entity\ItemInterface;
-use Sulu\Bundle\PricingBundle\Pricing\GroupedItemsPriceCalculatorInterface;
+use Sulu\Bundle\Sales\CoreBundle\Item\Exception\ItemNotFoundException;
 use Sulu\Bundle\Sales\CoreBundle\Manager\BaseSalesManager;
 use Sulu\Bundle\Sales\CoreBundle\Manager\OrderAddressManager;
 use Sulu\Bundle\Sales\OrderBundle\Cart\Exception\CartSubmissionException;
@@ -39,6 +37,8 @@ use Sulu\Bundle\Sales\OrderBundle\Order\OrderEmailManager;
 use Sulu\Bundle\Sales\OrderBundle\Order\Exception\OrderException;
 use Sulu\Bundle\Sales\OrderBundle\Order\OrderFactoryInterface;
 use Sulu\Bundle\Sales\OrderBundle\Order\OrderManager;
+use Symfony\Component\Config\Definition\Exception\Exception;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 class CartManager extends BaseSalesManager
 {

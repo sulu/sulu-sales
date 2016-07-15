@@ -344,8 +344,6 @@ interface OrderInterface
     public function getTotalNetPrice();
 
     /**
-     * Get totalNetPrice
-     *
      * @return float
      */
     public function getTotalRecurringNetPrice();

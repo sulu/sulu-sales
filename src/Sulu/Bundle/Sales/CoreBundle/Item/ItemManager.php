@@ -218,7 +218,7 @@ class ItemManager
 
         $item->setType($this->getProperty($data, 'type', BaseItem::TYPE_PRODUCT));
 
-        // Check if the product or addon relation on a saved still exists, else set type custom
+        // Check if the product or addon relation on a saved item still exists, else set type custom.
         if (!$isNewItem) {
             if ($item->getType() === BaseItem::TYPE_PRODUCT && $item->getProduct() === null) {
                 $item->setType(BaseItem::TYPE_CUSTOM);
