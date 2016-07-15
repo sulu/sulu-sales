@@ -344,6 +344,11 @@ interface OrderInterface
     public function getTotalNetPrice();
 
     /**
+     * @return float
+     */
+    public function getTotalRecurringNetPrice();
+
+    /**
      * Set orderDate
      *
      * @param \DateTime $orderDate

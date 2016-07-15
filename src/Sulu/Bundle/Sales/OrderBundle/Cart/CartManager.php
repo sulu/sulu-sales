@@ -11,14 +11,18 @@
 namespace Sulu\Bundle\Sales\OrderBundle\Cart;
 
 use Doctrine\Common\Persistence\ObjectManager;
-use Symfony\Component\Config\Definition\Exception\Exception;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Sulu\Component\Contact\Model\ContactInterface;
+use Sulu\Component\Rest\Exception\EntityNotFoundException;
 use Sulu\Component\Security\Authentication\UserInterface;
 use Sulu\Component\Persistence\RelationTrait;
+use Sulu\Bundle\ContactBundle\Contact\AccountManager;
+use Sulu\Bundle\PricingBundle\Pricing\GroupedItemsPriceCalculatorInterface;
 use Sulu\Bundle\ProductBundle\Product\Exception\ProductNotFoundException;
 use Sulu\Bundle\ProductBundle\Product\Exception\ProductNotValidException;
+use Sulu\Bundle\Sales\OrderBundle\Order\Exception\OrderNotFoundException;
+use Sulu\Bundle\Sales\CoreBundle\Entity\Item;
 use Sulu\Bundle\Sales\CoreBundle\Entity\ItemInterface;
-use Sulu\Bundle\PricingBundle\Pricing\GroupedItemsPriceCalculatorInterface;
+use Sulu\Bundle\Sales\CoreBundle\Item\Exception\ItemNotFoundException;
 use Sulu\Bundle\Sales\CoreBundle\Manager\BaseSalesManager;
 use Sulu\Bundle\Sales\CoreBundle\Manager\OrderAddressManager;
 use Sulu\Bundle\Sales\OrderBundle\Cart\Exception\CartSubmissionException;
@@ -26,7 +30,6 @@ use Sulu\Bundle\Sales\OrderBundle\Api\ApiOrderInterface;
 use Sulu\Bundle\Sales\OrderBundle\Api\Order as ApiOrder;
 use Sulu\Bundle\Sales\OrderBundle\Entity\Order;
 use Sulu\Bundle\Sales\OrderBundle\Entity\OrderInterface;
-use Sulu\Bundle\Sales\OrderBundle\Entity\OrderAddress;
 use Sulu\Bundle\Sales\OrderBundle\Entity\OrderRepository;
 use Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatus;
 use Sulu\Bundle\Sales\OrderBundle\Entity\OrderType;
@@ -34,6 +37,8 @@ use Sulu\Bundle\Sales\OrderBundle\Order\OrderEmailManager;
 use Sulu\Bundle\Sales\OrderBundle\Order\Exception\OrderException;
 use Sulu\Bundle\Sales\OrderBundle\Order\OrderFactoryInterface;
 use Sulu\Bundle\Sales\OrderBundle\Order\OrderManager;
+use Symfony\Component\Config\Definition\Exception\Exception;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 class CartManager extends BaseSalesManager
 {
@@ -229,8 +234,8 @@ class CartManager extends BaseSalesManager
      * @param UserInterface $user
      * @param string $locale
      *
-     * @throws \Sulu\Bundle\Sales\OrderBundle\Order\Exception\OrderException
-     * @throws \Sulu\Bundle\Sales\OrderBundle\Order\Exception\OrderNotFoundException
+     * @throws OrderException
+     * @throws OrderNotFoundException
      *
      * @return null|Order
      */
@@ -254,7 +259,7 @@ class CartManager extends BaseSalesManager
      * @param OrderInterface $originalCart The original cart that was submitted
      *
      * @throws OrderException
-     * @throws \Sulu\Component\Rest\Exception\EntityNotFoundException
+     * @throws EntityNotFoundException
      *
      * @return null|ApiOrder
      */
@@ -305,6 +310,7 @@ class CartManager extends BaseSalesManager
             // order-addresses have to be set to the current contact-addresses
             $this->reApplyOrderAddresses($cart, $user);
 
+            /** @var ContactInterface $customer */
             $customer = $user->getContact();
 
             // send confirmation email to customer
@@ -728,7 +734,9 @@ class CartManager extends BaseSalesManager
         return array(
             'totalItems' => count($cart->getItems()),
             'totalPrice' => $cart->getTotalNetPrice(),
+            'totalRecurringPrice' => $cart->getTotalRecurringNetPrice(),
             'totalPriceFormatted' => $cart->getTotalNetPriceFormatted(),
+            'totalRecurringPriceFormatted' => $cart->getTotalRecurringNetPriceFormatted(),
             'currency' => $cart->getCurrencyCode()
         );
     }
@@ -751,7 +759,7 @@ class CartManager extends BaseSalesManager
     /**
      * Remove deliveryAddress if it has a relation to a certain contact-address-id
      *
-     * @param OrderAddress $deliveryAddress
+     * @param Item $item
      * @param int $contactAddressId
      */
     protected function removeOrderAddressIfContactAddressIdIsEqualTo($item, $contactAddressId)

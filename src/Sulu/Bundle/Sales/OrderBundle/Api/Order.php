@@ -743,7 +743,7 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     /**
      * @param $supplierItems
      *
-     * @return $this
+     * @return self
      */
     public function setSupplierItems($supplierItems)
     {
@@ -888,9 +888,9 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     }
 
     /**
-     * @param $totalNetPrice
+     * @param float $totalNetPrice
      *
-     * @return $this
+     * @return self
      */
     public function setTotalNetPrice($totalNetPrice)
     {
@@ -923,6 +923,20 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     public function getTotalNetPriceFormatted($locale = null)
     {
         return $this->priceFormatter->format((float)$this->entity->getTotalNetPrice(), null, $locale);
+    }
+
+    /**
+     * @VirtualProperty
+     * @SerializedName("totalRecurringNetPriceFormatted")
+     * @Groups({"Default","cart"})
+     *
+     * @param string $locale
+     *
+     * @return string
+     */
+    public function getTotalRecurringNetPriceFormatted($locale = null)
+    {
+        return $this->priceFormatter->format((float)$this->entity->getTotalRecurringNetPrice(), null, $locale);
     }
 
     /**
@@ -1140,12 +1154,36 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     /**
      * @param string $note
      *
-     * @return Inquiry
+     * @return self
      */
     public function setInternalNote($note)
     {
         $this->entity->setInternalNote($note);
 
         return $this;
+    }
+
+    /**
+     * @param float $totalRecurringNetPrice
+     *
+     * @return self
+     */
+    public function setTotalRecurringNetPrice($totalRecurringNetPrice)
+    {
+        $this->entity->setTotalRecurringNetPrice($totalRecurringNetPrice);
+
+        return $this;
+    }
+
+    /**
+     * @VirtualProperty
+     * @SerializedName("totalRecurringNetPrice")
+     * @Groups({"Default","cart"})
+     *
+     * @return float
+     */
+    public function getTotalRecurringNetPrice()
+    {
+        return $this->entity->getTotalRecurringNetPrice();
     }
 }

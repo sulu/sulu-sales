@@ -38,6 +38,7 @@ use Sulu\Bundle\ProductBundle\Entity\TypeTranslation;
 use Sulu\Bundle\ProductBundle\Entity\Unit;
 use Sulu\Bundle\ProductBundle\Entity\UnitTranslation;
 use Sulu\Bundle\Sales\CoreBundle\Entity\Item;
+use Sulu\Bundle\Sales\CoreBundle\Entity\ItemInterface;
 use Sulu\Bundle\Sales\CoreBundle\Item\ItemFactoryInterface;
 use Sulu\Bundle\Sales\OrderBundle\DataFixtures\ORM\LoadOrderStatus;
 use Sulu\Bundle\Sales\OrderBundle\Entity\Order;
@@ -616,7 +617,7 @@ class OrderDataSetup
     /**
      * Creates new item for test purpose.
      *
-     * @return \Sulu\Bundle\Sales\CoreBundle\Entity\ItemInterface
+     * @return ItemInterface
      */
     public function createNewTestItem()
     {

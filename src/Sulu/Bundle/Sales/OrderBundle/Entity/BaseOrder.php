@@ -91,6 +91,11 @@ abstract class BaseOrder implements OrderInterface
     protected $totalNetPrice;
 
     /**
+     * @var float
+     */
+    protected $totalRecurringNetPrice;
+
+    /**
      * @var \DateTime
      */
     protected $orderDate;
@@ -412,5 +417,25 @@ abstract class BaseOrder implements OrderInterface
     public function getDeliveryCost()
     {
         return $this->deliveryCost;
+    }
+
+    /**
+     * @return float
+     */
+    public function getTotalRecurringNetPrice()
+    {
+        return $this->totalRecurringNetPrice;
+    }
+
+    /**
+     * @param float $totalRecurringNetPrice
+     *
+     * @return self
+     */
+    public function setTotalRecurringNetPrice($totalRecurringNetPrice)
+    {
+        $this->totalRecurringNetPrice = $totalRecurringNetPrice;
+
+        return $this;
     }
 }

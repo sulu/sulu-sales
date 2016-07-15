@@ -426,6 +426,13 @@ interface ApiOrderInterface
     public function getTotalNetPriceFormatted($locale = null);
 
     /**
+     * @param string $locale
+     *
+     * @return string
+     */
+    public function getTotalRecurringNetPriceFormatted($locale = null);
+
+    /**
      * @return string
      */
     public function getDeliveryCostFormatted($locale = null);
