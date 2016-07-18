@@ -252,7 +252,7 @@ interface OrderInterface
     /**
      * Get status
      *
-     * @return OrderInterfaceStatusInterface
+     * @return OrderStatusInterface
      */
     public function getStatus();
 
