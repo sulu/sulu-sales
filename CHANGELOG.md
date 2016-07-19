@@ -1,7 +1,7 @@
 CHANGELOG for Sulu Sales
 ========================
 
-* dev-develop
+* 0.4.1 (2016-07-19)
 
     * FEATURE     [General]       Updated for usage with recurring price calculation
     * BUGFIX      [CoreBundle]    Fixed creating independent items in item table caused by 
