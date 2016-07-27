@@ -722,12 +722,27 @@ class OrderManager
      * @param string $locale
      * @param int $userId
      * @param OrderEntity $order
+     * @param ItemInterface|null $parentItem
      *
      * @return null|Item
      */
-    public function updateItem(ItemInterface $item, $itemData, $locale, $userId, OrderEntity $order)
-    {
-        return $this->itemManager->save($itemData, $locale, $userId, $item, null, $order->getCustomerContact());
+    public function updateItem(
+        ItemInterface $item,
+        $itemData,
+        $locale,
+        $userId,
+        OrderEntity $order,
+        ItemInterface $parentItem = null
+    ) {
+        return $this->itemManager->save(
+            $itemData,
+            $locale,
+            $userId,
+            $item,
+            null,
+            $order->getCustomerContact(),
+            $parentItem
+        );
     }
 
     /**
@@ -1394,6 +1409,8 @@ class OrderManager
     private function processItems(array $data, Order $order, $locale, $userId = null)
     {
         $result = true;
+        $parentItemCache = null;
+
         try {
             if ($this->checkIfSet('items', $data)) {
                 // items has to be an array
@@ -1411,15 +1428,32 @@ class OrderManager
                     $this->removeItem($item->getEntity(), $order->getEntity());
                 };
 
-                $update = function ($item, $matchedEntry) use ($locale, $userId, $order) {
+                $update = function ($item, $matchedEntry) use ($locale, $userId, $order, &$parentItemCache) {
                     $item = $item->getEntity();
-                    $itemEntity = $this->updateItem($item, $matchedEntry, $locale, $userId, $order->getEntity());
+                    $itemEntity = $this->updateItem(
+                        $item,
+                        $matchedEntry,
+                        $locale,
+                        $userId,
+                        $order->getEntity(),
+                        $parentItemCache
+                    );
+
+                    if ($item->getType() === BaseItem::TYPE_PRODUCT || $item->getType() === BaseItem::TYPE_CUSTOM) {
+                        $parentItemCache = $item->getEntity();
+                    }
 
                     return $itemEntity ? true : false;
                 };
 
-                $add = function ($itemData) use ($locale, $userId, $order) {
-                    return $this->addItem($itemData, $locale, $userId, $order->getEntity());
+                $add = function ($itemData) use ($locale, $userId, $order,  &$parentItemCache) {
+                    $item = $this->addItem($itemData, $locale, $userId, $order->getEntity());
+
+                    if ($item->getType() === BaseItem::TYPE_PRODUCT || $item->getType() === BaseItem::TYPE_CUSTOM) {
+                        $parentItemCache = $item->getEntity();
+                    }
+
+                    return $item;
                 };
 
                 $result = $this->processSubEntities(
