@@ -341,7 +341,6 @@ class OrderControllerTest extends OrderTestBase
         $this->assertEquals($response->items[0]->id, $response->items[1]->parentId);
     }
 
-
     public function testPostItemsWithoutProductReference()
     {
         $data = [

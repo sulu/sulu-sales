@@ -1019,7 +1019,7 @@ class Item extends ApiWrapper implements
      */
     public function getParentId()
     {
-        if ($this->getParent()) {
+        if ($this->entity->getParent()) {
             return $this->entity->getParent()->getId();
         }
 

@@ -1,6 +1,10 @@
 CHANGELOG for Sulu Sales
 ========================
 
+* DEVELOP
+
+    * BUGFIX      [General]       Set parent item if an addon is added.
+
 * 0.4.1 (2016-07-19)
 
     * FEATURE     [General]       Updated for usage with recurring price calculation
