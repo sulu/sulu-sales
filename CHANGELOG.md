@@ -1,9 +1,10 @@
 CHANGELOG for Sulu Sales
 ========================
 
-* DEVELOP
+* 0.4.2 (2016-07-28)
 
     * BUGFIX      [General]       Set parent item if an addon is added.
+    * BUGFIX      [CoreBundle]    Fixed relation between item and parent item.
 
 * 0.4.1 (2016-07-19)
 
