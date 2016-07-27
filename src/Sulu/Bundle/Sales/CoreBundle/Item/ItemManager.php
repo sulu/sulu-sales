@@ -167,7 +167,7 @@ class ItemManager
      * @param ApiItemInterface|ItemInterface|null $item
      * @param int|null $itemStatusId
      * @param ContactInterface|null $contact The contact that should be used for order-address
-     * @param ItemInterface|null $parentItem
+     * @param ItemInterface|null $lastProcessedProductItem
      *
      * @return ApiItemInterface
      *
@@ -183,7 +183,7 @@ class ItemManager
         $item = null,
         $itemStatusId = null,
         ContactInterface $contact = null,
-        ItemInterface $parentItem = null
+        ItemInterface $lastProcessedProductItem = null
     ) {
         $itemEntity = $this->itemFactory->createEntity();
         $isNewItem = !$item;
@@ -258,8 +258,8 @@ class ItemManager
                         $this->setItemByProductData($productData, $item, $locale);
                     }
 
-                    if ($parentItem) {
-                        $this->setAddonData($item, $locale, $parentItem);
+                    if ($lastProcessedProductItem) {
+                        $this->setAddonData($lastProcessedProductItem, $item->getEntity());
                     }
                 }
                 break;
@@ -650,23 +650,25 @@ class ItemManager
     }
 
     /**
-     * @param ItemInterface $parentItem
-     * @param ApiItemInterface $item
+     * @param ItemInterface $lastProcessedProductItem
+     * @param ItemInterface $item
      *
      * @return Addon
      *
      * @throws \Exception
      */
-    protected function setAddonData(ItemInterface $parentItem, ApiItemInterface $item)
+    protected function setAddonData(ItemInterface $lastProcessedProductItem, ItemInterface $item)
     {
-        $item->setParent($parentItem);
+        $item->setParent($lastProcessedProductItem);
 
-        $product = $parentItem->getProduct();
-        $addon = $item->getProduct();
+        $parentProduct = $lastProcessedProductItem->getProduct();
+        $addonProduct = $item->getProduct();
         /** @var Addon $addon */
-        $addon = $this->addonRepository->findOneBy(['product' => $product, 'addon' => $addon]);
+        $addon = $this->addonRepository->findOneBy(['product' => $parentProduct, 'addon' => $addonProduct]);
         if (!$addon) {
-            throw new \Exception('Addon id ' . $addon->getId() . 'for product id ' . $product->getId() . ' not found.');
+            throw new \Exception(
+                'Addon id ' . $addonProduct->getId() . ' for product id ' . $parentProduct->getId() . ' not found.'
+            );
         }
         $item->setAddon($addon);
 
