@@ -1009,4 +1009,20 @@ class Item extends ApiWrapper implements
 
         return $this;
     }
+
+    /**
+     * @VirtualProperty
+     * @SerializedName("parentId")
+     * @Groups({"Default","cart"})
+     *
+     * {@inheritdoc}
+     */
+    public function getParentId()
+    {
+        if ($this->entity->getParent()) {
+            return $this->entity->getParent()->getId();
+        }
+
+        return null;
+    }
 }

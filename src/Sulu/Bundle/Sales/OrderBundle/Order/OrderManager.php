@@ -19,6 +19,7 @@ use Sulu\Bundle\PricingBundle\Pricing\GroupedItemsPriceCalculatorInterface;
 use Sulu\Bundle\ProductBundle\Product\ProductManagerInterface;
 use Sulu\Bundle\Sales\CoreBundle\Api\ApiItemInterface;
 use Sulu\Bundle\Sales\CoreBundle\Api\Item;
+use Sulu\Bundle\Sales\CoreBundle\Entity\BaseItem;
 use Sulu\Bundle\Sales\CoreBundle\Entity\ItemInterface;
 use Sulu\Bundle\Sales\CoreBundle\Entity\OrderAddress;
 use Sulu\Bundle\Sales\CoreBundle\Item\Exception\ItemNotFoundException;
@@ -704,12 +705,26 @@ class OrderManager
      * @param string $locale
      * @param int $userId
      * @param OrderEntity $order
+     * @param ItemInterface|null $lastProcessedProductItem
      *
      * @return ApiItemInterface
      */
-    public function addItem($itemData, $locale, $userId, OrderEntity $order)
-    {
-        $item = $this->itemManager->save($itemData, $locale, $userId, null, null, $order->getCustomerContact());
+    public function addItem(
+        $itemData,
+        $locale,
+        $userId,
+        OrderEntity $order,
+        ItemInterface $lastProcessedProductItem = null
+    ) {
+        $item = $this->itemManager->save(
+            $itemData,
+            $locale,
+            $userId,
+            null,
+            null,
+            $order->getCustomerContact(),
+            $lastProcessedProductItem
+        );
 
         $order->addItem($item->getEntity());
 
@@ -722,12 +737,27 @@ class OrderManager
      * @param string $locale
      * @param int $userId
      * @param OrderEntity $order
+     * @param ItemInterface|null $lastProcessedProductItem
      *
      * @return null|Item
      */
-    public function updateItem(ItemInterface $item, $itemData, $locale, $userId, OrderEntity $order)
-    {
-        return $this->itemManager->save($itemData, $locale, $userId, $item, null, $order->getCustomerContact());
+    public function updateItem(
+        ItemInterface $item,
+        $itemData,
+        $locale,
+        $userId,
+        OrderEntity $order,
+        ItemInterface $lastProcessedProductItem = null
+    ) {
+        return $this->itemManager->save(
+            $itemData,
+            $locale,
+            $userId,
+            $item,
+            null,
+            $order->getCustomerContact(),
+            $lastProcessedProductItem
+        );
     }
 
     /**
@@ -1394,6 +1424,8 @@ class OrderManager
     private function processItems(array $data, Order $order, $locale, $userId = null)
     {
         $result = true;
+        $lastProcessedProductItem = null;
+
         try {
             if ($this->checkIfSet('items', $data)) {
                 // items has to be an array
@@ -1411,15 +1443,32 @@ class OrderManager
                     $this->removeItem($item->getEntity(), $order->getEntity());
                 };
 
-                $update = function ($item, $matchedEntry) use ($locale, $userId, $order) {
+                $update = function ($item, $matchedEntry) use ($locale, $userId, $order, &$lastProcessedProductItem) {
                     $item = $item->getEntity();
-                    $itemEntity = $this->updateItem($item, $matchedEntry, $locale, $userId, $order->getEntity());
+                    $itemEntity = $this->updateItem(
+                        $item,
+                        $matchedEntry,
+                        $locale,
+                        $userId,
+                        $order->getEntity(),
+                        $lastProcessedProductItem
+                    );
+
+                    if ($item->getType() === BaseItem::TYPE_PRODUCT) {
+                        $lastProcessedProductItem = $item->getEntity();
+                    }
 
                     return $itemEntity ? true : false;
                 };
 
-                $add = function ($itemData) use ($locale, $userId, $order) {
-                    return $this->addItem($itemData, $locale, $userId, $order->getEntity());
+                $add = function ($itemData) use ($locale, $userId, $order, &$lastProcessedProductItem) {
+                    $item = $this->addItem($itemData, $locale, $userId, $order->getEntity(), $lastProcessedProductItem);
+
+                    if ($item->getType() === BaseItem::TYPE_PRODUCT) {
+                        $lastProcessedProductItem = $item->getEntity();
+                    }
+
+                    return $item;
                 };
 
                 $result = $this->processSubEntities(

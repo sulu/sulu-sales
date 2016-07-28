@@ -167,6 +167,7 @@ class ItemManager
      * @param ApiItemInterface|ItemInterface|null $item
      * @param int|null $itemStatusId
      * @param ContactInterface|null $contact The contact that should be used for order-address
+     * @param ItemInterface|null $lastProcessedProductItem
      *
      * @return ApiItemInterface
      *
@@ -181,7 +182,8 @@ class ItemManager
         $userId = null,
         $item = null,
         $itemStatusId = null,
-        ContactInterface $contact = null
+        ContactInterface $contact = null,
+        ItemInterface $lastProcessedProductItem = null
     ) {
         $itemEntity = $this->itemFactory->createEntity();
         $isNewItem = !$item;
@@ -250,9 +252,14 @@ class ItemManager
                 break;
             case BaseItem::TYPE_ADDON:
                 if ($isNewItem) {
-                    $addonData = $this->getProperty($data, 'addon');
-                    if ($addonData) {
-                        $this->setItemByAddonData($addonData, $item, $locale);
+                    $productData = $this->getProperty($data, 'product');
+                    if ($productData) {
+                        // Set Product's data to item
+                        $this->setItemByProductData($productData, $item, $locale);
+                    }
+
+                    if ($lastProcessedProductItem) {
+                        $this->setAddonData($lastProcessedProductItem, $item->getEntity());
                     }
                 }
                 break;
@@ -643,50 +650,27 @@ class ItemManager
     }
 
     /**
-     * @param array $addonData
-     * @param ApiItemInterface $item
-     * @param string $locale
+     * @param ItemInterface $lastProcessedProductItem
+     * @param ItemInterface $item
      *
      * @return Addon
      *
-     * @throws MissingItemAttributeException
-     * @throws ProductException
      * @throws \Exception
      */
-    protected function setItemByAddonData($addonData, ApiItemInterface $item, $locale)
+    protected function setAddonData(ItemInterface $lastProcessedProductItem, ItemInterface $item)
     {
-        $addonId = $this->getProductId($addonData, 'addon.id');
+        $item->setParent($lastProcessedProductItem);
 
+        $parentProduct = $lastProcessedProductItem->getProduct();
+        $addonProduct = $item->getProduct();
         /** @var Addon $addon */
-        $addon = $this->addonRepository->find($addonId);
+        $addon = $this->addonRepository->findOneBy(['product' => $parentProduct, 'addon' => $addonProduct]);
         if (!$addon) {
-            throw new \Exception('Addon with id ' . $addonId . ' not found.');
+            throw new \Exception(
+                'Addon id ' . $addonProduct->getId() . ' for product id ' . $parentProduct->getId() . ' not found.'
+            );
         }
-
         $item->setAddon($addon);
-        $addonProduct = $addon->getAddon();
-
-        $translation = $addonProduct->getTranslation($locale);
-        if (is_null($translation) && count($addonProduct->getTranslations()) === 0) {
-            throw new ProductException('Product ' . $addonProduct->getId() . ' has no translations!');
-        }
-        $translation = $addonProduct->getTranslations()[0];
-
-        $item->setName($translation->getName());
-        $item->setDescription($translation->getLongDescription());
-        $item->setNumber($addonProduct->getNumber());
-
-        // set order unit
-        if ($addonProduct->getOrderUnit()) {
-            $item->setQuantityUnit($addonProduct->getOrderUnit()->getTranslation($locale)->getName());
-        }
-
-        $tax = 0;
-        $taxClass = $addonProduct->getTaxClass();
-        if ($taxClass) {
-            $tax = $this->retrieveTaxForClass($taxClass);
-        }
-        $item->setTax($tax);
 
         return $addon;
     }

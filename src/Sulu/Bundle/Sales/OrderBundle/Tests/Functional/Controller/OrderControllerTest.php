@@ -321,8 +321,8 @@ class OrderControllerTest extends OrderTestBase
                     'supplierName' => 'supplier',
                     'isRecurringPrice' => true,
                     'type' => Item::TYPE_ADDON,
-                    'addon' => [
-                        'id' => $this->data->addon->getId()
+                    'product' => [
+                        'id' => $this->data->addon->getAddon()->getId()
                     ]
                 ],
             ]
@@ -338,8 +338,8 @@ class OrderControllerTest extends OrderTestBase
 
         $this->assertTrue($response->items[0]->isRecurringPrice);
         $this->assertEquals(Item::TYPE_ADDON, $response->items[1]->type);
+        $this->assertEquals($response->items[0]->id, $response->items[1]->parentId);
     }
-
 
     public function testPostItemsWithoutProductReference()
     {
