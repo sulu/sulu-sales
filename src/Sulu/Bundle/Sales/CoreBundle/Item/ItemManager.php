@@ -638,6 +638,8 @@ class ItemManager
             $item->setQuantityUnit($product->getOrderUnit()->getTranslation($locale)->getName());
         }
 
+        $item->setIsRecurringPrice($product->isRecurringPrice());
+
         $taxClass = $product->getTaxClass();
         if ($taxClass) {
             $tax = $this->retrieveTaxForClass($taxClass);
