@@ -1,6 +1,10 @@
 CHANGELOG for Sulu Sales
 ========================
 
+* 0.4.3 (2016-07-28)
+
+    * BUGFIX      [CoreBundle]    Set isRecurringPrice on items to fix calculation of order totals.
+
 * 0.4.2 (2016-07-28)
 
     * BUGFIX      [General]       Set parent item if an addon is added.
