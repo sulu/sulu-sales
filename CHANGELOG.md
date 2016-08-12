@@ -1,5 +1,8 @@
 CHANGELOG for Sulu Sales
 ========================
+* dev-develop
+
+    * FEATURE     [CoreBundle]    Added event that is triggered when order status changes.
 
 * 0.4.3 (2016-07-28)
 

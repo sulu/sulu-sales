@@ -32,8 +32,9 @@ use Sulu\Bundle\Sales\OrderBundle\Entity\OrderActivityLog;
 use Sulu\Bundle\Sales\OrderBundle\Entity\OrderInterface;
 use Sulu\Bundle\Sales\OrderBundle\Entity\OrderRepository;
 use Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatus;
-use Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatus as OrderStatusEntity;
 use Sulu\Bundle\Sales\OrderBundle\Entity\OrderType;
+use Sulu\Bundle\Sales\OrderBundle\Events\SalesOrderEvents;
+use Sulu\Bundle\Sales\OrderBundle\Events\SalesOrderStatusChangedEvent;
 use Sulu\Bundle\Sales\OrderBundle\Order\Exception\MissingOrderAttributeException;
 use Sulu\Bundle\Sales\OrderBundle\Order\Exception\OrderDependencyNotFoundException;
 use Sulu\Bundle\Sales\OrderBundle\Order\Exception\OrderException;
@@ -48,6 +49,7 @@ use Sulu\Component\Rest\ListBuilder\Doctrine\FieldDescriptor\DoctrineJoinDescrip
 use Sulu\Component\Rest\ListBuilder\Metadata\FieldDescriptorFactoryInterface;
 use Sulu\Component\Security\Authentication\UserInterface;
 use Sulu\Component\Security\Authentication\UserRepositoryInterface;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 class OrderManager
@@ -150,6 +152,11 @@ class OrderManager
     private $contactRepository;
 
     /**
+     * @var EventDispatcherInterface
+     */
+    protected $eventDispatcher;
+
+    /**
      * @param ObjectManager $em
      * @param OrderRepository $orderRepository
      * @param UserRepositoryInterface $userRepository
@@ -165,6 +172,7 @@ class OrderManager
      * @param FieldDescriptorFactoryInterface $fieldDescriptorFactory
      * @param string $defaultCurrency
      * @param ContactRepositoryInterface $contactRepository
+     * @param EventDispatcherInterface $eventDispatcher
      */
     public function __construct(
         ObjectManager $em,
@@ -181,7 +189,8 @@ class OrderManager
         OrderAddressManager $orderAddressManager,
         FieldDescriptorFactoryInterface $fieldDescriptorFactory,
         $defaultCurrency,
-        ContactRepositoryInterface $contactRepository
+        ContactRepositoryInterface $contactRepository,
+        EventDispatcherInterface $eventDispatcher
     ) {
         $this->orderRepository = $orderRepository;
         $this->userRepository = $userRepository;
@@ -198,6 +207,7 @@ class OrderManager
         $this->fieldDescriptorFactory = $fieldDescriptorFactory;
         $this->defaultCurrency = $defaultCurrency;
         $this->contactRepository = $contactRepository;
+        $this->eventDispatcher = $eventDispatcher;
 
         static::$orderEntityName = $this->orderRepository->getClassName();
     }
@@ -477,17 +487,17 @@ class OrderManager
     /**
      * Converts the status of an order.
      *
-     * @param ApiOrderInterface|OrderInterface $order
+     * @param ApiOrderInterface $apiOrder
      * @param int $statusId
      * @param bool $flush
      * @param bool $persist
      *
      * @throws EntityNotFoundException
      */
-    public function convertStatus($order, $statusId, $flush = false, $persist = true)
+    public function convertStatus(ApiOrderInterface $apiOrder, $statusId, $flush = false, $persist = true)
     {
-        if ($order instanceof Order) {
-            $order = $order->getEntity();
+        if ($apiOrder instanceof Order) {
+            $order = $apiOrder->getEntity();
         }
 
         // Get current status.
@@ -523,7 +533,7 @@ class OrderManager
             $this->em->persist($orderActivity);
         }
 
-        // BITMASK
+        // BITMASK.
         $currentBitmaskStatus = $order->getBitmaskStatus();
         // If desired status already is in bitmask, remove current state
         // since this is a step back.
@@ -534,15 +544,16 @@ class OrderManager
             $order->setBitmaskStatus($currentBitmaskStatus | $statusEntity->getId());
         }
 
-        // Check if status has changed.
-        if ($statusId === OrderStatusEntity::STATUS_CREATED) {
-            // TODO: re-edit - do some business logic
-        }
         $order->setStatus($statusEntity);
 
         if ($flush === true) {
             $this->em->flush();
         }
+
+        $this->eventDispatcher->dispatch(
+            SalesOrderEvents::STATUS_CHANGED,
+            new SalesOrderStatusChangedEvent($apiOrder)
+        );
     }
 
     /**

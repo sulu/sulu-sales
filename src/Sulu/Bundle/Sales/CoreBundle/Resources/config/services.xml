@@ -21,7 +21,6 @@
         <parameter key="sulu_sales_core.order_address_api_entity">Sulu\Bundle\Sales\CoreBundle\Api\OrderAddress</parameter>
         <parameter key="sulu_sales_core.item_factory.class">Sulu\Bundle\Sales\CoreBundle\Item\ItemFactory</parameter>
         <parameter key="sulu_sales_core.email_manager.class">Sulu\Bundle\Sales\CoreBundle\Manager\EmailManager</parameter>
-        <parameter key="sulu_sales_core.events.create_transition" type="constant">Sulu\Bundle\Sales\CoreBundle\Transition\TransitionEvents::CREATE_TRANSITION</parameter>
         <parameter key="sulu_sales_core.transition_repository.class">Sulu\Bundle\Sales\CoreBundle\Entity\TransitionRepository</parameter>
         <parameter key="sulu_sales_core.transition_entity.class">Sulu\Bundle\Sales\CoreBundle\Entity\Transition</parameter>
         <parameter key="sulu_sales_core.transition_item_repository.class">Sulu\Bundle\Sales\CoreBundle\Entity\TransitionItemRepository</parameter>
@@ -31,6 +30,9 @@
         <parameter key="sulu_sales_core.transition_resolver.class">Sulu\Bundle\Sales\CoreBundle\Transition\TransitionResolver</parameter>
         <parameter key="sulu_sales_core.sales_config_parameter_service.class">Sulu\Bundle\Sales\CoreBundle\Service\SalesConfigParameterService</parameter>
         <parameter key="sulu_sales_core.jsconfig.class">Sulu\Bundle\AdminBundle\Admin\JsConfig</parameter>
+
+        <!--EVENTS-->
+        <parameter key="sulu_sales_core.events.create_transition" type="constant">Sulu\Bundle\Sales\CoreBundle\Transition\TransitionEvents::CREATE_TRANSITION</parameter>
     </parameters>
 
     <services>
@@ -42,8 +44,8 @@
 
         <!--FACTORIES-->
         <service id="sulu_sales_core.item_factory" class="%sulu_sales_core.item_factory.class%">
-            <argument type="service" id="sulu_product.product_factory"/>
-            <argument type="service" id="sulu_pricing.formatter"/>
+            <argument type="service" id="sulu_product.product_factory" />
+            <argument type="service" id="sulu_pricing.formatter" />
             <argument>%sulu_product.default_currency%</argument>
         </service>
 
@@ -72,68 +74,68 @@
             <argument type="service" id="sulu_sales_core.order_address_manager" />
             <argument type="service" id="sulu_product.country_tax_repository" />
             <argument type="service" id="sulu_sales_core.item_factory" />
-            <argument type="service" id="sulu_product.product_addon_repository"/>
+            <argument type="service" id="sulu_product.product_addon_repository" />
             <argument>%sulu_sales_core.order_address_entity%</argument>
             <argument>%sulu_sales_core.shop_location%</argument>
         </service>
 
         <service id="sulu_sales_core.transition_manager" class="%sulu_sales_core.transition_manager.class%">
-            <argument type="service" id="sulu_sales_core.transition_repository"/>
+            <argument type="service" id="sulu_sales_core.transition_repository" />
         </service>
 
         <service id="sulu_sales_core.dependency_manager" class="%sulu_sales_core.dependency_manager.class%">
         </service>
 
         <service id="sulu_sales_core.transition_resolver" class="%sulu_sales_core.transition_resolver.class%">
-            <argument type="service" id="sulu_sales_core.transition_manager"/>
-            <argument type="service" id="sulu_sales_core.dependency_manager"/>
-            <argument type="service" id="doctrine.orm.entity_manager"/>
+            <argument type="service" id="sulu_sales_core.transition_manager" />
+            <argument type="service" id="sulu_sales_core.dependency_manager" />
+            <argument type="service" id="doctrine.orm.entity_manager" />
         </service>
 
         <!--REPOSITORIES-->
-        <service id="sulu_sales_core.item_repository" class="%sulu_sales_core.item_repository.class%"
-                 factory-method="getRepository" factory-service="doctrine.orm.entity_manager">
+        <service id="sulu_sales_core.item_repository" class="%sulu_sales_core.item_repository.class%">
+            <factory method="getRepository" service="doctrine" />
             <argument>%sulu_sales_core.item_entity%</argument>
         </service>
-        <service id="sulu_sales_core.order_address_repository" class="%sulu_sales_core.order_address_repository.class%"
-                 factory-method="getRepository" factory-service="doctrine.orm.entity_manager">
+        <service id="sulu_sales_core.order_address_repository" class="%sulu_sales_core.order_address_repository.class%">
+            <factory method="getRepository" service="doctrine" />
             <argument>%sulu_sales_core.order_address_entity%</argument>
         </service>
-        <service id="sulu_sales_core.transition_repository" class="%sulu_sales_core.transition_repository.class%"
-                 factory-method="getRepository" factory-service="doctrine.orm.entity_manager">
+        <service id="sulu_sales_core.transition_repository" class="%sulu_sales_core.transition_repository.class%">
+            <factory method="getRepository" service="doctrine" />
             <argument>%sulu_sales_core.transition_entity.class%</argument>
         </service>
-        <service id="sulu_sales_core.transition_item_repository" class="%sulu_sales_core.transition_item_repository.class%"
-                 factory-method="getRepository" factory-service="doctrine.orm.entity_manager">
+        <service id="sulu_sales_core.transition_item_repository" class="%sulu_sales_core.transition_item_repository.class%">
+            <factory method="getRepository" service="doctrine" />
             <argument>%sulu_sales_core.transition_item_entity.class%</argument>
         </service>
 
         <!--WIDGETS-->
         <service id="sulu_sales_core.widget.multiple_accounts" class="%sulu_sales_core.widgets.multiple_accounts.class%">
-            <tag name="sulu.widget" alias="sulu-sales-core-multiple-accounts"/>
-            <argument type="service" id="sulu_contact.account_repository"/>
+            <tag name="sulu.widget" alias="sulu-sales-core-multiple-accounts" />
+            <argument type="service" id="sulu_contact.account_repository" />
         </service>
 
         <service id="sulu_sales_core.widget.customers" class="%sulu_sales_core.widgets.customers.class%">
-            <tag name="sulu.widget" alias="sulu-sales-core-customers"/>
-            <argument type="service" id="sulu_contact.account_repository"/>
+            <tag name="sulu.widget" alias="sulu-sales-core-customers" />
+            <argument type="service" id="sulu_contact.account_repository" />
         </service>
 
         <service id="sulu_sales_core.widget.suppliers" class="%sulu_sales_core.widgets.suppliers.class%">
-            <tag name="sulu.widget" alias="sulu-sales-core-suppliers"/>
-            <argument type="service" id="sulu_contact.account_repository"/>
+            <tag name="sulu.widget" alias="sulu-sales-core-suppliers" />
+            <argument type="service" id="sulu_contact.account_repository" />
         </service>
 
         <service id="sulu_sales_core.widget.simple_account" class="%sulu_sales_core.widgets.simple_account.class%">
-            <tag name="sulu.widget" alias="sulu-sales-core-simple-account"/>
-            <argument type="service" id="doctrine.orm.entity_manager"/>
-            <argument type="service" id="sulu_contact.account_repository"/>
+            <tag name="sulu.widget" alias="sulu-sales-core-simple-account" />
+            <argument type="service" id="doctrine.orm.entity_manager" />
+            <argument type="service" id="sulu_contact.account_repository" />
         </service>
 
         <service id="sulu_sales_core.widget.simple_contact" class="%sulu_sales_core.widgets.simple_contact.class%">
-            <tag name="sulu.widget" alias="sulu-sales-core-simple-contact"/>
-            <argument type="service" id="doctrine.orm.entity_manager"/>
-            <argument type="service" id="sulu.repository.contact"/>
+            <tag name="sulu.widget" alias="sulu-sales-core-simple-contact" />
+            <argument type="service" id="doctrine.orm.entity_manager" />
+            <argument type="service" id="sulu.repository.contact" />
         </service>
 
         <service id="sulu_sales_core.sales_config_parameter_service" class="%sulu_sales_core.sales_config_parameter_service.class%">
@@ -145,7 +147,7 @@
             <argument type="collection">
                 <argument key="default_currency" type="string">%sulu_product.default_currency%</argument>
             </argument>
-            <tag name="sulu.js_config"/>
+            <tag name="sulu.js_config" />
         </service>
     </services>
 </container>
