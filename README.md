@@ -44,3 +44,13 @@ tests/app/console doctrine:schema:update --force
 
 phpunit
 ```
+
+## Documentation
+
+### Events
+
+The following events are triggered by the system:
+
+| Constant | Parameter  | Triggered | Parameters |
+|---|---|---|---|
+|SalesOrderEvents:StatusChanged| sulu_sales_order.events.status_changed  | Triggered when the status of an order changes.  | SuluSalesOrderStatusChangeEvent |
