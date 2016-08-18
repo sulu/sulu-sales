@@ -13,7 +13,7 @@ disabled =  'disabled';
         <table class="item-table-list"></table>
     </div>
 
-    <div class="item-add grid-col-5 husky-toolbar small">
+    <div class="item-add husky-toolbar small grid-col-5">
         <ul class="group left">
             <li class="toolbar-item add-row">
                 <span class="fa-search icon"></span>
@@ -25,7 +25,7 @@ disabled =  'disabled';
     </div>
 
     <% if (enableDeliveryCost == true) { %>
-    <div class="grid-col-12 delivery-cost" data-name="deliveryCost">
+    <div class="grid-col-7 delivery-cost m-top-20" data-name="deliveryCost">
         <label><%= translate('salescore.item.delivery-cost') %></label>
         <input id="delivery-cost" class="price input-field form-element"
                 data-validation-required="true"

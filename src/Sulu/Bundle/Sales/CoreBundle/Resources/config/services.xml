@@ -146,6 +146,7 @@
             <argument type="string">sulu_sales_core</argument>
             <argument type="collection">
                 <argument key="default_currency" type="string">%sulu_product.default_currency%</argument>
+                <argument key="shop_location" type="string">%sulu_sales_core.shop_location%</argument>
             </argument>
             <tag name="sulu.js_config" />
         </service>

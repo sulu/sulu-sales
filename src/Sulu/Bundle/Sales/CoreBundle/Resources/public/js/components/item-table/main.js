@@ -125,7 +125,14 @@ define([
             settingsOverlayId: '#settings-overlay',
             deliveryCostInputId: '#delivery-cost',
             autocompleteLimit: 20,
-            disablePagination: true,
+            disablePagination: true
+        },
+
+        selectors = {
+            itemOverallPrice: '.js-item-overall-price',
+            globalPriceValue: '.js-global-price-value',
+            itemOverallRecurringPrice: '.js-item-overall-recurring-price',
+            globalRecurringPriceValue: '.js-global-recurring-price-value'
         },
 
         translations = {
@@ -150,6 +157,7 @@ define([
             price: '',
             discount: 0,
             overallPrice: '',
+            overallRecurringPrice: '',
             currency: Config.get('sulu_sales_core').default_currency,
             useProductsPrice: false,
             tax: 0,
@@ -158,13 +166,16 @@ define([
         },
 
         templates = {
-            priceRow: function(title, value) {
+            priceRow: function(title, valueRecurring, value) {
                 return [
                     '<tr>',
                     '   <td>',
                     title,
                     '   </td>',
-                    '   <td>',
+                    '   <td class="js-global-recurring-price-value">',
+                    valueRecurring,
+                    '   </td>',
+                    '   <td class="js-global-price-value">',
                     value,
                     '   </td>',
                     '</tr>'
@@ -287,7 +298,8 @@ define([
                 quantityUnit: this.sandbox.translate('salescore.item.unit'),
                 price: this.sandbox.translate('salescore.item.price'),
                 discount: this.sandbox.translate('salescore.item.discount'),
-                overallPrice: this.sandbox.translate('salescore.item.overall-value')
+                overallPrice: this.sandbox.translate('salescore.item.overall-value'),
+                overallRecurringPrice: this.sandbox.translate('salescore.item.overall-recurring-value')
             };
         },
 
@@ -528,18 +540,17 @@ define([
         startLoader = function(dfdLoaderStarted) {
             prepareDomForLoader.call(this);
             this.sandbox.start([
-                    {
-                        name: 'loader@husky',
-                        options: {
-                            el: this.$loader,
-                            size: '40px',
-                            hidden: false
-                        }
+                {
+                    name: 'loader@husky',
+                    options: {
+                        el: this.$loader,
+                        size: '40px',
+                        hidden: false
                     }
-                ]
-            ).done(function() {
-                    dfdLoaderStarted.resolve();
-                }.bind(this));
+                }
+            ]).done(function() {
+                dfdLoaderStarted.resolve();
+            }.bind(this));
         },
 
         /**
@@ -706,9 +717,11 @@ define([
         updateOverallPrice = function(rowId) {
             var $row = this.$find('#' + rowId),
                 item = this.items[rowId],
-                $priceCol = this.sandbox.dom.find('.item-overall-price span', $row);
+                $priceCol = this.sandbox.dom.find('.item-overall-price span', $row),
+                $priceRecurringCol = this.sandbox.dom.find('.item-overall-recurring-price span', $row);
 
             this.sandbox.dom.html($priceCol, getOverallPriceString.call(this, item));
+            this.sandbox.dom.html($priceRecurringCol, getOverallPriceString.call(this, item, true));
         },
 
         /**
@@ -720,23 +733,32 @@ define([
                 return;
             }
 
-            var items = this.getItems(), result, $table, i;
-            $table = this.$find(constants.globalPriceTableClass);
+            var items = this.getItems();
+            var $table = this.$find(constants.globalPriceTableClass);
 
             if (!!items && items.length > 0) {
                 var totalNetPrice = 0;
+                var totalRecurringNetPrice = 0;
                 var grossPrice = 0;
+                var recurringGrossPrice = 0;
                 var deliveryCost = 0;
+                var currency = this.currency;
 
                 // Add delivery cost if enabled.
                 if (this.options.enableDeliveryCost === true) {
                     deliveryCost = this.sandbox.parseFloat($(constants.deliveryCostInputId).val());
                 }
-                result = PriceCalcUtil.getTotalPricesAndTaxes(this.sandbox, this.items, deliveryCost);
+                var result = PriceCalcUtil.getTotalPricesAndTaxes(this.sandbox, this.items, deliveryCost);
+                var resultRecurring = PriceCalcUtil.getTotalPricesAndTaxes(this.sandbox, this.items, 0, true);
 
                 if (!!result) {
                     totalNetPrice = result.netPrice;
                     grossPrice = result.grossPrice;
+                }
+
+                if (!!resultRecurring) {
+                    totalRecurringNetPrice = resultRecurring.netPrice;
+                    recurringGrossPrice = resultRecurring.grossPrice;
                 }
 
                 // Visualize
@@ -748,33 +770,83 @@ define([
                         this,
                         $table,
                         this.sandbox.translate('salescore.item.net-price'),
-                        PriceCalcUtil.getFormattedAmountAndUnit(this.sandbox, totalNetPrice, this.currency)
+                        PriceCalcUtil.getFormattedAmountAndUnit(this.sandbox, totalNetPrice, currency),
+                        PriceCalcUtil.getFormattedAmountAndUnit(this.sandbox, totalRecurringNetPrice, currency)
                     );
 
                     if (!this.options.taxfree) {
-                        if (result.taxes) {
+                        // First get all taxes.
+                        var taxes = retrieveTaxClassesFromResults.call(this, [result, resultRecurring]);
+
+                        if (taxes) {
                             // Add row for every tax group.
-                            for (i in result.taxes) {
+                            this.sandbox.util.foreach(taxes, function(taxClass) {
+                                var recurringTax = 0;
+                                var singleTax = 0;
+
+                                // Check if tax is defined for given tax-class.
+                                if (resultRecurring.taxes && resultRecurring.taxes.hasOwnProperty(taxClass)) {
+                                    recurringTax = resultRecurring.taxes[taxClass];
+                                }
+                                if (result.taxes && result.taxes.hasOwnProperty(taxClass)) {
+                                    singleTax = result.taxes[taxClass];
+                                }
+
+
                                 addPriceRow.call(
                                     this,
                                     $table,
-                                    this.sandbox.translate('salescore.item.vat') + '. (' + i + '%)',
-                                    PriceCalcUtil.getFormattedAmountAndUnit(this.sandbox, result.taxes[i], this.currency)
+                                    this.sandbox.translate('salescore.item.vat') + '. (' + taxClass + '%)',
+                                    PriceCalcUtil.getFormattedAmountAndUnit(this.sandbox, singleTax, currency),
+                                    PriceCalcUtil.getFormattedAmountAndUnit(this.sandbox, recurringTax, currency)
                                 );
-                            }
+                            }.bind(this));
                         }
 
                         addPriceRow.call(
                             this,
                             $table,
                             this.sandbox.translate('salescore.item.overall-price'),
-                            PriceCalcUtil.getFormattedAmountAndUnit(this.sandbox, grossPrice, this.currency)
+                            PriceCalcUtil.getFormattedAmountAndUnit(this.sandbox, grossPrice, currency),
+                            PriceCalcUtil.getFormattedAmountAndUnit(this.sandbox, recurringGrossPrice, currency)
                         );
                     }
+
+                    // Update width of global price.
+                    $(selectors.globalPriceValue).outerWidth(
+                        $(selectors.itemOverallPrice).outerWidth()
+                    );
+                    $(selectors.globalRecurringPriceValue).outerWidth(
+                        $(selectors.itemOverallRecurringPrice).outerWidth()
+                    );
                 }
             } else {
                 this.sandbox.dom.empty($table);
             }
+        },
+
+        /**
+         * Filters given result sets for tax classes.
+         *
+         * @param {Object} resultsets
+         *
+         * @returns {Array}
+         */
+        retrieveTaxClassesFromResults = function(resultsets) {
+            var taxes = [];
+
+            // For all given resultsets.
+            this.sandbox.util.foreach(resultsets, function(resultset) {
+                // Check if taxes are defined.
+                if (resultset.taxes) {
+                    // Add tax index to result.
+                    for (var i in resultset.taxes) {
+                        taxes.push(i);
+                    }
+                }
+            });
+
+            return $.unique(taxes);
         },
 
         /**
@@ -783,23 +855,35 @@ define([
          * @param {Object} $table
          * @param {String} title
          * @param {mixed} value
+         * @param {mixed} recurringValue
          */
-        addPriceRow = function($table, title, value) {
-            var $row = this.sandbox.dom.createElement(templates.priceRow.call(this, title, value));
+        addPriceRow = function($table, title, value, recurringValue) {
+            var $row = this.sandbox.dom.createElement(templates.priceRow.call(this, title, recurringValue, value));
             this.sandbox.dom.append($table, $row);
         },
 
         /**
          * Returns formated overallPrice + currency as string (based on item).
+         * If also returns recurring price.
          *
          * @param {Object} item
+         * @param {Bool} isRecurring
          *
          * @return {String}
          */
-        getOverallPriceString = function(item) {
+        getOverallPriceString = function(item, isRecurring) {
             setItemDefaults(item);
 
-            return item.totalNetPriceFormatted + ' ' + getCurrency.call(this, item);
+            var price = item.totalNetPriceFormatted;
+            var isRecurring = !!isRecurring;
+
+            // If requested price should be recurring and isn't return
+            // 0 as result.
+            if (item.isRecurringPrice !== isRecurring) {
+                price = this.sandbox.numberFormat(0, 'n');
+            }
+
+            return price + ' ' + getCurrency.call(this, item);
         },
 
         /**
@@ -808,6 +892,7 @@ define([
          * @param {Object} item
          */
         setItemDefaults = function(item) {
+            item.isRecurringPrice = item.isRecurringPrice || false;
             item.price = item.price || 0;
             item.priceFormatted = item.priceFormatted || 0;
             item.totalNetPriceFormatted = item.totalNetPriceFormatted || 0;
@@ -846,6 +931,7 @@ define([
                     'labels.warning',
                     ''
                 );
+
                 return;
             }
 
@@ -1105,6 +1191,7 @@ define([
 
             data.currency = this.currency;
             data.overallPrice = this.sandbox.numberFormat(getOverallPriceString.call(this, data));
+            data.overallRecurringPrice = this.sandbox.numberFormat(getOverallPriceString.call(this, data, true));
 
             // Format numbers for cultural differences.
             data.discount = this.sandbox.numberFormat(data.discount, 'n');
@@ -1288,7 +1375,8 @@ define([
                         description: productData.shortDescription,
                         product: productData,
                         quantityUnit: !!productData.orderUnit ? productData.orderUnit.name : '',
-                        isGrossPrice: productData.areGrossPrices
+                        isGrossPrice: productData.areGrossPrices,
+                        tax: retrieveTaxOfProductForCurrentLocation.call(this, productData)
                     }
                 );
 
@@ -1307,6 +1395,35 @@ define([
             }
 
             return itemData;
+        },
+
+        /**
+         * Returns the tax of a product for the current shop location (config).
+         *
+         * @param {Object} productData
+         *
+         * @returns {Number}
+         */
+        retrieveTaxOfProductForCurrentLocation = function(productData) {
+            var shopLocation = Config.get('sulu_sales_core').shop_location;
+            var tax = 0;
+
+            if (!shopLocation.length
+                || !productData.taxClass
+                || !productData.taxClass
+                || !productData.taxClass.countryTaxes.length
+            ) {
+                return tax;
+            }
+
+            // Find tax by comparing current shop location with country taxes of product.
+            this.sandbox.util.foreach(productData.taxClass.countryTaxes, function(countryTax) {
+                if (countryTax.country && countryTax.country.code.toUpperCase() === shopLocation.toUpperCase()) {
+                    tax = countryTax
+                }
+            }.bind(this));
+
+            return tax;
         },
 
         /**

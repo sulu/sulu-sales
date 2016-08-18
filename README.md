@@ -2,21 +2,32 @@
 
 ## Configuration
 
-### Sulu-sales order bundle
+### SuluSalesCoreBundle
+
+```
+sulu_sales_core:
+    shop_location: '%shop_location%'
+    email_from: '%mailer_from%'
+    email_templates:
+        footer_txt: SuluSalesCoreBundle:Email:email.footer.extended.txt.twig
+        footer_html: SuluSalesCoreBundle:Email:email.footer.extended.html.twig
+```
+
+### SuluSalesOrderBundle
 
 The available configuration in `app/config.yml` is:
 ```
 sulu_sales_order:
     pdf_templates:
-        confirmation: PoolAlpinSalesOrderBundle:Pdf:pool-alpin.order.confirmation.html.twig
-        base: PoolAlpinBaseBundle:Pdf:pdf-base.html.twig
-        header: PoolAlpinBaseBundle:Pdf:pdf-base-header.html.twig
-        footer: PoolAlpinBaseBundle:Pdf:pdf-base-footer.html.twig
-        macros: PoolAlpinBaseBundle:Pdf:pdf-macros.html.twig
+        confirmation: SuluSalesOrderBundle:Pdf:pool-alpin.order.confirmation.html.twig
+        base: SuluSalesCoreBundle:Pdf:pdf-base.html.twig
+        header: SuluSalesCoreBundle:Pdf:pdf-base-header.html.twig
+        footer: SuluSalesCoreBundle:Pdf:pdf-base-footer.html.twig
+        macros: SuluSalesCoreBundle:Pdf:pdf-macros.html.twig
     pdf_response_type: '%sulu_sales_orderbundle_pdf_responsetype%'
     email_templates:
-        footer_txt: PoolAlpinBaseBundle:Email:email.footer.txt.twig
-        footer_html: PoolAlpinBaseBundle:Email:email.footer.html.twig
+        footer_txt: SuluSalesOrderBundle:Email:email.footer.txt.twig
+        footer_html: SuluSalesOrderBundle:Email:email.footer.html.twig
     shop_email_from: '%mailer_from%'
     shop_email_confirmation_to: '%mailer_from%'
     send_email_confirmation_to_customer: false
