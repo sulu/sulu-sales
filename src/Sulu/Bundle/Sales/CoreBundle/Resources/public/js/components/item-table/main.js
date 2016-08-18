@@ -812,7 +812,7 @@ define([
                         );
                     }
 
-                    // Update width of global price.
+                    // Update width of global price block to width of specific column in item-table.
                     $(selectors.globalPriceValue).outerWidth(
                         $(selectors.itemOverallPrice).outerWidth()
                     );
@@ -1408,6 +1408,7 @@ define([
             var shopLocation = Config.get('sulu_sales_core').shop_location;
             var tax = 0;
 
+            // Check if shop-location and country taxes are defined.
             if (!shopLocation.length
                 || !productData.taxClass
                 || !productData.taxClass
