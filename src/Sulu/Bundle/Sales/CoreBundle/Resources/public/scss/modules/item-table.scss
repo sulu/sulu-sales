@@ -68,9 +68,24 @@ $rowPadding : 0 20px 0 0;
     border: 1px solid #ccc;
 }
 
+.item-table-row + :not(.item-table-row.type-2) {
+    border-bottom: none;
+}
+
 .item-table-row {
     height: 50px;
     @include border-bottom(1px);
+
+    // Style for items of type ADDON.
+    &.type-2 {
+        color: #999;
+
+        .pointer {
+            cursor: default;
+        }
+    }
+
+
 
     // show row number (but not for first row)
     .row-number {
@@ -80,9 +95,6 @@ $rowPadding : 0 20px 0 0;
         }
     }
 
-    &:hover {
-//       background-color: rgba(white,0.5);
-    }
 
     &:last-child {
         @include border-bottom;
