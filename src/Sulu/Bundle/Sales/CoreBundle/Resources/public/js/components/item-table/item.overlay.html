@@ -1,3 +1,10 @@
+<%
+    var disabledAttribute = '';
+    if (isEditable == 'false' || isEditable == false) {
+        disabledAttribute =  'disabled';
+    }
+%>
+
 <form id="settings-overlay" class="settings-overlay husky-validate">
     <% if (!!isIndependent) { %>
     <div class="grid-row">
@@ -8,7 +15,8 @@
                        data-validation-required="true"
                        type="text"
                        data-mapper-property="name"
-                       value="<%= name %>">
+                       value="<%= name %>"
+                       <%= disabledAttribute %>>
             </div>
         </div>
     </div>
@@ -18,7 +26,10 @@
         <div class="grid-col-12">
             <div class="form-group-vertical">
                 <label><%= translate('address.delivery') %></label>
-                <select class="address form-element" data-type="select" data-mapper-property="deliveryAddress">
+                <select class="address form-element"
+                        data-type="select"
+                        data-mapper-property="deliveryAddress"
+                        <%= disabledAttribute %>>
                     <option value="-1"><%= defaultAddressLabel %></option>
                     <% _.each(settings.addresses, function(address) { %>
                     <option value="<%=address.id%>"
@@ -36,7 +47,11 @@
         <div class="grid-col-12">
             <div class="form-group-vertical">
                 <label><%= translate('salescore.item.description') %></label>
-                <textarea class="form-element" data-mapper-property="description"><%= description %></textarea>
+                <textarea class="form-element"
+                          data-mapper-property="description"
+                          <%= disabledAttribute %>>
+                    <%= description %>
+                </textarea>
             </div>
         </div>
     </div>
@@ -53,14 +68,18 @@
                        data-mapper-property="quantity"
                        data-validation-min="0.01"
                        data-validation-required="true"
-                       value="<%= numberFormat(quantity) %>"/>
+                       value="<%= numberFormat(quantity) %>"
+                       <%= disabledAttribute %> />
             </div>
         </div>
         <div class="grid-col-3">
             <div class="form-group-vertical">
                 <label><%= translate('salescore.item.unit') %></label>
                 <% if (!!isIndependent) { %>
-                    <select class="form-element" data-type="select" data-mapper-property="quantityUnit">
+                    <select class="form-element"
+                            data-type="select"
+                            data-mapper-property="quantityUnit"
+                            <%= disabledAttribute %>>
                         <% _.each(settings.units, function(unit) { %>
                             <option value="<%= unit.name %>"
                             <% if (unit.id === 1 || (!!quantityUnit && unit.name === quantityUnit)) {
@@ -86,7 +105,8 @@
                        data-mapper-property="price"
                        data-type="decimal"
                        data-validation-required="true"
-                       value="<%= numberFormat(price) %>"/>
+                       value="<%= numberFormat(price) %>"
+                       <%= disabledAttribute %> />
             </div>
         </div>
         <div class="grid-col-3">
@@ -95,8 +115,9 @@
                 <input class="form-element husky-validate"
                        type="checkbox"
                        id="is-recurring-price"
-                        <%= typeof isRecurringPrice !== 'undefined' && isRecurringPrice ? 'checked' : '' %>
-                       data-mapper-property="isRecurringPrice"/>
+                       <%= typeof isRecurringPrice !== 'undefined' && isRecurringPrice ? 'checked' : '' %>
+                       data-mapper-property="isRecurringPrice"
+                       <%= disabledAttribute %> />
             </div>
         </div>
         <% } %>
@@ -113,7 +134,7 @@
                      data-mapper-property="deliveryDate"
                      data-type="husky-input"
                      data-value="<%= deliveryDate %>"
-                     data-form="true"></div>
+                     data-aura-disabled="<%= !isEditable %>"></div>
             </div>
         </div>
         <% } %>
@@ -121,7 +142,11 @@
         <div class="grid-col-6">
             <div class="form-group-vertical">
                 <label><%= translate('salesorder.orders.costCentre') %></label>
-                <input class="form-element" type="text" data-mapper-property="costCentre" value="<%= costCentre %>"/>
+                <input class="form-element"
+                       type="text"
+                       data-mapper-property="costCentre"
+                       value="<%= costCentre %>"
+                       <%= disabledAttribute %> />
             </div>
         </div>
         <% } %>
@@ -139,7 +164,8 @@
                        data-mapper-property="discount"
                        data-validation-min="0.0"
                        data-validation-max="100"
-                       value="<%= numberFormat(discount) %>"/>
+                       value="<%= numberFormat(discount) %>"
+                       <%= disabledAttribute %> />
             </div>
         </div>
         <% } %>
@@ -148,10 +174,17 @@
             <div class="grid-col-6">
                 <div class="form-group-vertical">
                     <label><%= translate('salescore.item.tax-rate') %></label>
-                    <select class="form-element" data-type="select" data-mapper-property="tax">
-                        <% _.each(settings.taxClasses, function(taxClass) { %>
+                    <select class="form-element"
+                            data-type="select"
+                            data-mapper-property="tax"
+                            <%= disabledAttribute %>>
+                        <% var hasSelection = false;
+                           _.each(settings.taxClasses, function(taxClass) { %>
                             <option value="<%= taxClass.tax %>"
-                            <% if (taxClass.tax == tax) print(selected="selected") %>>
+                            <%  if (taxClass.tax == tax && !hasSelection) {
+                                    hasSelection = true;
+                                    print(selected="selected")
+                                }%>>
                                 <%= taxClass.name %> <%= taxClass.tax %> %
                             </option>
                         <% }); %>
@@ -163,8 +196,10 @@
                 <div class="form-group-vertical">
                     <label><%= translate('salescore.item.tax-rate') %></label>
                     <% var selectedTax = tax; %>
+                    <% var hasMatched = false; %>
                     <% _.each(settings.taxClasses, function(taxClass) { %>
-                        <% if (taxClass.tax == tax) { %>
+                        <% if (taxClass.tax == tax && !hasMatched) { %>
+                            <% hasMatched = true; %>
                             <% selectedTax = taxClass.name + ' (' + taxClass.tax +' %)'; %>
                         <% } %>
                     <% }); %>

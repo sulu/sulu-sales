@@ -132,7 +132,8 @@ define([
             itemOverallPrice: '.js-item-overall-price',
             globalPriceValue: '.js-global-price-value',
             itemOverallRecurringPrice: '.js-item-overall-recurring-price',
-            globalRecurringPriceValue: '.js-global-recurring-price-value'
+            globalRecurringPriceValue: '.js-global-recurring-price-value',
+            overlayDeliveryDateInput:'#delivery-date input'
         },
 
         translations = {
@@ -140,7 +141,7 @@ define([
         },
 
         /**
-         * default values of a item row
+         * Default values of a item row.
          */
         rowDefaults = {
             rowClass: null,
@@ -586,8 +587,7 @@ define([
         rowClicked = function(event) {
             // If input or link was clicked, do nothing.
             if (event.target.tagName.toUpperCase() === 'INPUT' ||
-                event.target.tagName.toUpperCase() === 'A' ||
-                !this.options.isEditable
+                event.target.tagName.toUpperCase() === 'A'
             ) {
                 return;
             }
@@ -1428,7 +1428,7 @@ define([
         },
 
         /**
-         * Initalizes the overlay with a specific template.
+         * Initializes the overlay with a specific template.
          *
          * @param {Object} data
          * @param {Object} settings
@@ -1460,7 +1460,8 @@ define([
                 description: '',
                 numberFormat: this.sandbox.numberFormat,
                 settings: settings,
-                translate: this.sandbox.translate
+                translate: this.sandbox.translate,
+                isEditable: this.options.isEditable
             }, data);
 
             if (!templateData.hasOwnProperty(this.options.addressKey) || !templateData[this.options.addressKey]) {
@@ -1495,6 +1496,13 @@ define([
 
                 formatSettingsOverlayNumberFields.call(this);
                 bindSettingsOverlayDomEvents.call(this);
+
+                // Check if delivery date field has to be disabled
+                this.sandbox.once('husky.input.settings-delivery-date.initialized', function() {
+                    if (!this.options.isEditable) {
+                        $overlay.find(selectors.overlayDeliveryDateInput).attr('disabled', true);
+                    }
+                }.bind(this));
             }.bind(this));
 
             this.sandbox.start([

@@ -2,6 +2,8 @@ CHANGELOG for Sulu Sales
 ========================
 * dev-develop
 
+    * BUGFIX      [CoreBundle]    Displaying first found tax class in item tables overlay.
+    * FEATURE     [CoreBundle]    Display overlay (on click) also when item-table is disabled.
     * FEATURE     [CoreBundle]    Added recurring prices to item-table.
     * BUGFIX      [OrderBundle]   Fixed error when sidebar order-info is not defined in widgets config.
     * BUGFIX      [OrderBundle]   Fixed update of items in an order.
