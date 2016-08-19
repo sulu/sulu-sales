@@ -715,10 +715,10 @@ define([
          * @param {String} rowId
          */
         updateOverallPrice = function(rowId) {
-            var $row = this.$find('#' + rowId),
-                item = this.items[rowId],
-                $priceCol = this.sandbox.dom.find('.item-overall-price span', $row),
-                $priceRecurringCol = this.sandbox.dom.find('.item-overall-recurring-price span', $row);
+            var $row = this.$find('#' + rowId);
+            var item = this.items[rowId];
+            var $priceCol = this.sandbox.dom.find('.item-overall-price span', $row);
+            var $priceRecurringCol = this.sandbox.dom.find('.item-overall-recurring-price span', $row);
 
             this.sandbox.dom.html($priceCol, getOverallPriceString.call(this, item));
             this.sandbox.dom.html($priceRecurringCol, getOverallPriceString.call(this, item, true));
@@ -1411,7 +1411,7 @@ define([
             // Check if shop-location and country taxes are defined.
             if (!shopLocation.length
                 || !productData.taxClass
-                || !productData.taxClass
+                || !productData.taxClass.countryTaxes
                 || !productData.taxClass.countryTaxes.length
             ) {
                 return tax;
