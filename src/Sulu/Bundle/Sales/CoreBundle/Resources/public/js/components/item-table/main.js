@@ -39,6 +39,8 @@
  * @param {Bool}       [options.enableDeliveryCost] Defines if the delivery cost field is enabled or not
  * @param {Function}   [options.deliveryCostChangedCallback] Function called when delivery cost changes
  * @param {Bool}       [options.calculatePrices] Defines if prices should be calculated
+ * @param {Bool}       [options.shouldDisplayCurrencies] Define if currencies should be displayed in
+ *                      item table (for each price).
  *
  * ==============================================
  * Necessary data for creating a settings overlay
@@ -88,6 +90,7 @@ define([
             rowCallback: null,
             settings: false,
             showItemCount: true,
+            shouldDisplayCurrencies: false,
             taxfree: false,
             urlFilter: {}
         },
@@ -338,7 +341,15 @@ define([
             this.sandbox.dom.on(this.$el, 'click', removeRowClicked.bind(this), '.remove-row');
 
             // Item row has been clicked
-            this.sandbox.dom.on(this.$el, 'click', rowClicked.bind(this), '.item-table-row');
+            this.sandbox.dom.on(
+                this.$el,
+                'click',
+                rowClicked.bind(this),
+                // '.item-table-row, ' +
+                '.item-table-row .item-name'
+                + ', .item-table-row .item-number'
+            );
+
             // Add new item.
             this.sandbox.dom.on(this.$el, 'click', rowCellClicked.bind(this), '.item-table-row td');
 
@@ -592,8 +603,9 @@ define([
                 return;
             }
 
-            var rowId = this.sandbox.dom.attr(event.currentTarget, 'id'),
-                dataId = this.sandbox.dom.data(event.currentTarget, 'id');
+            var parent = $(event.currentTarget).parent();
+            var rowId = this.sandbox.dom.attr(parent, 'id');
+
             // Call rowCallback.
             if (!!this.options.rowCallback) {
                 this.options.rowCallback.call(this, rowId, this.items[rowId]);
@@ -742,7 +754,10 @@ define([
                 var grossPrice = 0;
                 var recurringGrossPrice = 0;
                 var deliveryCost = 0;
-                var currency = this.currency;
+                var currency = ' ';
+                if (this.options.shouldDisplayCurrencies) {
+                    currency = this.currency;
+                }
 
                 // Add delivery cost if enabled.
                 if (this.options.enableDeliveryCost === true) {
@@ -778,27 +793,38 @@ define([
                         // First get all taxes.
                         var taxes = retrieveTaxClassesFromResults.call(this, [result, resultRecurring]);
 
-                        if (taxes) {
+                        if (taxes && taxes.length) {
+
+                            taxes = taxes.sort();
                             // Add row for every tax group.
                             this.sandbox.util.foreach(taxes, function(taxClass) {
-                                var recurringTax = 0;
-                                var singleTax = 0;
+                                var recurringTax = '';
+                                var singleTax = '';
 
                                 // Check if tax is defined for given tax-class.
                                 if (resultRecurring.taxes && resultRecurring.taxes.hasOwnProperty(taxClass)) {
                                     recurringTax = resultRecurring.taxes[taxClass];
+                                    recurringTax = PriceCalcUtil.getFormattedAmountAndUnit(
+                                        this.sandbox,
+                                        recurringTax,
+                                        currency
+                                    );
                                 }
                                 if (result.taxes && result.taxes.hasOwnProperty(taxClass)) {
                                     singleTax = result.taxes[taxClass];
+                                    singleTax = PriceCalcUtil.getFormattedAmountAndUnit(
+                                        this.sandbox,
+                                        singleTax,
+                                        currency
+                                    );
                                 }
-
 
                                 addPriceRow.call(
                                     this,
                                     $table,
                                     this.sandbox.translate('salescore.item.vat') + '. (' + taxClass + '%)',
-                                    PriceCalcUtil.getFormattedAmountAndUnit(this.sandbox, singleTax, currency),
-                                    PriceCalcUtil.getFormattedAmountAndUnit(this.sandbox, recurringTax, currency)
+                                    singleTax,
+                                    recurringTax
                                 );
                             }.bind(this));
                         }
@@ -880,10 +906,14 @@ define([
             // If requested price should be recurring and isn't return
             // 0 as result.
             if (item.isRecurringPrice !== isRecurring) {
-                price = this.sandbox.numberFormat(0, 'n');
+                return '';
             }
 
-            return price + ' ' + getCurrency.call(this, item);
+            if (this.options.shouldDisplayCurrencies) {
+                price += getCurrency.call(this, item);
+            }
+
+            return price ;
         },
 
         /**
