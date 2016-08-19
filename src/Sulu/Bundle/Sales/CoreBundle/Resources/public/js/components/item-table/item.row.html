@@ -71,6 +71,11 @@ disabled =  'disabled';
         </span>
     </td>
     <% } if (columns.indexOf('totalPrice') > -1) { %>
+    <td class="item-overall-recurring-price is-numeric grey-font" data-name="overallRecurringPrice">
+        <span class="overall-recurring-price">
+            <%= overallRecurringPrice %>
+        </span>
+    </td>
     <td class="item-overall-price is-numeric grey-font" data-name="overallPrice">
         <span class="overall-price">
             <%= overallPrice %>

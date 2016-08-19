@@ -109,82 +109,83 @@
 
 /* line 128, ../scss/modules/item-table.scss */
 .item-add {
+  width: 41.66%;
   margin-top: 20px;
 }
-/* line 129, ../scss/modules/item-table.scss */
+/* line 131, ../scss/modules/item-table.scss */
 .item-add a {
   color: black;
 }
-/* line 131, ../scss/modules/item-table.scss */
+/* line 133, ../scss/modules/item-table.scss */
 .item-add a:hover, .item-add a:visited {
   color: black;
 }
-/* line 138, ../scss/modules/item-table.scss */
+/* line 140, ../scss/modules/item-table.scss */
 .item-add .add-row {
   font-size: 10px;
 }
 
-/* line 143, ../scss/modules/item-table.scss */
+/* line 145, ../scss/modules/item-table.scss */
 .item-overall-price {
   text-align: right;
 }
 
-/* line 147, ../scss/modules/item-table.scss */
+/* line 149, ../scss/modules/item-table.scss */
 .item-price {
   min-width: 100px;
 }
 
-/* line 151, ../scss/modules/item-table.scss */
+/* line 153, ../scss/modules/item-table.scss */
 .disabled .delivery-cost {
   padding-right: 20px;
 }
 
-/* line 155, ../scss/modules/item-table.scss */
+/* line 157, ../scss/modules/item-table.scss */
 .delivery-cost {
   text-align: right;
   min-width: 100px;
   padding-right: 50px;
 }
-/* line 160, ../scss/modules/item-table.scss */
+/* line 162, ../scss/modules/item-table.scss */
 .delivery-cost label {
   display: inline;
   margin-right: 13px;
 }
-/* line 165, ../scss/modules/item-table.scss */
+/* line 167, ../scss/modules/item-table.scss */
 .delivery-cost input {
   text-align: right;
 }
-/* line 169, ../scss/modules/item-table.scss */
+/* line 171, ../scss/modules/item-table.scss */
 .delivery-cost .form-element {
   width: 72px;
 }
 
-/* line 175, ../scss/modules/item-table.scss */
+/* line 177, ../scss/modules/item-table.scss */
 .global-price-container {
   padding-top: 15px;
   position: relative;
   float: right;
 }
-/* line 180, ../scss/modules/item-table.scss */
+/* line 182, ../scss/modules/item-table.scss */
 .global-price-container .global-price-table {
   width: initial;
   float: right;
   margin-right: 31px;
   text-align: right;
 }
-/* line 186, ../scss/modules/item-table.scss */
+/* line 188, ../scss/modules/item-table.scss */
 .global-price-container .global-price-table td {
   padding: 0 20px 0 0;
 }
-/* line 190, ../scss/modules/item-table.scss */
+/* line 192, ../scss/modules/item-table.scss */
 .global-price-container .global-price-table tr {
   height: 30px;
 }
-/* line 192, ../scss/modules/item-table.scss */
+/* line 194, ../scss/modules/item-table.scss */
 .global-price-container .global-price-table tr:last-child {
   font-weight: bold;
 }
-/* line 194, ../scss/modules/item-table.scss */
+/* line 196, ../scss/modules/item-table.scss */
 .global-price-container .global-price-table tr:last-child:not(:first-child) {
   border-top: 1px solid #ccc;
 }

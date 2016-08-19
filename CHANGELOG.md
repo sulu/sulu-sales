@@ -1,5 +1,10 @@
 CHANGELOG for Sulu Sales
 ========================
+* dev-develop
+
+    * FEATURE     [CoreBundle]    Added recurring prices to item-table.
+    * BUGFIX      [OrderBundle]   Fixed error when sidebar order-info is not defined in widgets config.
+    * BUGFIX      [OrderBundle]   Fixed update of items in an order.
 
 * 0.4.4 (2016-08-12)
 
