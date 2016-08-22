@@ -1,10 +1,11 @@
 <% var disabled = '';
 if (rowClass === 'new' || isEditable == 'false' || isEditable == false) {
-disabled =  'disabled';
+    disabled =  'disabled';
 }
+var typeClass= 'type-' + type;
 %>
 
-<tr id="<%= rowId %>" class="item-table-row <%= rowClass %>" data-id="<%= id %>">
+<tr id="<%= rowId %>" class="item-table-row <%= rowClass %> <%= typeClass %>" data-id="<%= id %>">
     <% if (showItemCount != false) { %>
     <td class="row-number grey-font"></td>
     <% } if (columns.indexOf('name') > -1) { %>
@@ -36,13 +37,17 @@ disabled =  'disabled';
     <% } if (columns.indexOf('quantity') > -1) { %>
     <td class="item-quantity is-numeric" data-name="quantity">
         <span>
-            <input class="input-field form-element"
-                   data-validation-required="true"
-                   value="<%= quantity %>"
-                   data-type="decimal"
-                   data-validation-min="0.0"
-                   data-validation-max="999999999"
-            <%= disabled %>/>
+            <% if (doDisplayInputs) { %>
+                <input class="input-field form-element"
+                       data-type="decimal"
+                       data-validation-max="999999999"
+                       data-validation-min="0.0"
+                       data-validation-required="true"
+                       value="<%= quantity %>"
+                <%= disabled %>/>
+            <% } else {
+                print(quantity);
+             } %>
         </span>
     </td>
     <% } if (columns.indexOf('quantityUnit') > -1) { %>
@@ -52,22 +57,30 @@ disabled =  'disabled';
     <% } if (columns.indexOf('price') > -1) { %>
     <td class="item-price is-numeric" data-name="price">
         <span>
-            <input class="price input-field form-element"
-                   data-validation-required="true"
-                   value="<%= price %>"
-                   data-type="decimal"
-            <%= disabled %>/>
+            <% if (doDisplayInputs) { %>
+                <input class="price input-field form-element"
+                       data-type="decimal"
+                       data-validation-required="true"
+                       value="<%= price %>"
+                <%= disabled %>/>
+            <% } else {
+                print(quantity);
+             } %>
         </span>
     </td>
     <% } if (columns.indexOf('discount') > -1) { %>
     <td class="item-discount is-numeric" data-name="discount">
         <span>
-            <input class="discount input-field form-element"
-                   value="<%= discount %>"
-                   data-type="decimal"
-                   data-validation-max="100.0"
-                   data-validation-min="0.0"
-            <%= disabled %>/>
+            <% if (doDisplayInputs) { %>
+                <input class="discount input-field form-element"
+                       data-type="decimal"
+                       data-validation-max="100.0"
+                       data-validation-min="0.0"
+                       value="<%= discount %>"
+                <%= disabled %>/>
+            <% } else {
+                print(quantity);
+             } %>
         </span>
     </td>
     <% } if (columns.indexOf('totalPrice') > -1) { %>

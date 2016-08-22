@@ -611,10 +611,21 @@ define([
                 this.options.rowCallback.call(this, rowId, this.items[rowId]);
             }
 
+            // Check if item already correctly set.
+            if (!this.items.hasOwnProperty(rowId)) {
+                return;
+            }
+
+            var item = this.items[rowId];
+
+            // If item is of type addon, do not open overlay
+            if (item.type === TYPES.ADDON) {
+                return;
+            }
+
             // If settings are activated, show them.
             if (!!this.options.settings
                 && this.options.settings !== 'false'
-                && this.items.hasOwnProperty(rowId)
             ) {
                 initSettingsOverlay.call(this, this.items[rowId], this.options.settings, rowId);
             }
@@ -1205,13 +1216,19 @@ define([
             var rowTpl, $row,
                 data = this.sandbox.util.extend({}, rowDefaults, this.options.defaultData, itemData,
                     {
-                        isEditable: this.options.isEditable,
-                        displayToolbars: this.options.displayToolbars,
                         columns: this.options.columns,
+                        displayToolbars: this.options.displayToolbars,
+                        doDisplayInputs: true,
+                        isEditable: this.options.isEditable,
                         rowId: rowId ? rowId : constants.rowIdPrefix + this.rowCount,
                         rowNumber: this.rowCount,
                         showItemCount: this.options.showItemCount
                     });
+
+            // Don't show input fields when item is addon.
+            if (data.type === TYPES.ADDON) {
+                data.doDisplayInputs = false;
+            }
 
             // Handle address.
             if (!!data.address && typeof data.address === 'object') {
@@ -1406,7 +1423,8 @@ define([
                         product: productData,
                         quantityUnit: !!productData.orderUnit ? productData.orderUnit.name : '',
                         isGrossPrice: productData.areGrossPrices,
-                        tax: retrieveTaxOfProductForCurrentLocation.call(this, productData)
+                        tax: retrieveTaxOfProductForCurrentLocation.call(this, productData),
+                        type: TYPES.PRODUCT
                     }
                 );
 

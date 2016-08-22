@@ -1,4 +1,5 @@
-@import 'modules/item-table',
+@import 'variables',
+        'modules/item-table',
         'modules/sidebar',
         'modules/transition-overlay',
         'modules/editable-data-row';
@@ -6,7 +7,7 @@
 // *** GENERAL DEFINITIONS ***
 
 .not-clickable {
-    color: #999;
+    color: $color-not-clickable;
 }
 
 
