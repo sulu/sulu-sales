@@ -2,6 +2,10 @@
     border-bottom: $size solid #ccc;
 }
 
+@mixin border-top($size: 2px) {
+    border-top: $size solid #ccc;
+}
+
 $rowPadding : 0 20px 0 0;
 
 .item-table-container {
@@ -63,18 +67,18 @@ $rowPadding : 0 20px 0 0;
     }
 }
 
-// overwrite
+// Overwrite
 .husky-validate-error *:not(.husky-validate-error) > .husky-validate:not(label) {
     border: 1px solid #ccc;
 }
 
-.item-table-row + :not(.item-table-row.type-2) {
-    border-bottom: none;
+.item-table-row + .item-table-row.type-2 {
+    border-top: none;
 }
 
 .item-table-row {
     height: 50px;
-    @include border-bottom(1px);
+    @include border-top(1px);
 
     // Style for items of type ADDON.
     &.type-2 {
@@ -85,9 +89,7 @@ $rowPadding : 0 20px 0 0;
         }
     }
 
-
-
-    // show row number (but not for first row)
+    // Show row number (but not for first row)
     .row-number {
         &:before {
             counter-increment: rowcount;
@@ -100,7 +102,6 @@ $rowPadding : 0 20px 0 0;
         @include border-bottom;
     }
 
-
     &.new {
         .product-search {
             display: block;
@@ -111,7 +112,7 @@ $rowPadding : 0 20px 0 0;
         height: 100%;
     }
 
-    // column specifics
+    // Column specifics
     .item-name {
         min-width: 170px;
     }
@@ -121,7 +122,7 @@ $rowPadding : 0 20px 0 0;
         display: none;
     }
 
-    // add padding to each row element
+    // Add padding to each row element
     > * {
         padding: $rowPadding;
     }
@@ -185,7 +186,7 @@ $rowPadding : 0 20px 0 0;
     }
 }
 
-// global price
+// Global price
 .global-price-container {
     padding-top: 15px;
     position: relative;
@@ -206,7 +207,7 @@ $rowPadding : 0 20px 0 0;
             &:last-child {
                 font-weight: bold;
                 &:not(:first-child) {
-                    border-top: 1px solid #ccc;
+                    @include border-bottom;
                 }
             }
         }

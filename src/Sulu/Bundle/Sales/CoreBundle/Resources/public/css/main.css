@@ -1,37 +1,37 @@
-/* line 7, ../scss/modules/item-table.scss */
+/* line 11, ../scss/modules/item-table.scss */
 .item-table-container {
   counter-reset: rowcount;
 }
 
-/* line 11, ../scss/modules/item-table.scss */
+/* line 15, ../scss/modules/item-table.scss */
 .item-table-list-form {
   margin-top: 20px;
 }
-/* line 16, ../scss/modules/item-table.scss */
+/* line 20, ../scss/modules/item-table.scss */
 .item-table-list-form.hide-toolbars .add-row,
 .item-table-list-form.hide-toolbars .item-remove, .item-table-list-form.disabled .add-row,
 .item-table-list-form.disabled .item-remove {
   display: none;
 }
-/* line 21, ../scss/modules/item-table.scss */
+/* line 25, ../scss/modules/item-table.scss */
 .item-table-list-form.hide-toolbars .global-price-table, .item-table-list-form.disabled .global-price-table {
   margin-right: 0;
 }
-/* line 25, ../scss/modules/item-table.scss */
+/* line 29, ../scss/modules/item-table.scss */
 .item-table-list-form.hide-toolbars .husky-toolbar .toolbar-item, .item-table-list-form.disabled .husky-toolbar .toolbar-item {
   display: none;
 }
-/* line 31, ../scss/modules/item-table.scss */
+/* line 35, ../scss/modules/item-table.scss */
 .item-table-list-form.disabled input {
   background-color: transparent;
 }
 
-/* line 37, ../scss/modules/item-table.scss */
+/* line 41, ../scss/modules/item-table.scss */
 .item-table-list {
   list-style: none;
   padding: 0;
 }
-/* line 41, ../scss/modules/item-table.scss */
+/* line 45, ../scss/modules/item-table.scss */
 .item-table-list .header {
   border-bottom: 2px solid #ccc;
   border-color: #ccc;
@@ -39,168 +39,168 @@
   font-size: 14px;
   padding: 8px 10px;
 }
-/* line 49, ../scss/modules/item-table.scss */
+/* line 53, ../scss/modules/item-table.scss */
 .item-table-list .header tr {
   height: 30px;
 }
-/* line 52, ../scss/modules/item-table.scss */
+/* line 56, ../scss/modules/item-table.scss */
 .item-table-list .header tr > * {
   padding: 0 20px 0 0;
 }
-/* line 56, ../scss/modules/item-table.scss */
+/* line 60, ../scss/modules/item-table.scss */
 .item-table-list .header .input-field {
   display: none;
 }
-/* line 60, ../scss/modules/item-table.scss */
+/* line 64, ../scss/modules/item-table.scss */
 .item-table-list .is-numeric,
 .item-table-list .is-numeric input {
   text-align: right;
 }
 
-/* line 67, ../scss/modules/item-table.scss */
+/* line 71, ../scss/modules/item-table.scss */
 .husky-validate-error *:not(.husky-validate-error) > .husky-validate:not(label) {
   border: 1px solid #ccc;
 }
 
-/* line 71, ../scss/modules/item-table.scss */
+/* line 75, ../scss/modules/item-table.scss */
 .item-table-row + .item-table-row.type-2 {
-  border-bottom: none;
+  border-top: none;
 }
 
-/* line 75, ../scss/modules/item-table.scss */
+/* line 79, ../scss/modules/item-table.scss */
 .item-table-row {
   height: 50px;
-  border-bottom: 1px solid #ccc;
+  border-top: 1px solid #ccc;
 }
-/* line 80, ../scss/modules/item-table.scss */
+/* line 84, ../scss/modules/item-table.scss */
 .item-table-row.type-2 {
   color: #999;
 }
-/* line 83, ../scss/modules/item-table.scss */
+/* line 87, ../scss/modules/item-table.scss */
 .item-table-row.type-2 .pointer {
   cursor: default;
 }
-/* line 92, ../scss/modules/item-table.scss */
+/* line 94, ../scss/modules/item-table.scss */
 .item-table-row .row-number:before {
   counter-increment: rowcount;
   content: counter(rowcount);
 }
-/* line 99, ../scss/modules/item-table.scss */
+/* line 101, ../scss/modules/item-table.scss */
 .item-table-row:last-child {
   border-bottom: 2px solid #ccc;
 }
-/* line 105, ../scss/modules/item-table.scss */
+/* line 106, ../scss/modules/item-table.scss */
 .item-table-row.new .product-search {
   display: block;
 }
-/* line 110, ../scss/modules/item-table.scss */
+/* line 111, ../scss/modules/item-table.scss */
 .item-table-row .span {
   height: 100%;
 }
-/* line 115, ../scss/modules/item-table.scss */
+/* line 116, ../scss/modules/item-table.scss */
 .item-table-row .item-name {
   min-width: 170px;
 }
-/* line 119, ../scss/modules/item-table.scss */
+/* line 120, ../scss/modules/item-table.scss */
 .item-table-row .product-search {
   margin: 0;
   display: none;
 }
-/* line 125, ../scss/modules/item-table.scss */
+/* line 126, ../scss/modules/item-table.scss */
 .item-table-row > * {
   padding: 0 20px 0 0;
 }
-/* line 129, ../scss/modules/item-table.scss */
+/* line 130, ../scss/modules/item-table.scss */
 .item-table-row > *:first-child {
   padding-left: 20px;
 }
 
-/* line 135, ../scss/modules/item-table.scss */
+/* line 136, ../scss/modules/item-table.scss */
 .item-remove a, .item-remove a:visited, .item-remove a:active {
   color: black;
 }
 
-/* line 140, ../scss/modules/item-table.scss */
+/* line 141, ../scss/modules/item-table.scss */
 .item-add {
   width: 41.66%;
   margin-top: 20px;
 }
-/* line 143, ../scss/modules/item-table.scss */
+/* line 144, ../scss/modules/item-table.scss */
 .item-add a {
   color: black;
 }
-/* line 145, ../scss/modules/item-table.scss */
+/* line 146, ../scss/modules/item-table.scss */
 .item-add a:hover, .item-add a:visited {
   color: black;
 }
-/* line 152, ../scss/modules/item-table.scss */
+/* line 153, ../scss/modules/item-table.scss */
 .item-add .add-row {
   font-size: 10px;
 }
 
-/* line 157, ../scss/modules/item-table.scss */
+/* line 158, ../scss/modules/item-table.scss */
 .item-overall-price {
   text-align: right;
 }
 
-/* line 161, ../scss/modules/item-table.scss */
+/* line 162, ../scss/modules/item-table.scss */
 .item-price {
   min-width: 100px;
 }
 
-/* line 165, ../scss/modules/item-table.scss */
+/* line 166, ../scss/modules/item-table.scss */
 .disabled .delivery-cost {
   padding-right: 20px;
 }
 
-/* line 169, ../scss/modules/item-table.scss */
+/* line 170, ../scss/modules/item-table.scss */
 .delivery-cost {
   text-align: right;
   min-width: 100px;
   padding-right: 50px;
 }
-/* line 174, ../scss/modules/item-table.scss */
+/* line 175, ../scss/modules/item-table.scss */
 .delivery-cost label {
   display: inline;
   margin-right: 13px;
 }
-/* line 179, ../scss/modules/item-table.scss */
+/* line 180, ../scss/modules/item-table.scss */
 .delivery-cost input {
   text-align: right;
 }
-/* line 183, ../scss/modules/item-table.scss */
+/* line 184, ../scss/modules/item-table.scss */
 .delivery-cost .form-element {
   width: 72px;
 }
 
-/* line 189, ../scss/modules/item-table.scss */
+/* line 190, ../scss/modules/item-table.scss */
 .global-price-container {
   padding-top: 15px;
   position: relative;
   float: right;
 }
-/* line 194, ../scss/modules/item-table.scss */
+/* line 195, ../scss/modules/item-table.scss */
 .global-price-container .global-price-table {
   width: initial;
   float: right;
   margin-right: 31px;
   text-align: right;
 }
-/* line 200, ../scss/modules/item-table.scss */
+/* line 201, ../scss/modules/item-table.scss */
 .global-price-container .global-price-table td {
   padding: 0 20px 0 0;
 }
-/* line 204, ../scss/modules/item-table.scss */
+/* line 205, ../scss/modules/item-table.scss */
 .global-price-container .global-price-table tr {
   height: 30px;
 }
-/* line 206, ../scss/modules/item-table.scss */
+/* line 207, ../scss/modules/item-table.scss */
 .global-price-container .global-price-table tr:last-child {
   font-weight: bold;
 }
-/* line 208, ../scss/modules/item-table.scss */
+/* line 209, ../scss/modules/item-table.scss */
 .global-price-container .global-price-table tr:last-child:not(:first-child) {
-  border-top: 1px solid #ccc;
+  border-bottom: 2px solid #ccc;
 }
 
 /* line 1, ../scss/modules/sidebar.scss */
