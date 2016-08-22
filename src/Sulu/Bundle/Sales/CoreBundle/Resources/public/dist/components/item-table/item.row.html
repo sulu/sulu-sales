@@ -39,11 +39,11 @@ var typeClass= 'type-' + type;
         <span>
             <% if (doDisplayInputs) { %>
                 <input class="input-field form-element"
+                       data-type="decimal"
+                       data-validation-max="999999999"
+                       data-validation-min="0.0"
                        data-validation-required="true"
                        value="<%= quantity %>"
-                       data-type="decimal"
-                       data-validation-min="0.0"
-                       data-validation-max="999999999"
                 <%= disabled %>/>
             <% } else {
                 print(quantity);
@@ -59,9 +59,9 @@ var typeClass= 'type-' + type;
         <span>
             <% if (doDisplayInputs) { %>
                 <input class="price input-field form-element"
+                       data-type="decimal"
                        data-validation-required="true"
                        value="<%= price %>"
-                       data-type="decimal"
                 <%= disabled %>/>
             <% } else {
                 print(quantity);
@@ -73,10 +73,10 @@ var typeClass= 'type-' + type;
         <span>
             <% if (doDisplayInputs) { %>
                 <input class="discount input-field form-element"
-                       value="<%= discount %>"
                        data-type="decimal"
                        data-validation-max="100.0"
                        data-validation-min="0.0"
+                       value="<%= discount %>"
                 <%= disabled %>/>
             <% } else {
                 print(quantity);

@@ -1,9 +1,9 @@
 @mixin border-bottom($size: 2px) {
-    border-bottom: $size solid #ccc;
+    border-bottom: $size solid $gray-light;
 }
 
 @mixin border-top($size: 2px) {
-    border-top: $size solid #ccc;
+    border-top: $size solid $gray-light;
 }
 
 $rowPadding : 0 20px 0 0;
@@ -45,7 +45,7 @@ $rowPadding : 0 20px 0 0;
     .header {
         @include border-bottom;
 
-        border-color: #ccc;
+        border-color: $gray-light;
         vertical-align: top;
         font-size: 14px;
         padding: 8px 10px;
@@ -69,7 +69,7 @@ $rowPadding : 0 20px 0 0;
 
 // Overwrite
 .husky-validate-error *:not(.husky-validate-error) > .husky-validate:not(label) {
-    border: 1px solid #ccc;
+    border: 1px solid $gray-light;
 }
 
 .item-table-row + .item-table-row.type-2 {
@@ -82,7 +82,7 @@ $rowPadding : 0 20px 0 0;
 
     // Style for items of type ADDON.
     &.type-2 {
-        color: #999;
+        color: $color-not-clickable;
 
         .pointer {
             cursor: default;

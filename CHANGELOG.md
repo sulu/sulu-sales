@@ -1,5 +1,6 @@
 CHANGELOG for Sulu Sales
 ========================
+
 * dev-develop
 
     * FEATURE     [CoreBundle]    Changed visual appearance of addons in item-table.
