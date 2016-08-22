@@ -1,7 +1,7 @@
 CHANGELOG for Sulu Sales
 ========================
 
-* dev-develop
+* 0.5.0 (2016-08-22)
 
     * FEATURE     [CoreBundle]    Changed visual appearance of addons in item-table.
     * FEATURE     [CoreBundle]    Added option to not display currency in item-table.
