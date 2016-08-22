@@ -1,6 +1,10 @@
 CHANGELOG for Sulu Sales
 ========================
 
+* dev-develop
+    * FEATURE     [OrderBundle]   Adopted UI for customer types
+    * FEATURE     [CoreBundle]    Added model CustomerType and CustomerTypeManager
+
 * 0.4.4 (2016-08-12)
 
     * FEATURE     [CoreBundle]    Added event that is triggered when order status changes.
