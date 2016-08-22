@@ -10,6 +10,7 @@
 
 namespace Sulu\Bundle\Sales\OrderBundle\Cart;
 
+use DateTime;
 use Doctrine\Common\Persistence\ObjectManager;
 use Sulu\Component\Contact\Model\ContactInterface;
 use Sulu\Component\Rest\Exception\EntityNotFoundException;
@@ -182,7 +183,7 @@ class CartManager extends BaseSalesManager
             $cart = $cartsArray[0];
         } else {
             // user has no cart - return empty one
-            $cart = $this->createEmptyCart($user, $persistEmptyCart);
+            $cart = $this->createEmptyCart($user, $persistEmptyCart, $locale);
         }
 
         // check if all products are still available
@@ -302,7 +303,7 @@ class CartManager extends BaseSalesManager
             $this->checkIfCartIsValid($user, $cart, $locale);
 
             // set order-date to current date
-            $cart->setOrderDate(new \DateTime());
+            $cart->setOrderDate(new DateTime());
 
             // change status of order to confirmed
             $this->orderManager->convertStatus($cart, OrderStatus::STATUS_CONFIRMED);
@@ -630,24 +631,24 @@ class CartManager extends BaseSalesManager
     }
 
     /**
-     * Function creates an empty cart
-     * this means an order with status 'in_cart' is created and all necessary data is set
+     * Function creates an empty cart.
+     * This means an order with status 'in_cart' is created and all necessary data is set.
      *
      * @param UserInterface $user
-     * @param bool $persist
+     * @param bool $doPersist
+     * @param string $locale
      * @param null|string $currencyCode
      *
      * @return Order
-     * @throws \Sulu\Component\Rest\Exception\EntityNotFoundException
      */
-    protected function createEmptyCart($user, $persist, $currencyCode = null)
+    protected function createEmptyCart(UserInterface $user, $doPersist, $locale, $currencyCode = null)
     {
         $cart = new Order();
         $cart->setCreator($user);
         $cart->setChanger($user);
-        $cart->setCreated(new \DateTime());
-        $cart->setChanged(new \DateTime());
-        $cart->setOrderDate(new \DateTime());
+        $cart->setCreated(new DateTime());
+        $cart->setChanged(new DateTime());
+        $cart->setOrderDate(new DateTime());
 
         // set currency - if not defined use default
         $currencyCode = $currencyCode ?: $this->defaultCurrency;
@@ -703,9 +704,11 @@ class CartManager extends BaseSalesManager
         }
         $cart->setCustomerName($name);
 
-        $this->orderManager->convertStatus($cart, OrderStatus::STATUS_IN_CART, false, $persist);
+        $apiCart = $this->orderFactory->createApiEntity($cart, $locale);
 
-        if ($persist) {
+        $this->orderManager->convertStatus($apiCart, OrderStatus::STATUS_IN_CART, false, $doPersist);
+
+        if ($doPersist) {
             $this->em->persist($cart);
             if ($invoiceOrderAddress) {
                 $this->em->persist($invoiceOrderAddress);

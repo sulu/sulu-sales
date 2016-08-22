@@ -1,6 +1,10 @@
 CHANGELOG for Sulu Sales
 ========================
 
+* 0.5.1 (2016-08-22)
+
+    * BUGFIX      [CoreBundle]    Fixed creation of empty cart.
+
 * 0.5.0 (2016-08-22)
 
     * FEATURE     [CoreBundle]    Changed visual appearance of addons in item-table.
