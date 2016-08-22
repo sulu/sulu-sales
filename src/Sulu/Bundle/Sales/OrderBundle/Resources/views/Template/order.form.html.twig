@@ -9,31 +9,28 @@
 <div class="grid-row">
 
     <div class="grid-row small changeListener">
-        <div class="grid-col-6">
+        <div class="grid-col-12">
             <div class="form-group">
                 <label for="account-input" class="required"><%=translate('salesorder.orders.account')%></label>
+                <div>
+                    <div id="customer-type-select"
+                         class="grid-col-3"
+                         data-aura-default-label="<%=translate('dropdown.please-choose')%>"
+                         data-aura-component="select@husky"
+                         data-aura-data='{{ customerTypes|json_encode()|raw }}'
+                         data-aura-default-value="[{{ customerTypeDefault.id }}]"
+                         data-aura-value-name="name"
+                         data-aura-multiple-select="false"
+                         data-aura-instance-name="customer-type-select"
+                         data-aura-disabled="<%= !isEditable %>"
+                         data-type="husky-select"
+                         data-mapper-property="customerType"
+                         data-validation-required="true"
+                         data-form="true">
+                    </div>
 
-                <div id="account-input" data-validation-required="true"></div>
-            </div>
-        </div>
-        <div class="grid-col-6">
-            <div class="form-group">
-                <label for="order-date-input" class="required"><%=translate('salescore.orderDate')%></label>
-
-                <div id="order-date"
-                     data-form="true"
-                     data-type="husky-input"
-                     data-aura-component="input@husky"
-                     data-aura-disabled="<%= !isEditable %>"
-                        {#data-aura-datepicker-options='{"startDate":"<%= new Date() %>"}'#}
-                     data-validation-required="true"
-                     data-aura-skin="date"
-                     data-aura-instance-name="order-date"
-                     data-aura-input-id="order-date-input"
-                     data-aura-input-name="order-date"
-                     data-aura-input-name="order-date"
-                     data-value="<%= parseDate(new Date()) %>"
-                     data-mapper-property="orderDate">
+                    <div id="customer-autocomplete-container" class="grid-col-9">
+                    </div>
                 </div>
             </div>
         </div>
@@ -99,6 +96,37 @@
         </div>
     </div>
 
+    <div class="grid-row small changeListener">
+        <div class="grid-col-6">
+            <div class="form-group">
+                <label for="order-date-input" class="required"><%=translate('salescore.orderDate')%></label>
+
+                <div id="order-date"
+                     data-form="true"
+                     data-type="husky-input"
+                     data-aura-component="input@husky"
+                     data-aura-disabled="<%= !isEditable %>"
+                        {#data-aura-datepicker-options='{"startDate":"<%= new Date() %>"}'#}
+                     data-validation-required="true"
+                     data-aura-skin="date"
+                     data-aura-instance-name="order-date"
+                     data-aura-input-id="order-date-input"
+                     data-aura-input-name="order-date"
+                     data-aura-input-name="order-date"
+                     data-value="<%= parseDate(new Date()) %>"
+                     data-mapper-property="orderDate">
+                </div>
+            </div>
+        </div>
+        <div class="grid-col-6">
+            <div class="form-group">
+                <label for="cost-centre"><%=translate('salesorder.orders.costCentre')%></label>
+                <input id="cost-centre" class="form-element" type="text" data-mapper-property="costCentre"
+                <%= disabled %>/>
+            </div>
+        </div>
+    </div>
+
     <div class="grid-row changeListener">
         <div class="grid-col-6">
             <div class="form-group">
@@ -110,14 +138,6 @@
                         <span class="icon"></span>
                     </div>
                 </div>
-            </div>
-        </div>
-
-        <div class="grid-col-6">
-            <div class="form-group">
-                <label for="cost-centre"><%=translate('salesorder.orders.costCentre')%></label>
-                <input id="cost-centre" class="form-element" type="text" data-mapper-property="costCentre"
-                <%= disabled %>/>
             </div>
         </div>
     </div>
@@ -286,6 +306,7 @@
             App.emit('sulu.salesorder.set-options-data', 'currencies', {{ currencies|json_encode()|raw }});
             App.emit('sulu.salesorder.set-options-data', 'taxClasses', {{ taxClasses|json_encode()|raw }});
             App.emit('sulu.salesorder.set-options-data', 'units', {{ units|json_encode()|raw }});
+            App.emit('sulu.salesorder.set-options-data', 'customerTypes', {{ customerTypes|json_encode()|raw }});
             App.emit('sulu.salesorder.set-customer-id', {{ customerId }});
         })();
     </script>

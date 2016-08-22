@@ -30,6 +30,7 @@
         <parameter key="sulu_sales_core.transition_resolver.class">Sulu\Bundle\Sales\CoreBundle\Transition\TransitionResolver</parameter>
         <parameter key="sulu_sales_core.sales_config_parameter_service.class">Sulu\Bundle\Sales\CoreBundle\Service\SalesConfigParameterService</parameter>
         <parameter key="sulu_sales_core.jsconfig.class">Sulu\Bundle\AdminBundle\Admin\JsConfig</parameter>
+        <parameter key="sulu_sales_core.customer_types_manager.class">Sulu\Bundle\Sales\CoreBundle\Manager\CustomerTypeManager</parameter>
 
         <!--EVENTS-->
         <parameter key="sulu_sales_core.events.create_transition" type="constant">Sulu\Bundle\Sales\CoreBundle\Transition\TransitionEvents::CREATE_TRANSITION</parameter>
@@ -90,6 +91,9 @@
             <argument type="service" id="sulu_sales_core.transition_manager" />
             <argument type="service" id="sulu_sales_core.dependency_manager" />
             <argument type="service" id="doctrine.orm.entity_manager" />
+        </service>
+
+        <service id="sulu_sales_core.customer_types_manager" class="%sulu_sales_core.customer_types_manager.class%">
         </service>
 
         <!--REPOSITORIES-->

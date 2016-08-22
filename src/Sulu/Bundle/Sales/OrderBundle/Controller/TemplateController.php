@@ -2,6 +2,7 @@
 
 namespace Sulu\Bundle\Sales\OrderBundle\Controller;
 
+use Sulu\Bundle\Sales\CoreBundle\Manager\CustomerTypeManager;
 use Symfony\Component\HttpFoundation\Response;
 use Sulu\Component\Rest\RestController;
 use Sulu\Bundle\ContactExtensionBundle\Entity\Account;
@@ -49,6 +50,8 @@ class TemplateController extends RestController
                 'customerId' => Account::TYPE_CUSTOMER,
                 'taxClasses' => $this->getTaxClasses($locale),
                 'units' => $this->getProductUnits($locale),
+                'customerTypes' => $this->getCustomerTypes($locale),
+                'customerTypeDefault' => $this->getCustomerTypeDefault($locale)
             )
         );
     }
@@ -114,5 +117,58 @@ class TemplateController extends RestController
             );
         }
         return $statusArray;
+    }
+
+    /**
+     * Returns all customer types.
+     *
+     * @param string $locale
+     *
+     * @return array
+     */
+    public function getCustomerTypes($locale)
+    {
+        $translator = $this->get('translator');
+        $translator->setLocale($locale);
+
+        $customerTypes = $this->getCustomerTypeManager()->getAll(
+            $translator
+        );
+
+        $result = [];
+
+        foreach ($customerTypes as $customerType) {
+            $result[] = [
+                'id' => $customerType->getId(),
+                'name' => $customerType->getName(),
+            ];
+        }
+
+        return $result;
+    }
+
+    /**
+     * Returns all customer types.
+     *
+     * @param string $locale
+     *
+     * @return array
+     */
+    public function getCustomerTypeDefault($locale)
+    {
+        $translator = $this->get('translator');
+        $translator->setLocale($locale);
+
+        return $this->getCustomerTypeManager()->getTypeOrganization(
+            $translator
+        );
+    }
+
+    /**
+     * @return CustomerTypeManager
+     */
+    private function getCustomerTypeManager()
+    {
+        return $this->get('sulu_sales_core.customer_types_manager');
     }
 }
