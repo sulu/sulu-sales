@@ -1,6 +1,10 @@
 CHANGELOG for Sulu Sales
 ========================
 
+* dev-develop 
+
+    * BUGFIX      [CoreBundle]    Style fixes in global total price of item-table.
+    
 * 0.5.1 (2016-08-22)
 
     * BUGFIX      [CoreBundle]    Fixed creation of empty cart.
