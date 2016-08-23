@@ -14,7 +14,7 @@ use Symfony\Component\Translation\TranslatorInterface;
 
 class CustomerTypeManager
 {
-    const TRANS_DOMAIN = 'backend';
+    const TRANSLATION_DOMAIN = 'backend';
 
     const TYPE_ORGANIZATION_ID = 1;
     const TYPE_PRIVATE_PERSON_ID = 2;
@@ -46,7 +46,7 @@ class CustomerTypeManager
             $this->retrieveTranslator($locale)->trans(
                 'salescore.customer-type.organization',
                 [],
-                self::TRANS_DOMAIN
+                self::TRANSLATION_DOMAIN
             )
         );
 
@@ -66,7 +66,7 @@ class CustomerTypeManager
             $this->retrieveTranslator($locale)->trans(
                 'salescore.customer-type.private-person',
                 [],
-                self::TRANS_DOMAIN
+                self::TRANSLATION_DOMAIN
             )
         );
 
@@ -81,8 +81,8 @@ class CustomerTypeManager
     public function retrieveAll($locale)
     {
         return [
-            self::retrieveTypeOrganization($locale),
-            self::retrieveTypePrivatePerson($locale)
+            $this->retrieveTypeOrganization($locale),
+            $this->retrieveTypePrivatePerson($locale)
         ];
     }
 
@@ -96,7 +96,7 @@ class CustomerTypeManager
         $result = [];
 
         /** @var CustomerType $customerType */
-        foreach (self::retrieveAll($locale) as $customerType) {
+        foreach ($this->retrieveAll($locale) as $customerType) {
             $result[] = [
                 'id' => $customerType->getId(),
                 'name' => $customerType->getName(),
@@ -113,7 +113,7 @@ class CustomerTypeManager
      */
     public function retrieveDefault($locale)
     {
-        return self::retrieveTypeOrganization($locale);
+        return $this->retrieveTypeOrganization($locale);
     }
 
     /**
@@ -124,6 +124,7 @@ class CustomerTypeManager
     private function retrieveTranslator($locale)
     {
         $this->translator->setLocale($locale);
+
         return $this->translator;
     }
 }

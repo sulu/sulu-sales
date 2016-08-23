@@ -409,6 +409,12 @@ define([
             this.$find(selectors.billingAddress).removeClass('disabled-button');
         },
 
+        /**
+         * Init delivery and invoice address component.
+         *
+         * @param {Object} orderData
+         * @param {Array} addressData
+         */
         initAddressComponents = function(orderData, addressData)
         {
             // When an address is already selected, the selected address should be used
