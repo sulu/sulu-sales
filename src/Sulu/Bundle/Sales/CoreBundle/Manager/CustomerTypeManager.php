@@ -14,38 +14,39 @@ use Symfony\Component\Translation\TranslatorInterface;
 
 class CustomerTypeManager
 {
-    /**
-     * @return CustomerType
-     */
-    public static function getTypeOrganization(TranslatorInterface $translator)
-    {
-        $customerType = new CustomerType();
-        $customerType->setId(1);
-        $customerType->setName(
-            $translator->trans(
-                'salescore.customer-type.organization',
-                [],
-                'backend'
-            )
-        );
+    const TRANS_DOMAIN = 'backend';
 
-        return $customerType;
-    }
+    const TYPE_ORGANIZATION_ID = 1;
+    const TYPE_PRIVATE_PERSON_ID = 2;
+
+    /**
+     * @var TranslatorInterface
+     */
+    private $translator;
 
     /**
      * @param TranslatorInterface $translator
+     */
+    public function __construct(
+        TranslatorInterface $translator
+    ) {
+        $this->translator = $translator;
+    }
+
+    /**
+     * @param string $locale
      *
      * @return CustomerType
      */
-    public static function getTypePrivatePerson(TranslatorInterface $translator)
+    public function retrieveTypeOrganization($locale)
     {
         $customerType = new CustomerType();
-        $customerType->setId(2);
+        $customerType->setId(self::TYPE_ORGANIZATION_ID);
         $customerType->setName(
-            $translator->trans(
-                'salescore.customer-type.private-person',
+            $this->retrieveTranslator($locale)->trans(
+                'salescore.customer-type.organization',
                 [],
-                'backend'
+                self::TRANS_DOMAIN
             )
         );
 
@@ -53,14 +54,76 @@ class CustomerTypeManager
     }
 
     /**
-     * @return CustomerType[]
+     * @param string $locale
+     *
+     * @return CustomerType
      */
-    public static function getAll(TranslatorInterface $translator)
+    public function retrieveTypePrivatePerson($locale)
     {
-        $customerType = [];
-        $customerType[] = CustomerTypeManager::getTypeOrganization($translator);
-        $customerType[] = CustomerTypeManager::getTypePrivatePerson($translator);
+        $customerType = new CustomerType();
+        $customerType->setId(self::TYPE_PRIVATE_PERSON_ID);
+        $customerType->setName(
+            $this->retrieveTranslator($locale)->trans(
+                'salescore.customer-type.private-person',
+                [],
+                self::TRANS_DOMAIN
+            )
+        );
 
         return $customerType;
+    }
+
+    /**
+     * @param string $locale
+     *
+     * @return CustomerType[]
+     */
+    public function retrieveAll($locale)
+    {
+        return [
+            self::retrieveTypeOrganization($locale),
+            self::retrieveTypePrivatePerson($locale)
+        ];
+    }
+
+    /**
+     * @param string $locale
+     *
+     * @return array
+     */
+    public function retrieveAllAsArray($locale)
+    {
+        $result = [];
+
+        /** @var CustomerType $customerType */
+        foreach (self::retrieveAll($locale) as $customerType) {
+            $result[] = [
+                'id' => $customerType->getId(),
+                'name' => $customerType->getName(),
+            ];
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param string $locale
+     *
+     * @return CustomerType
+     */
+    public function retrieveDefault($locale)
+    {
+        return self::retrieveTypeOrganization($locale);
+    }
+
+    /**
+     * @param string $locale
+     *
+     * @return TranslatorInterface
+     */
+    private function retrieveTranslator($locale)
+    {
+        $this->translator->setLocale($locale);
+        return $this->translator;
     }
 }

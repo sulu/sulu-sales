@@ -2,12 +2,12 @@
 
 namespace Sulu\Bundle\Sales\OrderBundle\Controller;
 
-use Sulu\Bundle\Sales\CoreBundle\Manager\CustomerTypeManager;
-use Symfony\Component\HttpFoundation\Response;
-use Sulu\Component\Rest\RestController;
 use Sulu\Bundle\ContactExtensionBundle\Entity\Account;
+use Sulu\Bundle\Sales\CoreBundle\Manager\CustomerTypeManager;
 use Sulu\Bundle\Sales\CoreBundle\Traits\ItemTableTrait;
 use Sulu\Bundle\Sales\OrderBundle\Api\OrderStatus;
+use Sulu\Component\Rest\RestController;
+use Symfony\Component\HttpFoundation\Response;
 
 class TemplateController extends RestController
 {
@@ -40,7 +40,7 @@ class TemplateController extends RestController
 
         return $this->render(
             'SuluSalesOrderBundle:Template:order.form.html.twig',
-            array(
+            [
                 'systemUser' => $this->getSystemUserArray(),
                 'systemUserId' => $this->getUser()->getContact()->getId(),
                 'termsOfPayment' => $this->getTermsArray(self::$termsOfPaymentEntityName),
@@ -50,9 +50,9 @@ class TemplateController extends RestController
                 'customerId' => Account::TYPE_CUSTOMER,
                 'taxClasses' => $this->getTaxClasses($locale),
                 'units' => $this->getProductUnits($locale),
-                'customerTypes' => $this->getCustomerTypes($locale),
-                'customerTypeDefault' => $this->getCustomerTypeDefault($locale)
-            )
+                'customerTypes' => $this->getCustomerTypesManager()->retrieveAllAsArray($locale),
+                'customerTypeDefault' => $this->getCustomerTypesManager()->retrieveDefault($locale)
+            ]
         );
     }
 
@@ -69,11 +69,12 @@ class TemplateController extends RestController
 
         foreach ($users as $user) {
             $contact = $user->getContact();
-            $contacts[] = array(
+            $contacts[] = [
                 'id' => $contact->getId(),
                 'fullName' => $contact->getFullName()
-            );
+            ];
         }
+
         return $contacts;
     }
 
@@ -90,11 +91,12 @@ class TemplateController extends RestController
         $termsArray = [];
 
         foreach ($terms as $term) {
-            $termsArray[] = array(
+            $termsArray[] = [
                 'id' => $term->getId(),
                 'name' => $term->getTerms()
-            );
+            ];
         }
+
         return $termsArray;
     }
 
@@ -111,63 +113,19 @@ class TemplateController extends RestController
 
         foreach ($statuses as $statusEntity) {
             $status = new OrderStatus($statusEntity, $locale);
-            $statusArray[] = array(
+            $statusArray[] = [
                 'id' => $status->getId(),
                 'status' => $status->getStatus()
-            );
-        }
-        return $statusArray;
-    }
-
-    /**
-     * Returns all customer types.
-     *
-     * @param string $locale
-     *
-     * @return array
-     */
-    public function getCustomerTypes($locale)
-    {
-        $translator = $this->get('translator');
-        $translator->setLocale($locale);
-
-        $customerTypes = $this->getCustomerTypeManager()->getAll(
-            $translator
-        );
-
-        $result = [];
-
-        foreach ($customerTypes as $customerType) {
-            $result[] = [
-                'id' => $customerType->getId(),
-                'name' => $customerType->getName(),
             ];
         }
 
-        return $result;
-    }
-
-    /**
-     * Returns all customer types.
-     *
-     * @param string $locale
-     *
-     * @return array
-     */
-    public function getCustomerTypeDefault($locale)
-    {
-        $translator = $this->get('translator');
-        $translator->setLocale($locale);
-
-        return $this->getCustomerTypeManager()->getTypeOrganization(
-            $translator
-        );
+        return $statusArray;
     }
 
     /**
      * @return CustomerTypeManager
      */
-    private function getCustomerTypeManager()
+    private function getCustomerTypesManager()
     {
         return $this->get('sulu_sales_core.customer_types_manager');
     }

@@ -94,6 +94,7 @@
         </service>
 
         <service id="sulu_sales_core.customer_types_manager" class="%sulu_sales_core.customer_types_manager.class%">
+            <argument type="service" id="translator" />
         </service>
 
         <!--REPOSITORIES-->

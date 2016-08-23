@@ -3,310 +3,292 @@
 <link rel="stylesheet" type="text/css" href="/bundles/sulusalesorder/css/main.min.css"/>
 <link rel="stylesheet" type="text/css" href="/bundles/sulusalescore/css/main.min.css"/>
 <div class="order-form-container <%= disabled %>">
-<form id="order-form" class="form-horizontal">
-<input type="hidden" data-mapper-property="id"/>
+    <form id="order-form" class="form-horizontal">
+        <input type="hidden" data-mapper-property="id"/>
 
-<div class="grid-row">
+        <div class="grid-row">
 
-    <div class="grid-row small changeListener">
-        <div class="grid-col-12">
-            <div class="form-group">
-                <label for="account-input" class="required"><%=translate('salesorder.orders.account')%></label>
-                <div>
-                    <div id="customer-type-select"
-                         class="grid-col-3"
-                         data-aura-default-label="<%=translate('dropdown.please-choose')%>"
-                         data-aura-component="select@husky"
-                         data-aura-data='{{ customerTypes|json_encode()|raw }}'
-                         data-aura-default-value="[{{ customerTypeDefault.id }}]"
-                         data-aura-value-name="name"
-                         data-aura-multiple-select="false"
-                         data-aura-instance-name="customer-type-select"
-                         data-aura-disabled="<%= !isEditable %>"
+            <div class="grid-row small changeListener">
+                <div class="grid-col-12 m-bottom-30">
+                    <div class="form-group">
+                        <label for="customer-type-select" class="required">
+                            <%= translate('salesorder.orders.account') %>
+                        </label>
+
+                        <div>
+                            <div id="customer-type-select"
+                                 class="grid-col-3"
+                                 data-aura-default-label="<%= translate('dropdown.please-choose') %>"
+                                 data-aura-component="select@husky"
+                                 data-aura-value-name="name"
+                                 data-aura-instance-name="customer-type-select"
+                                 data-aura-disabled="<%= !isEditable %>"
+                                 data-type="husky-select"
+                                 data-mapper-property="customerType"
+                                 data-validation-required="true"
+                                 data-form="true">
+                            </div>
+
+                            <div id="js-customer-autocomplete-container" class="grid-col-9"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid-row small changeListener">
+                <div class="grid-col-6">
+                    <div class="form-group">
+                        <label for="contact-select" class="required">
+                            <%= translate('salesorder.orders.contact') %>
+                        </label>
+
+                        <div id="contact-select"
+                             data-aura-component="select@husky"
+                             data-aura-data="[]"
+                             data-aura-instance-name="contact-select"
+                             data-aura-value-name="fullName"
+                             data-aura-default-label="<%= translate('dropdown.please-choose') %>"
+                             data-aura-pre-selected-elements="[]"
+                             data-aura-disabled="<%= !isEditable %>"
+                             data-validation-required="true"
+                             data-type="husky-select"
+                             data-mapper-property="customerContact"
+                             data-form="true">
+                        </div>
+                    </div>
+                </div>
+                <div class="grid-col-6">
+                    <div class="form-group">
+                        <label for="commission"><%= translate('salesorder.orders.commission') %></label>
+                        <input id="commission" class="form-element" type="text" data-mapper-property="commission"
+                        <%= disabled %> />
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid-row small changeListener">
+                <div class="grid-col-6">
+                    <div class="form-group">
+                        <label for="responsible-contact-select" class="required">
+                            <%= translate('salesorder.orders.responsibleContact') %>
+                        </label>
+
+                        <div id="responsible-contact-select"
+                             data-aura-component="select@husky"
+                             data-aura-data='{{ systemUser | json_encode() | raw }}'
+                             data-aura-default-value='[{{ systemUserId }}]'
+                             data-aura-default-label="<%=translate('public.please-choose')%>"
+                             data-aura-value-name="fullName"
+                             data-aura-instance-name="responsible-contact-select"
+                             data-aura-disabled="<%= !isEditable %>"
+                             data-type="husky-select"
+                             data-mapper-property="responsibleContact"
+                             data-validation-required="true"
+                             data-form="true">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid-col-6">
+                    <div class="form-group changeListener">
+                        <label for="order-number"><%= translate('salesorder.orders.number') %></label>
+                        <input id="order-number" class="form-element" type="text" data-mapper-property="orderNumber"
+                        <%= disabled %> />
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid-row small changeListener">
+                <div class="grid-col-6">
+                    <div class="form-group">
+                        <label for="order-date-input" class="required"><%= translate('salescore.orderDate') %></label>
+
+                        <div id="order-date"
+                             data-form="true"
+                             data-type="husky-input"
+                             data-aura-component="input@husky"
+                             data-aura-disabled="<%= !isEditable %>"
+                             data-validation-required="true"
+                             data-aura-skin="date"
+                             data-aura-instance-name="order-date"
+                             data-aura-input-id="order-date-input"
+                             data-aura-input-name="order-date"
+                             data-value="<%= parseDate(new Date()) %>"
+                             data-mapper-property="orderDate">
+                        </div>
+                    </div>
+                </div>
+                <div class="grid-col-6">
+                    <div class="form-group">
+                        <label for="cost-centre"><%= translate('salesorder.orders.costCentre') %></label>
+                        <input id="cost-centre" class="form-element" type="text" data-mapper-property="costCentre"
+                        <%= disabled %> />
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid-row changeListener">
+                <div class="grid-col-6">
+                    <div class="form-group">
+                        <label for="js-tax-free"><%= translate('salesorder.orders.taxfree') %></label>
+                        <div>
+                            <div class="custom-checkbox">
+                                <input class="form-element husky-validate" type="checkbox" id="js-tax-free"
+                                       data-mapper-property="taxfree" <%= disabled %> />
+                                <span class="icon"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid-row small">
+                <div class="grid-col-12">
+                    <div class="form-group">
+                        <label for="js-delivery-address" class="required"><%= translate('address.delivery') %></label>
+
+                        <div id="js-delivery-address"
+                             class="disabled-button"
+                             data-aura-component="editable-data-row@sulusalescore"
+                             data-form="true"
+                             data-aura-view="address"
+                             data-mapper-property="deliveryAddress"
+                             data-validation-required="true"
+                             data-aura-instance-name="delivery-address"
+                             data-aura-disabled="<%= !isEditable %>"
+                             data-type="editableDataRow">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid-row small">
+                <div class="grid-col-12">
+                    <div class="form-group">
+                        <label for="js-billing-address" class="required"><%= translate('address.invoice') %></label>
+
+                        <div id="js-billing-address"
+                             class="disabled-button"
+                             data-aura-component="editable-data-row@sulusalescore"
+                             data-form="true"
+                             data-mapper-property="invoiceAddress"
+                             data-aura-view="address"
+                             data-validation-required="true"
+                             data-aura-instance-name="billing-address"
+                             data-aura-disabled="<%= !isEditable %>"
+                             data-type="editableDataRow">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid-row small changeListener">
+                <div class="grid-col-12">
+                    <div class="form-group">
+                        <label for="delivery-terms-select"><%= translate('contact.termsOfDelivery') %></label>
+
+                        <div id="delivery-terms-row"
+                             data-aura-component="editable-data-row@sulusalescore"
+                             data-aura-select-data='{{ termsOfDelivery | json_encode() | raw }}'
+                             data-form="true"
+                             data-mapper-property="termsOfDeliveryContent"
+                             data-aura-view="simple"
+                             data-aura-show-plus-icon="true"
+                             data-aura-instance-name="delivery-terms"
+                             data-aura-disabled="<%= !isEditable %>"
+                             data-type="editableDataRow">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid-row small changeListener">
+                <div class="grid-col-12">
+                    <div class="form-group">
+                        <label for="delivery-terms-select"><%= translate('contact.termsOfPayment') %></label>
+
+                        <div id="payment-terms-row"
+                             data-aura-component="editable-data-row@sulusalescore"
+                             data-aura-select-data='{{ termsOfPayment | json_encode() | raw }}'
+                             data-form="true"
+                             data-mapper-property="termsOfPaymentContent"
+                             data-aura-view="simple"
+                             data-aura-show-plus-icon="true"
+                             data-aura-instance-name="payment-terms"
+                             data-aura-disabled="<%= !isEditable %>"
+                             data-type="editableDataRow">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid-row changeListener">
+                <div class="grid-col-12">
+                    <div class="form-group">
+                        <label for="internal-note" class="top"><%= translate('salescore.internal-note') %></label>
+                        <textarea id="internal-note"
+                                  class="form-element"
+                                  data-mapper-property="internalNote"
+                                  <%= disabled %> />
+                        </textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <h2 class="divider"><%= translate('salescore.items') %></h2>
+
+        <div class="changeListener grid-row">
+            <div id="js-order-items"
+                 data-form="true"
+                 data-type="itemTable"
+                 data-mapper-property="items">
+            </div>
+        </div>
+
+        <h2 class="divider m-top-40"><%= translate('public.details') %></h2>
+
+        <div class="grid-row small changeListener">
+            <div class="grid-col-6">
+                <div class="form-group">
+                    <label for="js-currency-select" class="required"><%= translate('salescore.currency') %></label>
+                    <div id="js-currency-select"
                          data-type="husky-select"
-                         data-mapper-property="customerType"
-                         data-validation-required="true"
+                         data-mapper-property-type="string"
                          data-form="true">
                     </div>
+                </div>
+            </div>
+            <div class="grid-col-6">
+                <div class="form-group">
+                    <label for="shipping-date-input"><%= translate('salescore.shipping.date') %></label>
 
-                    <div id="customer-autocomplete-container" class="grid-col-9">
+                    <div id="shipping-date"
+                         data-form="true"
+                         data-type="husky-input"
+                         data-aura-component="input@husky"
+                         data-aura-disabled="<%= !isEditable %>"
+                         data-aura-skin="date"
+                         data-aura-instance-name="shipping-date"
+                         data-aura-input-id="shipping-date-input"
+                         data-aura-input-name="shipping-date"
+                         data-mapper-property="desiredDeliveryDate">
                     </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <div class="grid-row small changeListener">
-        <div class="grid-col-6">
-            <div class="form-group">
-                <label for="contact-select" class="required"><%=translate('salesorder.orders.contact')%></label>
-
-                <div id="contact-select"
-                     data-aura-component="select@husky"
-                     data-aura-data="[]"
-                     data-aura-instance-name="contact-select"
-                     data-aura-value-name="fullName"
-                     data-aura-multiple-select="false"
-                     data-aura-default-label="<%=translate('dropdown.please-choose')%>"
-                     data-aura-pre-selected-elements="[]"
-                     data-aura-disabled="<%= !isEditable %>"
-                     data-validation-required="true"
-                     data-type="husky-select"
-                     data-mapper-property="customerContact"
-                     data-form="true"></div>
-            </div>
-        </div>
-        <div class="grid-col-6">
-            <div class="form-group">
-                <label for="commission"><%=translate('salesorder.orders.commission')%></label>
-                <input id="commission" class="form-element" type="text" data-mapper-property="commission"
-                <%= disabled %>/>
-            </div>
-        </div>
-    </div>
-
-    <div class="grid-row small changeListener">
-        <div class="grid-col-6">
-            <div class="form-group">
-                <label for="responsible-contact-select" class="required"><%=translate('salesorder.orders.responsibleContact')%></label>
-
-                <div id="responsible-contact-select"
-                     data-aura-component="select@husky"
-                     data-aura-data='{{ systemUser|json_encode()|raw }}'
-                     data-aura-default-value='[{{ systemUserId }}]'
-                     data-aura-default-label="<%=translate('public.please-choose')%>"
-                     data-aura-value-name="fullName"
-                     data-aura-multiple-select="false"
-                     data-aura-instance-name="responsible-contact-select"
-                     data-aura-disabled="<%= !isEditable %>"
-                     data-type="husky-select"
-                     data-mapper-property="responsibleContact"
-                     data-validation-required="true"
-                     data-form="true">
-                </div>
-            </div>
-        </div>
-
-        <div class="grid-col-6">
-            <div class="form-group changeListener">
-                <label for="order-number"><%=translate('salesorder.orders.number')%></label>
-                <input id="order-number" class="form-element" type="text" data-mapper-property="orderNumber"
-                <%= disabled %>/>
-            </div>
-        </div>
-    </div>
-
-    <div class="grid-row small changeListener">
-        <div class="grid-col-6">
-            <div class="form-group">
-                <label for="order-date-input" class="required"><%=translate('salescore.orderDate')%></label>
-
-                <div id="order-date"
-                     data-form="true"
-                     data-type="husky-input"
-                     data-aura-component="input@husky"
-                     data-aura-disabled="<%= !isEditable %>"
-                        {#data-aura-datepicker-options='{"startDate":"<%= new Date() %>"}'#}
-                     data-validation-required="true"
-                     data-aura-skin="date"
-                     data-aura-instance-name="order-date"
-                     data-aura-input-id="order-date-input"
-                     data-aura-input-name="order-date"
-                     data-aura-input-name="order-date"
-                     data-value="<%= parseDate(new Date()) %>"
-                     data-mapper-property="orderDate">
-                </div>
-            </div>
-        </div>
-        <div class="grid-col-6">
-            <div class="form-group">
-                <label for="cost-centre"><%=translate('salesorder.orders.costCentre')%></label>
-                <input id="cost-centre" class="form-element" type="text" data-mapper-property="costCentre"
-                <%= disabled %>/>
-            </div>
-        </div>
-    </div>
-
-    <div class="grid-row changeListener">
-        <div class="grid-col-6">
-            <div class="form-group">
-                <label for="tax-free"><%=translate('salesorder.orders.taxfree')%></label>
-                <div>
-                    <div class="custom-checkbox">
-                        <input class="form-element husky-validate" type="checkbox" id="tax-free"
-                               data-mapper-property="taxfree" <%= disabled %>/>
-                        <span class="icon"></span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="grid-row small">
-        <div class="grid-col-12">
-            <div class="form-group">
-                <label for="delivery-address" class="required"><%=translate('address.delivery')%></label>
-
-                <div id="delivery-address"
-                     class="disabled-button"
-                     data-aura-component="editable-data-row@sulusalescore"
-                     data-form="true"
-                     data-aura-view="address"
-                     data-mapper-property="deliveryAddress"
-                     data-validation-required="true"
-                     data-aura-instance-name="delivery-address"
-                     data-aura-disabled="<%= !isEditable %>"
-                     data-type="editableDataRow">
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="grid-row small">
-        <div class="grid-col-12">
-            <div class="form-group">
-                <label for="billing-address" class="required"><%=translate('address.invoice')%></label>
-
-                <div id="billing-address"
-                     class="disabled-button"
-                     data-aura-component="editable-data-row@sulusalescore"
-                     data-form="true"
-                     data-mapper-property="invoiceAddress"
-                     data-aura-view="address"
-                     data-validation-required="true"
-                     data-aura-instance-name="billing-address"
-                     data-aura-disabled="<%= !isEditable %>"
-                     data-type="editableDataRow">
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="grid-row small changeListener">
-        <div class="grid-col-12">
-            <div class="form-group">
-                <label for="delivery-terms-select"><%=translate('contact.termsOfDelivery')%></label>
-
-                <div id="delivery-terms-row"
-                     data-aura-component="editable-data-row@sulusalescore"
-                     data-aura-select-data='{{ termsOfDelivery|json_encode()|raw }}'
-                     data-form="true"
-                     data-mapper-property="termsOfDeliveryContent"
-                     data-aura-view="simple"
-                     data-aura-show-plus-icon="true"
-                     data-aura-instance-name="delivery-terms"
-                     data-aura-disabled="<%= !isEditable %>"
-                     data-type="editableDataRow">
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="grid-row small changeListener">
-        <div class="grid-col-12">
-            <div class="form-group">
-                <label for="delivery-terms-select"><%=translate('contact.termsOfPayment')%></label>
-
-                <div id="payment-terms-row"
-                     data-aura-component="editable-data-row@sulusalescore"
-                     data-aura-select-data='{{ termsOfPayment|json_encode()|raw }}'
-                     data-form="true"
-                     data-mapper-property="termsOfPaymentContent"
-                     data-aura-view="simple"
-                     data-aura-show-plus-icon="true"
-                     data-aura-instance-name="payment-terms"
-                     data-aura-disabled="<%= !isEditable %>"
-                     data-type="editableDataRow">
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="grid-row changeListener">
-        <div class="grid-col-12">
-            <div class="form-group">
-                <label for="internal-note" class="top"><%=translate('salescore.internal-note')%></label>
-                <textarea id="internal-note" class="form-element" data-mapper-property="internalNote"
-                <%= disabled %>/></textarea>
-            </div>
-        </div>
-    </div>
-</div>
-
-<h2 class="divider"><%=translate('salescore.items')%></h2>
-
-<div class="changeListener grid-row">
-    <div id="order-items"
-         data-form="true"
-         data-type="itemTable"
-         data-mapper-property="items"></div>
-</div>
-
-<h2 class="divider m-top-40"><%=translate('public.details')%></h2>
-
-<div class="grid-row small changeListener">
-    <div class="grid-col-6">
-        <div class="form-group">
-            <label for="currency-select" class="required"><%=translate('salescore.currency')%></label>
-            <div id="currency-select"
-                 data-type="husky-select"
-                 data-mapper-property-type="string"
-                 data-form="true">
-            </div>
-        </div>
-    </div>
-    <div class="grid-col-6">
-        <div class="form-group">
-            <label for="shipping-date-input"><%=translate('salescore.shipping.date')%></label>
-
-            <div id="shipping-date"
-                 data-form="true"
-                 data-type="husky-input"
-                 data-aura-component="input@husky"
-                 data-aura-disabled="<%= !isEditable %>"
-                 data-aura-skin="date"
-                 data-aura-instance-name="shipping-date"
-                 data-aura-input-id="shipping-date-input"
-                 data-aura-input-name="shipping-date"
-                 data-mapper-property="desiredDeliveryDate">
-            </div>
-        </div>
-    </div>
-</div>
-{#<div class="grid-row small changeListener">#}
-    {#<div class="grid-col-6">#}
-        {#<div class="form-group">#}
-            {#<label for="payment-select" class="required"><%=translate('salescore.paymentMethod')%></label>#}
-            {#<div id="payment-select"#}
-                 {#data-aura-component="select@husky"#}
-                 {#data-aura-data="[]"#}
-                 {#data-aura-instance-name="payment-select"#}
-                 {#data-aura-value-name="name"#}
-                 {#data-aura-multiple-select="false"#}
-                 {#data-aura-default-label="<%=translate('dropdown.please-choose')%>"#}
-                 {#data-aura-pre-selected-elements="[]"#}
-                 {#data-aura-disabled="<%= !isEditable %>"#}
-                 {#data-type="husky-select"#}
-                 {#data-mapper-property="payment"#}
-                 {#data-form="true">#}
-             {#</div>#}
-        {#</div>#}
-        {#<div class="grid-col-6"></div>#}
-    {#</div>#}
-{#</div>#}
-
-
-</form>
+    </form>
 </div>
 
 {% block data %}
     <script type="text/javascript">
         (function() {
-            App.emit('sulu.salesorder.set-options-data', 'orderStatuses', {{ orderStatus |json_encode()|raw }});
-            App.emit('sulu.salesorder.set-options-data', 'currencies', {{ currencies|json_encode()|raw }});
-            App.emit('sulu.salesorder.set-options-data', 'taxClasses', {{ taxClasses|json_encode()|raw }});
-            App.emit('sulu.salesorder.set-options-data', 'units', {{ units|json_encode()|raw }});
-            App.emit('sulu.salesorder.set-options-data', 'customerTypes', {{ customerTypes|json_encode()|raw }});
+            App.emit('sulu.salesorder.set-options-data', 'orderStatuses', {{ orderStatus | json_encode() | raw }});
+            App.emit('sulu.salesorder.set-options-data', 'currencies', {{ currencies | json_encode() | raw }});
+            App.emit('sulu.salesorder.set-options-data', 'taxClasses', {{ taxClasses | json_encode() | raw }});
+            App.emit('sulu.salesorder.set-options-data', 'units', {{ units | json_encode() | raw }});
+            App.emit('sulu.salesorder.set-options-data', 'customerTypes', {{ customerTypes | json_encode() | raw }});
             App.emit('sulu.salesorder.set-customer-id', {{ customerId }});
         })();
     </script>
