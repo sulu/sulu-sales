@@ -39,6 +39,8 @@
  * @param {Bool}       [options.enableDeliveryCost] Defines if the delivery cost field is enabled or not
  * @param {Function}   [options.deliveryCostChangedCallback] Function called when delivery cost changes
  * @param {Bool}       [options.calculatePrices] Defines if prices should be calculated
+ * @param {Bool}       [options.shouldDisplayCurrencies] Define if currencies should be displayed in
+ *                      item table (for each price).
  *
  * ==============================================
  * Necessary data for creating a settings overlay
@@ -88,6 +90,7 @@ define([
             rowCallback: null,
             settings: false,
             showItemCount: true,
+            shouldDisplayCurrencies: false,
             taxfree: false,
             urlFilter: {}
         },
@@ -125,7 +128,15 @@ define([
             settingsOverlayId: '#settings-overlay',
             deliveryCostInputId: '#delivery-cost',
             autocompleteLimit: 20,
-            disablePagination: true,
+            disablePagination: true
+        },
+
+        selectors = {
+            itemOverallPrice: '.js-item-overall-price',
+            globalPriceValue: '.js-global-price-value',
+            itemOverallRecurringPrice: '.js-item-overall-recurring-price',
+            globalRecurringPriceValue: '.js-global-recurring-price-value',
+            overlayDeliveryDateInput:'#delivery-date input'
         },
 
         translations = {
@@ -133,7 +144,7 @@ define([
         },
 
         /**
-         * default values of a item row
+         * Default values of a item row.
          */
         rowDefaults = {
             rowClass: null,
@@ -150,6 +161,7 @@ define([
             price: '',
             discount: 0,
             overallPrice: '',
+            overallRecurringPrice: '',
             currency: Config.get('sulu_sales_core').default_currency,
             useProductsPrice: false,
             tax: 0,
@@ -158,13 +170,16 @@ define([
         },
 
         templates = {
-            priceRow: function(title, value) {
+            priceRow: function(title, valueRecurring, value) {
                 return [
                     '<tr>',
                     '   <td>',
                     title,
                     '   </td>',
-                    '   <td>',
+                    '   <td class="js-global-recurring-price-value">',
+                    valueRecurring,
+                    '   </td>',
+                    '   <td class="js-global-price-value">',
                     value,
                     '   </td>',
                     '</tr>'
@@ -287,7 +302,8 @@ define([
                 quantityUnit: this.sandbox.translate('salescore.item.unit'),
                 price: this.sandbox.translate('salescore.item.price'),
                 discount: this.sandbox.translate('salescore.item.discount'),
-                overallPrice: this.sandbox.translate('salescore.item.overall-value')
+                overallPrice: this.sandbox.translate('salescore.item.overall-value'),
+                overallRecurringPrice: this.sandbox.translate('salescore.item.overall-recurring-value')
             };
         },
 
@@ -325,7 +341,15 @@ define([
             this.sandbox.dom.on(this.$el, 'click', removeRowClicked.bind(this), '.remove-row');
 
             // Item row has been clicked
-            this.sandbox.dom.on(this.$el, 'click', rowClicked.bind(this), '.item-table-row');
+            this.sandbox.dom.on(
+                this.$el,
+                'click',
+                rowClicked.bind(this),
+                // '.item-table-row, ' +
+                '.item-table-row .item-name'
+                + ', .item-table-row .item-number'
+            );
+
             // Add new item.
             this.sandbox.dom.on(this.$el, 'click', rowCellClicked.bind(this), '.item-table-row td');
 
@@ -528,18 +552,17 @@ define([
         startLoader = function(dfdLoaderStarted) {
             prepareDomForLoader.call(this);
             this.sandbox.start([
-                    {
-                        name: 'loader@husky',
-                        options: {
-                            el: this.$loader,
-                            size: '40px',
-                            hidden: false
-                        }
+                {
+                    name: 'loader@husky',
+                    options: {
+                        el: this.$loader,
+                        size: '40px',
+                        hidden: false
                     }
-                ]
-            ).done(function() {
-                    dfdLoaderStarted.resolve();
-                }.bind(this));
+                }
+            ]).done(function() {
+                dfdLoaderStarted.resolve();
+            }.bind(this));
         },
 
         /**
@@ -575,23 +598,34 @@ define([
         rowClicked = function(event) {
             // If input or link was clicked, do nothing.
             if (event.target.tagName.toUpperCase() === 'INPUT' ||
-                event.target.tagName.toUpperCase() === 'A' ||
-                !this.options.isEditable
+                event.target.tagName.toUpperCase() === 'A'
             ) {
                 return;
             }
 
-            var rowId = this.sandbox.dom.attr(event.currentTarget, 'id'),
-                dataId = this.sandbox.dom.data(event.currentTarget, 'id');
+            var parent = $(event.currentTarget).parent();
+            var rowId = this.sandbox.dom.attr(parent, 'id');
+
             // Call rowCallback.
             if (!!this.options.rowCallback) {
                 this.options.rowCallback.call(this, rowId, this.items[rowId]);
             }
 
+            // Check if item already correctly set.
+            if (!this.items.hasOwnProperty(rowId)) {
+                return;
+            }
+
+            var item = this.items[rowId];
+
+            // If item is of type addon, do not open overlay
+            if (item.type === TYPES.ADDON) {
+                return;
+            }
+
             // If settings are activated, show them.
             if (!!this.options.settings
                 && this.options.settings !== 'false'
-                && this.items.hasOwnProperty(rowId)
             ) {
                 initSettingsOverlay.call(this, this.items[rowId], this.options.settings, rowId);
             }
@@ -704,11 +738,13 @@ define([
          * @param {String} rowId
          */
         updateOverallPrice = function(rowId) {
-            var $row = this.$find('#' + rowId),
-                item = this.items[rowId],
-                $priceCol = this.sandbox.dom.find('.item-overall-price span', $row);
+            var $row = this.$find('#' + rowId);
+            var item = this.items[rowId];
+            var $priceCol = this.sandbox.dom.find('.item-overall-price span', $row);
+            var $priceRecurringCol = this.sandbox.dom.find('.item-overall-recurring-price span', $row);
 
             this.sandbox.dom.html($priceCol, getOverallPriceString.call(this, item));
+            this.sandbox.dom.html($priceRecurringCol, getOverallPriceString.call(this, item, true));
         },
 
         /**
@@ -720,23 +756,35 @@ define([
                 return;
             }
 
-            var items = this.getItems(), result, $table, i;
-            $table = this.$find(constants.globalPriceTableClass);
+            var items = this.getItems();
+            var $table = this.$find(constants.globalPriceTableClass);
 
             if (!!items && items.length > 0) {
                 var totalNetPrice = 0;
+                var totalRecurringNetPrice = 0;
                 var grossPrice = 0;
+                var recurringGrossPrice = 0;
                 var deliveryCost = 0;
+                var currency = ' ';
+                if (this.options.shouldDisplayCurrencies) {
+                    currency = this.currency;
+                }
 
                 // Add delivery cost if enabled.
                 if (this.options.enableDeliveryCost === true) {
                     deliveryCost = this.sandbox.parseFloat($(constants.deliveryCostInputId).val());
                 }
-                result = PriceCalcUtil.getTotalPricesAndTaxes(this.sandbox, this.items, deliveryCost);
+                var result = PriceCalcUtil.getTotalPricesAndTaxes(this.sandbox, this.items, deliveryCost);
+                var resultRecurring = PriceCalcUtil.getTotalPricesAndTaxes(this.sandbox, this.items, 0, true);
 
                 if (!!result) {
                     totalNetPrice = result.netPrice;
                     grossPrice = result.grossPrice;
+                }
+
+                if (!!resultRecurring) {
+                    totalRecurringNetPrice = resultRecurring.netPrice;
+                    recurringGrossPrice = resultRecurring.grossPrice;
                 }
 
                 // Visualize
@@ -748,33 +796,94 @@ define([
                         this,
                         $table,
                         this.sandbox.translate('salescore.item.net-price'),
-                        PriceCalcUtil.getFormattedAmountAndUnit(this.sandbox, totalNetPrice, this.currency)
+                        PriceCalcUtil.getFormattedAmountAndUnit(this.sandbox, totalNetPrice, currency),
+                        PriceCalcUtil.getFormattedAmountAndUnit(this.sandbox, totalRecurringNetPrice, currency)
                     );
 
                     if (!this.options.taxfree) {
-                        if (result.taxes) {
+                        // First get all taxes.
+                        var taxes = retrieveTaxClassesFromResults.call(this, [result, resultRecurring]);
+
+                        if (taxes && taxes.length) {
+
+                            taxes = taxes.sort();
                             // Add row for every tax group.
-                            for (i in result.taxes) {
+                            this.sandbox.util.foreach(taxes, function(taxClass) {
+                                var recurringTax = '';
+                                var singleTax = '';
+
+                                // Check if tax is defined for given tax-class.
+                                if (resultRecurring.taxes && resultRecurring.taxes.hasOwnProperty(taxClass)) {
+                                    recurringTax = resultRecurring.taxes[taxClass];
+                                    recurringTax = PriceCalcUtil.getFormattedAmountAndUnit(
+                                        this.sandbox,
+                                        recurringTax,
+                                        currency
+                                    );
+                                }
+                                if (result.taxes && result.taxes.hasOwnProperty(taxClass)) {
+                                    singleTax = result.taxes[taxClass];
+                                    singleTax = PriceCalcUtil.getFormattedAmountAndUnit(
+                                        this.sandbox,
+                                        singleTax,
+                                        currency
+                                    );
+                                }
+
                                 addPriceRow.call(
                                     this,
                                     $table,
-                                    this.sandbox.translate('salescore.item.vat') + '. (' + i + '%)',
-                                    PriceCalcUtil.getFormattedAmountAndUnit(this.sandbox, result.taxes[i], this.currency)
+                                    this.sandbox.translate('salescore.item.vat') + '. (' + taxClass + '%)',
+                                    singleTax,
+                                    recurringTax
                                 );
-                            }
+                            }.bind(this));
                         }
 
                         addPriceRow.call(
                             this,
                             $table,
                             this.sandbox.translate('salescore.item.overall-price'),
-                            PriceCalcUtil.getFormattedAmountAndUnit(this.sandbox, grossPrice, this.currency)
+                            PriceCalcUtil.getFormattedAmountAndUnit(this.sandbox, grossPrice, currency),
+                            PriceCalcUtil.getFormattedAmountAndUnit(this.sandbox, recurringGrossPrice, currency)
                         );
                     }
+
+                    // Update width of global price block to width of specific column in item-table.
+                    $(selectors.globalPriceValue).outerWidth(
+                        $(selectors.itemOverallPrice).outerWidth()
+                    );
+                    $(selectors.globalRecurringPriceValue).outerWidth(
+                        $(selectors.itemOverallRecurringPrice).outerWidth()
+                    );
                 }
             } else {
                 this.sandbox.dom.empty($table);
             }
+        },
+
+        /**
+         * Filters given result sets for tax classes.
+         *
+         * @param {Object} resultsets
+         *
+         * @returns {Array}
+         */
+        retrieveTaxClassesFromResults = function(resultsets) {
+            var taxes = [];
+
+            // For all given resultsets.
+            this.sandbox.util.foreach(resultsets, function(resultset) {
+                // Check if taxes are defined.
+                if (resultset.taxes) {
+                    // Add tax index to result.
+                    for (var i in resultset.taxes) {
+                        taxes.push(i);
+                    }
+                }
+            });
+
+            return $.unique(taxes);
         },
 
         /**
@@ -783,23 +892,39 @@ define([
          * @param {Object} $table
          * @param {String} title
          * @param {mixed} value
+         * @param {mixed} recurringValue
          */
-        addPriceRow = function($table, title, value) {
-            var $row = this.sandbox.dom.createElement(templates.priceRow.call(this, title, value));
+        addPriceRow = function($table, title, value, recurringValue) {
+            var $row = this.sandbox.dom.createElement(templates.priceRow.call(this, title, recurringValue, value));
             this.sandbox.dom.append($table, $row);
         },
 
         /**
          * Returns formated overallPrice + currency as string (based on item).
+         * If also returns recurring price.
          *
          * @param {Object} item
+         * @param {Bool} isRecurring
          *
          * @return {String}
          */
-        getOverallPriceString = function(item) {
+        getOverallPriceString = function(item, isRecurring) {
             setItemDefaults(item);
 
-            return item.totalNetPriceFormatted + ' ' + getCurrency.call(this, item);
+            var price = item.totalNetPriceFormatted;
+            var isRecurring = !!isRecurring;
+
+            // If requested price should be recurring and isn't return
+            // 0 as result.
+            if (item.isRecurringPrice !== isRecurring) {
+                return '';
+            }
+
+            if (this.options.shouldDisplayCurrencies) {
+                price += getCurrency.call(this, item);
+            }
+
+            return price ;
         },
 
         /**
@@ -808,6 +933,7 @@ define([
          * @param {Object} item
          */
         setItemDefaults = function(item) {
+            item.isRecurringPrice = item.isRecurringPrice || false;
             item.price = item.price || 0;
             item.priceFormatted = item.priceFormatted || 0;
             item.totalNetPriceFormatted = item.totalNetPriceFormatted || 0;
@@ -846,6 +972,7 @@ define([
                     'labels.warning',
                     ''
                 );
+
                 return;
             }
 
@@ -1089,13 +1216,19 @@ define([
             var rowTpl, $row,
                 data = this.sandbox.util.extend({}, rowDefaults, this.options.defaultData, itemData,
                     {
-                        isEditable: this.options.isEditable,
-                        displayToolbars: this.options.displayToolbars,
                         columns: this.options.columns,
+                        displayToolbars: this.options.displayToolbars,
+                        doDisplayInputs: true,
+                        isEditable: this.options.isEditable,
                         rowId: rowId ? rowId : constants.rowIdPrefix + this.rowCount,
                         rowNumber: this.rowCount,
                         showItemCount: this.options.showItemCount
                     });
+
+            // Don't show input fields when item is addon.
+            if (data.type === TYPES.ADDON) {
+                data.doDisplayInputs = false;
+            }
 
             // Handle address.
             if (!!data.address && typeof data.address === 'object') {
@@ -1105,6 +1238,7 @@ define([
 
             data.currency = this.currency;
             data.overallPrice = this.sandbox.numberFormat(getOverallPriceString.call(this, data));
+            data.overallRecurringPrice = this.sandbox.numberFormat(getOverallPriceString.call(this, data, true));
 
             // Format numbers for cultural differences.
             data.discount = this.sandbox.numberFormat(data.discount, 'n');
@@ -1288,7 +1422,9 @@ define([
                         description: productData.shortDescription,
                         product: productData,
                         quantityUnit: !!productData.orderUnit ? productData.orderUnit.name : '',
-                        isGrossPrice: productData.areGrossPrices
+                        isGrossPrice: productData.areGrossPrices,
+                        tax: retrieveTaxOfProductForCurrentLocation.call(this, productData),
+                        type: TYPES.PRODUCT
                     }
                 );
 
@@ -1310,7 +1446,37 @@ define([
         },
 
         /**
-         * Initalizes the overlay with a specific template.
+         * Returns the tax of a product for the current shop location (config).
+         *
+         * @param {Object} productData
+         *
+         * @returns {Number}
+         */
+        retrieveTaxOfProductForCurrentLocation = function(productData) {
+            var shopLocation = Config.get('sulu_sales_core').shop_location;
+            var tax = 0;
+
+            // Check if shop-location and country taxes are defined.
+            if (!shopLocation.length
+                || !productData.taxClass
+                || !productData.taxClass.countryTaxes
+                || !productData.taxClass.countryTaxes.length
+            ) {
+                return tax;
+            }
+
+            // Find tax by comparing current shop location with country taxes of product.
+            this.sandbox.util.foreach(productData.taxClass.countryTaxes, function(countryTax) {
+                if (countryTax.country && countryTax.country.code.toUpperCase() === shopLocation.toUpperCase()) {
+                    tax = countryTax
+                }
+            }.bind(this));
+
+            return tax;
+        },
+
+        /**
+         * Initializes the overlay with a specific template.
          *
          * @param {Object} data
          * @param {Object} settings
@@ -1342,7 +1508,8 @@ define([
                 description: '',
                 numberFormat: this.sandbox.numberFormat,
                 settings: settings,
-                translate: this.sandbox.translate
+                translate: this.sandbox.translate,
+                isEditable: this.options.isEditable
             }, data);
 
             if (!templateData.hasOwnProperty(this.options.addressKey) || !templateData[this.options.addressKey]) {
@@ -1377,6 +1544,13 @@ define([
 
                 formatSettingsOverlayNumberFields.call(this);
                 bindSettingsOverlayDomEvents.call(this);
+
+                // Check if delivery date field has to be disabled
+                this.sandbox.once('husky.input.settings-delivery-date.initialized', function() {
+                    if (!this.options.isEditable) {
+                        $overlay.find(selectors.overlayDeliveryDateInput).attr('disabled', true);
+                    }
+                }.bind(this));
             }.bind(this));
 
             this.sandbox.start([

@@ -2,24 +2,39 @@
 
 ## Configuration
 
-### Sulu-sales order bundle
+The following description contains the default configuration for the different sales bundles.
 
-The available configuration in `app/config.yml` is:
+### SuluSalesCoreBundle
+
+```
+sulu_sales_core:
+    priceformatter_digits: 2
+    shop_location: ~ # Is used for calculating correct tax
+    email_from: ~ # Originator of sales emails like an order confirmation
+    email_templates: # Footer templates for email
+        footer_txt: ~
+        footer_html: ~
+```
+
+### SuluSalesOrderBundle
+
+Confirmation emails are only sent, when using CartManager for creating orders.
+
 ```
 sulu_sales_order:
     pdf_templates:
-        confirmation: PoolAlpinSalesOrderBundle:Pdf:pool-alpin.order.confirmation.html.twig
-        base: PoolAlpinBaseBundle:Pdf:pdf-base.html.twig
-        header: PoolAlpinBaseBundle:Pdf:pdf-base-header.html.twig
-        footer: PoolAlpinBaseBundle:Pdf:pdf-base-footer.html.twig
-        macros: PoolAlpinBaseBundle:Pdf:pdf-macros.html.twig
-    pdf_response_type: '%sulu_sales_orderbundle_pdf_responsetype%'
+        confirmation: SuluSalesOrderBundle:Pdf:pool-alpin.order.confirmation.html.twig
+        base: SuluSalesCoreBundle:Pdf:pdf-base.html.twig
+        header: SuluSalesCoreBundle:Pdf:pdf-base-header.html.twig
+        footer: SuluSalesCoreBundle:Pdf:pdf-base-footer.html.twig
+        macros: SuluSalesCoreBundle:Pdf:pdf-macros.html.twig
+    pdf_response_type: 'inline'
     email_templates:
-        footer_txt: PoolAlpinBaseBundle:Email:email.footer.txt.twig
-        footer_html: PoolAlpinBaseBundle:Email:email.footer.html.twig
-    shop_email_from: '%mailer_from%'
-    shop_email_confirmation_to: '%mailer_from%'
-    send_email_confirmation_to_customer: false
+        footer_txt: ~
+        footer_html: ~
+    shop_email_from: ~ # Originator of confirmation email
+    shop_email_confirmation_to: ~ # Defines an extra recipient for confirmation email
+    send_email_confirmation_to_customer: false # Defines if a confirmation mail should be sent to customer
 ```
 
 #### Pdf response type

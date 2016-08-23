@@ -1466,7 +1466,7 @@ class OrderManager
                     );
 
                     if ($item->getType() === BaseItem::TYPE_PRODUCT) {
-                        $lastProcessedProductItem = $item->getEntity();
+                        $lastProcessedProductItem = $item;
                     }
 
                     return $itemEntity ? true : false;

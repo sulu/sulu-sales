@@ -34,9 +34,13 @@
                 <source>navigation.item.discount</source>
                 <target>Discount [%]</target>
             </trans-unit>
+            <trans-unit id="b50accg2ac221350142c0b4720e29ab9" resname="salescore.item.overall-recurring-value">
+                <source>salescore.item.overall-recurring-value</source>
+                <target>Total recurring</target>
+            </trans-unit>
             <trans-unit id="a50accg2ac221350142c0b4720e29ab9" resname="salescore.item.overall-value">
                 <source>navigation.item.overall-value</source>
-                <target>Total value</target>
+                <target>Total one-time</target>
             </trans-unit>
             <trans-unit id="a50accg2ac221350142c0b4720e29a10" resname="salescore.item.add">
                 <source>navigation.item.add</source>

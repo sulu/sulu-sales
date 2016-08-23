@@ -9,8 +9,9 @@
 
 define([
     'app-config',
-    'sulusalesorder/model/order'
-], function(AppConfig, Order) {
+    'sulusalesorder/model/order',
+    'widget-groups'
+], function(AppConfig, Order, WidgetGroups) {
 
     'use strict';
 
@@ -146,8 +147,11 @@ define([
          */
         initForList: function(sandbox) {
             this.sandbox = sandbox;
-            bindDomEvents.call(this);
-            bindCustomEventsForListSidebar.call(this);
+
+            if (WidgetGroups.exists('order-info')) {
+                bindDomEvents.call(this);
+                bindCustomEventsForListSidebar.call(this);
+            }
         }
     };
 });

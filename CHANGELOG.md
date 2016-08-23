@@ -4,6 +4,20 @@ CHANGELOG for Sulu Sales
 * dev-develop
     * FEATURE     [OrderBundle]   Adopted UI for customer types
     * FEATURE     [CoreBundle]    Added model CustomerType and CustomerTypeManager
+    
+* 0.5.1 (2016-08-22)
+
+    * BUGFIX      [CoreBundle]    Fixed creation of empty cart.
+
+* 0.5.0 (2016-08-22)
+
+    * FEATURE     [CoreBundle]    Changed visual appearance of addons in item-table.
+    * FEATURE     [CoreBundle]    Added option to not display currency in item-table.
+    * BUGFIX      [CoreBundle]    Displaying first found tax class in item tables overlay.
+    * FEATURE     [CoreBundle]    Display overlay (on click) also when item-table is disabled.
+    * FEATURE     [CoreBundle]    Added recurring prices to item-table.
+    * BUGFIX      [OrderBundle]   Fixed error when sidebar order-info is not defined in widgets config.
+    * BUGFIX      [OrderBundle]   Fixed update of items in an order.
 
 * 0.4.4 (2016-08-12)
 

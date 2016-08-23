@@ -4,13 +4,13 @@
 
 .sidebar-table {
     font-size: 12px;
-    border-top: 2px solid #ccc;
-    border-bottom: 2px solid #ccc;
+    border-top: 2px solid $gray-light;
+    border-bottom: 2px solid $gray-light;
 
 
     tr {
         height:30px;
-        border-bottom: 1px solid #ccc;
+        border-bottom: 1px solid $gray-light;
     }
 
     td {
