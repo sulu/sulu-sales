@@ -83,8 +83,8 @@ define([
         /**
          * Sets specific data to options.
          *
-         * @param {String} key Where to set data (this.options[key])
-         * @param {Mixed} optionData Data to set onto options
+         * @param {String} key Where to set data (this.options[key]).
+         * @param {Mixed} optionData Data to set onto options.
          */
         setOptionsData = function(key, optionData) {
             this.options[key] = optionData;
@@ -234,7 +234,7 @@ define([
         /**
          * Set saved method.
          *
-         * @param {Boolean} saved Defines if saved state should be shown
+         * @param {Boolean} saved Defines if saved state should be shown.
          */
         setSaved = function(saved) {
             if (saved !== this.saved) {
