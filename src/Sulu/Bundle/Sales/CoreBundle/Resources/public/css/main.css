@@ -200,7 +200,7 @@
 }
 /* line 209, ../scss/modules/item-table.scss */
 .global-price-container .global-price-table tr:last-child:not(:first-child) {
-  border-bottom: 2px solid #ccc;
+  border-top: 2px solid #ccc;
 }
 
 /* line 1, ../scss/modules/sidebar.scss */
