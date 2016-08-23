@@ -270,6 +270,14 @@
                 <source>salescore.item.is-recurring-price</source>
                 <target>Wiederkehrender Preis</target>
             </trans-unit>
+            <trans-unit id="29" resname="salescore.customer-type.organization">
+                <source>salescore.customer-type.organization</source>
+                <target>Organisation</target>
+            </trans-unit>
+            <trans-unit id="30" resname="salescore.customer-type.private-person">
+                <source>salescore.customer-type.private-person</source>
+                <target>Privatperson</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>

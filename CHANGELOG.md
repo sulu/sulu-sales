@@ -1,8 +1,9 @@
 CHANGELOG for Sulu Sales
 ========================
 
-* dev-develop 
-
+* dev-develop
+    * FEATURE     [OrderBundle]   Adopted UI for customer types
+    * FEATURE     [CoreBundle]    Added model CustomerType and CustomerTypeManager
     * BUGFIX      [CoreBundle]    Style fixes in global total price of item-table.
     
 * 0.5.1 (2016-08-22)
