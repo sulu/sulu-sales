@@ -345,9 +345,7 @@ define([
                 this.$el,
                 'click',
                 rowClicked.bind(this),
-                // '.item-table-row, ' +
-                '.item-table-row .item-name'
-                + ', .item-table-row .item-number'
+                '.item-table-row .item-name, .item-table-row .item-number'
             );
 
             // Add new item.
@@ -1237,8 +1235,8 @@ define([
             }
 
             data.currency = this.currency;
-            data.overallPrice = this.sandbox.numberFormat(getOverallPriceString.call(this, data));
-            data.overallRecurringPrice = this.sandbox.numberFormat(getOverallPriceString.call(this, data, true));
+            data.overallPrice = this.sandbox.numberFormat(getOverallPriceString.call(this, data), 'n');
+            data.overallRecurringPrice = this.sandbox.numberFormat(getOverallPriceString.call(this, data, true), 'n');
 
             // Format numbers for cultural differences.
             data.discount = this.sandbox.numberFormat(data.discount, 'n');
