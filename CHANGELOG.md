@@ -1,7 +1,7 @@
 CHANGELOG for Sulu Sales
 ========================
 
-* dev-develop
+* 0.6.1 (2016-08-24)
 
     * BUGFIX      [OrderBundle]   Fixed bug with empty customer type select
     * BUGFIX      [CoreBundle]    Fixed initial format of global price when adding an empty row to item-table.
