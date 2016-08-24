@@ -101,6 +101,26 @@
             <div class="grid-row small changeListener">
                 <div class="grid-col-6">
                     <div class="form-group">
+                        <label for="js-currency-select" class="required"><%= translate('salescore.currency') %></label>
+                        <div id="js-currency-select"
+                             data-type="husky-select"
+                             data-mapper-property-type="string"
+                             data-form="true">
+                        </div>
+                    </div>
+                </div>
+                <div class="grid-col-6">
+                    <div class="form-group">
+                        <label for="cost-centre"><%= translate('salesorder.orders.costCentre') %></label>
+                        <input id="cost-centre" class="form-element" type="text" data-mapper-property="costCentre"
+                        <%= disabled %> />
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid-row form-horizontal small changeListener">
+                <div class="grid-col-6">
+                    <div class="form-group">
                         <label for="order-date-input" class="required"><%= translate('salescore.orderDate') %></label>
 
                         <div id="order-date"
@@ -120,9 +140,19 @@
                 </div>
                 <div class="grid-col-6">
                     <div class="form-group">
-                        <label for="cost-centre"><%= translate('salesorder.orders.costCentre') %></label>
-                        <input id="cost-centre" class="form-element" type="text" data-mapper-property="costCentre"
-                        <%= disabled %> />
+                        <label for="shipping-date-input"><%= translate('salescore.shipping.date') %></label>
+
+                        <div id="shipping-date"
+                             data-form="true"
+                             data-type="husky-input"
+                             data-aura-component="input@husky"
+                             data-aura-disabled="<%= !isEditable %>"
+                             data-aura-skin="date"
+                             data-aura-instance-name="shipping-date"
+                             data-aura-input-id="shipping-date-input"
+                             data-aura-input-name="shipping-date"
+                             data-mapper-property="desiredDeliveryDate">
+                        </div>
                     </div>
                 </div>
             </div>
@@ -245,39 +275,6 @@
                  data-mapper-property="items">
             </div>
         </div>
-
-        <h2 class="divider m-top-40"><%= translate('public.details') %></h2>
-
-        <div class="grid-row small changeListener">
-            <div class="grid-col-6">
-                <div class="form-group">
-                    <label for="js-currency-select" class="required"><%= translate('salescore.currency') %></label>
-                    <div id="js-currency-select"
-                         data-type="husky-select"
-                         data-mapper-property-type="string"
-                         data-form="true">
-                    </div>
-                </div>
-            </div>
-            <div class="grid-col-6">
-                <div class="form-group">
-                    <label for="shipping-date-input"><%= translate('salescore.shipping.date') %></label>
-
-                    <div id="shipping-date"
-                         data-form="true"
-                         data-type="husky-input"
-                         data-aura-component="input@husky"
-                         data-aura-disabled="<%= !isEditable %>"
-                         data-aura-skin="date"
-                         data-aura-instance-name="shipping-date"
-                         data-aura-input-id="shipping-date-input"
-                         data-aura-input-name="shipping-date"
-                         data-mapper-property="desiredDeliveryDate">
-                    </div>
-                </div>
-            </div>
-        </div>
-
     </form>
 </div>
 
