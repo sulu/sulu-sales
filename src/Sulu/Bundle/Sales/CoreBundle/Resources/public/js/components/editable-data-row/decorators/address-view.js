@@ -268,14 +268,25 @@ define(['text!sulusalescore/components/editable-data-row/templates/address.form.
          * @returns {*}
          */
         getAddressString = function(address) {
-            var str = !!address.street ? address.street : '',
-                part = (address.zip + ' ' + address.city).trim();
+            var addressString = '';
+            var namePart = '';
+            var addressPart = (address.zip + ' ' + address.city).trim();
 
-            str += !!str.length && !!address.number ? ' ' + address.number : address.number;
-            str += !!str.length && !!part ? ', ' + part : part;
-            str += !!str.length && !!address.country ? ', ' + address.country : address.country;
+            if (!!address.firstName) {
+                namePart = address.firstName;
+            }
 
-            return str;
+            if (!!address.lastName) {
+                namePart += !!namePart.length ? ' ' + address.lastName : address.lastName;
+            }
+
+            addressString += namePart.trim();
+            addressString += !!addressString.length && !!address.street ? ', ' + address.street : address.street;
+            addressString += !!addressString.length && !!address.number ? ' ' + address.number : address.number;
+            addressString += !!addressString.length && !!addressPart ? ', ' + addressPart : addressPart;
+            addressString += !!addressString.length && !!address.country ? ', ' + address.country : address.country;
+
+            return addressString;
         };
 
     return {
