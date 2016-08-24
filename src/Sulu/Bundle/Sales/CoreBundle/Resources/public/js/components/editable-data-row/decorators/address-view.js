@@ -58,7 +58,8 @@ define(['text!sulusalescore/components/editable-data-row/templates/address.form.
         eventNamespace = 'sulu.editable-data-row.address-view.',
 
         /**
-         * raised when an item is changed
+         * Raised when an item is changed.
+         *
          * @event sulu.editable-data-row.address-view.instanceName.initialized
          */
         EVENT_INITIALIZED = function() {
@@ -66,24 +67,26 @@ define(['text!sulusalescore/components/editable-data-row/templates/address.form.
         },
 
         /**
-         * raised when something is changed - should be used by subcomponents
+         * Raised when something is changed - should be used by subcomponents.
+         *
          * @event sulu.editable-data-row.[instanceName].changed
-         * @param data
+         *
+         * @param {Object} data
          */
         CHANGED_EVENT = function(data) {
             this.sandbox.emit(eventNamespace + this.options.instanceName + '.changed', data);
         },
 
         /**
-         * bind custom events
+         * Bind custom events.
          */
         bindCustomEvents = function() {
             if (!this.context.options.disabled) {
-                // trigger init of form when overlay is open
+                // Trigger init of form when overlay is open.
                 this.sandbox.on('husky.overlay.' + this.context.options.instanceName + '.opened', function() {
 
                     // TODO: Handle empty values - not decided yet - issue #131
-                    // currently values will not be overwritten when no address is available
+                    // Currently values will not be overwritten when no address is available.
 
                     if (!this.openedDialog) {
                         startForm.call(this);
@@ -104,43 +107,45 @@ define(['text!sulusalescore/components/editable-data-row/templates/address.form.
         },
 
         /**
-         * @var ids - array of ids to delete
-         * @var callback - callback function returns true or false if data got deleted
+         * Shows information overlay dialog.
          */
         showInformationDialog = function() {
+            // Save data from overlay.
+            var data = this.sandbox.form.getData(constants.formSelector);
 
-            // hide overlay
+            // Hide overlay.
             this.sandbox.emit('husky.overlay.' + this.context.options.instanceName + '.close');
 
-            // show dialog
+            // Show dialog.
             this.sandbox.emit('sulu.overlay.show-warning',
                 'salesorder.orders.addressOverlayWarningTitle',
                 'salesorder.orders.addressOverlayWarningMessage',
-                handleDialogClick.bind(this, false),
-                handleDialogClick.bind(this, true)
+                handleDialogClick.bind(this, false, null),
+                handleDialogClick.bind(this, true, data)
             );
 
             this.openedDialog = true;
         },
 
         /**
-         * Handles closing of dialog
-         * @param accepted
+         * Handles closing of dialog.
+         *
+         * @param {Boolean} accepted
+         * @param {Object} data
          */
-        handleDialogClick = function(accepted) {
+        handleDialogClick = function(accepted, data) {
 
             if (!accepted) {
                 this.sandbox.emit('husky.overlay.' + this.context.options.instanceName + '.open');
             } else {
-                var data = this.sandbox.form.getData(this.formObject, true),
-                    fullAddress = getAddressString.call(this, data),
-                    newData;
+                var fullAddress = getAddressString.call(this, data);
+                var newData;
 
                 if (!!fullAddress) {
                     newData = this.sandbox.util.extend({}, this.context.selectedData, data);
                 } else {
-                    // set to null when all address data has been removed
-                    // should show the add icon again
+                    // Set to null when all address data has been removed.
+                    // Should show the add icon again.
                     newData = null;
                 }
 
@@ -152,16 +157,14 @@ define(['text!sulusalescore/components/editable-data-row/templates/address.form.
         },
 
         /**
-         * starts form
+         * Starts form.
          */
         startForm = function() {
             var $form = this.sandbox.dom.find(constants.formSelector, this.context.$el);
 
             this.sandbox.start(this.sandbox.dom.find('.editable-data-overlay-container', this.$el));
 
-            this.formObject = this.sandbox.form.create($form);
-
-            this.formObject.initialized.then(function() {
+            this.sandbox.form.create($form).initialized.then(function() {
                 if (!!this.context.selectedData) {
                     setFormData.call(this, this.context.selectedData);
                 }
@@ -169,25 +172,26 @@ define(['text!sulusalescore/components/editable-data-row/templates/address.form.
         },
 
         /**
-         * sets data on form
-         * @param data
+         * Sets data on form.
+         *
+         * @param {Object} data
          */
         setFormData = function(data) {
-            this.sandbox.form.setData(this.formObject, data).fail(function(error) {
+            this.sandbox.form.setData(constants.formSelector, data).fail(function(error) {
                 this.sandbox.logger.error("An error occured when setting data!", error);
             }.bind(this));
         },
 
         /**
-         * bind dom events
+         * Bind dom events.
          */
         bindDomEvents = function() {
             if (!this.context.options.disabled) {
-                // click handler to trigger overlay
+                // Click handler to trigger overlay.
                 this.sandbox.dom.on(this.context.$el, 'click', openOverlay.bind(this), constants.rowClassSelector);
 
                 // TODO remove it, when when replaced by custom select
-                // this is temporarily replacement for the custom select
+                // This is temporarily replacement for the custom select.
                 this.sandbox.dom.on(this.context.$el, 'change', function(event) {
                     var id = this.sandbox.dom.val(event.currentTarget),
                         data = this.context.getDataByPropertyAndValue.call(this, 'id', id);
@@ -197,8 +201,10 @@ define(['text!sulusalescore/components/editable-data-row/templates/address.form.
         },
 
         /**
-         * Flattens an address object or an array of addresses
-         * @param data
+         * Flattens an address object or an array of addresses.
+         *
+         * @param {Object} data
+         *
          * @returns {*}
          */
         flattenAddresses = function(data) {
@@ -223,14 +229,14 @@ define(['text!sulusalescore/components/editable-data-row/templates/address.form.
         },
 
         /**
-         * Renders the single row with the data according to the fields param or a replacement when no data is given
+         * Renders the single row with the data according to the fields param or a replacement when no data is given.
          */
         renderRow = function(data) {
             var $row,
                 $oldRow,
                 address;
 
-            // remove old row when rendering is triggered not for the first time
+            // Remove old row when rendering is triggered not for the first time.
             $oldRow = this.sandbox.dom.find(constants.rowClassSelector, this.context.$el);
             this.sandbox.dom.remove($oldRow);
 
@@ -255,8 +261,10 @@ define(['text!sulusalescore/components/editable-data-row/templates/address.form.
         },
 
         /**
-         * Returns the address according to the defined format
-         * @param address
+         * Returns the address according to the defined format.
+         *
+         * @param {Object} address
+         *
          * @returns {*}
          */
         getAddressString = function(address) {
@@ -277,7 +285,7 @@ define(['text!sulusalescore/components/editable-data-row/templates/address.form.
             this.context = context;
             this.sandbox = this.context.sandbox;
             this.options = this.sandbox.util.extend({}, defaults, options);
-            this.openedDialog = false; // used to determine if form is accessed via dialog or not
+            this.openedDialog = false; // Used to determine if form is accessed via dialog or not.
 
             bindCustomEvents.call(this);
             bindDomEvents.call(this);
