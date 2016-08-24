@@ -2,7 +2,8 @@ CHANGELOG for Sulu Sales
 ========================
 
 * dev-develop
-
+    
+    * BUGFIX      [OrderBundle]   Fixed bug with empty customer type select
     * BUGFIX      [CoreBundle]    Fixed initial format of global price when adding an empty row to item-table.
     * BUGFIX      [CoreBundle]    Fixed bug in overlay in component editable-data-row
     * ENHANCEMENT [OrderBundle]   Adopted UI of form

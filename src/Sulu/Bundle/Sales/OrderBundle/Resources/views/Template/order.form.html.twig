@@ -19,6 +19,8 @@
                             <div id="customer-type-select"
                                  class="grid-col-3"
                                  data-aura-default-label="<%= translate('dropdown.please-choose') %>"
+                                 data-aura-data='{{ customerTypes | json_encode() | raw }}'
+                                 data-aura-default-value='[{{ customerTypeDefault.id }}]'
                                  data-aura-component="select@husky"
                                  data-aura-value-name="name"
                                  data-aura-instance-name="customer-type-select"
