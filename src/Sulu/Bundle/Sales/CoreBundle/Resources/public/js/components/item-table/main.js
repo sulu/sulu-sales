@@ -175,20 +175,20 @@ define([
                 var globalRecurringPriceColumn = '';
                 if (!!this.options.displayRecurringPrices) {
                     globalRecurringPriceColumn = [
-                        '   <td class="js-global-recurring-price-value">',
+                        '<td class="js-global-recurring-price-value">',
                         valueRecurring,
-                        '   </td>'
+                        '</td>'
                     ].join('');
                 }
                 return [
                     '<tr>',
-                    '   <td>',
+                    '<td>',
                     title,
-                    '   </td>',
+                    '</td>',
                     globalRecurringPriceColumn,
-                    '   <td class="js-global-price-value">',
+                    '<td class="js-global-price-value">',
                     value,
-                    '   </td>',
+                    '</td>',
                     '</tr>'
                 ].join('');
             },
