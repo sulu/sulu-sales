@@ -42,9 +42,11 @@
             <%= header.discount %>
         </td>
         <% } if (columns.indexOf('totalPrice') > -1) { %>
-        <td class="js-item-overall-recurring-price item-overallRecurringPrice is-numeric">
-            <%= header.overallRecurringPrice %>
-        </td>
+            <% if (!!displayRecurringPrices) { %>
+                <td class="js-item-overall-recurring-price item-overallRecurringPrice is-numeric">
+                    <%= header.overallRecurringPrice %>
+                </td>
+            <% } %>
         <td class="js-item-overall-price item-overallPrice is-numeric">
             <%= header.overallPrice %>
         </td>

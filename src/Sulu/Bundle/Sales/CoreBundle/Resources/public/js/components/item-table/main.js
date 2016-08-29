@@ -82,6 +82,7 @@ define([
             deliveryCostChangedCallback: null,
             calculatePrices: true,
             displayToolbars: true,
+            displayRecurringPrices: Config.get('sulu_sales_core').display_recurring_prices,
             enableDeliveryCost: false,
             enableIndependentItems: false,
             formId: 'item-table-form',
@@ -171,14 +172,20 @@ define([
 
         templates = {
             priceRow: function(title, valueRecurring, value) {
+                var globalRecurringPriceColumn = '';
+                if (!!this.options.displayRecurringPrices) {
+                    globalRecurringPriceColumn = [
+                        '   <td class="js-global-recurring-price-value">',
+                        valueRecurring,
+                        '   </td>'
+                    ].join('');
+                }
                 return [
                     '<tr>',
                     '   <td>',
                     title,
                     '   </td>',
-                    '   <td class="js-global-recurring-price-value">',
-                    valueRecurring,
-                    '   </td>',
+                    globalRecurringPriceColumn,
                     '   <td class="js-global-price-value">',
                     value,
                     '   </td>',
@@ -1220,7 +1227,8 @@ define([
                         isEditable: this.options.isEditable,
                         rowId: rowId ? rowId : constants.rowIdPrefix + this.rowCount,
                         rowNumber: this.rowCount,
-                        showItemCount: this.options.showItemCount
+                        showItemCount: this.options.showItemCount,
+                        displayRecurringPrices: this.options.displayRecurringPrices
                     });
 
             // Don't show input fields when item is addon.
@@ -1507,7 +1515,8 @@ define([
                 numberFormat: this.sandbox.numberFormat,
                 settings: settings,
                 translate: this.sandbox.translate,
-                isEditable: this.options.isEditable
+                isEditable: this.options.isEditable,
+                displayRecurringPrices: this.options.displayRecurringPrices
             }, data);
 
             if (!templateData.hasOwnProperty(this.options.addressKey) || !templateData[this.options.addressKey]) {
@@ -1674,7 +1683,12 @@ define([
             data.description = getDataMapperPropertyValFromOverlay.call(this, 'description');
             data.quantity = this.sandbox.parseFloat(getDataMapperPropertyValFromOverlay.call(this, 'quantity'));
             data.price = this.sandbox.parseFloat(getDataMapperPropertyValFromOverlay.call(this, 'price'));
-            data.isRecurringPrice = this.sandbox.dom.find('#is-recurring-price')[0].checked;
+            data.isRecurringPrice = false;
+
+            var isRecurringPrice = getDataMapperPropertyValFromOverlay.call(this, 'isRecurringPrice');
+            if (!!isRecurringPrice && isRecurringPrice === 'on') {
+                data.isRecurringPrice = true;
+            }
 
             // Set address
             if (deliveryAddress !== '-1') {

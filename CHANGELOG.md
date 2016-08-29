@@ -1,6 +1,11 @@
 CHANGELOG for Sulu Sales
 ========================
 
+* dev-develop
+
+    * ENHANCMENT  [CoreBundle]    Item table shows now elements for recurring prices
+                                  only when `sulu_product.display_recurring_prices` is set to `true
+
 * 0.6.1 (2016-08-24)
 
     * BUGFIX      [OrderBundle]   Fixed bug with empty customer type select

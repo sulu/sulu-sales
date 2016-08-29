@@ -152,6 +152,7 @@
             <argument type="collection">
                 <argument key="default_currency" type="string">%sulu_product.default_currency%</argument>
                 <argument key="shop_location" type="string">%sulu_sales_core.shop_location%</argument>
+                <argument key="display_recurring_prices" type="string">%sulu_product.display_recurring_prices%</argument>
             </argument>
             <tag name="sulu.js_config" />
         </service>
