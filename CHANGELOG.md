@@ -1,6 +1,10 @@
 CHANGELOG for Sulu Sales
 ========================
 
+* dev-develop
+
+    * ENHANCEMENT [OrderBundle]   Added prices to Order/OrderInterface
+
 * 0.6.2 (2016-08-29)
 
     * ENHANCMENT  [CoreBundle]    Item table shows now elements for recurring prices
