@@ -23,22 +23,21 @@ use Sulu\Component\Security\Authentication\UserInterface;
 interface ApiOrderInterface
 {
     /**
-     * Returns the id of the order entity
-
+     * Returns the id of the order entity.
+     *
      * @return int
      */
     public function getId();
 
     /**
-     *
-     * @return int
+     * @return string
      */
     public function getNumber();
 
     /**
-     * @param $number
+     * @param string $number
      *
-     * @return Order
+     * @return self
      */
     public function setNumber($number);
 
@@ -50,7 +49,7 @@ interface ApiOrderInterface
     /**
      * @param DateTime $created
      *
-     * @return Order
+     * @return self
      */
     public function setCreated(DateTime $created);
 
@@ -62,38 +61,30 @@ interface ApiOrderInterface
     /**
      * @param DateTime $changed
      *
-     * @return Order
+     * @return self
      */
     public function setChanged(DateTime $changed);
 
     /**
-     * Set status
+     * @param OrderStatus $status
      *
-     * @param OrderStatus
-     *
-     * @return Order
+     * @return self
      */
     public function setStatus($status);
 
     /**
-     * Get order status
-     *
      * @return OrderStatus
      */
     public function getStatus();
 
     /**
-     * Set currency-code
-     *
      * @param string $currency
      *
-     * @return Order
+     * @return self
      */
     public function setCurrencyCode($currency);
 
     /**
-     * Get currency-code
-     *
      * @return string
      */
     public function getCurrencyCode();
@@ -101,7 +92,7 @@ interface ApiOrderInterface
     /**
      * @param string $customerName
      *
-     * @return Order
+     * @return self
      */
     public function setCustomerName($customerName);
 
@@ -111,65 +102,49 @@ interface ApiOrderInterface
     public function getCustomerName();
 
     /**
-     * Set termsOfDelivery
-     *
      * @param TermsOfDelivery $termsOfDelivery
      *
-     * @return Order
+     * @return self
      */
-    public function setTermsOfDelivery($termsOfDelivery);
+    public function setTermsOfDelivery(TermsOfDelivery $termsOfDelivery);
 
     /**
-     * Get termsOfDelivery
-     *
      * @return TermsOfDelivery
      */
     public function getTermsOfDelivery();
 
     /**
-     * Set termsOfPayment
-     *
      * @param TermsOfPayment $termsOfPayment
      *
-     * @return Order
+     * @return self
      */
-    public function setTermsOfPayment($termsOfPayment);
+    public function setTermsOfPayment(TermsOfPayment $termsOfPayment);
 
     /**
-     * Get termsOfPayment
-     *
      * @return TermsOfPayment
      */
     public function getTermsOfPayment();
 
     /**
-     * Set termsOfPayment
-     *
      * @param string $termsOfPayment
      *
-     * @return Order
+     * @return self
      */
     public function setTermsOfPaymentContent($termsOfPayment);
 
     /**
-     * Get termsOfPayment
-     *
      * @return string
      */
     public function getTermsOfPaymentContent();
 
     /**
-     * Set termsOfDelivery
-     *
      * @param string $termsOfDelivery
      *
-     * @return Order
+     * @return self
      */
     public function setTermsOfDeliveryContent($termsOfDelivery);
 
     /**
-     * Get termsOfDelivery
-     *
      * @return string
      */
     public function getTermsOfDeliveryContent();
@@ -177,7 +152,7 @@ interface ApiOrderInterface
     /**
      * @param float $deliveryCost
      *
-     * @return Order
+     * @return self
      */
     public function setDeliveryCost($deliveryCost);
 
@@ -187,211 +162,159 @@ interface ApiOrderInterface
     public function getDeliveryCost();
 
     /**
-     * Set costCentre
-     *
      * @param string $costCentre
      *
-     * @return Order
+     * @return self
      */
     public function setCostCentre($costCentre);
 
     /**
-     * Get costCentre
-     *
      * @return string
      */
     public function getCostCentre();
 
     /**
-     * Set commission
-     *
      * @param string $commission
      *
-     * @return Order
+     * @return self
      */
     public function setCommission($commission);
 
     /**
-     * Get commission
-     *
      * @return string
      */
     public function getCommission();
 
     /**
-     * Set desiredDeliveryDate
-     *
      * @param \DateTime $desiredDeliveryDate
      *
-     * @return Order
+     * @return self
      */
     public function setDesiredDeliveryDate($desiredDeliveryDate);
 
     /**
-     * Get desiredDeliveryDate
-     *
      * @return \DateTime
      */
     public function getDesiredDeliveryDate();
 
     /**
-     * Set taxfree
-     *
      * @param boolean $taxfree
      *
-     * @return Order
+     * @return self
      */
     public function setTaxfree($taxfree);
 
     /**
-     * Get taxfree
-     *
      * @return boolean
      */
     public function getTaxfree();
 
     /**
-     * Set account
+     * @param AccountInterface|null $account
      *
-     * @param AccountInterface $account
-     *
-     * @return Order
+     * @return self
      */
     public function setCustomerAccount(AccountInterface $account = null);
 
     /**
-     * Get account
-     *
      * @return AccountInterface
      */
     public function getCustomerAccount();
 
     /**
-     * Set contact
+     * @param ContactInterface|null $contact
      *
-     * @param ContactInterface $contact
-     *
-     * @return Order
+     * @return self
      */
     public function setCustomerContact(ContactInterface $contact = null);
 
     /**
-     * Get contact
-     *
      * @return ContactInterface
      */
     public function getCustomerContact();
 
     /**
-     * Set responsibleContact
+     * @param ContactInterface|null $responsibleContact
      *
-     * @param ContactInterface $responsibleContact
-     *
-     * @return Order
+     * @return self
      */
     public function setResponsibleContact(ContactInterface $responsibleContact = null);
 
     /**
-     * Get responsibleContact
-     *
      * @return ContactInterface
      */
     public function getResponsibleContact();
 
     /**
-     * Add item
-     *
      * @param ItemInterface $item
      *
-     * @return Order
+     * @return self
      */
     public function addItem(ItemInterface $item);
 
     /**
-     * Remove item
-     *
      * @param ItemInterface $item
      *
-     * @return Order
+     * @return self
      */
     public function removeItem(ItemInterface $item);
 
     /**
-     * Get items
-     *
      * @return \Doctrine\Common\Collections\Collection
      */
     public function getItems();
 
     /**
-     * Get item entity by id
-     *
-     * @param $id
+     * @param string $id
      *
      * @return mixed
      */
     public function getItem($id);
 
     /**
-     * Set changer
+     * @param UserInterface|null $changer
      *
-     * @param UserInterface $changer
-     *
-     * @return Order
+     * @return self
      */
     public function setChanger(UserInterface $changer = null);
 
     /**
-     * Get changer
-     *
      * @return UserInterface
      */
     public function getChanger();
 
     /**
-     * Set creator
+     * @param UserInterface|null $creator
      *
-     * @param UserInterface $creator
-     *
-     * @return Order
+     * @return self
      */
     public function setCreator(UserInterface $creator = null);
 
     /**
-     * Get creator
-     *
      * @return UserInterface
      */
     public function getCreator();
 
     /**
-     * Set deliveryAddress
+     * @param OrderAddressInterface|null $deliveryAddress
      *
-     * @param OrderAddressInterface $deliveryAddress
-     *
-     * @return Order
+     * @return self
      */
     public function setDeliveryAddress(OrderAddressInterface $deliveryAddress = null);
 
     /**
-     * Get deliveryAddress
-     *
      * @return OrderAddressEntity
      */
     public function getDeliveryAddress();
 
     /**
-     * Set invoiceAddress
+     * @param OrderAddressInterface|null $invoiceAddress
      *
-     * @param OrderAddressInterface $invoiceAddress
-     *
-     * @return Order
+     * @return self
      */
     public function setInvoiceAddress(OrderAddressInterface $invoiceAddress = null);
 
     /**
-     * Get invoiceAddress
-     *
      * @return OrderAddressEntity
      */
     public function getInvoiceAddress();
@@ -399,7 +322,7 @@ interface ApiOrderInterface
     /**
      * @param $number
      *
-     * @return Order
+     * @return self
      */
     public function setOrderNumber($number);
 
@@ -409,9 +332,9 @@ interface ApiOrderInterface
     public function getOrderNumber();
 
     /**
-     * @param $totalNetPrice
+     * @param float $totalNetPrice
      *
-     * @return $this
+     * @return self
      */
     public function setTotalNetPrice($totalNetPrice);
 
@@ -421,16 +344,16 @@ interface ApiOrderInterface
     public function getTotalNetPrice();
 
     /**
-     * @param string $locale
+     * @param string $locale|null
      *
      * @return string
      */
     public function getTotalNetPriceFormatted($locale = null);
 
     /**
-     * @param $totalRecurringNetPrice
+     * @param float $totalRecurringNetPrice
      *
-     * @return $this
+     * @return self
      */
     public function setTotalRecurringNetPrice($totalRecurringNetPrice);
 
@@ -440,14 +363,14 @@ interface ApiOrderInterface
     public function getTotalRecurringNetPrice();
 
     /**
-     * @param string $locale
+     * @param string $locale|null
      *
      * @return string
      */
     public function getTotalRecurringNetPriceFormatted($locale = null);
 
     /**
-     * @param string $locale
+     * @param string $locale|null
      *
      * @return string
      */
@@ -456,7 +379,7 @@ interface ApiOrderInterface
     /**
      * @param DateTime
      *
-     * @return Order
+     * @return self
      */
     public function setOrderDate($orderDate);
 
