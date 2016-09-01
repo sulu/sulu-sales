@@ -421,9 +421,23 @@ interface ApiOrderInterface
     public function getTotalNetPrice();
 
     /**
+     * @param string $locale
+     *
      * @return string
      */
     public function getTotalNetPriceFormatted($locale = null);
+
+    /**
+     * @param $totalRecurringNetPrice
+     *
+     * @return $this
+     */
+    public function setTotalRecurringNetPrice($totalRecurringNetPrice);
+
+    /**
+     * @return float
+     */
+    public function getTotalRecurringNetPrice();
 
     /**
      * @param string $locale
@@ -433,6 +447,8 @@ interface ApiOrderInterface
     public function getTotalRecurringNetPriceFormatted($locale = null);
 
     /**
+     * @param string $locale
+     *
      * @return string
      */
     public function getDeliveryCostFormatted($locale = null);

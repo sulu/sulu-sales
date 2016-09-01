@@ -15,12 +15,19 @@
                 <option name="default">0</option>
             </options>
         </field>
+        <field name="totalPrice" type="float" column="totalPrice" nullable="true"/>
         <field name="totalNetPrice" type="float" column="totalNetPrice" nullable="true"/>
+        <field name="totalRecurringPrice" type="float" column="totalRecurringPrice" nullable="true"/>
         <field name="totalRecurringNetPrice" type="float" column="totalRecurringNetPrice" nullable="true"/>
         <field name="costCentre" type="string" column="costCentre" nullable="true"/>
         <field name="commission" type="string" column="commission" nullable="true"/>
         <field name="customerName" type="string" column="customerName" length="255" nullable="false"/>
         <field name="deliveryCost" type="float" column="deliveryCost" nullable="true">
+            <options>
+                <option name="default">0</option>
+            </options>
+        </field>
+        <field name="netDeliveryCost" type="float" column="netDeliveryCost" nullable="true">
             <options>
                 <option name="default">0</option>
             </options>

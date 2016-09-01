@@ -10,8 +10,6 @@ use Sulu\Component\Security\Authentication\UserInterface;
 interface OrderInterface
 {
     /**
-     * Set number
-     *
      * @param string $number
      *
      * @return OrderInterface
@@ -19,15 +17,11 @@ interface OrderInterface
     public function setNumber($number);
 
     /**
-     * Get number
-     *
      * @return string
      */
     public function getNumber();
 
     /**
-     * Set orderNumber
-     *
      * @param string $orderNumber
      *
      * @return OrderInterface
@@ -35,15 +29,11 @@ interface OrderInterface
     public function setOrderNumber($orderNumber);
 
     /**
-     * Get orderNumber
-     *
      * @return string
      */
     public function getOrderNumber();
 
     /**
-     * Set currency
-     *
      * @param string $currency
      *
      * @return OrderInterface
@@ -51,15 +41,11 @@ interface OrderInterface
     public function setCurrencyCode($currency);
 
     /**
-     * Get currency
-     *
      * @return string
      */
     public function getCurrencyCode();
 
     /**
-     * Set taxfree
-     *
      * @param boolean $taxfree
      *
      * @return OrderInterface
@@ -67,15 +53,11 @@ interface OrderInterface
     public function setTaxfree($taxfree);
 
     /**
-     * Get taxfree
-     *
      * @return boolean
      */
     public function getTaxfree();
 
     /**
-     * Set costCentre
-     *
      * @param string $costCentre
      *
      * @return OrderInterface
@@ -83,15 +65,11 @@ interface OrderInterface
     public function setCostCentre($costCentre);
 
     /**
-     * Get costCentre
-     *
      * @return string
      */
     public function getCostCentre();
 
     /**
-     * Set commission
-     *
      * @param string $commission
      *
      * @return OrderInterface
@@ -99,15 +77,11 @@ interface OrderInterface
     public function setCommission($commission);
 
     /**
-     * Get commission
-     *
      * @return string
      */
     public function getCommission();
 
     /**
-     * Set customerName
-     *
      * @param string $customerName
      *
      * @return OrderInterface
@@ -115,15 +89,11 @@ interface OrderInterface
     public function setCustomerName($customerName);
 
     /**
-     * Get customerName
-     *
      * @return string
      */
     public function getCustomerName();
 
     /**
-     * Set termsOfDeliveryContent
-     *
      * @param string $termsOfDeliveryContent
      *
      * @return OrderInterface
@@ -131,15 +101,11 @@ interface OrderInterface
     public function setTermsOfDeliveryContent($termsOfDeliveryContent);
 
     /**
-     * Get termsOfDeliveryContent
-     *
      * @return string
      */
     public function getTermsOfDeliveryContent();
 
     /**
-     * Set termsOfPaymentContent
-     *
      * @param string $termsOfPaymentContent
      *
      * @return OrderInterface
@@ -147,15 +113,11 @@ interface OrderInterface
     public function setTermsOfPaymentContent($termsOfPaymentContent);
 
     /**
-     * Get termsOfPaymentContent
-     *
      * @return string
      */
     public function getTermsOfPaymentContent();
 
     /**
-     * Set created
-     *
      * @param \DateTime $created
      *
      * @return OrderInterface
@@ -163,15 +125,11 @@ interface OrderInterface
     public function setCreated($created);
 
     /**
-     * Get created
-     *
      * @return \DateTime
      */
     public function getCreated();
 
     /**
-     * Set changed
-     *
      * @param \DateTime $changed
      *
      * @return OrderInterface
@@ -179,15 +137,11 @@ interface OrderInterface
     public function setChanged($changed);
 
     /**
-     * Get changed
-     *
      * @return \DateTime
      */
     public function getChanged();
 
     /**
-     * Set desiredDeliveryDate
-     *
      * @param \DateTime $desiredDeliveryDate
      *
      * @return OrderInterface
@@ -195,32 +149,24 @@ interface OrderInterface
     public function setDesiredDeliveryDate($desiredDeliveryDate);
 
     /**
-     * Get desiredDeliveryDate
-     *
      * @return \DateTime
      */
     public function getDesiredDeliveryDate();
 
     /**
-     * Get id
-     *
      * @return integer
      */
     public function getId();
 
     /**
-     * Set deliveryAddress
-     *
      * @param OrderAddressInterface $deliveryAddress
      *
-     * @return OrderInterfaceInterface
+     * @return OrderAddressInterface
      */
     public function setDeliveryAddress(OrderAddressInterface $deliveryAddress = null);
 
     /**
-     * Get deliveryAddress
-     *
-     * @return OrderInterfaceAddress
+     * @return OrderAddressInterface
      */
     public function getDeliveryAddress();
 
@@ -234,9 +180,7 @@ interface OrderInterface
     public function setInvoiceAddress(OrderAddressInterface $invoiceAddress = null);
 
     /**
-     * Get invoiceAddress
-     *
-     * @return OrderInterfaceAddress
+     * @return OrderAddressInterface
      */
     public function getInvoiceAddress();
 
@@ -250,15 +194,11 @@ interface OrderInterface
     public function setStatus(OrderStatusInterface $status);
 
     /**
-     * Get status
-     *
      * @return OrderStatusInterface
      */
     public function getStatus();
 
     /**
-     * Set contact
-     *
      * @param ContactInterface $contact
      *
      * @return OrderInterface
@@ -266,15 +206,11 @@ interface OrderInterface
     public function setCustomerContact(ContactInterface $contact = null);
 
     /**
-     * Get contact
-     *
      * @return ContactInterface
      */
     public function getCustomerContact();
 
     /**
-     * Add items
-     *
      * @param ItemInterface $items
      *
      * @return OrderInterface
@@ -282,22 +218,16 @@ interface OrderInterface
     public function addItem(ItemInterface $items);
 
     /**
-     * Remove items
-     *
      * @param ItemInterface $items
      */
     public function removeItem(ItemInterface $items);
 
     /**
-     * Get items
-     *
      * @return \Doctrine\Common\Collections\Collection
      */
     public function getItems();
 
     /**
-     * Set changer
-     *
      * @param UserInterface $changer
      *
      * @return OrderInterface
@@ -305,15 +235,12 @@ interface OrderInterface
     public function setChanger(UserInterface $changer = null);
 
     /**
-     * Get changer
      *
      * @return UserInterface
      */
     public function getChanger();
 
     /**
-     * Set creator
-     *
      * @param UserInterface $creator
      *
      * @return OrderInterface
@@ -321,15 +248,23 @@ interface OrderInterface
     public function setCreator(UserInterface $creator = null);
 
     /**
-     * Get creator
-     *
      * @return UserInterface
      */
     public function getCreator();
 
     /**
-     * Set totalNetPrice
+     * @param float $totalPrice
      *
+     * @return OrderInterface
+     */
+    public function setTotalPrice($totalPrice);
+
+    /**
+     * @return float
+     */
+    public function getTotalPrice();
+
+    /**
      * @param float $totalNetPrice
      *
      * @return OrderInterface
@@ -337,11 +272,16 @@ interface OrderInterface
     public function setTotalNetPrice($totalNetPrice);
 
     /**
-     * Get totalNetPrice
-     *
      * @return float
      */
     public function getTotalNetPrice();
+
+    /**
+     * @param float $totalRecurringNetPrice
+     *
+     * @return OrderInterface
+     */
+    public function setTotalRecurringNetPrice($totalRecurringNetPrice);
 
     /**
      * @return float
@@ -349,8 +289,18 @@ interface OrderInterface
     public function getTotalRecurringNetPrice();
 
     /**
-     * Set orderDate
+     * @param float $totalRecurringPrice
      *
+     * @return OrderInterface
+     */
+    public function setTotalRecurringPrice($totalRecurringPrice);
+
+    /**
+     * @return float
+     */
+    public function getTotalRecurringPrice();
+
+    /**
      * @param \DateTime $orderDate
      *
      * @return OrderInterface
@@ -358,20 +308,16 @@ interface OrderInterface
     public function setOrderDate($orderDate);
 
     /**
-     * Get orderDate
-     *
      * @return \DateTime
      */
     public function getOrderDate();
 
     /**
-     * Updates the total net price
+     * Updates the total net price.
      */
     public function updateTotalNetPrice();
 
     /**
-     * Set deliveryCost
-     *
      * @param float $deliveryCost
      *
      * @return OrderInterface
@@ -379,9 +325,19 @@ interface OrderInterface
     public function setDeliveryCost($deliveryCost);
 
     /**
-     * Get deliveryCost
-     *
      * @return float
      */
     public function getDeliveryCost();
+
+    /**
+     * @param float $netDeliveryCost
+     *
+     * @return OrderInterface
+     */
+    public function setNetDeliveryCost($netDeliveryCost);
+
+    /**
+     * @return float
+     */
+    public function getNetDeliveryCost();
 }
