@@ -367,7 +367,7 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
      *
      * @return Order
      */
-    public function setTermsOfDelivery($termsOfDelivery)
+    public function setTermsOfDelivery(TermsOfDelivery $termsOfDelivery)
     {
         $this->entity->setTermsOfDelivery($termsOfDelivery);
 
@@ -399,7 +399,7 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
      *
      * @return Order
      */
-    public function setTermsOfPayment($termsOfPayment)
+    public function setTermsOfPayment(TermsOfPayment $termsOfPayment)
     {
         $this->entity->setTermsOfPayment($termsOfPayment);
 

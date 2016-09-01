@@ -88,7 +88,17 @@ abstract class BaseOrder implements OrderInterface
     /**
      * @var float
      */
+    protected $totalPrice;
+
+    /**
+     * @var float
+     */
     protected $totalNetPrice;
+
+    /**
+     * @var float
+     */
+    protected $totalRecurringPrice;
 
     /**
      * @var float
@@ -99,6 +109,11 @@ abstract class BaseOrder implements OrderInterface
      * @var \DateTime
      */
     protected $orderDate;
+
+    /**
+     * @var float
+     */
+    protected $netDeliveryCost = 0;
 
     /**
      * @var float
@@ -368,6 +383,24 @@ abstract class BaseOrder implements OrderInterface
     /**
      * {@inheritDoc}
      */
+    public function setTotalPrice($totalPrice)
+    {
+        $this->totalPrice = $totalPrice;
+
+        return $this;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getTotalPrice()
+    {
+        return $this->totalNetPrice;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function setOrderDate($orderDate)
     {
         $this->orderDate = $orderDate;
@@ -420,7 +453,25 @@ abstract class BaseOrder implements OrderInterface
     }
 
     /**
-     * @return float
+     * {@inheritDoc}
+     */
+    public function setNetDeliveryCost($netDeliveryCost = 0)
+    {
+        $this->netDeliveryCost = $netDeliveryCost;
+
+        return $this;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getNetDeliveryCost()
+    {
+        return $this->deliveryCost;
+    }
+
+    /**
+     * {@inheritDoc}
      */
     public function getTotalRecurringNetPrice()
     {
@@ -428,13 +479,29 @@ abstract class BaseOrder implements OrderInterface
     }
 
     /**
-     * @param float $totalRecurringNetPrice
-     *
-     * @return self
+     * {@inheritDoc}
      */
     public function setTotalRecurringNetPrice($totalRecurringNetPrice)
     {
         $this->totalRecurringNetPrice = $totalRecurringNetPrice;
+
+        return $this;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getTotalRecurringPrice()
+    {
+        return $this->totalRecurringPrice;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setTotalRecurringPrice($totalRecurringPrice)
+    {
+        $this->totalRecurringPrice = $totalRecurringPrice;
 
         return $this;
     }
