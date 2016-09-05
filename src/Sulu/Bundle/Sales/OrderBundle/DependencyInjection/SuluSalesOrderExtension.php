@@ -29,10 +29,19 @@ class SuluSalesOrderExtension extends Extension
         $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.xml');
 
-        // set pdf templates
-        $this->setParameters($container, 'sulu_sales_order.pdf_templates', $config['pdf_templates']);
+        // set pdf templates.
+        $this->setParameters(
+            $container,
+            'sulu_sales_order.pdf_templates',
+            $config['pdf_templates']
+        );
+
         // set email templates
-        $this->setParameters($container, 'sulu_sales_order.email_templates', $config['email_templates']);
+        $this->setParameters(
+            $container,
+            'sulu_sales_order.email_templates',
+            $config['email_templates']
+        );
 
         // email confirmation settings
         $shopEmailFrom = null;
@@ -43,8 +52,14 @@ class SuluSalesOrderExtension extends Extension
         if (isset($config['shop_email_confirmation_to'])) {
             $shopEmailConfirmationTo = $config['shop_email_confirmation_to'];
         }
-        $container->setParameter('sulu_sales_order.shop_email_from', $shopEmailFrom);
-        $container->setParameter('sulu_sales_order.shop_email_confirmation_to', $shopEmailConfirmationTo);
+        $container->setParameter(
+            'sulu_sales_order.shop_email_from',
+            $shopEmailFrom
+        );
+        $container->setParameter(
+            'sulu_sales_order.shop_email_confirmation_to',
+            $shopEmailConfirmationTo
+        );
         $container->setParameter(
             'sulu_sales_order.send_email_confirmation_to_customer',
             $config['send_email_confirmation_to_customer']
@@ -56,6 +71,14 @@ class SuluSalesOrderExtension extends Extension
         $container->setParameter(
             'sulu_sales_order.pdf_response_type',
             $config['pdf_response_type']
+        );
+        $container->setParameter(
+            'sulu_sales_order.pdf_order_confirmation_name_prefix',
+            $config['pdf_order_confirmation_name_prefix']
+        );
+        $container->setParameter(
+            'sulu_sales_order.pdf_order_unsubmitted_name_prefix',
+            $config['pdf_order_unsubmitted_name_prefix']
         );
     }
 

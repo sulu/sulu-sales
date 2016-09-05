@@ -61,7 +61,52 @@ class PdfController extends RestController
 
         $pdf = $this->getPdfManager()->createOrderConfirmation($orderApiEntity);
 
-        $pdfName = $this->getPdfManager()->getPdfName($order);
+        // Get pdf name with function parameter isSubmitted = true.
+        $pdfName = $this->getPdfManager()->getPdfName($order, true);
+        $responseType = $this->container->getParameter('sulu_sales_order.pdf_response_type');
+
+        return new Response(
+            $pdf,
+            200,
+            array(
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => $responseType . '; ' . 'filename="' . $pdfName . '"'
+            )
+        );
+    }
+
+    /**
+     * Endpoint that returns a pdf of a given order id.
+     *
+     * @param Request $request
+     * @param $id
+     *
+     * @throws OrderNotFoundException
+     *
+     * @return Response
+     */
+    public function orderPdfAction(Request $request, $id)
+    {
+        $locale = $this->getLocale($request);
+
+        $this->get('translator')->setLocale($locale);
+
+        $orderRepository = $this->get('sulu_sales_order.order_repository');
+
+        try {
+            $orderApiEntity = $this->getOrderManager()->findByIdAndLocale($id, $locale);
+            $order = $orderApiEntity->getEntity();
+        } catch (OrderNotFoundException $exc) {
+            throw new OrderNotFoundException($id);
+        }
+
+        // Get pdf file from manager. Function parameter fallbacks are sufficient.
+        $pdf = $this->getPdfManager()->createOrderPdfDynamic($orderApiEntity);
+
+        // Get the filename with parameter: isSubmitted = false since this is the unsubmitted case.
+        $pdfName = $this->getPdfManager()->getPdfName($order, false);
+
+        // Get the response type defined in the parameters.yml.
         $responseType = $this->container->getParameter('sulu_sales_order.pdf_response_type');
 
         return new Response(
