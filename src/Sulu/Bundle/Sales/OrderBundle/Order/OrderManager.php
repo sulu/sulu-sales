@@ -404,7 +404,7 @@ class OrderManager
     }
 
     /**
-     * Function updates the api-entity, like price-calculations
+     * Function updates the api-entity, like price-calculations.
      *
      * @param Order $apiOrder
      */
@@ -413,8 +413,8 @@ class OrderManager
         $items = $apiOrder->getItems();
 
         // Perform price calculation.
-        $groupedPrices = null;
-        $supplierItems = null;
+        $groupedPrices = [];
+        $supplierItems = [];
 
         $prices = $this->priceCalculator->calculate(
             $items,

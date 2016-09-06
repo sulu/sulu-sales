@@ -781,7 +781,7 @@ class ItemManager
      * @param null|DateTime $currentDate
      * @param callable $setCallback
      */
-    protected function setDate($data, $key, $currentDate, callable $setCallback)
+    protected function setDate($data, $key, DateTime $currentDate = null, callable $setCallback)
     {
         $date = $this->getProperty($data, $key, $currentDate);
         if ($date !== null) {
