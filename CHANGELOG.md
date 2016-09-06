@@ -1,7 +1,7 @@
 CHANGELOG for Sulu Sales
 ========================
 
-* dev-develop
+* 0.7.0 (2016-09-06)
 
     * FEATURE     [CoreBundle]    Renamed delivery cost to shipping costs
     * FEATURE     [OrderBundle]   Renamed delivery cost to shipping costs
