@@ -10,6 +10,7 @@
 
 namespace Sulu\Bundle\Sales\OrderBundle\Entity;
 
+use Sulu\Bundle\Sales\CoreBundle\Entity\Item;
 use Sulu\Component\Contact\Model\ContactInterface;
 use Sulu\Component\Security\Authentication\UserInterface;
 
@@ -425,14 +426,17 @@ abstract class BaseOrder implements OrderInterface
             return;
         }
 
-        $sum = 0;
+        $totalNetPrice = 0;
+        /** @var Item $item */
         foreach ($this->getItems() as $item) {
-            $sum += $item->getTotalNetPrice();
+            if (!$item->isRecurringPrice()) {
+                $totalNetPrice += $item->getTotalNetPrice();
+            }
         }
 
-        $sum += self::getNetShippingCosts();
+        $totalNetPrice += self::getNetShippingCosts();
 
-        $this->setTotalNetPrice($sum);
+        $this->setTotalNetPrice($totalNetPrice);
     }
 
     /**
