@@ -3,6 +3,8 @@ CHANGELOG for Sulu Sales
 
 * dev-develop
 
+    * FEATURE     [CoreBundle]    Renamed delivery cost to shipping costs
+    * FEATURE     [OrderBundle]   Renamed delivery cost to shipping costs
     * ENHANCEMENT [OrderBundle]   Added prices to Order/OrderInterface
 
 * 0.6.2 (2016-08-29)

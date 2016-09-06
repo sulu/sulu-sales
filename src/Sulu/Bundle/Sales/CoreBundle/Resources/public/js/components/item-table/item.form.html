@@ -24,12 +24,12 @@ disabled =  'disabled';
         </ul>
     </div>
 
-    <% if (enableDeliveryCost == true) { %>
-    <div class="grid-col-7 delivery-cost m-top-20" data-name="deliveryCost">
-        <label><%= translate('salescore.item.delivery-cost') %></label>
-        <input id="delivery-cost" class="price input-field form-element"
+    <% if (enableNetShippingCosts == true) { %>
+    <div class="grid-col-7 net-shipping-costs m-top-20" data-name="netShippingCosts">
+        <label><%= translate('salescore.item.net-shipping-costs') %></label>
+        <input id="net-shipping-costs" class="price input-field form-element"
                 data-validation-required="true"
-                value="<%= deliveryCost %>"
+                value="<%= netShippingCosts %>"
                 data-type="decimal"
                 data-validation-max="999999999"
         <%= disabled %>/>

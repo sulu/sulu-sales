@@ -10,6 +10,7 @@
 
 namespace Sulu\Bundle\Sales\OrderBundle\Entity;
 
+use Sulu\Bundle\Sales\CoreBundle\Entity\Item;
 use Sulu\Component\Contact\Model\ContactInterface;
 use Sulu\Component\Security\Authentication\UserInterface;
 
@@ -113,12 +114,12 @@ abstract class BaseOrder implements OrderInterface
     /**
      * @var float
      */
-    protected $netDeliveryCost = 0;
+    protected $netShippingCosts = 0;
 
     /**
      * @var float
      */
-    protected $deliveryCost = 0;
+    protected $shippingCosts = 0;
 
     /**
      * {@inheritDoc}
@@ -417,9 +418,7 @@ abstract class BaseOrder implements OrderInterface
     }
 
     /**
-     * FIXME: this function does not really belong here
-     *
-     * Updates the total net price
+     * Updates the total net price.
      */
     public function updateTotalNetPrice()
     {
@@ -427,19 +426,25 @@ abstract class BaseOrder implements OrderInterface
             return;
         }
 
-        $sum = 0;
+        $totalNetPrice = 0;
+        /** @var Item $item */
         foreach ($this->getItems() as $item) {
-            $sum += $item->getTotalNetPrice();
+            if (!$item->isRecurringPrice()) {
+                $totalNetPrice += $item->getTotalNetPrice();
+            }
         }
-        $this->setTotalNetPrice($sum);
+
+        $totalNetPrice += self::getNetShippingCosts();
+
+        $this->setTotalNetPrice($totalNetPrice);
     }
 
     /**
      * {@inheritDoc}
      */
-    public function setDeliveryCost($deliveryCost = 0)
+    public function setShippingCosts($shippingCosts = 0)
     {
-        $this->deliveryCost = $deliveryCost;
+        $this->shippingCosts = $shippingCosts;
 
         return $this;
     }
@@ -447,17 +452,17 @@ abstract class BaseOrder implements OrderInterface
     /**
      * {@inheritDoc}
      */
-    public function getDeliveryCost()
+    public function getShippingCosts()
     {
-        return $this->deliveryCost;
+        return $this->shippingCosts;
     }
 
     /**
      * {@inheritDoc}
      */
-    public function setNetDeliveryCost($netDeliveryCost = 0)
+    public function setNetShippingCosts($netShippingCosts = 0)
     {
-        $this->netDeliveryCost = $netDeliveryCost;
+        $this->netShippingCosts = $netShippingCosts;
 
         return $this;
     }
@@ -465,9 +470,9 @@ abstract class BaseOrder implements OrderInterface
     /**
      * {@inheritDoc}
      */
-    public function getNetDeliveryCost()
+    public function getNetShippingCosts()
     {
-        return $this->deliveryCost;
+        return $this->netShippingCosts;
     }
 
     /**

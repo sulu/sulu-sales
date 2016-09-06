@@ -318,26 +318,26 @@ interface OrderInterface
     public function updateTotalNetPrice();
 
     /**
-     * @param float $deliveryCost
+     * @param float $shippingCosts
      *
      * @return OrderInterface
      */
-    public function setDeliveryCost($deliveryCost);
+    public function setShippingCosts($shippingCosts);
 
     /**
      * @return float
      */
-    public function getDeliveryCost();
+    public function getShippingCosts();
 
     /**
-     * @param float $netDeliveryCost
+     * @param float $netShippingCosts
      *
      * @return OrderInterface
      */
-    public function setNetDeliveryCost($netDeliveryCost);
+    public function setNetShippingCosts($netShippingCosts);
 
     /**
      * @return float
      */
-    public function getNetDeliveryCost();
+    public function getNetShippingCosts();
 }

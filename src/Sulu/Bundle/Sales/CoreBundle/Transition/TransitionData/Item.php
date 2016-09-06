@@ -63,7 +63,7 @@ class Item
     /**
      * @var float
      */
-    private $deliveryCost;
+    private $netShippingCosts;
 
     /**
      * @var string
@@ -181,7 +181,7 @@ class Item
             'quantity' => $this->quantity,
             'quantityUnit' => $this->quantityUnit,
             'deliveryDate' => $this->deliveryDate,
-            'deliveryCost' => $this->deliveryCost,
+            'netShippingCosts' => $this->netShippingCosts,
             'note' => $this->note,
         ];
 
@@ -255,17 +255,17 @@ class Item
     /**
      * @return float
      */
-    public function getDeliveryCost()
+    public function getNetShippingCosts()
     {
-        return $this->deliveryCost;
+        return $this->netShippingCosts;
     }
 
     /**
-     * @param float $deliveryCost
+     * @param float $netShippingCosts
      */
-    public function setDeliveryCost($deliveryCost)
+    public function setNetShippingCosts($netShippingCosts)
     {
-        $this->deliveryCost = $deliveryCost;
+        $this->netShippingCosts = $netShippingCosts;
     }
 
     /**
