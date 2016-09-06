@@ -798,10 +798,10 @@ define([
                             units: this.options.units
                         },
                         taxfree: this.options.data.taxfree,
-                        deliveryCost: this.options.data.deliveryCost,
-                        enableDeliveryCost: true,
-                        deliveryCostChangedCallback: function(cost) {
-                            this.deliveryCost = cost;
+                        netShippingCosts: this.options.data.netShippingCosts,
+                        enableNetShippingCosts: true,
+                        netShippingCostsChangedCallback: function(cost) {
+                            this.netShippingCosts = cost;
                         }.bind(this)
                     }
                 },
@@ -839,7 +839,7 @@ define([
                 // has to be set this way.
                 data.currencyCode = !!this.currency ? this.currency : this.options.data.currencyCode;
 
-                data.deliveryCost = this.deliveryCost;
+                data.netShippingCosts = this.netShippingCosts;
 
                 // Only get id, if auto-complete is not empty:
                 data.customerAccount = {

@@ -471,27 +471,27 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     }
 
     /**
-     * @param float $deliveryCost
+     * @param float $netShippingCosts
      *
      * @return Order
      */
-    public function setDeliveryCost($deliveryCost)
+    public function setNetShippingCosts($netShippingCosts)
     {
-        $this->entity->setDeliveryCost($deliveryCost);
+        $this->entity->setNetShippingCosts($netShippingCosts);
 
         return $this;
     }
 
     /**
      * @VirtualProperty
-     * @SerializedName("deliveryCost")
+     * @SerializedName("netShippingCosts")
      * @Groups({"Default","cart"})
      *
      * @return float
      */
-    public function getDeliveryCost()
+    public function getNetShippingCosts()
     {
-        return $this->entity->getDeliveryCost();
+        return $this->entity->getNetShippingCosts();
     }
 
     /**
@@ -941,16 +941,16 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
 
     /**
      * @VirtualProperty
-     * @SerializedName("deliveryCostFormatted")
+     * @SerializedName("netShippingCostsFormatted")
      * @Groups({"Default","cart"})
      *
      * @param string $locale
      *
      * @return string
      */
-    public function getDeliveryCostFormatted($locale = null)
+    public function getNetShippingCostsFormatted($locale = null)
     {
-        return $this->priceFormatter->format((float)$this->entity->getDeliveryCost(), null, $locale);
+        return $this->priceFormatter->format((float)$this->entity->getNetShippingCosts(), null, $locale);
     }
 
     /**

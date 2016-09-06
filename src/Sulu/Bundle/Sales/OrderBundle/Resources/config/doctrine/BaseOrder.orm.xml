@@ -22,12 +22,12 @@
         <field name="costCentre" type="string" column="costCentre" nullable="true"/>
         <field name="commission" type="string" column="commission" nullable="true"/>
         <field name="customerName" type="string" column="customerName" length="255" nullable="false"/>
-        <field name="deliveryCost" type="float" column="deliveryCost" nullable="true">
+        <field name="shippingCosts" type="float" column="shippingCosts" nullable="true">
             <options>
                 <option name="default">0</option>
             </options>
         </field>
-        <field name="netDeliveryCost" type="float" column="netDeliveryCost" nullable="true">
+        <field name="netShippingCosts" type="float" column="netShippingCosts" nullable="true">
             <options>
                 <option name="default">0</option>
             </options>

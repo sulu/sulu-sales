@@ -150,16 +150,16 @@ interface ApiOrderInterface
     public function getTermsOfDeliveryContent();
 
     /**
-     * @param float $deliveryCost
+     * @param float $netShippingCosts
      *
      * @return self
      */
-    public function setDeliveryCost($deliveryCost);
+    public function setNetShippingCosts($netShippingCosts);
 
     /**
      * @return float
      */
-    public function getDeliveryCost();
+    public function getNetShippingCosts();
 
     /**
      * @param string $costCentre
@@ -374,7 +374,7 @@ interface ApiOrderInterface
      *
      * @return string
      */
-    public function getDeliveryCostFormatted($locale = null);
+    public function getNetShippingCostsFormatted($locale = null);
 
     /**
      * @param DateTime
