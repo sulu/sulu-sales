@@ -36,11 +36,10 @@ class PdfController extends RestController
     }
 
     /**
-     * Finds a order object by a given id from the url
-     * and returns a rendered pdf in a download window
+     * Finds an order object by a given id from the url and returns a rendered pdf in a download window.
      *
      * @param Request $request
-     * @param $id
+     * @param int $id
      *
      * @throws OrderNotFoundException
      *
@@ -68,18 +67,19 @@ class PdfController extends RestController
         return new Response(
             $pdf,
             200,
-            array(
+            [
                 'Content-Type' => 'application/pdf',
                 'Content-Disposition' => $responseType . '; ' . 'filename="' . $pdfName . '"'
-            )
+            ]
         );
     }
 
     /**
-     * Endpoint that returns a pdf of a given order id.
+     * Finds an order object by a given id from the url and renders a configurable template.
+     * Then returns it as pdf in a new tab.
      *
      * @param Request $request
-     * @param $id
+     * @param int $id
      *
      * @throws OrderNotFoundException
      *
@@ -101,7 +101,7 @@ class PdfController extends RestController
         }
 
         // Get pdf file from manager. Function parameter fallbacks are sufficient.
-        $pdf = $this->getPdfManager()->createOrderPdfDynamic($orderApiEntity);
+        $pdf = $this->getPdfManager()->createOrderPdfDynamically($orderApiEntity);
 
         // Get the filename with parameter: isSubmitted = false since this is the unsubmitted case.
         $pdfName = $this->getPdfManager()->getPdfName($order, false);
@@ -112,10 +112,10 @@ class PdfController extends RestController
         return new Response(
             $pdf,
             200,
-            array(
+            [
                 'Content-Type' => 'application/pdf',
                 'Content-Disposition' => $responseType . '; ' . 'filename="' . $pdfName . '"'
-            )
+            ]
         );
     }
 }

@@ -112,6 +112,7 @@ class OrderPdfManager
 
     /**
      * @param Order $order
+     * @param bool $isOrderSubmitted
      *
      * @return string
      */
@@ -143,11 +144,14 @@ class OrderPdfManager
      * Function to create a pdf for a given order using given templates.
      *
      * @param ApiOrderInterface $apiOrder
-     * @param string $template
+     * @param string $templateHeaderPath
+     * @param string $templateBasePath
+     * @param string $templateMainPath
+     * @param string $templateFooterPath
      *
-     * @return file
+     * @return File
      */
-    public function createOrderPdfDynamic(
+    public function createOrderPdfDynamically(
         ApiOrderInterface $apiOrder,
         $templateHeaderPath = null,
         $templateBasePath = null,
@@ -209,6 +213,7 @@ class OrderPdfManager
         $order = $apiOrder->getEntity();
 
         $customerNumber = null;
+
         if ($order->getCustomerAccount()) {
             $customerNumber = $order->getCustomerAccount()->getNumber();
         } else {
