@@ -313,6 +313,11 @@ interface OrderInterface
     public function getOrderDate();
 
     /**
+    * Updates the total net price.
+    */
+    public function updateTotalNetPrice();
+
+    /**
      * @param float $shippingCosts
      *
      * @return OrderInterface

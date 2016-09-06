@@ -417,6 +417,25 @@ abstract class BaseOrder implements OrderInterface
     }
 
     /**
+    * Updates the total net price.
+    */
+    public function updateTotalNetPrice()
+    {
+        if (!$this->getItems()) {
+            return;
+        }
+
+        $sum = 0;
+        foreach ($this->getItems() as $item) {
+            $sum += $item->getTotalNetPrice();
+        }
+
+        $sum += self::getNetShippingCosts();
+
+        $this->setTotalNetPrice($sum);
+    }
+
+    /**
      * {@inheritDoc}
      */
     public function setShippingCosts($shippingCosts = 0)
