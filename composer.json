@@ -23,7 +23,7 @@
 
         "sulu/sulu": "~1.2.3",
         "sulu/product-bundle": "~0.12",
-        "sulu/pricing-bundle": "~0.4",
+        "sulu/pricing-bundle": "~0.5",
         "massive/pdf-bundle": "~0.1",
         "sulu/contact-extension-bundle": "~0.2"
     },
