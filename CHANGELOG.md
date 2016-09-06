@@ -3,12 +3,12 @@ CHANGELOG for Sulu Sales
 
 * dev-develop
 
-    * ENHANCEMENT  [OrderBundle]  Added functionality to generate pdf files of orders with a configurable template.
+    * ENHANCEMENT [OrderBundle]   Added functionality to generate pdf files of orders with a configurable template.
                                   Accessible over a website route.
 
 * 0.6.2 (2016-08-29)
 
-    * ENHANCEMENT  [CoreBundle]   Item table shows now elements for recurring prices
+    * ENHANCEMENT [CoreBundle]    Item table shows now elements for recurring prices
                                   only when `sulu_product.display_recurring_prices` is set to `true
 
 * 0.6.1 (2016-08-24)

@@ -29,21 +29,21 @@ class SuluSalesOrderExtension extends Extension
         $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.xml');
 
-        // set pdf templates.
+        // Set pdf templates via helper function.
         $this->setParameters(
             $container,
             'sulu_sales_order.pdf_templates',
             $config['pdf_templates']
         );
 
-        // set email templates
+        // Set email templates via helper function.
         $this->setParameters(
             $container,
             'sulu_sales_order.email_templates',
             $config['email_templates']
         );
 
-        // email confirmation settings
+        // Email confirmation settings.
         $shopEmailFrom = null;
         if (isset($config['shop_email_from'])) {
             $shopEmailFrom = $config['shop_email_from'];
@@ -83,7 +83,7 @@ class SuluSalesOrderExtension extends Extension
     }
 
     /**
-     * Sets parameters to container as specified by key value pair in params-array
+     * Sets parameters to container as specified by key value pair in params-array.
      *
      * @param ContainerBuilder $container
      * @param string $basicPath
