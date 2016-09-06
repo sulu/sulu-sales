@@ -75,7 +75,7 @@ class OrderUpdater
             $order = $this->getOrderManager()->findOrderEntityForItemWithId($id);
             if (!in_array($order->getId(), $orders)) {
                 $orders[] = $order->getId();
-                $order->updateTotalNetPrice();
+                //$order->updateTotalNetPrice();
             }
         }
         unset($this->scheduledIds);
