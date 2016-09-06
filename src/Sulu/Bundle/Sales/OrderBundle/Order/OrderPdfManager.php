@@ -64,7 +64,7 @@ class OrderPdfManager
     /**
      * @var string
      */
-    protected $namePrefixUnsubmittedOrder;
+    protected $namePrefixDynamicOrder;
 
     /**
      * @var string
@@ -81,7 +81,7 @@ class OrderPdfManager
      * @param string $templateFooterPath
      * @param string $templateMacrosPath
      * @param string $locale
-     * @param string $namePrefixUnsubmittedOrder
+     * @param string $namePrefixDynamicOrder
      * @param string $namePrefixConfirmedOrder
      */
     public function __construct(
@@ -94,7 +94,7 @@ class OrderPdfManager
         $templateFooterPath,
         $templateMacrosPath,
         $locale,
-        $namePrefixUnsubmittedOrder,
+        $namePrefixDynamicOrder,
         $namePrefixConfirmedOrder
     ) {
         $this->entityManager = $entityManager;
@@ -106,23 +106,23 @@ class OrderPdfManager
         $this->templateFooterPath = $templateFooterPath;
         $this->templateMacrosPath = $templateMacrosPath;
         $this->websiteLocale = $locale;
-        $this->namePrefixUnsubmittedOrder = $namePrefixUnsubmittedOrder;
+        $this->namePrefixDynamicOrder = $namePrefixDynamicOrder;
         $this->namePrefixConfirmedOrder = $namePrefixConfirmedOrder;
     }
 
     /**
      * @param Order $order
-     * @param bool $isOrderSubmitted
+     * @param bool $isOrderConfirmation
      *
      * @return string
      */
-    public function getPdfName(Order $order, $isOrderSubmitted = true)
+    public function getPdfName(Order $order, $isOrderConfirmation = true)
     {
-        if ($isOrderSubmitted) {
+        if ($isOrderConfirmation) {
             return $this->namePrefixConfirmedOrder . $order->getNumber() . '.pdf';
         }
 
-        return $this->namePrefixUnsubmittedOrder . $order->getNumber() . '.pdf';
+        return $this->namePrefixDynamicOrder . $order->getNumber() . '.pdf';
     }
 
     /**

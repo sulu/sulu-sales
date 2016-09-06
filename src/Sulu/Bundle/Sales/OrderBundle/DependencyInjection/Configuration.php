@@ -55,7 +55,7 @@ class Configuration implements ConfigurationInterface
             ->scalarNode('pdf_order_confirmation_name_prefix')
                 ->defaultValue('order_confirmation')
             ->end()
-            ->scalarNode('pdf_order_unsubmitted_name_prefix')
+            ->scalarNode('pdf_order_dynamically_name_prefix')
                 ->defaultValue('order_pdf')
             ->end()
             ->arrayNode('email_templates')

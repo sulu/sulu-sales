@@ -69,7 +69,7 @@ class PdfController extends RestController
             200,
             [
                 'Content-Type' => 'application/pdf',
-                'Content-Disposition' => $responseType . '; ' . 'filename="' . $pdfName . '"'
+                'Content-Disposition' => sprintf('%s; filename="%s"', $responseType, $pdfName)
             ]
         );
     }
@@ -87,18 +87,14 @@ class PdfController extends RestController
      */
     public function orderPdfAction(Request $request, $id)
     {
-        $locale = $this->getLocale($request);
+        $locale = $request->getLocale();
 
         $this->get('translator')->setLocale($locale);
 
         $orderRepository = $this->get('sulu_sales_order.order_repository');
 
-        try {
-            $orderApiEntity = $this->getOrderManager()->findByIdAndLocale($id, $locale);
-            $order = $orderApiEntity->getEntity();
-        } catch (OrderNotFoundException $exc) {
-            throw new OrderNotFoundException($id);
-        }
+        $orderApiEntity = $this->getOrderManager()->findByIdAndLocale($id, $locale);
+        $order = $orderApiEntity->getEntity();
 
         // Get pdf file from manager. Function parameter fallbacks are sufficient.
         $pdf = $this->getPdfManager()->createOrderPdfDynamically($orderApiEntity);
@@ -114,7 +110,7 @@ class PdfController extends RestController
             200,
             [
                 'Content-Type' => 'application/pdf',
-                'Content-Disposition' => $responseType . '; ' . 'filename="' . $pdfName . '"'
+                'Content-Disposition' => sprintf('%s; filename="%s"', $responseType, $pdfName)
             ]
         );
     }

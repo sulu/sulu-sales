@@ -77,8 +77,8 @@ class SuluSalesOrderExtension extends Extension
             $config['pdf_order_confirmation_name_prefix']
         );
         $container->setParameter(
-            'sulu_sales_order.pdf_order_unsubmitted_name_prefix',
-            $config['pdf_order_unsubmitted_name_prefix']
+            'sulu_sales_order.pdf_order_dynamically_name_prefix',
+            $config['pdf_order_dynamically_name_prefix']
         );
     }
 
