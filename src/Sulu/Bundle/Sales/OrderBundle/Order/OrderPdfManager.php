@@ -49,7 +49,7 @@ class OrderPdfManager
     /**
      * @var string
      */
-    protected $templateUnsubmittedPath;
+    protected $templateDynamicPath;
 
     /**
      * @var ObjectManager
@@ -75,7 +75,7 @@ class OrderPdfManager
      * @param ObjectManager $entityManager
      * @param PdfManager $pdfManager
      * @param string $templateConfirmationPath
-     * @param string $templateUnsubmittedPath
+     * @param string $templateDynamicPath
      * @param string $templateBasePath
      * @param string $templateHeaderPath
      * @param string $templateFooterPath
@@ -88,7 +88,7 @@ class OrderPdfManager
         ObjectManager $entityManager,
         PdfManager $pdfManager,
         $templateConfirmationPath,
-        $templateUnsubmittedPath,
+        $templateDynamicPath,
         $templateBasePath,
         $templateHeaderPath,
         $templateFooterPath,
@@ -100,7 +100,7 @@ class OrderPdfManager
         $this->entityManager = $entityManager;
         $this->pdfManager = $pdfManager;
         $this->templateConfirmationPath = $templateConfirmationPath;
-        $this->templateUnsubmittedPath = $templateUnsubmittedPath;
+        $this->templateDynamicPath = $templateDynamicPath;
         $this->templateBasePath = $templateBasePath;
         $this->templateHeaderPath = $templateHeaderPath;
         $this->templateFooterPath = $templateFooterPath;
@@ -151,6 +151,7 @@ class OrderPdfManager
         ApiOrderInterface $apiOrder,
         $templateHeaderPath = null,
         $templateBasePath = null,
+        $templateMainPath = null,
         $templateFooterPath = null
     ) {
         $data = $this->getContentForPdf($apiOrder);
@@ -174,11 +175,17 @@ class OrderPdfManager
         );
 
         if ($templateBasePath === null) {
-            $templateBasePath = $this->templateUnsubmittedPath;
+            $templateBasePath = $this->templateConfirmationPath;
+        }
+        // Change the base template which will be extended to the confirmation template.
+        $data['templateDynamicBasePath'] = $templateBasePath;
+
+        if ($templateMainPath === null) {
+            $templateMainPath = $this->templateDynamicPath;
         }
 
         $pdf = $this->pdfManager->convertToPdf(
-            $templateBasePath,
+            $templateMainPath,
             $data,
             false,
             [
