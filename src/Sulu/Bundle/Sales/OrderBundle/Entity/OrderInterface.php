@@ -313,8 +313,8 @@ interface OrderInterface
     public function getOrderDate();
 
     /**
-    * Updates the total net price.
-    */
+     * Updates the total net price.
+     */
     public function updateTotalNetPrice();
 
     /**

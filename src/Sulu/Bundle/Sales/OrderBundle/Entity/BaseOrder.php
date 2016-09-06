@@ -418,8 +418,8 @@ abstract class BaseOrder implements OrderInterface
     }
 
     /**
-    * Updates the total net price.
-    */
+     * Updates the total net price.
+     */
     public function updateTotalNetPrice()
     {
         if (!$this->getItems()) {
