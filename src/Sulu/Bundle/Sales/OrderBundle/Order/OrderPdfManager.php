@@ -16,6 +16,9 @@ use Sulu\Bundle\Sales\OrderBundle\Entity\Order;
 
 class OrderPdfManager
 {
+    // Define a fallback name prefix if none is provided in constructor.
+    const FALLBACK_NAME_PREFIX_ORDER_PDF = 'OrderConfirmation-';
+
     /**
      * @var PdfManager
      */
@@ -75,12 +78,12 @@ class OrderPdfManager
      * @param ObjectManager $entityManager
      * @param PdfManager $pdfManager
      * @param string $templateConfirmationPath
-     * @param string $templateDynamicPath
      * @param string $templateBasePath
      * @param string $templateHeaderPath
      * @param string $templateFooterPath
      * @param string $templateMacrosPath
      * @param string $locale
+     * @param string $templateDynamicPath
      * @param string $namePrefixDynamicOrder
      * @param string $namePrefixConfirmedOrder
      */
@@ -88,38 +91,41 @@ class OrderPdfManager
         ObjectManager $entityManager,
         PdfManager $pdfManager,
         $templateConfirmationPath,
-        $templateDynamicPath,
         $templateBasePath,
         $templateHeaderPath,
         $templateFooterPath,
         $templateMacrosPath,
         $locale,
-        $namePrefixDynamicOrder,
-        $namePrefixConfirmedOrder
+        $templateDynamicPath = null,
+        $namePrefixDynamicOrder = null,
+        $namePrefixConfirmedOrder = self::FALLBACK_NAME_PREFIX_ORDER_PDF
     ) {
         $this->entityManager = $entityManager;
         $this->pdfManager = $pdfManager;
         $this->templateConfirmationPath = $templateConfirmationPath;
-        $this->templateDynamicPath = $templateDynamicPath;
         $this->templateBasePath = $templateBasePath;
         $this->templateHeaderPath = $templateHeaderPath;
         $this->templateFooterPath = $templateFooterPath;
         $this->templateMacrosPath = $templateMacrosPath;
         $this->websiteLocale = $locale;
+        $this->templateDynamicPath = $templateDynamicPath;
         $this->namePrefixDynamicOrder = $namePrefixDynamicOrder;
         $this->namePrefixConfirmedOrder = $namePrefixConfirmedOrder;
     }
 
     /**
-     * @param Order $order
+     * @param $order
      * @param bool $isOrderConfirmation
      *
      * @return string
      */
-    public function getPdfName(Order $order, $isOrderConfirmation = true)
+    public function getPdfName($order, $isOrderConfirmation = true)
     {
         if ($isOrderConfirmation) {
-            return $this->namePrefixConfirmedOrder . $order->getNumber() . '.pdf';
+
+            $pdfName = $this->namePrefixConfirmedOrder . $order->getNumber() . '.pdf';
+
+            return $pdfName;
         }
 
         return $this->namePrefixDynamicOrder . $order->getNumber() . '.pdf';
@@ -132,9 +138,10 @@ class OrderPdfManager
      */
     public function createOrderConfirmation(ApiOrderInterface $apiOrder)
     {
-        return $this->createOrderPdfDynamic(
+        return $this->createOrderPdfDynamically(
             $apiOrder,
             $this->templateHeaderPath,
+            null,
             $this->templateConfirmationPath,    // Since this is the action for confirmation pdfs.
             $this->templateFooterPath
         );
