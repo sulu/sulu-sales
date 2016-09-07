@@ -149,27 +149,27 @@
 }
 
 /* line 166, ../scss/modules/item-table.scss */
-.disabled .delivery-cost {
+.disabled .net-shipping-costs {
   padding-right: 20px;
 }
 
 /* line 170, ../scss/modules/item-table.scss */
-.delivery-cost {
+.net-shipping-costs {
   text-align: right;
   min-width: 100px;
   padding-right: 50px;
 }
 /* line 175, ../scss/modules/item-table.scss */
-.delivery-cost label {
+.net-shipping-costs label {
   display: inline;
   margin-right: 13px;
 }
 /* line 180, ../scss/modules/item-table.scss */
-.delivery-cost input {
+.net-shipping-costs input {
   text-align: right;
 }
 /* line 184, ../scss/modules/item-table.scss */
-.delivery-cost .form-element {
+.net-shipping-costs .form-element {
   width: 72px;
 }
 
