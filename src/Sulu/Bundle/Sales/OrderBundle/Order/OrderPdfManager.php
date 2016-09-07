@@ -12,6 +12,7 @@ namespace Sulu\Bundle\Sales\OrderBundle\Order;
 use Doctrine\Common\Persistence\ObjectManager;
 use Massive\Bundle\PdfBundle\Pdf\PdfManager;
 use Sulu\Bundle\Sales\OrderBundle\Api\ApiOrderInterface;
+use Sulu\Bundle\Sales\OrderBundle\Entity\Order;
 
 class OrderPdfManager
 {
@@ -46,6 +47,11 @@ class OrderPdfManager
     protected $templateConfirmationPath;
 
     /**
+     * @var string
+     */
+    protected $templateDynamicPath;
+
+    /**
      * @var ObjectManager
      */
     protected $entityManager;
@@ -56,45 +62,67 @@ class OrderPdfManager
     protected $websiteLocale;
 
     /**
+     * @var string
+     */
+    protected $namePrefixDynamicOrder;
+
+    /**
+     * @var string
+     */
+    protected $namePrefixConfirmedOrder;
+
+    /**
      * @param ObjectManager $entityManager
      * @param PdfManager $pdfManager
      * @param string $templateConfirmationPath
+     * @param string $templateDynamicPath
      * @param string $templateBasePath
      * @param string $templateHeaderPath
      * @param string $templateFooterPath
      * @param string $templateMacrosPath
      * @param string $locale
+     * @param string $namePrefixDynamicOrder
+     * @param string $namePrefixConfirmedOrder
      */
     public function __construct(
         ObjectManager $entityManager,
         PdfManager $pdfManager,
         $templateConfirmationPath,
+        $templateDynamicPath,
         $templateBasePath,
         $templateHeaderPath,
         $templateFooterPath,
         $templateMacrosPath,
-        $locale
+        $locale,
+        $namePrefixDynamicOrder,
+        $namePrefixConfirmedOrder
     ) {
         $this->entityManager = $entityManager;
         $this->pdfManager = $pdfManager;
         $this->templateConfirmationPath = $templateConfirmationPath;
+        $this->templateDynamicPath = $templateDynamicPath;
         $this->templateBasePath = $templateBasePath;
         $this->templateHeaderPath = $templateHeaderPath;
         $this->templateFooterPath = $templateFooterPath;
         $this->templateMacrosPath = $templateMacrosPath;
         $this->websiteLocale = $locale;
+        $this->namePrefixDynamicOrder = $namePrefixDynamicOrder;
+        $this->namePrefixConfirmedOrder = $namePrefixConfirmedOrder;
     }
 
     /**
-     * @param ApiOrderInterface $order
+     * @param Order $order
+     * @param bool $isOrderConfirmation
      *
      * @return string
      */
-    public function getPdfName($order)
+    public function getPdfName(Order $order, $isOrderConfirmation = true)
     {
-        $pdfName = 'PA_OrderConfirmation-' . $order->getNumber() . '.pdf';
+        if ($isOrderConfirmation) {
+            return $this->namePrefixConfirmedOrder . $order->getNumber() . '.pdf';
+        }
 
-        return $pdfName;
+        return $this->namePrefixDynamicOrder . $order->getNumber() . '.pdf';
     }
 
     /**
@@ -104,20 +132,64 @@ class OrderPdfManager
      */
     public function createOrderConfirmation(ApiOrderInterface $apiOrder)
     {
+        return $this->createOrderPdfDynamic(
+            $apiOrder,
+            $this->templateHeaderPath,
+            $this->templateConfirmationPath,    // Since this is the action for confirmation pdfs.
+            $this->templateFooterPath
+        );
+    }
+
+    /**
+     * Function to create a pdf for a given order using given templates.
+     *
+     * @param ApiOrderInterface $apiOrder
+     * @param string $templateHeaderPath
+     * @param string $templateBasePath
+     * @param string $templateMainPath
+     * @param string $templateFooterPath
+     *
+     * @return File
+     */
+    public function createOrderPdfDynamically(
+        ApiOrderInterface $apiOrder,
+        $templateHeaderPath = null,
+        $templateBasePath = null,
+        $templateMainPath = null,
+        $templateFooterPath = null
+    ) {
         $data = $this->getContentForPdf($apiOrder);
 
+        if ($templateHeaderPath === null) {
+            $templateHeaderPath = $this->templateHeaderPath;
+        }
+
         $header = $this->pdfManager->renderTemplate(
-            $this->templateHeaderPath,
+            $templateHeaderPath,
             []
         );
+
+        if ($templateFooterPath === null) {
+            $templateFooterPath = $this->templateFooterPath;
+        }
 
         $footer = $this->pdfManager->renderTemplate(
-            $this->templateFooterPath,
+            $templateFooterPath,
             []
         );
 
+        if ($templateBasePath === null) {
+            $templateBasePath = $this->templateConfirmationPath;
+        }
+        // Change the base template which will be extended to the confirmation template.
+        $data['templateDynamicBasePath'] = $templateBasePath;
+
+        if ($templateMainPath === null) {
+            $templateMainPath = $this->templateDynamicPath;
+        }
+
         $pdf = $this->pdfManager->convertToPdf(
-            $this->templateConfirmationPath,
+            $templateMainPath,
             $data,
             false,
             [
@@ -141,6 +213,7 @@ class OrderPdfManager
         $order = $apiOrder->getEntity();
 
         $customerNumber = null;
+
         if ($order->getCustomerAccount()) {
             $customerNumber = $order->getCustomerAccount()->getNumber();
         } else {
