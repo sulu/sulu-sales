@@ -19,6 +19,7 @@ use JMS\Serializer\Annotation\Exclude;
 use Sulu\Bundle\ContactBundle\Entity\AccountInterface;
 use Sulu\Bundle\ContactExtensionBundle\Entity\TermsOfDelivery;
 use Sulu\Bundle\ContactExtensionBundle\Entity\TermsOfPayment;
+use Sulu\Bundle\ProductBundle\Exception\PriceFormatterException;
 use Sulu\Bundle\Sales\CoreBundle\Api\OrderAddress;
 use Sulu\Bundle\Sales\CoreBundle\Core\SalesDocument;
 use Sulu\Bundle\Sales\CoreBundle\Entity\ItemInterface;
@@ -471,30 +472,6 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     }
 
     /**
-     * @param float $netShippingCosts
-     *
-     * @return Order
-     */
-    public function setNetShippingCosts($netShippingCosts)
-    {
-        $this->entity->setNetShippingCosts($netShippingCosts);
-
-        return $this;
-    }
-
-    /**
-     * @VirtualProperty
-     * @SerializedName("netShippingCosts")
-     * @Groups({"Default","cart"})
-     *
-     * @return float
-     */
-    public function getNetShippingCosts()
-    {
-        return $this->entity->getNetShippingCosts();
-    }
-
-    /**
      * @param string $costCentre
      *
      * @return Order
@@ -888,72 +865,6 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     }
 
     /**
-     * @param float $totalNetPrice
-     *
-     * @return self
-     */
-    public function setTotalNetPrice($totalNetPrice)
-    {
-        $this->entity->setTotalNetPrice($totalNetPrice);
-
-        return $this;
-    }
-
-    /**
-     * @VirtualProperty
-     * @SerializedName("totalNetPrice")
-     * @Groups({"Default","cart"})
-     *
-     * @return float
-     */
-    public function getTotalNetPrice()
-    {
-        return $this->entity->getTotalNetPrice();
-    }
-
-    /**
-     * @VirtualProperty
-     * @SerializedName("totalNetPriceFormatted")
-     * @Groups({"Default","cart"})
-     *
-     * @param string $locale
-     *
-     * @return string
-     */
-    public function getTotalNetPriceFormatted($locale = null)
-    {
-        return $this->priceFormatter->format((float)$this->entity->getTotalNetPrice(), null, $locale);
-    }
-
-    /**
-     * @VirtualProperty
-     * @SerializedName("totalRecurringNetPriceFormatted")
-     * @Groups({"Default","cart"})
-     *
-     * @param string $locale
-     *
-     * @return string
-     */
-    public function getTotalRecurringNetPriceFormatted($locale = null)
-    {
-        return $this->priceFormatter->format((float)$this->entity->getTotalRecurringNetPrice(), null, $locale);
-    }
-
-    /**
-     * @VirtualProperty
-     * @SerializedName("netShippingCostsFormatted")
-     * @Groups({"Default","cart"})
-     *
-     * @param string $locale
-     *
-     * @return string
-     */
-    public function getNetShippingCostsFormatted($locale = null)
-    {
-        return $this->priceFormatter->format((float)$this->entity->getNetShippingCosts(), null, $locale);
-    }
-
-    /**
      * @param DateTime
      *
      * @return Order
@@ -1051,30 +962,6 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     }
 
     /**
-     * @VirtualProperty
-     * @SerializedName("hasChangedPrices")
-     * @Groups({"Default","cart"})
-     *
-     * @return bool
-     */
-    public function hasChangedPrices()
-    {
-        return $this->hasChangedPrices;
-    }
-
-    /**
-     * @param $hasChangedPrices
-     *
-     * @return Order
-     */
-    public function setHasChangedPrices($hasChangedPrices)
-    {
-        $this->hasChangedPrices = $hasChangedPrices;
-
-        return $this;
-    }
-
-    /**
      * Get status codes of cart
      *
      * @VirtualProperty
@@ -1164,6 +1051,85 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     }
 
     /**
+     * @param float $totalNetPrice
+     *
+     * @return self
+     */
+    public function setTotalNetPrice($totalNetPrice)
+    {
+        $this->entity->setTotalNetPrice($totalNetPrice);
+
+        return $this;
+    }
+
+    /**
+     * @VirtualProperty
+     * @SerializedName("totalNetPrice")
+     * @Groups({"Default","cart"})
+     *
+     * @return float
+     */
+    public function getTotalNetPrice()
+    {
+        return $this->entity->getTotalNetPrice();
+    }
+
+    /**
+     * @VirtualProperty
+     * @SerializedName("totalNetPriceFormatted")
+     * @Groups({"Default","cart"})
+     *
+     * @throws PriceFormatterException
+     *
+     * @param null|string $locale
+     *
+     * @return string
+     */
+    public function getTotalNetPriceFormatted($locale = null)
+    {
+        return $this->priceFormatter->format((float)$this->entity->getTotalNetPrice(), null, $locale);
+    }
+
+    /**
+     * @param float $totalPrice
+     *
+     * @return self
+     */
+    public function setTotalPrice($totalPrice)
+    {
+        $this->entity->setTotalPrice($totalPrice);
+
+        return $this;
+    }
+
+    /**
+     * @VirtualProperty
+     * @SerializedName("totalPrice")
+     * @Groups({"Default", "xmlOrder"})
+     *
+     * @return array
+     */
+    public function getTotalPrice()
+    {
+        return $this->entity->getTotalPrice();
+    }
+
+    /**
+     * @VirtualProperty
+     * @SerializedName("totalPriceFormatted")
+     *
+     * @throws PriceFormatterException
+     *
+     * @param null|string $locale
+     *
+     * @return string
+     */
+    public function getTotalPriceFormatted($locale = null)
+    {
+        return $this->priceFormatter->format((float)$this->entity->getTotalNetPrice(), null, $locale);
+    }
+
+    /**
      * @param float $totalRecurringNetPrice
      *
      * @return self
@@ -1185,5 +1151,175 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     public function getTotalRecurringNetPrice()
     {
         return $this->entity->getTotalRecurringNetPrice();
+    }
+
+    /**
+     * @VirtualProperty
+     * @SerializedName("totalRecurringNetPriceFormatted")
+     * @Groups({"Default","cart"})
+     *
+     * @param null|string $locale
+     *
+     * @throws PriceFormatterException
+     *
+     * @return string
+     */
+    public function getTotalRecurringNetPriceFormatted($locale = null)
+    {
+        return $this->priceFormatter->format((float)$this->entity->getTotalRecurringNetPrice(), null, $locale);
+    }
+
+    /**
+     * @param float $totalRecurringPrice
+     *
+     * @return self
+     */
+    public function setTotalRecurringPrice($totalRecurringPrice)
+    {
+        $this->entity->setTotalRecurringPrice($totalRecurringPrice);
+
+        return $this;
+    }
+
+    /**
+     * @VirtualProperty
+     * @SerializedName("totalRecurringPrice")
+     *
+     * @return float
+     */
+    public function getTotalRecurringPrice()
+    {
+        return $this->entity->getTotalRecurringPrice();
+    }
+
+    /**
+     * @VirtualProperty
+     * @SerializedName("totalRecurringPriceFormatted")
+     *
+     * @param null|string $locale
+     *
+     * @throws PriceFormatterException
+     *
+     * @return float
+     */
+    public function getTotalRecurringPriceFormatted($locale = null)
+    {
+        return $this->priceFormatter->format((float)$this->entity->getTotalRecurringPrice(), null, $locale);
+    }
+
+    /**
+     * @param float $netShippingCosts
+     *
+     * @return Order
+     */
+    public function setNetShippingCosts($netShippingCosts)
+    {
+        $this->entity->setNetShippingCosts($netShippingCosts);
+
+        return $this;
+    }
+
+    /**
+     * @VirtualProperty
+     * @SerializedName("netShippingCosts")
+     * @Groups({"Default","cart"})
+     *
+     * @return float
+     */
+    public function getNetShippingCosts()
+    {
+        return $this->entity->getNetShippingCosts();
+    }
+
+    /**
+     * @VirtualProperty
+     * @SerializedName("netShippingCostsFormatted")
+     * @Groups({"Default","cart"})
+     *
+     * @param null|string $locale
+     *
+     * @throws PriceFormatterException
+     *
+     * @return string
+     */
+    public function getNetShippingCostsFormatted($locale = null)
+    {
+        return $this->priceFormatter->format((float)$this->entity->getNetShippingCosts(), null, $locale);
+    }
+
+    /**
+     * @VirtualProperty
+     * @SerializedName("taxes")
+     *
+     * @return float
+     */
+    public function getTotalTaxes()
+    {
+        return $this->entity->getTotalPrice() - $this->entity->getTotalNetPrice();
+    }
+
+    /**
+     * @VirtualProperty
+     * @SerializedName("taxesFormatted")
+     *
+     * @param null|string $locale
+     *
+     * @throws PriceFormatterException
+     *
+     * @return float
+     */
+    public function getTotalTaxesFormatted($locale = null)
+    {
+        return $this->priceFormatter->format((float)$this->getTotalTaxes(), null, $locale);
+    }
+
+    /**
+     * @VirtualProperty
+     * @SerializedName("totalRecurringTaxes")
+     *
+     * @return float
+     */
+    public function getTotalRecurringTaxes()
+    {
+        return $this->entity->getTotalRecurringPrice() - $this->entity->getTotalRecurringNetPrice();
+    }
+
+    /**
+     * @VirtualProperty
+     * @SerializedName("totalRecurringTaxesFormatted")
+     *
+     * @param null|string $locale
+     *
+     * @throws PriceFormatterException
+     *
+     * @return float
+     */
+    public function getTotalRecurringTaxesFormatted($locale = null)
+    {
+        return $this->priceFormatter->format((float)$this->getTotalRecurringTaxes(), null, $locale);
+    }
+
+    /**
+     * @VirtualProperty
+     * @SerializedName("hasChangedPrices")
+     * @Groups({"Default","cart"})
+     *
+     * @return bool
+     */
+    public function hasChangedPrices()
+    {
+        return $this->hasChangedPrices;
+    }
+
+    /**
+     * @param $hasChangedPrices
+     *
+     * @return Order
+     */
+    public function setHasChangedPrices($hasChangedPrices)
+    {
+        $this->hasChangedPrices = $hasChangedPrices;
+
+        return $this;
     }
 }

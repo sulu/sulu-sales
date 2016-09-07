@@ -1,6 +1,10 @@
 CHANGELOG for Sulu Sales
 ========================
 
+* 0.7.2 (2016-09-07)
+
+    * BUGFIX      [OrderBundle]   ApiOrder: Added methods for all prices
+
 * 0.7.1 (2016-09-07)
 
     * BUGFIX      [CoreBundle]    Built dist files
