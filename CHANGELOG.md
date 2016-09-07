@@ -1,6 +1,10 @@
 CHANGELOG for Sulu Sales
 ========================
 
+* 0.7.1 (2016-09-07)
+
+    * BUGFIX      [CoreBundle]    Built dist files
+
 * 0.7.0 (2016-09-06)
 
     * FEATURE     [CoreBundle]    Renamed delivery cost to shipping costs
