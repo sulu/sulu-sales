@@ -154,7 +154,7 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     /**
      * @param $number
      *
-     * @return Order
+     * @return self
      */
     public function setNumber($number)
     {
@@ -178,7 +178,7 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     /**
      * @param DateTime $created
      *
-     * @return Order
+     * @return self
      */
     public function setCreated(DateTime $created)
     {
@@ -201,7 +201,7 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     /**
      * @param DateTime $changed
      *
-     * @return Order
+     * @return self
      */
     public function setChanged(DateTime $changed)
     {
@@ -213,7 +213,7 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     /**
      * @param string $sessionId
      *
-     * @return Order
+     * @return self
      */
     public function setSessionId($sessionId)
     {
@@ -236,7 +236,7 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     /**
      * @param OrderStatus
      *
-     * @return Order
+     * @return self
      */
     public function setStatus($status)
     {
@@ -248,7 +248,7 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     /**
      * @param integer $bitmaskStatus
      *
-     * @return Order
+     * @return self
      */
     public function setBitmaskStatus($bitmaskStatus)
     {
@@ -290,7 +290,7 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     /**
      * @param OrderType
      *
-     * @return Order
+     * @return self
      */
     public function setType($type)
     {
@@ -317,7 +317,7 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     /**
      * @param string $currency
      *
-     * @return Order
+     * @return self
      */
     public function setCurrencyCode($currency)
     {
@@ -341,7 +341,7 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     /**
      * @param string $customerName
      *
-     * @return Order
+     * @return self
      */
     public function setCustomerName($customerName)
     {
@@ -366,7 +366,7 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
      *
      * @param TermsOfDelivery $termsOfDelivery
      *
-     * @return Order
+     * @return self
      */
     public function setTermsOfDelivery(TermsOfDelivery $termsOfDelivery)
     {
@@ -398,7 +398,7 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     /**
      * @param TermsOfPayment $termsOfPayment
      *
-     * @return Order
+     * @return self
      */
     public function setTermsOfPayment(TermsOfPayment $termsOfPayment)
     {
@@ -428,7 +428,7 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     /**
      * @param string $termsOfPayment
      *
-     * @return Order
+     * @return self
      */
     public function setTermsOfPaymentContent($termsOfPayment)
     {
@@ -451,7 +451,7 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     /**
      * @param string $termsOfDelivery
      *
-     * @return Order
+     * @return self
      */
     public function setTermsOfDeliveryContent($termsOfDelivery)
     {
@@ -474,7 +474,7 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     /**
      * @param string $costCentre
      *
-     * @return Order
+     * @return self
      */
     public function setCostCentre($costCentre)
     {
@@ -498,7 +498,7 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     /**
      * @param string $commission
      *
-     * @return Order
+     * @return self
      */
     public function setCommission($commission)
     {
@@ -522,7 +522,7 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     /**
      * @param \DateTime $desiredDeliveryDate
      *
-     * @return Order
+     * @return self
      */
     public function setDesiredDeliveryDate($desiredDeliveryDate)
     {
@@ -546,7 +546,7 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     /**
      * @param boolean $taxfree
      *
-     * @return Order
+     * @return self
      */
     public function setTaxfree($taxfree)
     {
@@ -569,7 +569,7 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     /**
      * @param AccountInterface $account
      *
-     * @return Order
+     * @return self
      */
     public function setCustomerAccount(AccountInterface $account = null)
     {
@@ -599,7 +599,7 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     /**
      * @param ContactInterface $contact
      *
-     * @return Order
+     * @return self
      */
     public function setCustomerContact(ContactInterface $contact = null)
     {
@@ -630,7 +630,7 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     /**
      * @param ContactInterface $responsibleContact
      *
-     * @return Order
+     * @return self
      */
     public function setResponsibleContact(ContactInterface $responsibleContact = null)
     {
@@ -660,7 +660,7 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     /**
      * @param ItemInterface $item
      *
-     * @return Order
+     * @return self
      */
     public function addItem(ItemInterface $item)
     {
@@ -673,7 +673,7 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     /**
      * @param ItemInterface $item
      *
-     * @return Order
+     * @return self
      */
     public function removeItem(ItemInterface $item)
     {
@@ -750,7 +750,7 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     /**
      * @param UserInterface $changer
      *
-     * @return Order
+     * @return self
      */
     public function setChanger(UserInterface $changer = null)
     {
@@ -770,7 +770,7 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     /**
      * @param UserInterface $creator
      *
-     * @return Order
+     * @return self
      */
     public function setCreator(UserInterface $creator = null)
     {
@@ -790,7 +790,7 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     /**
      * @param OrderAddressInterface $deliveryAddress
      *
-     * @return Order
+     * @return self
      */
     public function setDeliveryAddress(OrderAddressInterface $deliveryAddress = null)
     {
@@ -818,7 +818,7 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     /**
      * @param OrderAddressInterface $invoiceAddress
      *
-     * @return Order
+     * @return self
      */
     public function setInvoiceAddress(OrderAddressInterface $invoiceAddress = null)
     {
@@ -844,7 +844,7 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     /**
      * @param $number
      *
-     * @return Order
+     * @return self
      */
     public function setOrderNumber($number)
     {
@@ -867,7 +867,7 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     /**
      * @param DateTime
      *
-     * @return Order
+     * @return self
      */
     public function setOrderDate($orderDate)
     {
@@ -908,7 +908,7 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     /**
      * @param array
      *
-     * @return Order
+     * @return self
      */
     public function setPermissions(array $permissions)
     {
@@ -931,7 +931,7 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     /**
      * @param array
      *
-     * @return Order
+     * @return self
      */
     public function setWorkflows(array $workflows)
     {
@@ -980,7 +980,7 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
      *
      * @param int
      *
-     * @return Order
+     * @return self
      */
     public function addCartErrorCode($statusCode)
     {
@@ -1210,7 +1210,7 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     /**
      * @param float $netShippingCosts
      *
-     * @return Order
+     * @return self
      */
     public function setNetShippingCosts($netShippingCosts)
     {
@@ -1312,9 +1312,9 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     }
 
     /**
-     * @param $hasChangedPrices
+     * @param bool $hasChangedPrices
      *
-     * @return Order
+     * @return self
      */
     public function setHasChangedPrices($hasChangedPrices)
     {
