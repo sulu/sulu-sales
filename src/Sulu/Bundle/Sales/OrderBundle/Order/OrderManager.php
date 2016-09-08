@@ -270,8 +270,8 @@ class OrderManager
         $order->setTaxfree(
             $this->getPropertyBasedOnPatch($data, 'taxfree', $order->getTaxfree(), $patch)
         );
-        $order->setDeliveryCost(
-            $this->getPropertyBasedOnPatch($data, 'deliveryCost', $order->getDeliveryCost(), $patch)
+        $order->setNetShippingCosts(
+            $this->getPropertyBasedOnPatch($data, 'netShippingCosts', $order->getNetShippingCosts(), $patch)
         );
         $order->setInternalNote(
             $this->getPropertyBasedOnPatch($data, 'internalNote', $order->getInternalNote(), $patch)
@@ -404,7 +404,7 @@ class OrderManager
     }
 
     /**
-     * Function updates the api-entity, like price-calculations
+     * Function updates the api-entity, like price-calculations.
      *
      * @param Order $apiOrder
      */
@@ -413,11 +413,16 @@ class OrderManager
         $items = $apiOrder->getItems();
 
         // Perform price calculation.
-        $prices = $supplierItems = null;
-        $totalPrices = $this->priceCalculator->calculate($items, $prices, $supplierItems, $this->defaultCurrency);
+        $groupedPrices = [];
+        $supplierItems = [];
 
-        $totalPrice = $totalPrices['totalPrice'];
-        $totalRecurringPrice = $totalPrices['totalRecurringPrice'];
+        $prices = $this->priceCalculator->calculate(
+            $items,
+            $apiOrder->getNetShippingCosts(),
+            $groupedPrices,
+            $supplierItems,
+            $this->defaultCurrency
+        );
 
         if ($supplierItems) {
             $supplierItems = array_values($supplierItems);
@@ -439,9 +444,12 @@ class OrderManager
         }
         $apiOrder->setHasChangedPrices($hasChangedPrices);
 
-        // Set total price.
-        $apiOrder->setTotalNetPrice($totalPrice);
-        $apiOrder->setTotalRecurringNetPrice($totalRecurringPrice);
+        // Set total prices.
+        $apiOrder->getEntity()->setTotalNetPrice($prices['totalNetPrice']);
+        $apiOrder->getEntity()->setTotalPrice($prices['totalPrice']);
+        $apiOrder->getEntity()->setTotalRecurringNetPrice($prices['totalRecurringNetPrice']);
+        $apiOrder->getEntity()->setTotalRecurringPrice($prices['totalRecurringPrice']);
+        $apiOrder->getEntity()->setShippingCosts($prices['shippingCosts']);
     }
 
     /**

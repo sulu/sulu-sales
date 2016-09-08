@@ -148,7 +148,7 @@ class ItemManager
     }
 
     /**
-     * Set correct product-entity to api-item
+     * Set correct product-entity to api-item.
      *
      * @param $productEntity
      */
@@ -159,7 +159,7 @@ class ItemManager
     }
 
     /**
-     * Creates an item, but does not flush
+     * Creates an item, but does not flush.
      *
      * @param array $data
      * @param string $locale
@@ -234,7 +234,7 @@ class ItemManager
                 if ($isNewItem) {
                     $productData = $this->getProperty($data, 'product');
                     if ($productData) {
-                        // Set Product's data to item
+                        // Set Product's data to item.
                         $this->setItemByProductData($productData, $item, $locale);
                     }
                 }
@@ -254,7 +254,7 @@ class ItemManager
                 if ($isNewItem) {
                     $productData = $this->getProperty($data, 'product');
                     if ($productData) {
-                        // Set Product's data to item
+                        // Set Product's data to item.
                         $this->setItemByProductData($productData, $item, $locale);
                     }
 
@@ -310,7 +310,7 @@ class ItemManager
     }
 
     /**
-     * Converts status of an item
+     * Converts status of an item.
      *
      * @param ApiItemInterface $item
      * @param int $status
@@ -321,7 +321,7 @@ class ItemManager
         // BITMASK
         $currentBitmaskStatus = $item->getBitmaskStatus();
 
-        // if status is not already is in bitmask
+        // if status is not already is in bitmask.
         if (!($currentBitmaskStatus && $currentBitmaskStatus & $status)) {
             // add status
             $item->setBitmaskStatus($currentBitmaskStatus | $status);
@@ -333,7 +333,7 @@ class ItemManager
     }
 
     /**
-     * Converts status of an item
+     * Converts status of an item.
      *
      * @param ApiItemInterface $item
      * @param int $status
@@ -343,7 +343,7 @@ class ItemManager
     {
         // BITMASK
         $currentBitmaskStatus = $item->getBitmaskStatus();
-        // if status is in bitmask, remove it
+        // if status is in bitmask, remove it.
         if ($currentBitmaskStatus && $currentBitmaskStatus & $status) {
             $item->setBitmaskStatus($currentBitmaskStatus & ~$status);
         }
@@ -354,7 +354,7 @@ class ItemManager
     }
 
     /**
-     * Deletes an item
+     * Deletes an item.
      *
      * @param int $id
      *
@@ -373,7 +373,7 @@ class ItemManager
     }
 
     /**
-     * Finds an item by id and locale
+     * Finds an item by id and locale.
      *
      * @param int $id
      * @param string $locale
@@ -392,7 +392,7 @@ class ItemManager
     }
 
     /**
-     * Finds an item entity by id
+     * Finds an item entity by id.
      *
      * @param int $id
      *
@@ -433,8 +433,7 @@ class ItemManager
     }
 
     /**
-     * Retrieves the tax depending on the current class and configured
-     * shop location.
+     * Retrieves the tax depending on the current class and configured shop location.
      *
      * @param TaxClass $taxClass
      *
@@ -511,7 +510,7 @@ class ItemManager
     }
 
     /**
-     * Check if necessary data is set
+     * Check if necessary data is set.
      *
      * @param array $data
      * @param bool $isNew
@@ -520,9 +519,9 @@ class ItemManager
      */
     private function checkRequiredData($data, $isNew)
     {
-        // either name or products must be set
+        // Either name or products must be set.
         if (array_key_exists('product', $data)) {
-            // product-id must be defined
+            // Product-id must be defined.
             $this->getProductId($data['product'], 'product.id');
         } else {
             $this->checkDataSet($data, 'name', $isNew);
@@ -532,7 +531,7 @@ class ItemManager
     }
 
     /**
-     * Checks data for attributes
+     * Checks data for attributes.
      *
      * @param array $data
      * @param string $key
@@ -553,7 +552,7 @@ class ItemManager
     }
 
     /**
-     * Returns the entry from the data with the given key, or the given default value, if the key does not exist
+     * Returns the entry from the data with the given key, or the given default value, if the key does not exist.
      *
      * @param array $data
      * @param string $key
@@ -576,14 +575,14 @@ class ItemManager
      */
     private function getProductId($data, $exceptionKey)
     {
-        // if data is array, id must be a key
+        // If data is array, id must be a key.
         if (is_array($data)) {
             if (!isset($data['id'])) {
                 throw new MissingItemAttributeException($exceptionKey);
             }
 
             return $data['id'];
-            // data must be an int
+            // Data must be an int.
         } elseif (!is_int($data)) {
             throw new MissingItemAttributeException($exceptionKey);
         }
@@ -592,7 +591,7 @@ class ItemManager
     }
 
     /**
-     * Sets item based on given product data
+     * Sets item based on given product data.
      *
      * @param array $productData
      * @param ApiItemInterface $item
@@ -616,9 +615,7 @@ class ItemManager
         $item->setProduct($product);
         $translation = $product->getTranslation($locale);
 
-        // when the product is not available in the current language choose the first translation you find
-        // FIXME: should be changed when products have a language fallback
-        // https://github.com/massiveart/POOL-ALPIN/issues/611
+        // When the product is not available in the current language choose the first translation you find.
         if (is_null($translation)) {
             if (count($product->getTranslations()) > 0) {
                 $translation = $product->getTranslations()[0];
@@ -678,16 +675,16 @@ class ItemManager
     }
 
     /**
-     * Set supplier of an item
+     * Set supplier of an item.
      *
-     * @param ItemInterface $item
+     * @param ApiItemInterface $item
      * @param ProductInterface $product
      */
-    protected function setItemSupplier($item, $product)
+    protected function setItemSupplier(ApiItemInterface $item, ProductInterface $product)
     {
         $supplier = null;
         $supplierName = '';
-        // get products supplier
+        // Get products supplier.
         if ($product->getSupplier()) {
             $supplier = $product->getSupplier();
             $supplierName = $product->getSupplier()->getName();
@@ -697,27 +694,26 @@ class ItemManager
     }
 
     /**
-     * Function updates item prices its product data
+     * Function updates item prices its product data.
      *
      * @param ApiItemInterface $item
      * @param array $data
      */
     private function updatePrices(ApiItemInterface $item, $data)
     {
-        //TODO: currency
         $currency = null;
 
-        // set products price by data
+        // Set products price by data.
         if ($item->getUseProductsPrice() === false) {
             $item->setPrice($this->getProperty($data, 'price', $item->getPrice()));
         }
 
-        // set items total net price
-        $price = $this->itemPriceCalculator->calculate($item, $currency, $item->getUseProductsPrice());
+        // Set items total net price.
+        $price = $this->itemPriceCalculator->calculateItemTotalNetPrice($item, $currency, $item->getUseProductsPrice());
         $item->setTotalNetPrice($price);
 
-        // set items price
-        $itemPrice = $this->itemPriceCalculator->getItemPrice($item, $currency, $item->getUseProductsPrice());
+        // Set items price.
+        $itemPrice = $this->itemPriceCalculator->calculateItemNetPrice($item, $currency, $item->getUseProductsPrice());
         $item->setPrice($itemPrice);
     }
 
@@ -739,7 +735,7 @@ class ItemManager
                 };
 
                 $delete = function ($itemAttribute) use ($item) {
-                    // delete item
+                    // Delete item.
                     $this->em->remove($itemAttribute);
                 };
 
@@ -778,14 +774,14 @@ class ItemManager
     }
 
     /**
-     * Sets a date if it's set in data
+     * Sets a date if it's set in data.
      *
      * @param array $data
      * @param string $key
-     * @param DateTime $currentDate
+     * @param null|DateTime $currentDate
      * @param callable $setCallback
      */
-    protected function setDate($data, $key, $currentDate, callable $setCallback)
+    protected function setDate($data, $key, DateTime $currentDate = null, callable $setCallback)
     {
         $date = $this->getProperty($data, $key, $currentDate);
         if ($date !== null) {
