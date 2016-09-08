@@ -48,7 +48,7 @@ class TransitionData
     /**
      * @var float
      */
-    protected $deliveryCost;
+    protected $netShippingCosts;
 
     /**
      * @var Contact
@@ -184,17 +184,17 @@ class TransitionData
     /**
      * @return float
      */
-    public function getDeliveryCost()
+    public function getNetShippingCosts()
     {
-        return $this->deliveryCost;
+        return $this->netShippingCosts;
     }
 
     /**
-     * @param float $deliveryCost
+     * @param float $netShippingCosts
      */
-    public function setDeliveryCost($deliveryCost)
+    public function setNetShippingCosts($netShippingCosts)
     {
-        $this->deliveryCost = $deliveryCost;
+        $this->netShippingCosts = $netShippingCosts;
     }
 
     /**
@@ -289,7 +289,7 @@ class TransitionData
             $item->setAddress($this->getProperty('address', $itemData));
             $item->setUseProductsPrice($this->getProperty('useProductsPrice', $itemData));
             $item->setDeliveryDate($this->getProperty('deliveryDate', $itemData));
-            $item->setDeliveryCost($this->getProperty('deliveryCost', $itemData));
+            $item->setNetShippingCosts($this->getProperty('netShippingCosts', $itemData));
 
             if (isset($itemData['product'])) {
                 $product = new Product(
@@ -393,7 +393,7 @@ class TransitionData
             'commission' => $this->commission,
             'costCentre' => $this->costCentre,
             'currencyCode' => $this->currencyCode,
-            'deliveryCost' => $this->deliveryCost,
+            'netShippingCosts' => $this->netShippingCosts,
             'internalNote' => $this->getInternalNote(),
             'responsibleContact' => $this->createDataArray($this->responsibleContact),
             'items' => $this->itemsToArray(),

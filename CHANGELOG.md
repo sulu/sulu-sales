@@ -5,6 +5,19 @@ CHANGELOG for Sulu Sales
 
     * ENHANCEMENT [OrderBundle]   Added functionality to generate pdf files of orders with a configurable template.
                                   Accessible over a website route.
+* 0.7.2 (2016-09-07)
+
+    * BUGFIX      [OrderBundle]   ApiOrder: Added methods for all prices
+
+* 0.7.1 (2016-09-07)
+
+    * BUGFIX      [CoreBundle]    Built dist files
+
+* 0.7.0 (2016-09-06)
+
+    * FEATURE     [CoreBundle]    Renamed delivery cost to shipping costs
+    * FEATURE     [OrderBundle]   Renamed delivery cost to shipping costs
+    * ENHANCEMENT [OrderBundle]   Added prices to Order/OrderInterface
 
 * 0.6.2 (2016-08-29)
 

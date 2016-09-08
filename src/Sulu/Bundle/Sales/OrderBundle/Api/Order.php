@@ -19,6 +19,7 @@ use JMS\Serializer\Annotation\Exclude;
 use Sulu\Bundle\ContactBundle\Entity\AccountInterface;
 use Sulu\Bundle\ContactExtensionBundle\Entity\TermsOfDelivery;
 use Sulu\Bundle\ContactExtensionBundle\Entity\TermsOfPayment;
+use Sulu\Bundle\ProductBundle\Exception\PriceFormatterException;
 use Sulu\Bundle\Sales\CoreBundle\Api\OrderAddress;
 use Sulu\Bundle\Sales\CoreBundle\Core\SalesDocument;
 use Sulu\Bundle\Sales\CoreBundle\Entity\ItemInterface;
@@ -153,7 +154,7 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     /**
      * @param $number
      *
-     * @return Order
+     * @return self
      */
     public function setNumber($number)
     {
@@ -177,7 +178,7 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     /**
      * @param DateTime $created
      *
-     * @return Order
+     * @return self
      */
     public function setCreated(DateTime $created)
     {
@@ -200,7 +201,7 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     /**
      * @param DateTime $changed
      *
-     * @return Order
+     * @return self
      */
     public function setChanged(DateTime $changed)
     {
@@ -212,7 +213,7 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     /**
      * @param string $sessionId
      *
-     * @return Order
+     * @return self
      */
     public function setSessionId($sessionId)
     {
@@ -235,7 +236,7 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     /**
      * @param OrderStatus
      *
-     * @return Order
+     * @return self
      */
     public function setStatus($status)
     {
@@ -247,7 +248,7 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     /**
      * @param integer $bitmaskStatus
      *
-     * @return Order
+     * @return self
      */
     public function setBitmaskStatus($bitmaskStatus)
     {
@@ -289,7 +290,7 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     /**
      * @param OrderType
      *
-     * @return Order
+     * @return self
      */
     public function setType($type)
     {
@@ -316,7 +317,7 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     /**
      * @param string $currency
      *
-     * @return Order
+     * @return self
      */
     public function setCurrencyCode($currency)
     {
@@ -340,7 +341,7 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     /**
      * @param string $customerName
      *
-     * @return Order
+     * @return self
      */
     public function setCustomerName($customerName)
     {
@@ -365,9 +366,9 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
      *
      * @param TermsOfDelivery $termsOfDelivery
      *
-     * @return Order
+     * @return self
      */
-    public function setTermsOfDelivery($termsOfDelivery)
+    public function setTermsOfDelivery(TermsOfDelivery $termsOfDelivery)
     {
         $this->entity->setTermsOfDelivery($termsOfDelivery);
 
@@ -397,9 +398,9 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     /**
      * @param TermsOfPayment $termsOfPayment
      *
-     * @return Order
+     * @return self
      */
-    public function setTermsOfPayment($termsOfPayment)
+    public function setTermsOfPayment(TermsOfPayment $termsOfPayment)
     {
         $this->entity->setTermsOfPayment($termsOfPayment);
 
@@ -427,7 +428,7 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     /**
      * @param string $termsOfPayment
      *
-     * @return Order
+     * @return self
      */
     public function setTermsOfPaymentContent($termsOfPayment)
     {
@@ -450,7 +451,7 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     /**
      * @param string $termsOfDelivery
      *
-     * @return Order
+     * @return self
      */
     public function setTermsOfDeliveryContent($termsOfDelivery)
     {
@@ -471,33 +472,9 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     }
 
     /**
-     * @param float $deliveryCost
-     *
-     * @return Order
-     */
-    public function setDeliveryCost($deliveryCost)
-    {
-        $this->entity->setDeliveryCost($deliveryCost);
-
-        return $this;
-    }
-
-    /**
-     * @VirtualProperty
-     * @SerializedName("deliveryCost")
-     * @Groups({"Default","cart"})
-     *
-     * @return float
-     */
-    public function getDeliveryCost()
-    {
-        return $this->entity->getDeliveryCost();
-    }
-
-    /**
      * @param string $costCentre
      *
-     * @return Order
+     * @return self
      */
     public function setCostCentre($costCentre)
     {
@@ -521,7 +498,7 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     /**
      * @param string $commission
      *
-     * @return Order
+     * @return self
      */
     public function setCommission($commission)
     {
@@ -545,7 +522,7 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     /**
      * @param \DateTime $desiredDeliveryDate
      *
-     * @return Order
+     * @return self
      */
     public function setDesiredDeliveryDate($desiredDeliveryDate)
     {
@@ -569,7 +546,7 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     /**
      * @param boolean $taxfree
      *
-     * @return Order
+     * @return self
      */
     public function setTaxfree($taxfree)
     {
@@ -592,7 +569,7 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     /**
      * @param AccountInterface $account
      *
-     * @return Order
+     * @return self
      */
     public function setCustomerAccount(AccountInterface $account = null)
     {
@@ -622,7 +599,7 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     /**
      * @param ContactInterface $contact
      *
-     * @return Order
+     * @return self
      */
     public function setCustomerContact(ContactInterface $contact = null)
     {
@@ -653,7 +630,7 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     /**
      * @param ContactInterface $responsibleContact
      *
-     * @return Order
+     * @return self
      */
     public function setResponsibleContact(ContactInterface $responsibleContact = null)
     {
@@ -683,7 +660,7 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     /**
      * @param ItemInterface $item
      *
-     * @return Order
+     * @return self
      */
     public function addItem(ItemInterface $item)
     {
@@ -696,7 +673,7 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     /**
      * @param ItemInterface $item
      *
-     * @return Order
+     * @return self
      */
     public function removeItem(ItemInterface $item)
     {
@@ -773,7 +750,7 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     /**
      * @param UserInterface $changer
      *
-     * @return Order
+     * @return self
      */
     public function setChanger(UserInterface $changer = null)
     {
@@ -793,7 +770,7 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     /**
      * @param UserInterface $creator
      *
-     * @return Order
+     * @return self
      */
     public function setCreator(UserInterface $creator = null)
     {
@@ -813,7 +790,7 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     /**
      * @param OrderAddressInterface $deliveryAddress
      *
-     * @return Order
+     * @return self
      */
     public function setDeliveryAddress(OrderAddressInterface $deliveryAddress = null)
     {
@@ -841,7 +818,7 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     /**
      * @param OrderAddressInterface $invoiceAddress
      *
-     * @return Order
+     * @return self
      */
     public function setInvoiceAddress(OrderAddressInterface $invoiceAddress = null)
     {
@@ -867,7 +844,7 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     /**
      * @param $number
      *
-     * @return Order
+     * @return self
      */
     public function setOrderNumber($number)
     {
@@ -888,75 +865,9 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     }
 
     /**
-     * @param float $totalNetPrice
-     *
-     * @return self
-     */
-    public function setTotalNetPrice($totalNetPrice)
-    {
-        $this->entity->setTotalNetPrice($totalNetPrice);
-
-        return $this;
-    }
-
-    /**
-     * @VirtualProperty
-     * @SerializedName("totalNetPrice")
-     * @Groups({"Default","cart"})
-     *
-     * @return float
-     */
-    public function getTotalNetPrice()
-    {
-        return $this->entity->getTotalNetPrice();
-    }
-
-    /**
-     * @VirtualProperty
-     * @SerializedName("totalNetPriceFormatted")
-     * @Groups({"Default","cart"})
-     *
-     * @param string $locale
-     *
-     * @return string
-     */
-    public function getTotalNetPriceFormatted($locale = null)
-    {
-        return $this->priceFormatter->format((float)$this->entity->getTotalNetPrice(), null, $locale);
-    }
-
-    /**
-     * @VirtualProperty
-     * @SerializedName("totalRecurringNetPriceFormatted")
-     * @Groups({"Default","cart"})
-     *
-     * @param string $locale
-     *
-     * @return string
-     */
-    public function getTotalRecurringNetPriceFormatted($locale = null)
-    {
-        return $this->priceFormatter->format((float)$this->entity->getTotalRecurringNetPrice(), null, $locale);
-    }
-
-    /**
-     * @VirtualProperty
-     * @SerializedName("deliveryCostFormatted")
-     * @Groups({"Default","cart"})
-     *
-     * @param string $locale
-     *
-     * @return string
-     */
-    public function getDeliveryCostFormatted($locale = null)
-    {
-        return $this->priceFormatter->format((float)$this->entity->getDeliveryCost(), null, $locale);
-    }
-
-    /**
      * @param DateTime
      *
-     * @return Order
+     * @return self
      */
     public function setOrderDate($orderDate)
     {
@@ -997,7 +908,7 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     /**
      * @param array
      *
-     * @return Order
+     * @return self
      */
     public function setPermissions(array $permissions)
     {
@@ -1020,7 +931,7 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     /**
      * @param array
      *
-     * @return Order
+     * @return self
      */
     public function setWorkflows(array $workflows)
     {
@@ -1051,30 +962,6 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     }
 
     /**
-     * @VirtualProperty
-     * @SerializedName("hasChangedPrices")
-     * @Groups({"Default","cart"})
-     *
-     * @return bool
-     */
-    public function hasChangedPrices()
-    {
-        return $this->hasChangedPrices;
-    }
-
-    /**
-     * @param $hasChangedPrices
-     *
-     * @return Order
-     */
-    public function setHasChangedPrices($hasChangedPrices)
-    {
-        $this->hasChangedPrices = $hasChangedPrices;
-
-        return $this;
-    }
-
-    /**
      * Get status codes of cart
      *
      * @VirtualProperty
@@ -1093,7 +980,7 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
      *
      * @param int
      *
-     * @return Order
+     * @return self
      */
     public function addCartErrorCode($statusCode)
     {
@@ -1164,6 +1051,85 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     }
 
     /**
+     * @param float $totalNetPrice
+     *
+     * @return self
+     */
+    public function setTotalNetPrice($totalNetPrice)
+    {
+        $this->entity->setTotalNetPrice($totalNetPrice);
+
+        return $this;
+    }
+
+    /**
+     * @VirtualProperty
+     * @SerializedName("totalNetPrice")
+     * @Groups({"Default","cart"})
+     *
+     * @return float
+     */
+    public function getTotalNetPrice()
+    {
+        return $this->entity->getTotalNetPrice();
+    }
+
+    /**
+     * @VirtualProperty
+     * @SerializedName("totalNetPriceFormatted")
+     * @Groups({"Default","cart"})
+     *
+     * @throws PriceFormatterException
+     *
+     * @param null|string $locale
+     *
+     * @return string
+     */
+    public function getTotalNetPriceFormatted($locale = null)
+    {
+        return $this->priceFormatter->format((float)$this->entity->getTotalNetPrice(), null, $locale);
+    }
+
+    /**
+     * @param float $totalPrice
+     *
+     * @return self
+     */
+    public function setTotalPrice($totalPrice)
+    {
+        $this->entity->setTotalPrice($totalPrice);
+
+        return $this;
+    }
+
+    /**
+     * @VirtualProperty
+     * @SerializedName("totalPrice")
+     * @Groups({"Default", "xmlOrder"})
+     *
+     * @return array
+     */
+    public function getTotalPrice()
+    {
+        return $this->entity->getTotalPrice();
+    }
+
+    /**
+     * @VirtualProperty
+     * @SerializedName("totalPriceFormatted")
+     *
+     * @throws PriceFormatterException
+     *
+     * @param null|string $locale
+     *
+     * @return string
+     */
+    public function getTotalPriceFormatted($locale = null)
+    {
+        return $this->priceFormatter->format((float)$this->entity->getTotalNetPrice(), null, $locale);
+    }
+
+    /**
      * @param float $totalRecurringNetPrice
      *
      * @return self
@@ -1185,5 +1151,175 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     public function getTotalRecurringNetPrice()
     {
         return $this->entity->getTotalRecurringNetPrice();
+    }
+
+    /**
+     * @VirtualProperty
+     * @SerializedName("totalRecurringNetPriceFormatted")
+     * @Groups({"Default","cart"})
+     *
+     * @param null|string $locale
+     *
+     * @throws PriceFormatterException
+     *
+     * @return string
+     */
+    public function getTotalRecurringNetPriceFormatted($locale = null)
+    {
+        return $this->priceFormatter->format((float)$this->entity->getTotalRecurringNetPrice(), null, $locale);
+    }
+
+    /**
+     * @param float $totalRecurringPrice
+     *
+     * @return self
+     */
+    public function setTotalRecurringPrice($totalRecurringPrice)
+    {
+        $this->entity->setTotalRecurringPrice($totalRecurringPrice);
+
+        return $this;
+    }
+
+    /**
+     * @VirtualProperty
+     * @SerializedName("totalRecurringPrice")
+     *
+     * @return float
+     */
+    public function getTotalRecurringPrice()
+    {
+        return $this->entity->getTotalRecurringPrice();
+    }
+
+    /**
+     * @VirtualProperty
+     * @SerializedName("totalRecurringPriceFormatted")
+     *
+     * @param null|string $locale
+     *
+     * @throws PriceFormatterException
+     *
+     * @return float
+     */
+    public function getTotalRecurringPriceFormatted($locale = null)
+    {
+        return $this->priceFormatter->format((float)$this->entity->getTotalRecurringPrice(), null, $locale);
+    }
+
+    /**
+     * @param float $netShippingCosts
+     *
+     * @return self
+     */
+    public function setNetShippingCosts($netShippingCosts)
+    {
+        $this->entity->setNetShippingCosts($netShippingCosts);
+
+        return $this;
+    }
+
+    /**
+     * @VirtualProperty
+     * @SerializedName("netShippingCosts")
+     * @Groups({"Default","cart"})
+     *
+     * @return float
+     */
+    public function getNetShippingCosts()
+    {
+        return $this->entity->getNetShippingCosts();
+    }
+
+    /**
+     * @VirtualProperty
+     * @SerializedName("netShippingCostsFormatted")
+     * @Groups({"Default","cart"})
+     *
+     * @param null|string $locale
+     *
+     * @throws PriceFormatterException
+     *
+     * @return string
+     */
+    public function getNetShippingCostsFormatted($locale = null)
+    {
+        return $this->priceFormatter->format((float)$this->entity->getNetShippingCosts(), null, $locale);
+    }
+
+    /**
+     * @VirtualProperty
+     * @SerializedName("taxes")
+     *
+     * @return float
+     */
+    public function getTotalTaxes()
+    {
+        return $this->entity->getTotalPrice() - $this->entity->getTotalNetPrice();
+    }
+
+    /**
+     * @VirtualProperty
+     * @SerializedName("taxesFormatted")
+     *
+     * @param null|string $locale
+     *
+     * @throws PriceFormatterException
+     *
+     * @return float
+     */
+    public function getTotalTaxesFormatted($locale = null)
+    {
+        return $this->priceFormatter->format((float)$this->getTotalTaxes(), null, $locale);
+    }
+
+    /**
+     * @VirtualProperty
+     * @SerializedName("totalRecurringTaxes")
+     *
+     * @return float
+     */
+    public function getTotalRecurringTaxes()
+    {
+        return $this->entity->getTotalRecurringPrice() - $this->entity->getTotalRecurringNetPrice();
+    }
+
+    /**
+     * @VirtualProperty
+     * @SerializedName("totalRecurringTaxesFormatted")
+     *
+     * @param null|string $locale
+     *
+     * @throws PriceFormatterException
+     *
+     * @return float
+     */
+    public function getTotalRecurringTaxesFormatted($locale = null)
+    {
+        return $this->priceFormatter->format((float)$this->getTotalRecurringTaxes(), null, $locale);
+    }
+
+    /**
+     * @VirtualProperty
+     * @SerializedName("hasChangedPrices")
+     * @Groups({"Default","cart"})
+     *
+     * @return bool
+     */
+    public function hasChangedPrices()
+    {
+        return $this->hasChangedPrices;
+    }
+
+    /**
+     * @param bool $hasChangedPrices
+     *
+     * @return self
+     */
+    public function setHasChangedPrices($hasChangedPrices)
+    {
+        $this->hasChangedPrices = $hasChangedPrices;
+
+        return $this;
     }
 }

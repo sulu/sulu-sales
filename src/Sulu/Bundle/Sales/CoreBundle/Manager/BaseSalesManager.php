@@ -15,13 +15,14 @@ use DateTime;
 abstract class BaseSalesManager
 {
     /**
-     * sets a date if it's set in data
-     * @param $data
-     * @param $key
-     * @param $currentDate
+     * Sets a date if it's set in data.
+     *
+     * @param array$data
+     * @param string $key
+     * @param DateTIme|null $currentDate
      * @param callable $setCallback
      */
-    protected function setDate($data, $key, $currentDate, callable $setCallback)
+    protected function setDate($data, $key, DateTIme $currentDate, callable $setCallback)
     {
         $date = $this->getProperty($data, $key, $currentDate);
         if ($date !== null) {
@@ -33,12 +34,15 @@ abstract class BaseSalesManager
     }
 
     /**
-     * checks data for attributes
+     * Checks data for attributes.
+     *
      * @param array $data
-     * @param $key
-     * @param $isNew
-     * @return bool
+     * @param string $key
+     * @param bool $isNew
+     *
      * @throws \Exception
+     *
+     * @return bool
      */
     protected function checkDataSet(array $data, $key, $isNew)
     {
@@ -52,9 +56,11 @@ abstract class BaseSalesManager
     }
 
     /**
-     * checks if data is set
-     * @param $key
-     * @param $data
+     * Checks if data is set.
+     *
+     * @param string $key
+     * @param array $data
+     *
      * @return bool
      */
     protected function checkIfSet($key, $data)
@@ -65,12 +71,15 @@ abstract class BaseSalesManager
     }
 
     /**
-     * searches for contact in specified data and calls callback function
+     * Searches for contact in specified data and calls callback function.
+     *
      * @param array $data
-     * @param $dataKey
-     * @param $addCallback
-     * @return null|Contact
+     * @param string $dataKey
+     * @param string $addCallback
+     *
      * @throws \Exception
+     *
+     * @return null|Contact
      */
     protected function addContactRelation(array $data, $dataKey, $addCallback)
     {
@@ -89,7 +98,8 @@ abstract class BaseSalesManager
     }
 
     /**
-     * Returns the entry from the data with the given key, or the given default value, if the key does not exist
+     * Returns the entry from the data with the given key, or the given default value, if the key does not exist.
+     *
      * @param array $data
      * @param string $key
      * @param string $default
@@ -103,8 +113,10 @@ abstract class BaseSalesManager
     /**
      * @param $data
      * @param $entity
-     * @return null|object
+     *
      * @throws \Exception
+     *
+     * @return null|object
      * @internal param Order $order
      */
     protected function setAccount($data, $entity)

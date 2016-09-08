@@ -123,8 +123,8 @@
     {% endfor %}
 {% endblock %}
 
-{% block productlist_footer_shippingcost_value %}
-    {{ orderApiEntity.deliveryCostFormatted|default('-') }}
+{% block productlist_footer_netshippingcosts_value %}
+    {{ orderApiEntity.netShippingCostsFormatted|default('-') }}
 {% endblock %}
 
 {% block productlist_footer_total_value %}

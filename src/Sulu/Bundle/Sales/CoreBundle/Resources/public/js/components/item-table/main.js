@@ -13,11 +13,11 @@
  *
  * @param {Object}     [options] Configuration object
  * @param {Array}      [options.data] Array of data [string, object]
- * @param {Bool}       [options.isEditable] Defines if component is editable
- * @param {Bool}       [options.displayToolbars] Defines if toolbars should be shown, when component is editable.
+ * @param {Boolean}    [options.isEditable] Defines if component is editable
+ * @param {Boolean}    [options.displayToolbars] Defines if toolbars should be shown, when component is editable.
  *                      If false, no rows can be added or deleted.
  * @param {Array}      [options.columns] Defines which columns should be shown. Array of strings
- * @param {Bool}       [options.hasNestedItems] this is used, when data array is merged (must be an object
+ * @param {Boolean}    [options.hasNestedItems] this is used, when data array is merged (must be an object
  *                     containing an attribute called 'item'
  * @param {Array}      [options.defaultData] can be used to pass extra default parameters to an item
  * @param {Object}     [options.columnCallbacks] if a specific column is clicked (as name) a callback can be defined
@@ -30,16 +30,16 @@
  * @param {Object}     [options.settings.units] All units that can be assigned to an item.
  * @param {Object}     [options.urlFilter] Object containing key value pairs to extend the url
  * @param {String}     [options.addressKey] Defines how to access address value over api
- * @param {Bool}       [options.allowDuplicatedProducts] Defines if a product can be added multiple times to items list
- * @param {Bool}       [options.showItemCount] Defines if the column which shows the item count should be displayed.
- * @param {Bool}       [options.taxfree] Defines if table should contain taxes
- * @param {Bool}       [options.enableIndependentItems] Defines an independent item can be created
+ * @param {Boolean}    [options.allowDuplicatedProducts] Defines if a product can be added multiple times to items list
+ * @param {Boolean}    [options.showItemCount] Defines if the column which shows the item count should be displayed.
+ * @param {Boolean}    [options.taxfree] Defines if table should contain taxes
+ * @param {Boolean}    [options.enableIndependentItems] Defines an independent item can be created
  *                     (without product assignment).
- * @param {Number}     [options.deliveryCost] The delivery cost
- * @param {Bool}       [options.enableDeliveryCost] Defines if the delivery cost field is enabled or not
- * @param {Function}   [options.deliveryCostChangedCallback] Function called when delivery cost changes
- * @param {Bool}       [options.calculatePrices] Defines if prices should be calculated
- * @param {Bool}       [options.shouldDisplayCurrencies] Define if currencies should be displayed in
+ * @param {Number}     [options.netShippingCosts] The net shipping costs
+ * @param {Boolean}    [options.enableNetShippingCosts] Defines if the net shipping costs field is enabled or not
+ * @param {Function}   [options.netShippingCostsChangedCallback] Function called when net shipping costs changes
+ * @param {Boolean}    [options.calculatePrices] Defines if prices should be calculated
+ * @param {Boolean}    [options.shouldDisplayCurrencies] Define if currencies should be displayed in
  *                      item table (for each price).
  *
  * ==============================================
@@ -78,12 +78,12 @@ define([
             ],
             data: [],
             defaultData: {},
-            deliveryCost: 0,
-            deliveryCostChangedCallback: null,
+            netShippingCosts: 0,
+            netShippingCostsChangedCallback: null,
             calculatePrices: true,
             displayToolbars: true,
             displayRecurringPrices: Config.get('sulu_sales_core').display_recurring_prices,
-            enableDeliveryCost: false,
+            enableNetShippingCosts: false,
             enableIndependentItems: false,
             formId: 'item-table-form',
             hasNestedItems: false,
@@ -127,7 +127,7 @@ define([
             overlayClass: 'settings-overlay',
             overlayClassSelector: '.settings-overlay',
             settingsOverlayId: '#settings-overlay',
-            deliveryCostInputId: '#delivery-cost',
+            netShippingCostsInputId: '#net-shipping-costs',
             autocompleteLimit: 20,
             disablePagination: true
         },
@@ -369,9 +369,9 @@ define([
             this.sandbox.dom.on(this.$el, 'change', priceChangedHandler.bind(this), constants.priceInput);
             this.sandbox.dom.on(this.$el, 'change', discountChangedHandler.bind(this), constants.discountInput);
 
-            // Listen to focus out of delivery cost input field.
-            if (this.options.enableDeliveryCost === true) {
-                this.sandbox.dom.on('#item-table-form', 'focusout', deliveryCostChangedHandler.bind(this));
+            // Listen to focus out of net shipping costs input field.
+            if (this.options.enableNetShippingCosts === true) {
+                this.sandbox.dom.on('#item-table-form', 'focusout', netShippingCostsChangedHandler.bind(this));
             }
         },
 
@@ -393,7 +393,7 @@ define([
             var $inputField = $(inputField);
             var number = this.sandbox.parseFloat($inputField.val());
 
-            // Do not format, if delivery-cost is invalid.
+            // Do not format, if net shipping costs is invalid.
             if (!this.sandbox.dom.isNumeric(number)) {
                 return;
             }
@@ -403,21 +403,21 @@ define([
         },
 
         /**
-         *  DOM-EVENT listener: Delivery cost focus out.
+         *  DOM-EVENT listener: Net shipping costs focus out.
          */
-        deliveryCostChangedHandler = function() {
-            var deliveryCost = this.sandbox.parseFloat($(constants.deliveryCostInputId).val());
+        netShippingCostsChangedHandler = function() {
+            var netShippingCosts = this.sandbox.parseFloat($(constants.netShippingCostsInputId).val());
 
-            // Do not format, if delivery-cost is invalid.
-            if (!this.sandbox.dom.isNumeric(deliveryCost)) {
+            // Do not format, if net shipping costs is invalid.
+            if (!this.sandbox.dom.isNumeric(netShippingCosts)) {
                 return;
             }
 
             // Reformat the input.
-            $(constants.deliveryCostInputId).val(this.sandbox.numberFormat(deliveryCost, 'n'));
+            $(constants.netShippingCostsInputId).val(this.sandbox.numberFormat(netShippingCosts, 'n'));
             // Update the global price.
             updateGlobalPrice.call(this);
-            this.options.deliveryCostChangedCallback(deliveryCost);
+            this.options.netShippingCostsChangedCallback(netShippingCosts);
         },
 
         /**
@@ -769,17 +769,17 @@ define([
                 var totalRecurringNetPrice = 0;
                 var grossPrice = 0;
                 var recurringGrossPrice = 0;
-                var deliveryCost = 0;
+                var netShippingCosts = 0;
                 var currency = ' ';
                 if (this.options.shouldDisplayCurrencies) {
                     currency = this.currency;
                 }
 
-                // Add delivery cost if enabled.
-                if (this.options.enableDeliveryCost === true) {
-                    deliveryCost = this.sandbox.parseFloat($(constants.deliveryCostInputId).val());
+                // Add net shipping costs if enabled.
+                if (this.options.enableNetShippingCosts === true) {
+                    netShippingCosts = this.sandbox.parseFloat($(constants.netShippingCostsInputId).val());
                 }
-                var result = PriceCalcUtil.getTotalPricesAndTaxes(this.sandbox, this.items, deliveryCost);
+                var result = PriceCalcUtil.getTotalPricesAndTaxes(this.sandbox, this.items, netShippingCosts);
                 var resultRecurring = PriceCalcUtil.getTotalPricesAndTaxes(this.sandbox, this.items, 0, true);
 
                 if (!!result) {
@@ -1040,7 +1040,6 @@ define([
             // Load product price.
             this.sandbox.util.save(urls.pricing, 'POST', {
                 currency: this.currency,
-                taxfree: this.options.taxfree,
                 items: items
             }).then(function(response) {
                 // Map each result of response back to rowIds.
@@ -1815,8 +1814,8 @@ define([
                     showItemCount: this.options.showItemCount,
                     enableIndependentItems: this.options.enableIndependentItems,
                     translate: this.sandbox.translate,
-                    deliveryCost: this.sandbox.numberFormat(this.options.deliveryCost, 'n'),
-                    enableDeliveryCost: this.options.enableDeliveryCost
+                    netShippingCosts: this.sandbox.numberFormat(this.options.netShippingCosts, 'n'),
+                    enableNetShippingCosts: this.options.enableNetShippingCosts
                 }
             );
 
