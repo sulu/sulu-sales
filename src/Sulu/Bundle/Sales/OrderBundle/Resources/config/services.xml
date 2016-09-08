@@ -117,12 +117,12 @@
             <argument type="service" id="doctrine.orm.entity_manager" />
             <argument type="service" id="massive_pdf.pdf_manager" />
             <argument>%sulu_sales_order.pdf_templates.confirmation%</argument>
-            <argument>%sulu_sales_order.pdf_templates.dynamically%</argument>
             <argument>%sulu_sales_order.pdf_templates.base%</argument>
             <argument>%sulu_sales_order.pdf_templates.header%</argument>
             <argument>%sulu_sales_order.pdf_templates.footer%</argument>
             <argument>%sulu_sales_order.pdf_templates.macros%</argument>
             <argument>%website_locale%</argument>
+            <argument>%sulu_sales_order.pdf_templates.dynamically%</argument>
             <argument>%sulu_sales_order.pdf_order_dynamically_name_prefix%</argument>
             <argument>%sulu_sales_order.pdf_order_confirmation_name_prefix%</argument>
         </service>
