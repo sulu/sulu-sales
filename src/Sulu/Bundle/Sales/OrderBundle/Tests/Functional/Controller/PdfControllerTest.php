@@ -21,6 +21,5 @@ class PdfControllerTest extends OrderTestBase
         $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
         $this->assertEquals('application/pdf', $this->client->getResponse()->headers->get('Content-Type'));
         $this->assertNotNull($this->client->getResponse()->getContent());
-
     }
 }
