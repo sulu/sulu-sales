@@ -70,6 +70,25 @@ the same logic, the filename for the confirmation pdf is generated.
 
 If not configured, the default values are applied. Those are like shown in the example config above.
 
+## Routing
+
+The routing of the Bundle depends on the routing files that live in the respective `Resources/config/routing`
+directories.
+
+Those are, grouped by bundle:
+
+- SuluSalesOrderBundle:
+  - routing.xml
+  - routing_api.xml
+  - routing_website.xml
+- SuluSalesCoreBundle:
+  - routing.xml
+- SuluSalesShippingBundle:
+  - routing.xml
+  - routing_api.xml
+
+It is also important to know, that the routing for tests is configured separately. (Check the Tests/ directory)
+
 ## How to run tests
 
 The following command is going to run tests for all sales bundles:

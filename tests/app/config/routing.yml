@@ -13,6 +13,10 @@ sulu_product_api:
     resource: "@SuluProductBundle/Resources/config/routing_api.yml"
     prefix: /api
 
+sulu_order_website:
+    resource: "@SuluSalesOrderBundle/Resources/config/routing_website.xml"
+    prefix: /
+
 sulu_media.collections:
     type: rest
     resource: Sulu\Bundle\MediaBundle\Controller\CollectionController
