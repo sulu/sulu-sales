@@ -16,3 +16,8 @@ before_script:
 
 script:
   - phpunit
+
+addons:
+  apt:
+    packages:
+      - wkhtmltopdf
