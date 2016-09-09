@@ -639,11 +639,11 @@ class CartManager extends BaseSalesManager
      * @param string $locale
      * @param null|string $currencyCode
      *
-     * @return Order
+     * @return OrderInterface
      */
     protected function createEmptyCart(UserInterface $user, $doPersist, $locale, $currencyCode = null)
     {
-        $cart = new Order();
+        $cart = $this->orderRepository->createNew();
         $cart->setCreator($user);
         $cart->setChanger($user);
         $cart->setCreated(new DateTime());

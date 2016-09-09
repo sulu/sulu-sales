@@ -1,6 +1,10 @@
 CHANGELOG for Sulu Sales
 ========================
 
+* dev-develop
+
+    * FEATURE     [OrderBundle]   Adapted sales-order to support sulu persistence.
+
 * 0.7.2 (2016-09-07)
 
     * BUGFIX      [OrderBundle]   ApiOrder: Added methods for all prices
