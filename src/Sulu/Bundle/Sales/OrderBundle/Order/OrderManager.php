@@ -67,44 +67,44 @@ class OrderManager
     protected static $termsOfDeliveryEntityName = 'SuluContactExtensionBundle:TermsOfDelivery';
     protected static $termsOfPaymentEntityName = 'SuluContactExtensionBundle:TermsOfPayment';
 
-    private $currentLocale;
+    protected $currentLocale;
 
     /**
      * @var ObjectManager
      */
-    private $em;
+    protected $em;
 
     /**
      * @var ItemManager
      */
-    private $itemManager;
+    protected $itemManager;
 
     /**
      * @var OrderRepository
      */
-    private $orderRepository;
+    protected $orderRepository;
 
     /**
      * @var EntityRepository
      */
-    private $orderTypeRepository;
+    protected $orderTypeRepository;
 
     /**
      * @var EntityRepository
      */
-    private $orderStatusRepository;
+    protected $orderStatusRepository;
 
     /**
      * @var UserRepositoryInterface
      */
-    private $userRepository;
+    protected $userRepository;
 
     /**
      * Describes the fields, which are handled by this controller.
      *
      * @var DoctrineFieldDescriptor[]
      */
-    private $fieldDescriptors = array();
+    protected $fieldDescriptors = array();
 
     /**
      * @var SessionInterface
@@ -119,37 +119,37 @@ class OrderManager
     /**
      * @var GroupedItemsPriceCalculatorInterface
      */
-    private $priceCalculator;
+    protected $priceCalculator;
 
     /**
      * @var ProductManagerInterface
      */
-    private $productManager;
+    protected $productManager;
 
     /**
      * @var OrderFactoryInterface
      */
-    private $orderFactory;
+    protected $orderFactory;
 
     /**
      * @var AccountRepository
      */
-    private $accountRepository;
+    protected $accountRepository;
 
     /**
      * @var OrderAddressManager
      */
-    private $orderAddressManager;
+    protected $orderAddressManager;
 
     /**
      * @var string
      */
-    private $defaultCurrency;
+    protected $defaultCurrency;
 
     /**
      * @var ContactRepositoryInterface
      */
-    private $contactRepository;
+    protected $contactRepository;
 
     /**
      * @var EventDispatcherInterface
