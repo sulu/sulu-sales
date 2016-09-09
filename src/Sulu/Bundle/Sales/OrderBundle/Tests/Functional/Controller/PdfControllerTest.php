@@ -18,7 +18,7 @@ class PdfControllerTest extends OrderTestBase
     {
         $request = $this->client->request('GET', '/de/_pdf/order/' . $this->data->order->getId());
 
-        $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
+        $this->assertEquals(200, $this->client->getResponse()->getStatusCode(), $this->client->getResponse());
         $this->assertEquals('application/pdf', $this->client->getResponse()->headers->get('Content-Type'));
         $this->assertNotNull($this->client->getResponse()->getContent());
     }
