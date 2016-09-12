@@ -83,8 +83,8 @@ class OrderPdfManager
      * @param string $templateFooterPath
      * @param string $templateMacrosPath
      * @param string $locale
-     * @param string $templateDynamicPath
-     * @param string $namePrefixDynamicOrder
+     * @param string|null $templateDynamicPath
+     * @param string|null $namePrefixDynamicOrder
      * @param string $namePrefixConfirmedOrder
      */
     public function __construct(
