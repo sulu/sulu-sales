@@ -87,6 +87,8 @@ class Configuration implements ConfigurationInterface
             ->end()
         ->end();
 
+        $this->addObjectsSection($root);
+
         return $treeBuilder;
     }
 
