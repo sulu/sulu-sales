@@ -43,12 +43,19 @@
 
         <!--FACTORIES-->
         <service id="sulu_sales_order.order_factory" class="%sulu_sales_order.order_factory.class%">
+            <argument type="service" id="sulu.repository.sales_order" />
             <argument type="service" id="sulu_sales_core.item_factory" />
             <argument type="service" id="sulu_pricing.formatter" />
         </service>
 
         <!--REPOSITORIES-->
         <service id="sulu_sales_order.order_repository" class="%sulu_sales_order.order_repository.class%">
+            <factory method="getRepository" service="doctrine" />
+            <argument>%sulu_sales_order.order_entity%</argument>
+            <deprecated>The "%service_id%" service is deprecated please use "sulu.repository.sales_order" instead</deprecated>
+        </service>
+
+        <service id="sulu.repository.sales_order" class="%sulu_sales_order.order_repository.class%">
             <factory method="getRepository" service="doctrine" />
             <argument>%sulu_sales_order.order_entity%</argument>
         </service>
@@ -67,7 +74,7 @@
 
         <service id="sulu_sales_order.order_manager" class="%sulu_sales_order.order_manager.class%">
             <argument type="service" id="doctrine.orm.entity_manager" />
-            <argument type="service" id="sulu_sales_order.order_repository" />
+            <argument type="service" id="sulu.repository.sales_order" />
             <argument type="service" id="sulu_security.user_repository" />
             <argument type="service" id="sulu_contact.account_repository" />
             <argument type="service" id="sulu_sales_core.item_manager" />
@@ -87,7 +94,7 @@
         <service id="sulu_sales_order.cart_manager" class="%sulu_sales_order.cart_manager.class%">
             <argument type="service" id="doctrine.orm.entity_manager" />
             <argument type="service" id="session" />
-            <argument type="service" id="sulu_sales_order.order_repository" />
+            <argument type="service" id="sulu.repository.sales_order" />
             <argument type="service" id="sulu_sales_order.order_manager" />
             <argument type="service" id="sulu_pricing.grouped_price_calculator" />
             <argument>%sulu_product.default_currency%</argument>
