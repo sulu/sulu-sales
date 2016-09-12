@@ -129,6 +129,9 @@
             <argument>%sulu_sales_order.pdf_templates.footer%</argument>
             <argument>%sulu_sales_order.pdf_templates.macros%</argument>
             <argument>%website_locale%</argument>
+            <argument>%sulu_sales_order.pdf_templates.dynamically%</argument>
+            <argument>%sulu_sales_order.pdf_order_dynamically_name_prefix%</argument>
+            <argument>%sulu_sales_order.pdf_order_confirmation_name_prefix%</argument>
         </service>
 
         <service id="sulu_sales_order.order_dependency_manager"

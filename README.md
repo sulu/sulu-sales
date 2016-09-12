@@ -23,12 +23,16 @@ Confirmation emails are only sent, when using CartManager for creating orders.
 ```
 sulu_sales_order:
     pdf_templates:
-        confirmation: SuluSalesOrderBundle:Pdf:pool-alpin.order.confirmation.html.twig
+        confirmation: SuluSalesOrderBundle:Pdf:order.confirmation.html.twig
         base: SuluSalesCoreBundle:Pdf:pdf-base.html.twig
         header: SuluSalesCoreBundle:Pdf:pdf-base-header.html.twig
         footer: SuluSalesCoreBundle:Pdf:pdf-base-footer.html.twig
         macros: SuluSalesCoreBundle:Pdf:pdf-macros.html.twig
+        dynamically: SuluSalesOrderBundle:Pdf:order.dynamically.html.twig
+        dynamically_base: SuluSalesOrderBundle:Pdf:order.confirmation.html.twig
     pdf_response_type: 'inline'
+    pdf_order_confirmation_name_prefix: order_confirmation
+    pdf_order_dynamically_name_prefix: order_pdf
     email_templates:
         footer_txt: ~
         footer_html: ~
@@ -40,6 +44,16 @@ sulu_sales_order:
             model: Sulu\Bundle\Sales\OrderBundle\Entity\Order
             repository: Sulu\Bundle\Sales\OrderBundle\Entity\OrderRepository
 ```
+
+#### Pdf templates dynamically
+
+The `dynamically` pdf template can be configured easily. That way it is possible to dynamically change the look of the
+pdf generated from a given order object. To add even more flexibility it is possible to configure the
+`dynamically_base` template which is the template, that will be extended by `dynamically`. Like: *dynamically extends
+dynamically_base*.
+
+Since there are defaults specified and default templates exist in the bundle, it is not strictly necessary to configure
+those parameters.
 
 #### Pdf response type
 
@@ -53,6 +67,33 @@ sulu_sales_orderbundle_pdf_responsetype: inline
 
 The bundle-sided configuration for this key defaults to `inline`.
 
+#### Pdf naming prefixes
+
+The naming prefixes, that can be configured are : `pdf_order_confirmation_name_prefix` and
+`pdf_order_dynamically_name_prefix`. That way it is easily configurable how the returned file is named. So if a dynamic
+template is rendered, the `pdf_order_dynamically_name_prefix` will be used and suffixed with the order number. Applying
+the same logic, the filename for the confirmation pdf is generated.
+
+If not configured, the default values are applied. Those are like shown in the example config above.
+
+## Routing
+
+The routing of the Bundle depends on the routing files that live in the respective `Resources/config/routing`
+directories.
+
+Those are, grouped by bundle:
+
+- SuluSalesOrderBundle:
+  - routing.xml
+  - routing_api.xml
+  - routing_website.xml
+- SuluSalesCoreBundle:
+  - routing.xml
+- SuluSalesShippingBundle:
+  - routing.xml
+  - routing_api.xml
+
+It is also important to know, that the routing for tests is configured separately. (Check the Tests/ directory)
 
 ## How to run tests
 

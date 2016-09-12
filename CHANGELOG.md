@@ -3,6 +3,9 @@ CHANGELOG for Sulu Sales
 
 * dev-develop
 
+    * ENHANCEMENT [OrderBundle]   Added functionality to generate pdf files of orders with a configurable template.
+                                  Accessible over a website route.
+
     * FEATURE     [OrderBundle]   Adapted sales-order to support sulu persistence.
 
 * 0.7.2 (2016-09-07)
@@ -21,7 +24,7 @@ CHANGELOG for Sulu Sales
 
 * 0.6.2 (2016-08-29)
 
-    * ENHANCMENT  [CoreBundle]    Item table shows now elements for recurring prices
+    * ENHANCEMENT [CoreBundle]    Item table shows now elements for recurring prices
                                   only when `sulu_product.display_recurring_prices` is set to `true
 
 * 0.6.1 (2016-08-24)
@@ -36,7 +39,7 @@ CHANGELOG for Sulu Sales
     * FEATURE     [OrderBundle]   Adopted UI for customer types
     * FEATURE     [CoreBundle]    Added model CustomerType and CustomerTypeManager
     * BUGFIX      [CoreBundle]    Style fixes in global total price of item-table.
-    
+
 * 0.5.1 (2016-08-22)
 
     * BUGFIX      [CoreBundle]    Fixed creation of empty cart.
@@ -67,8 +70,8 @@ CHANGELOG for Sulu Sales
 * 0.4.1 (2016-07-19)
 
     * FEATURE     [General]       Updated for usage with recurring price calculation
-    * BUGFIX      [CoreBundle]    Fixed creating independent items in item table caused by 
-                                  changes in pricing bundle 
+    * BUGFIX      [CoreBundle]    Fixed creating independent items in item table caused by
+                                  changes in pricing bundle
     * ENHANCEMENT [General]       Moved db diagram from sulu/docs to sales
 
 * 0.4.0 (2016-07-06)
