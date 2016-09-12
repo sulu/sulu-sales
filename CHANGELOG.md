@@ -6,6 +6,8 @@ CHANGELOG for Sulu Sales
     * ENHANCEMENT [OrderBundle]   Added functionality to generate pdf files of orders with a configurable template.
                                   Accessible over a website route.
 
+    * FEATURE     [OrderBundle]   Adapted sales-order to support sulu persistence.
+
 * 0.7.2 (2016-09-07)
 
     * BUGFIX      [OrderBundle]   ApiOrder: Added methods for all prices

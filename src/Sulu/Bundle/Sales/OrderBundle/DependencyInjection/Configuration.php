@@ -9,6 +9,7 @@
  */
 namespace Sulu\Bundle\Sales\OrderBundle\DependencyInjection;
 
+use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 
@@ -21,10 +22,11 @@ class Configuration implements ConfigurationInterface
     {
         $treeBuilder = new TreeBuilder();
 
-        $treeBuilder->root('sulu_sales_order')
+        $root = $treeBuilder->root('sulu_sales_order');
+        $root
             ->children()
-            ->arrayNode('pdf_templates')
-                ->addDefaultsIfNotSet()
+                ->arrayNode('pdf_templates')
+                    ->addDefaultsIfNotSet()
                     ->children()
                     ->scalarNode('base')
                         ->defaultValue('SuluSalesCoreBundle:Pdf:pdf-base.html.twig')
@@ -86,5 +88,33 @@ class Configuration implements ConfigurationInterface
         ->end();
 
         return $treeBuilder;
+    }
+
+    /**
+     * Adds `objects` section.
+     *
+     * @param ArrayNodeDefinition $node
+     */
+    private function addObjectsSection(ArrayNodeDefinition $node)
+    {
+        $node
+            ->children()
+                ->arrayNode('objects')
+                    ->addDefaultsIfNotSet()
+                    ->children()
+                        ->arrayNode('sales_order')
+                            ->addDefaultsIfNotSet()
+                            ->children()
+                                ->scalarNode('model')
+                                    ->defaultValue('Sulu\Bundle\Sales\OrderBundle\Entity\Order')
+                                ->end()
+                                ->scalarNode('repository')
+                                    ->defaultValue('Sulu\Bundle\Sales\OrderBundle\Entity\OrderRepository')
+                                ->end()
+                            ->end()
+                        ->end()
+                    ->end()
+                ->end()
+            ->end();
     }
 }
