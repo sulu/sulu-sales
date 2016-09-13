@@ -1,6 +1,10 @@
 CHANGELOG for Sulu Sales
 ========================
 
+* 0.8.1 (2016-09-14)
+
+    * BUGFIX      [OrderBundle]   Fixed order entity class for inheritance
+
 * 0.8.0 (2016-09-13)
 
     * FEATURE     [OrderBundle]   Added functionality to generate pdf files of orders with a configurable template.

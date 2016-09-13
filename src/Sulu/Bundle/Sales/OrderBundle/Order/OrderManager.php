@@ -596,9 +596,7 @@ class OrderManager
     public function findOrderEntityById($id)
     {
         try {
-            return $this->em
-                ->getRepository(static::$orderEntityName)
-                ->find($id);
+            return $this->orderRepository->find($id);
         } catch (NoResultException $nre) {
             throw new EntityNotFoundException(static::$orderEntityName, $id);
         }
@@ -616,9 +614,7 @@ class OrderManager
     public function findOrderEntityForItemWithId($id, $returnMultipleResults = false)
     {
         try {
-            return $this->em
-                ->getRepository(static::$orderEntityName)
-                ->findOrderForItemWithId($id, $returnMultipleResults);
+            return $this->orderRepository->findOrderForItemWithId($id, $returnMultipleResults);
         } catch (NoResultException $nre) {
             throw new EntityNotFoundException(static::$itemEntity, $id);
         }

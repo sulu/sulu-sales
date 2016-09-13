@@ -19,7 +19,7 @@
         <parameter key="sulu_sales_order.order_pdf_manager.class">Sulu\Bundle\Sales\OrderBundle\Order\OrderPdfManager</parameter>
         <parameter key="sulu_sales_order.order_factory.class">Sulu\Bundle\Sales\OrderBundle\Order\OrderFactory</parameter>
         <parameter key="sulu_sales_order.order_email_manager.class">Sulu\Bundle\Sales\OrderBundle\Order\OrderEmailManager</parameter>
-        <parameter key="sulu_sales_order.order_entity">Sulu\Bundle\Sales\OrderBundle\Entity\Order</parameter>
+        <parameter key="sulu_sales_order.order_entity">%sulu.model.sales_order.class%</parameter>
         <parameter key="sulu_sales_order.order_status_entity">Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatus</parameter>
         <parameter key="sulu_sales_order.order_type_entity">Sulu\Bundle\Sales\OrderBundle\Entity\OrderType</parameter>
         <!--EVENTS-->
@@ -51,13 +51,13 @@
         <!--REPOSITORIES-->
         <service id="sulu_sales_order.order_repository" class="%sulu_sales_order.order_repository.class%">
             <factory method="getRepository" service="doctrine" />
-            <argument>%sulu_sales_order.order_entity%</argument>
+            <argument>%sulu.model.sales_order.class%</argument>
             <deprecated>The "%service_id%" service is deprecated please use "sulu.repository.sales_order" instead</deprecated>
         </service>
 
         <service id="sulu.repository.sales_order" class="%sulu_sales_order.order_repository.class%">
             <factory method="getRepository" service="doctrine" />
-            <argument>%sulu_sales_order.order_entity%</argument>
+            <argument>%sulu.model.sales_order.class%</argument>
         </service>
 
         <service id="sulu_sales_order.order_status_repository" class="%sulu_sales_order.order_status_repository.class%">
