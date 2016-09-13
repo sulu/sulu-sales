@@ -1,9 +1,9 @@
 CHANGELOG for Sulu Sales
 ========================
 
-* dev-develop
+* 0.8.0 (2016-09-13)
 
-    * ENHANCEMENT [OrderBundle]   Added functionality to generate pdf files of orders with a configurable template.
+    * FEATURE     [OrderBundle]   Added functionality to generate pdf files of orders with a configurable template.
                                   Accessible over a website route.
 
     * FEATURE     [OrderBundle]   Adapted sales-order to support sulu persistence.
