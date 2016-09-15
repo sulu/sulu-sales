@@ -1,6 +1,10 @@
 CHANGELOG for Sulu Sales
 ========================
 
+* dev-devlop
+
+    * ENHANCEMENT [OrderBundle]   Made OrderFactory ready for extending
+
 * 0.8.1 (2016-09-14)
 
     * BUGFIX      [OrderBundle]   Fixed order entity class for inheritance

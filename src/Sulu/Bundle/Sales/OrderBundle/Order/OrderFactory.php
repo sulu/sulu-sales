@@ -19,17 +19,17 @@ use Sulu\Bundle\Sales\OrderBundle\Entity\OrderRepository;
 
 class OrderFactory implements OrderFactoryInterface
 {
-    private $itemFactory;
+    protected $itemFactory;
 
     /**
      * @var PriceFormatter
      */
-    private $priceFormatter;
+    protected $priceFormatter;
 
     /**
      * @var OrderRepository
      */
-    private $orderRepository;
+    protected $orderRepository;
 
     /**
      * @param OrderRepository $orderRepository
