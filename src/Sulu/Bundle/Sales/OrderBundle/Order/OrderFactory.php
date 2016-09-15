@@ -19,6 +19,9 @@ use Sulu\Bundle\Sales\OrderBundle\Entity\OrderRepository;
 
 class OrderFactory implements OrderFactoryInterface
 {
+    /**
+     * @var ItemFactoryInterface
+     */
     protected $itemFactory;
 
     /**
