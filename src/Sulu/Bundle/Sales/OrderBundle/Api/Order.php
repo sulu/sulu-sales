@@ -80,13 +80,6 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     private $hasChangedPrices = false;
 
     /**
-     * @Exclude
-     *
-     * @var ItemFactoryInterface
-     */
-    private $itemFactory;
-
-    /**
      * Indicated if items have been changed.
      *
      * @var bool
@@ -108,9 +101,16 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
     private $workflows = array();
 
     /**
+     * @Exclude
+     *
+     * @var ItemFactoryInterface
+     */
+    protected $itemFactory;
+
+    /**
      * @var PriceFormatter
      */
-    private $priceFormatter;
+    protected $priceFormatter;
 
     /**
      * @param OrderInterface $order The order to wrap
