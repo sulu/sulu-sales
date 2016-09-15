@@ -1,7 +1,7 @@
 CHANGELOG for Sulu Sales
 ========================
 
-* dev-devlop
+* 0.8.2 (2016-09-15)
 
     * ENHANCEMENT [OrderBundle]   Made OrderFactory ready for extending
 
