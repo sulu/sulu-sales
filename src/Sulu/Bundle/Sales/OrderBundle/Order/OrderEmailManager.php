@@ -82,28 +82,28 @@ class OrderEmailManager extends EmailManager
         $sendEmailConfirmationToCustomer,
         $rootPath
     ) {
-        // services
+        // Services.
         $this->twig = $twig;
         $this->mailer = $mailer;
         $this->pdfManager = $pdfManager;
         $this->serializer = $serializer;
-        // email addresses
+        // Email addresses.
         $this->emailFrom = $emailFrom;
         $this->confirmationRecipientEmailAddress = $confirmationRecipientEmailAddress;
-        // templates
+        // Templates.
         $this->templateCustomerConfirmationPath = $templateCustomerConfirmationPath;
         $this->templateShopownerConfirmationPath = $templateShopownerConfirmationPath;
         $this->templateFooterTxtPath = $templateFooterTxtPath;
         $this->templateFooterHtmlPath = $templateFooterHtmlPath;
-        // define if emails should be sent
+        // Define if emails should be sent.
         $this->sendEmailConfirmationToShopowner = $sendEmailConfirmationToShopowner;
         $this->sendEmailConfirmationToCustomer = $sendEmailConfirmationToCustomer;
-        // rootPath
+        // RootPath.
         $this->rootPath = $rootPath;
     }
 
     /**
-     * Sends a confirmation email to the shop-owner
+     * Sends a confirmation email to the shop-owner.
      *
      * @param null|string $recipient
      * @param ApiOrderInterface $apiOrder
@@ -134,7 +134,7 @@ class OrderEmailManager extends EmailManager
     }
 
     /**
-     * Sends a confirmation email to the customer
+     * Sends a confirmation email to the customer.
      *
      * @param string $recipient
      * @param ApiOrderInterface $apiOrder
@@ -179,16 +179,16 @@ class OrderEmailManager extends EmailManager
             return false;
         }
 
-        $tmplData = array(
+        $tmplData = [
             'order' => $apiOrder,
             'contact' => $customerContact,
-        );
+        ];
 
         return $this->sendOrderMail($recipient, $templatePath, $tmplData, $apiOrder);
     }
 
     /**
-     * Sends an email
+     * Sends an email.
      *
      * @param string $recipient
      * @param string $templatePath
@@ -202,17 +202,17 @@ class OrderEmailManager extends EmailManager
     public function sendOrderMail(
         $recipient,
         $templatePath,
-        $data = array(),
+        array $data = [],
         ApiOrderInterface $apiOrder = null,
-        $blindCopyRecipients = array(),
+        array $blindCopyRecipients = [],
         $sendXMLOrder = false
     ) {
         $tmplData = array_merge(
             $data,
-            array(
+            [
                 'footerTxt' => $this->templateFooterTxtPath,
                 'footerHtml' => $this->templateFooterHtmlPath,
-            )
+            ]
         );
 
         $template = $this->twig->loadTemplate($templatePath);
@@ -232,29 +232,16 @@ class OrderEmailManager extends EmailManager
             ->setTo($recipient)
             ->setBody($emailBodyText, 'text/plain')
             ->addPart($emailBodyHtml, 'text/html');
-        
-        // add blind copy recipients
+
+        // Add blind copy recipients.
         foreach ($blindCopyRecipients as $bcc) {
             $message->addBcc($bcc);
         }
 
-        // add pdf if order is supplied
-        if ($apiOrder) {
-            $pdf = $this->pdfManager->createOrderConfirmation($apiOrder);
-            $pdfFileName = $this->pdfManager->getPdfName($apiOrder);
-            // now send mail
-            $attachment = \Swift_Attachment::newInstance()
-                ->setFilename($pdfFileName)
-                ->setContentType('application/pdf')
-                ->setBody($pdf);
-            $message->attach($attachment);
+        // Add attachments like pdf and xml to email.
+        $this->applyOrderAttachments($message, $apiOrder, $sendXMLOrder);
 
-            if ($sendXMLOrder) {
-                $message->attach($this->createXMLAttachment($apiOrder));
-            }
-        }
-
-        $failedRecipients = array();
+        $failedRecipients = [];
         $this->mailer->send($message, $failedRecipients);
 
         if (count($failedRecipients) > 0) {
@@ -267,11 +254,38 @@ class OrderEmailManager extends EmailManager
     }
 
     /**
+     * Function adds attachments to the email message.
+     *
+     * @param \Swift_Message $message
+     * @param ApiOrderInterface $apiOrder
+     * @param bool $sendXMLOrder
+     */
+    protected function applyOrderAttachments(
+        \Swift_Message $message,
+        ApiOrderInterface $apiOrder = null,
+        $sendXMLOrder = false
+    ) {
+        if ($apiOrder) {
+            $pdf = $this->pdfManager->createOrderConfirmation($apiOrder);
+            $pdfFileName = $this->pdfManager->getPdfName($apiOrder);
+            $attachment = \Swift_Attachment::newInstance()
+                ->setFilename($pdfFileName)
+                ->setContentType('application/pdf')
+                ->setBody($pdf);
+            $message->attach($attachment);
+
+            if ($sendXMLOrder) {
+                $message->attach($this->createXMLAttachment($apiOrder));
+            }
+        }
+    }
+
+    /**
      * @param ApiOrderInterface $apiOrder
      *
      * @return \Swift_Mime_Attachment
      */
-    private function createXMLAttachment(ApiOrderInterface $apiOrder)
+    protected function createXMLAttachment(ApiOrderInterface $apiOrder)
     {
         $xmlFilename = 'PA_OrderConfirmation-' . $apiOrder->getNumber() . '.xml';
         $context = SerializationContext::create()->setGroups(['xmlOrder']);

@@ -1,13 +1,16 @@
 CHANGELOG for Sulu Sales
 ========================
+* dev-develop
+
+    * BUGFIX      [OrderBundle]   Prepared pdf order manager for better extensibility.
 
 * 0.8.2 (2016-09-15)
 
-    * ENHANCEMENT [OrderBundle]   Made OrderFactory ready for extending
+    * ENHANCEMENT [OrderBundle]   Made OrderFactory ready for extending.
 
 * 0.8.1 (2016-09-14)
 
-    * BUGFIX      [OrderBundle]   Fixed order entity class for inheritance
+    * BUGFIX      [OrderBundle]   Fixed order entity class for inheritance.
 
 * 0.8.0 (2016-09-13)
 
