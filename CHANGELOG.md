@@ -1,6 +1,7 @@
 CHANGELOG for Sulu Sales
 ========================
-* dev-develop
+
+* 0.8.3 (2016-09-16)
 
     * BUGFIX      [OrderBundle]   Prepared pdf order manager for better extensibility.
 
