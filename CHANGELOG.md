@@ -1,6 +1,11 @@
 CHANGELOG for Sulu Sales
 ========================
 
+* 0.6.3 (2016-09-27)
+
+    * FEATURE     [OrderBundle]   Added csv export function to order list.
+    * ENHANCEMENT [OrderBundle]   Extended order widget to be capable of missing contact or account data.
+
 * 0.8.3 (2016-09-16)
 
     * BUGFIX      [OrderBundle]   Prepared pdf order manager for better extensibility.

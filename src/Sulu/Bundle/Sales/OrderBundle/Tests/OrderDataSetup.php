@@ -406,10 +406,7 @@ class OrderDataSetup
         $this->em->persist($orderUnitTranslation);
         // Product type
         $productType = new Type();
-        $productTypeTranslation = new TypeTranslation();
-        $productTypeTranslation->setLocale($this->locale);
-        $productTypeTranslation->setName('EnglishProductType-1');
-        $productTypeTranslation->setType($productType);
+        $productType->setTranslationKey('product-type');
         // Product status
         $productStatus = new Status();
         $productStatus->setId(Status::ACTIVE);
