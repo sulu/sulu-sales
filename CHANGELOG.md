@@ -1,6 +1,11 @@
 CHANGELOG for Sulu Sales
 ========================
 
+* dev-develop
+
+    * BUGFIX      [OrderBundle]   Fixed contacts dropdown in orders form when account has more than 10 contacts.
+    * BUGFIX      [OrderBundle]   Fixed bug in tests (for current product-bundle)
+
 * 0.6.3 (2016-09-27)
 
     * FEATURE     [OrderBundle]   Added csv export function to order list.
