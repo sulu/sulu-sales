@@ -73,6 +73,7 @@ class SimpleContact implements WidgetInterface
      * Returns data to render template.
      *
      * @param array $options
+     *
      * @throws WidgetException
      *
      * @return array
@@ -93,14 +94,15 @@ class SimpleContact implements WidgetInterface
                     $id
                 );
             }
+
             return $this->parseMainContact($contact);
-        } else {
-            throw new WidgetParameterException(
-                'Required parameter account not found or empty!',
-                $this->widgetName,
-                'account'
-            );
         }
+
+        throw new WidgetParameterException(
+            'Required parameter contact not found or empty!',
+            $this->widgetName,
+            'contact'
+        );
     }
 
     /**
@@ -118,6 +120,7 @@ class SimpleContact implements WidgetInterface
             $data['fullName'] = $contact->getFullName();
             $data['phone'] = $contact->getMainPhone();
             $data['email'] = $contact->getMainEmail();
+
             return $data;
         } else {
             return null;

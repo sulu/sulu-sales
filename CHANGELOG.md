@@ -1,6 +1,11 @@
 CHANGELOG for Sulu Sales
 ========================
 
+* 0.6.3 (2016-09-27)
+
+    * FEATURE     [OrderBundle]   Added csv export function to order list.
+    * ENHANCEMENT [OrderBundle]   Extended order widget to be capable of missing contact or account data.
+
 * 0.6.2 (2016-08-29)
 
     * ENHANCMENT  [CoreBundle]    Item table shows now elements for recurring prices
@@ -18,7 +23,7 @@ CHANGELOG for Sulu Sales
     * FEATURE     [OrderBundle]   Adopted UI for customer types
     * FEATURE     [CoreBundle]    Added model CustomerType and CustomerTypeManager
     * BUGFIX      [CoreBundle]    Style fixes in global total price of item-table.
-    
+
 * 0.5.1 (2016-08-22)
 
     * BUGFIX      [CoreBundle]    Fixed creation of empty cart.
