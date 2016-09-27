@@ -1,7 +1,7 @@
 CHANGELOG for Sulu Sales
 ========================
 
-* dev-develop
+* 0.8.4 (2016-09-27)
 
     * BUGFIX      [OrderBundle]   Fixed contacts dropdown in orders form when account has more than 10 contacts.
     * BUGFIX      [OrderBundle]   Fixed bug in tests (for current product-bundle)
