@@ -38,13 +38,18 @@ define([
          */
         EVENT_SET_OPTIONS_DATA = namespace + 'set-options-data',
 
+        /**
+         * The maximum number of contacts that is fetched for fill dropdown.
+         */
+        MAXIMUM_CONTACTS_TO_FETCH = 999,
+
         CUSTOMER_TYPE = {
             ORGANIZATION: 1,
             PRIVATE_PERSON: 2
         },
 
         constants = {
-            accountContactsUrl: '/admin/api/accounts/<%= id %>/contacts?flat=true',
+            accountContactsUrl: '/admin/api/accounts/<%= id %>/contacts?flat=true&limit=<%= limit %>',
             accountAddressesUrl: '/admin/api/accounts/<%= id %>/addresses',
             customerAccountId: 'js-customer-account',
             customerContactId: 'js-customer-contact',
@@ -629,7 +634,13 @@ define([
             });
 
             // Load contacts of an account.
-            this.sandbox.util.load(this.sandbox.util.template(constants.accountContactsUrl, {id: id}))
+            this.sandbox.util.load(this.sandbox.util.template(
+                constants.accountContactsUrl,
+                {
+                    id: id,
+                    limit: MAXIMUM_CONTACTS_TO_FETCH
+                }
+                ))
                 .then(function(response) {
                     data = response._embedded.contacts;
                     preselect = !!orderData && orderData.customerContact ? [orderData.customerContact.id] : null;

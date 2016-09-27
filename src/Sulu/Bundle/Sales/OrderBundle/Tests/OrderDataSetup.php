@@ -34,7 +34,6 @@ use Sulu\Bundle\ProductBundle\Entity\ProductTranslation;
 use Sulu\Bundle\ProductBundle\Entity\Status;
 use Sulu\Bundle\ProductBundle\Entity\StatusTranslation;
 use Sulu\Bundle\ProductBundle\Entity\Type;
-use Sulu\Bundle\ProductBundle\Entity\TypeTranslation;
 use Sulu\Bundle\ProductBundle\Entity\Unit;
 use Sulu\Bundle\ProductBundle\Entity\UnitTranslation;
 use Sulu\Bundle\Sales\CoreBundle\Entity\Item;
@@ -564,7 +563,6 @@ class OrderDataSetup
         $this->em->persist($this->product2);
         $this->em->persist($this->productTranslation);
         $this->em->persist($productType);
-        $this->em->persist($productTypeTranslation);
         $this->em->persist($productStatus);
         $this->em->persist($productStatusTranslation);
 
