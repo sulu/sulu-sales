@@ -1,5 +1,5 @@
 /*
- * This file is part of the Sulu CMS.
+ * This file is part of Sulu.
  *
  * (c) MASSIVE ART WebServices GmbH
  *
@@ -22,10 +22,10 @@ define([
             }
         },
 
-    /**
-     * Binds events for the sidebar in the details view
-     */
-    bindCustomEventsForDetailsSidebar = function() {
+        /**
+         * Binds events for the sidebar in the details view.
+         */
+        bindCustomEventsForDetailsSidebar = function() {
             this.sandbox.on('sulu.flow-of-documents.orders.row.clicked', function(data) {
                 var routePartials, routeForNavigation;
 
@@ -41,7 +41,7 @@ define([
         },
 
         /**
-         * Binds events used by the sidebar in the list view
+         * Binds events used by the sidebar in the list view.
          */
         bindCustomEventsForListSidebar = function() {
             // navigate to edit contact
@@ -52,7 +52,7 @@ define([
                     callback: function(contact, account) {
                         this.sandbox.emit(
                             'sulu.sidebar.set-widget',
-                                constants.widgetUrls.orderInfo +'?contact=' + contact + '&account=' + account
+                            constants.widgetUrls.orderInfo + '?contact=' + contact + '&account=' + account
                         );
                     }.bind(this)
                 });
@@ -60,7 +60,7 @@ define([
         },
 
         /**
-         * Binds dom events for sidebar
+         * Binds dom events for sidebar.
          */
         bindDomEvents = function() {
             this.sandbox.dom.off('#sidebar');
@@ -79,8 +79,9 @@ define([
         },
 
         /**
-         * Gets data to init list sidebar with correct params values
-         * @param payload
+         * Gets data to init list sidebar with correct params values.
+         *
+         * @param {Object} payload
          */
         getDataForListSidebar = function(payload) {
             if (!!payload && !!payload.data && !!payload.callback && typeof payload.callback === 'function') {
@@ -90,11 +91,18 @@ define([
                 order.fetch({
                     success: function(response) {
                         model = response.toJSON();
-                        if (!!model.customerAccount && !!model.customerContact) {
-                            payload.callback(model.customerContact.id, model.customerAccount.id);
-                        } else {
-                            this.sandbox.logger.error('received invalid data when initializing sidebar', model);
+
+                        var contactId = null;
+                        var accountId = null;
+
+                        if (!!model.customerAccount) {
+                            accountId = model.customerAccount.id;
                         }
+                        if (!!model.customerContact) {
+                            contactId = model.customerContact.id;
+                        }
+
+                        payload.callback(contactId, accountId);
                     }.bind(this),
                     error: function() {
                         this.sandbox.logger.error('error while fetching order');
@@ -106,44 +114,53 @@ define([
         };
 
     return {
-
         /**
-         * Inits sidebar for details view
-         * @param sandbox
-         * @param data
+         * Inits sidebar for details view.
+         *
+         * @param {Object} sandbox
+         * @param {Object} data
          */
         initForDetail: function(sandbox, data) {
-
             var url, uriTemplate;
+            var accountId = null;
+            var contactId = null;
+            var status = null;
 
             this.sandbox = sandbox;
 
-            if (!!data.customerContact && !!data.customerAccount && !!data.status) {
-                uriTemplate = this.sandbox.uritemplate.parse(constants.widgetUrls.orderDetail);
-                url = uriTemplate.expand({
-                    params: {
-                        contact: data.customerContact.id,
-                        account: data.customerAccount.id,
-                        status: data.status.status,
-                        locale: AppConfig.getUser().locale,
-                        orderDate: data.orderDate,
-                        orderNumber: data.number,
-                        orderId: data.id
-                    }
-                });
-                bindDomEvents.call(this);
-                bindCustomEventsForDetailsSidebar.call(this);
-            } else {
-                uriTemplate = this.sandbox.uritemplate.parse(constants.widgetUrls.orderDetail);
-                url = uriTemplate.expand({params: {}});
+            if (data.customerAccount) {
+                accountId = data.customerAccount.id;
             }
+            if (data.customerContact) {
+                contactId = data.customerContact.id;
+            }
+            if (data.status) {
+                status = data.status.status;
+            }
+
+            uriTemplate = this.sandbox.uritemplate.parse(constants.widgetUrls.orderDetail);
+            url = uriTemplate.expand({
+                params: {
+                    contact: contactId,
+                    account: accountId,
+                    status: status,
+                    locale: AppConfig.getUser().locale,
+                    orderDate: data.orderDate,
+                    orderNumber: data.number,
+                    orderId: data.id
+                }
+            });
+
+            bindDomEvents.call(this);
+            bindCustomEventsForDetailsSidebar.call(this);
 
             this.sandbox.emit('sulu.sidebar.set-widget', url);
         },
 
         /**
-         * Inits sidebar for the list view
-         * @param sandbox
+         * Inits sidebar for the list view.
+         *
+         * @param {Object} sandbox
          */
         initForList: function(sandbox) {
             this.sandbox = sandbox;

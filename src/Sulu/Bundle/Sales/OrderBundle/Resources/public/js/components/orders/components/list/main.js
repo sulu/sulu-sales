@@ -63,7 +63,15 @@ define(['sulusalesorder/util/sidebar'], function(Sidebar) {
 
             toolbar: {
                 buttons: {
-                    add: {}
+                    add: {},
+                    export: {
+                        options: {
+                            urlParameter: {
+                                flat: true
+                            },
+                            url: '/admin/api/orders.csv'
+                        }
+                    }
                 }
             }
         },

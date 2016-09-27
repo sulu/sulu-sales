@@ -1,12 +1,12 @@
 <?php
 /*
-  * This file is part of the Sulu CMS.
-  *
-  * (c) MASSIVE ART WebServices GmbH
-  *
-  * This source file is subject to the MIT license that is bundled
-  * with this source code in the file LICENSE.
-  */
+ * This file is part of the Sulu CMS.
+ *
+ * (c) MASSIVE ART WebServices GmbH
+ *
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
+ */
 
 namespace Sulu\Bundle\Sales\OrderBundle\Widgets;
 
@@ -34,7 +34,7 @@ class OrderDetails implements WidgetInterface
     /**
      * @param EntityManager $em
      */
-    function __construct(EntityManager $em)
+    public function __construct(EntityManager $em)
     {
         $this->em = $em;
     }
@@ -74,17 +74,16 @@ class OrderDetails implements WidgetInterface
             array_key_exists('status', $options) &&
             !empty($options['status'])
         ) {
-            // TODO return also total price of offer when implemented
             $data = [];
             $data['status'] = $options['status'];
 
             return $data;
-        } else {
-            throw new WidgetParameterException(
-                'Required parameter status not found or empty!',
-                $this->widgetName,
-                'status'
-            );
         }
+
+        throw new WidgetParameterException(
+            'Required parameter status not found or empty!',
+            $this->widgetName,
+            'status'
+        );
     }
 }
