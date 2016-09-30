@@ -1,6 +1,10 @@
 CHANGELOG for Sulu Sales
 ========================
 
+* 0.8.5 (2016-09-30)
+
+    * BUGFIX      [OrderBundle]   Fixed sulu persistence for sales order.
+
 * 0.8.4 (2016-09-27)
 
     * BUGFIX      [OrderBundle]   Fixed contacts dropdown in orders form when account has more than 10 contacts.
