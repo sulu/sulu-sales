@@ -45,6 +45,16 @@ sulu_sales_order:
             repository: Sulu\Bundle\Sales\OrderBundle\Entity\OrderRepository
 ```
 
+You also need to tell doctrine, how to resolve the target entities:
+
+```
+doctrine:
+    orm:
+        resolve_target_entities:
+            Sulu\Bundle\Sales\CoreBundle\Entity\ItemInterface: Sulu\Bundle\Sales\CoreBundle\Entity\Item
+            Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatusInterface: Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatus
+```
+
 #### Pdf templates dynamically
 
 The `dynamically` pdf template can be configured easily. That way it is possible to dynamically change the look of the

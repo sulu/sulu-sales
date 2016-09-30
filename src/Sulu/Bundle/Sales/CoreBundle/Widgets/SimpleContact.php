@@ -98,11 +98,7 @@ class SimpleContact implements WidgetInterface
             return $this->parseMainContact($contact);
         }
 
-        throw new WidgetParameterException(
-            'Required parameter contact not found or empty!',
-            $this->widgetName,
-            'contact'
-        );
+        return null;
     }
 
     /**
