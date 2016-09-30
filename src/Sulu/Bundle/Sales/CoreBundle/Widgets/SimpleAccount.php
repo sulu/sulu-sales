@@ -97,13 +97,9 @@ class SimpleAccount implements WidgetInterface
             }
 
             return $this->parseAccount($account);
-        } else {
-            throw new WidgetParameterException(
-                'Required parameter contact not found or empty!',
-                $this->widgetName,
-                'account'
-            );
         }
+
+        return null;
     }
 
     /**
