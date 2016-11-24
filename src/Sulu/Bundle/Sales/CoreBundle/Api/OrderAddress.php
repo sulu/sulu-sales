@@ -73,11 +73,11 @@ class OrderAddress extends ApiWrapper
     }
 
     /**
-     * @return int
-     *
      * @VirtualProperty
      * @SerializedName("formOfAddress")
      * @Groups({"Default","cart"})
+     *
+     * @return int
      */
     public function getFormOfAddress()
     {
