@@ -79,6 +79,9 @@ class OrderAddressManager
             if (isset($contactData['salutation'])) {
                 $orderAddress->setSalutation($contactData['salutation']);
             }
+            if (isset($contactData['formOfAddress'])) {
+                $orderAddress->setFormOfAddress($contactData['formOfAddress']);
+            }
         }
 
         // Add account data.
@@ -169,6 +172,7 @@ class OrderAddressManager
                 $orderAddress->setTitle($contact->getTitle()->getTitle());
             }
             $orderAddress->setSalutation($contact->getSalutation());
+            $orderAddress->setFormOfAddress($contact->getFormOfAddress());
             $orderAddress->setFirstName($contact->getFirstName());
             $orderAddress->setLastName($contact->getLastName());
             $orderAddress->setEmail($contact->getMainEmail());
@@ -189,7 +193,8 @@ class OrderAddressManager
         $addressData['firstName'] = $contact->getFirstName();
         $addressData['lastName'] = $contact->getLastName();
         $addressData['fullName'] = $contact->getFullName();
-        $addressData['salutation'] = $contact->getFormOfAddress();
+        $addressData['salutation'] = $contact->getSalutation();
+        $addressData['formOfAddress'] = $contact->getFormOfAddress();
         if ($contact->getTitle() !== null) {
             $addressData['title'] = $contact->getTitle()->getTitle();
         }
@@ -264,6 +269,9 @@ class OrderAddressManager
             }
             if (isset($addressData['salutation'])) {
                 $result['salutation'] = $addressData['salutation'];
+            }
+            if (isset($addressData['formOfAddress'])) {
+                $result['formOfAddress'] = $addressData['formOfAddress'];
             }
         } else {
             throw new MissingAttributeException('firstName, lastName or contact');

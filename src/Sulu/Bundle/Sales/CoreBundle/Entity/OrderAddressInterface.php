@@ -7,313 +7,247 @@ use Sulu\Bundle\ContactBundle\Entity\Address;
 interface OrderAddressInterface
 {
     /**
-     * Set salutation
-     *
      * @param string $salutation
      *
-     * @return OrderAddress
+     * @return $this
      */
     public function setSalutation($salutation);
 
     /**
-     * Get salutation
-     *
      * @return string
      */
     public function getSalutation();
 
     /**
-     * Set firstName
+     * @return int
+     */
+    public function getFormOfAddress();
+
+    /**
+     * @param int $formOfAddress
      *
+     * @return $this
+     */
+    public function setFormOfAddress($formOfAddress);
+
+    /**
      * @param string $firstName
      *
-     * @return OrderAddress
+     * @return $this
      */
     public function setFirstName($firstName);
 
     /**
-     * Get firstName
-     *
      * @return string
      */
     public function getFirstName();
 
     /**
-     * Set lastName
-     *
      * @param string $lastName
      *
-     * @return OrderAddress
+     * @return $this
      */
     public function setLastName($lastName);
 
     /**
-     * Get lastName
-     *
      * @return string
      */
     public function getLastName();
 
     /**
-     * Set accountName
-     *
      * @param string $accountName
      *
-     * @return OrderAddress
+     * @return $this
      */
     public function setAccountName($accountName);
 
     /**
-     * Get accountName
-     *
      * @return string
      */
     public function getAccountName();
 
     /**
-     * Set title
-     *
      * @param string $title
      *
-     * @return OrderAddress
+     * @return $this
      */
     public function setTitle($title);
 
     /**
-     * Get title
-     *
      * @return string
      */
     public function getTitle();
 
     /**
-     * Set street
-     *
      * @param string $street
      *
-     * @return OrderAddress
+     * @return $this
      */
     public function setStreet($street);
 
     /**
-     * Get street
-     *
      * @return string
      */
     public function getStreet();
 
     /**
-     * Set addition
-     *
      * @param string $addition
      *
-     * @return OrderAddress
+     * @return $this
      */
     public function setAddition($addition);
 
     /**
-     * Get addition
-     *
      * @return string
      */
     public function getAddition();
 
     /**
-     * Set number
-     *
      * @param string $number
      *
-     * @return OrderAddress
+     * @return $this
      */
     public function setNumber($number);
 
     /**
-     * Get number
-     *
      * @return string
      */
     public function getNumber();
 
     /**
-     * Set city
-     *
      * @param string $city
      *
-     * @return OrderAddress
+     * @return $this
      */
     public function setCity($city);
 
     /**
-     * Get city
-     *
      * @return string
      */
     public function getCity();
 
     /**
-     * Set zip
-     *
      * @param string $zip
      *
-     * @return OrderAddress
+     * @return $this
      */
     public function setZip($zip);
 
     /**
-     * Get zip
-     *
      * @return string
      */
     public function getZip();
 
     /**
-     * Set state
-     *
      * @param string $state
      *
-     * @return OrderAddress
+     * @return $this
      */
     public function setState($state);
 
     /**
-     * Get state
-     *
      * @return string
      */
     public function getState();
 
     /**
-     * Set country
-     *
      * @param string $country
      *
-     * @return OrderAddress
+     * @return $this
      */
     public function setCountry($country);
 
     /**
-     * Get country
-     *
      * @return string
      */
     public function getCountry();
 
     /**
-     * Set uid
-     *
      * @param string $uid
      *
-     * @return OrderAddress
+     * @return $this
      */
     public function setUid($uid);
 
     /**
-     * Get uid
-     *
      * @return string
      */
     public function getUid();
 
     /**
-     * Set phone
-     *
      * @param string $phone
      *
-     * @return OrderAddress
+     * @return $this
      */
     public function setPhone($phone);
 
     /**
-     * Get phone
-     *
      * @return string
      */
     public function getPhone();
 
     /**
-     * Set phoneMobile
-     *
      * @param string $phoneMobile
      *
-     * @return OrderAddress
+     * @return $this
      */
     public function setPhoneMobile($phoneMobile);
 
     /**
-     * Get phoneMobile
-     *
      * @return string
      */
     public function getPhoneMobile();
 
     /**
-     * Get id
-     *
      * @return integer
      */
     public function setId($id);
 
     /**
-     * Get id
-     *
      * @return integer
      */
     public function getId();
 
     /**
-     * Set postboxCity
-     *
      * @param string $postboxCity
      *
-     * @return OrderAddress
+     * @return $this
      */
     public function setPostboxCity($postboxCity);
 
     /**
-     * Get postboxCity
-     *
      * @return string
      */
     public function getPostboxCity();
 
     /**
-     * Set postboxNumber
-     *
      * @param string $postboxNumber
      *
-     * @return OrderAddress
+     * @return $this
      */
     public function setPostboxNumber($postboxNumber);
 
     /**
-     * Get postboxNumber
-     *
      * @return string
      */
     public function getPostboxNumber();
 
     /**
-     * Set postboxPostcode
-     *
      * @param string $postboxPostcode
      *
-     * @return OrderAddress
+     * @return self
      */
     public function setPostboxPostcode($postboxPostcode);
 
     /**
-     * Get postboxPostcode
-     *
      * @return string
      */
     public function getPostboxPostcode();
 
     /**
-     * Set email
-     *
      * @param string $email
      *
-     * @return OrderAddress
+     * @return $this
      */
     public function setEmail($email);
 
@@ -325,11 +259,9 @@ interface OrderAddressInterface
     public function getEmail();
 
     /**
-     * Set contactAddress
-     *
      * @param Address $contactAddress
      *
-     * @return Item
+     * @return $this
      */
     public function setContactAddress(Address $contactAddress = null);
 
@@ -345,7 +277,7 @@ interface OrderAddressInterface
      *
      * @param string $note
      *
-     * @return OrderAddress
+     * @return $this
      */
     public function setNote($note);
 

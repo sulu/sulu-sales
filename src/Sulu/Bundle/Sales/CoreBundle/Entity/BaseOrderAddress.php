@@ -15,6 +15,12 @@ abstract class BaseOrderAddress implements OrderAddressInterface
     private $salutation;
 
     /**
+     * @var int
+     * @Groups({"Default", "xmlOrder"})
+     */
+    private $formOfAddress;
+
+    /**
      * @var string
      * @Groups({"Default", "xmlOrder"})
      */
@@ -141,7 +147,7 @@ abstract class BaseOrderAddress implements OrderAddressInterface
      *
      * @param string $salutation
      *
-     * @return OrderAddress
+     * @return $this
      */
     public function setSalutation($salutation)
     {
@@ -151,8 +157,6 @@ abstract class BaseOrderAddress implements OrderAddressInterface
     }
 
     /**
-     * Get salutation
-     *
      * @return string
      */
     public function getSalutation()
@@ -161,11 +165,31 @@ abstract class BaseOrderAddress implements OrderAddressInterface
     }
 
     /**
+     * @return int
+     */
+    public function getFormOfAddress()
+    {
+        return $this->formOfAddress;
+    }
+
+    /**
+     * @param int $formOfAddress
+     *
+     * @return $this
+     */
+    public function setFormOfAddress($formOfAddress)
+    {
+        $this->formOfAddress = $formOfAddress;
+
+        return $this;
+    }
+
+    /**
      * Set firstName
      *
      * @param string $firstName
      *
-     * @return OrderAddress
+     * @return $this
      */
     public function setFirstName($firstName)
     {
@@ -185,11 +209,9 @@ abstract class BaseOrderAddress implements OrderAddressInterface
     }
 
     /**
-     * Set lastName
-     *
      * @param string $lastName
      *
-     * @return OrderAddress
+     * @return $this
      */
     public function setLastName($lastName)
     {
@@ -199,8 +221,6 @@ abstract class BaseOrderAddress implements OrderAddressInterface
     }
 
     /**
-     * Get lastName
-     *
      * @return string
      */
     public function getLastName()
@@ -209,11 +229,9 @@ abstract class BaseOrderAddress implements OrderAddressInterface
     }
 
     /**
-     * Set accountName
-     *
      * @param string $accountName
      *
-     * @return OrderAddress
+     * @return $this
      */
     public function setAccountName($accountName)
     {
@@ -223,8 +241,6 @@ abstract class BaseOrderAddress implements OrderAddressInterface
     }
 
     /**
-     * Get accountName
-     *
      * @return string
      */
     public function getAccountName()
@@ -233,11 +249,9 @@ abstract class BaseOrderAddress implements OrderAddressInterface
     }
 
     /**
-     * Set title
-     *
      * @param string $title
      *
-     * @return OrderAddress
+     * @return $this
      */
     public function setTitle($title)
     {
@@ -247,8 +261,6 @@ abstract class BaseOrderAddress implements OrderAddressInterface
     }
 
     /**
-     * Get title
-     *
      * @return string
      */
     public function getTitle()
@@ -261,7 +273,7 @@ abstract class BaseOrderAddress implements OrderAddressInterface
      *
      * @param string $street
      *
-     * @return OrderAddress
+     * @return $this
      */
     public function setStreet($street)
     {
@@ -285,7 +297,7 @@ abstract class BaseOrderAddress implements OrderAddressInterface
      *
      * @param string $addition
      *
-     * @return OrderAddress
+     * @return $this
      */
     public function setAddition($addition)
     {
@@ -309,7 +321,7 @@ abstract class BaseOrderAddress implements OrderAddressInterface
      *
      * @param string $number
      *
-     * @return OrderAddress
+     * @return $this
      */
     public function setNumber($number)
     {
@@ -333,7 +345,7 @@ abstract class BaseOrderAddress implements OrderAddressInterface
      *
      * @param string $city
      *
-     * @return OrderAddress
+     * @return $this
      */
     public function setCity($city)
     {
@@ -357,7 +369,7 @@ abstract class BaseOrderAddress implements OrderAddressInterface
      *
      * @param string $zip
      *
-     * @return OrderAddress
+     * @return $this
      */
     public function setZip($zip)
     {
@@ -381,7 +393,7 @@ abstract class BaseOrderAddress implements OrderAddressInterface
      *
      * @param string $state
      *
-     * @return OrderAddress
+     * @return $this
      */
     public function setState($state)
     {
@@ -405,7 +417,7 @@ abstract class BaseOrderAddress implements OrderAddressInterface
      *
      * @param string $country
      *
-     * @return OrderAddress
+     * @return $this
      */
     public function setCountry($country)
     {
@@ -429,7 +441,7 @@ abstract class BaseOrderAddress implements OrderAddressInterface
      *
      * @param string $uid
      *
-     * @return OrderAddress
+     * @return $this
      */
     public function setUid($uid)
     {
@@ -453,7 +465,7 @@ abstract class BaseOrderAddress implements OrderAddressInterface
      *
      * @param string $phone
      *
-     * @return OrderAddress
+     * @return $this
      */
     public function setPhone($phone)
     {
@@ -477,7 +489,7 @@ abstract class BaseOrderAddress implements OrderAddressInterface
      *
      * @param string $phoneMobile
      *
-     * @return OrderAddress
+     * @return $this
      */
     public function setPhoneMobile($phoneMobile)
     {
@@ -499,7 +511,7 @@ abstract class BaseOrderAddress implements OrderAddressInterface
     /**
      * Get id
      *
-     * @return integer
+     * @return $this
      */
     public function setId($id)
     {
@@ -509,8 +521,6 @@ abstract class BaseOrderAddress implements OrderAddressInterface
     }
 
     /**
-     * Get id
-     *
      * @return integer
      */
     public function getId()
@@ -519,11 +529,9 @@ abstract class BaseOrderAddress implements OrderAddressInterface
     }
 
     /**
-     * Set postboxCity
-     *
      * @param string $postboxCity
      *
-     * @return OrderAddress
+     * @return $this
      */
     public function setPostboxCity($postboxCity)
     {
@@ -533,8 +541,6 @@ abstract class BaseOrderAddress implements OrderAddressInterface
     }
 
     /**
-     * Get postboxCity
-     *
      * @return string
      */
     public function getPostboxCity()
@@ -543,11 +549,9 @@ abstract class BaseOrderAddress implements OrderAddressInterface
     }
 
     /**
-     * Set postboxNumber
-     *
      * @param string $postboxNumber
      *
-     * @return OrderAddress
+     * @return $this
      */
     public function setPostboxNumber($postboxNumber)
     {
@@ -557,8 +561,6 @@ abstract class BaseOrderAddress implements OrderAddressInterface
     }
 
     /**
-     * Get postboxNumber
-     *
      * @return string
      */
     public function getPostboxNumber()
@@ -567,11 +569,9 @@ abstract class BaseOrderAddress implements OrderAddressInterface
     }
 
     /**
-     * Set postboxPostcode
-     *
      * @param string $postboxPostcode
      *
-     * @return OrderAddress
+     * @return $this
      */
     public function setPostboxPostcode($postboxPostcode)
     {
@@ -581,8 +581,6 @@ abstract class BaseOrderAddress implements OrderAddressInterface
     }
 
     /**
-     * Get postboxPostcode
-     *
      * @return string
      */
     public function getPostboxPostcode()
@@ -591,11 +589,9 @@ abstract class BaseOrderAddress implements OrderAddressInterface
     }
 
     /**
-     * Set email
-     *
      * @param string $email
      *
-     * @return OrderAddress
+     * @return $this
      */
     public function setEmail($email)
     {
@@ -605,8 +601,6 @@ abstract class BaseOrderAddress implements OrderAddressInterface
     }
 
     /**
-     * Get email
-     *
      * @return string
      */
     public function getEmail()
@@ -615,11 +609,9 @@ abstract class BaseOrderAddress implements OrderAddressInterface
     }
 
     /**
-     * Set contactAddress
-     *
      * @param Address $contactAddress
      *
-     * @return Item
+     * @return $this
      */
     public function setContactAddress(Address $contactAddress = null)
     {
@@ -629,8 +621,6 @@ abstract class BaseOrderAddress implements OrderAddressInterface
     }
 
     /**
-     * Get contactAddress
-     *
      * @return Address
      */
     public function getContactAddress()
@@ -639,11 +629,9 @@ abstract class BaseOrderAddress implements OrderAddressInterface
     }
 
     /**
-     * Set note
-     *
      * @param string $note
      *
-     * @return OrderAddress
+     * @return $this
      */
     public function setNote($note)
     {
@@ -653,8 +641,6 @@ abstract class BaseOrderAddress implements OrderAddressInterface
     }
 
     /**
-     * Get note
-     *
      * @return string
      */
     public function getNote()
@@ -663,25 +649,26 @@ abstract class BaseOrderAddress implements OrderAddressInterface
     }
 
     /**
-     * Copies address data from one order-address-interface to another
+     * Copies address data from one order-address-interface to another.
      *
      * @param OrderAddressInterface $from
      * @param OrderAddressInterface $to
      */
     public function copyValuesFromInterface(OrderAddressInterface $from, OrderAddressInterface $to)
     {
-        // account
+        // Account.
         $to->setAccountName($from->getAccountName());
         $to->setUid($from->getUid());
-        // contact
+        // Contact.
         $to->setTitle($from->getTitle());
         $to->setSalutation($from->getSalutation());
+        $to->setFormOfAddress($from->getFormOfAddress());
         $to->setFirstName($from->getFirstName());
         $to->setLastName($from->getLastName());
         $to->setEmail($from->getEmail());
         $to->setPhone($from->getPhone());
         $to->setPhoneMobile($from->getPhoneMobile());
-        // address
+        // Address.
         $to->setStreet($from->getStreet());
         $to->setNumber($from->getNumber());
         $to->setAddition($from->getAddition());
@@ -691,30 +678,31 @@ abstract class BaseOrderAddress implements OrderAddressInterface
         $to->setCountry($from->getCountry());
         $to->setContactAddress($from->getContactAddress());
         $to->setNote($from->getNote());
-        // postbox
+        // Postbox.
         $to->setPostboxCity($from->getPostboxCity());
         $to->setPostboxNumber($from->getPostboxNumber());
         $to->setPostboxPostcode($from->getPostboxPostcode());
     }
 
     /**
-     * Converts a BaseOrderAddress
+     * Converts a BaseOrderAddress.
      */
     public function toArray()
     {
         return array(
-            // account
+            // Account.
             'accountName' => $this->getAccountName(),
             'uid' => $this->getUid(),
-            // contact
+            // Contact.
             'title' => $this->getTitle(),
             'salutation' => $this->getSalutation(),
+            'formOfAddress' => $this->getFormOfAddress(),
             'firstName' => $this->getFirstName(),
             'lastName' => $this->getLastName(),
             'email' => $this->getEmail(),
             'phone' => $this->getPhone(),
             'phoneMobile' => $this->getPhoneMobile(),
-            // address
+            // Address.
             'street' => $this->getStreet(),
             'number' => $this->getNumber(),
             'addition' => $this->getAddition(),
@@ -726,7 +714,7 @@ abstract class BaseOrderAddress implements OrderAddressInterface
             'contactAddress' => $this->getContactAddress() ? array(
                 'id' => $this->getContactAddress()->getId()
             ) : null,
-            // postbox
+            // Postbox.
             'postboxCity' => $this->getPostboxCity(),
             'postboxNumber' => $this->getPostboxNumber(),
             'postboxPostcode' => $this->getPostboxPostcode(),
