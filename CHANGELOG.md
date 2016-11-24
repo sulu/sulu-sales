@@ -1,6 +1,10 @@
 CHANGELOG for Sulu Sales
 ========================
 
+* develop
+
+    * ENHANCEMENT [CoreBundle]    Added field formOfAddress to BaseOrderAddress.
+
 * 0.8.5 (2016-09-30)
 
     * BUGFIX      [OrderBundle]   Fixed simple account and simple contact widget to accept empty data.

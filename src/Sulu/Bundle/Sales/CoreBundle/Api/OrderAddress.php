@@ -61,6 +61,30 @@ class OrderAddress extends ApiWrapper
     }
 
     /**
+     * @param int $formOfAddress
+     *
+     * @return OrderAddress
+     */
+    public function setFormOfAddress($formOfAddress)
+    {
+        $this->entity->setFormOfAddress($formOfAddress);
+
+        return $this;
+    }
+
+    /**
+     * @VirtualProperty
+     * @SerializedName("formOfAddress")
+     * @Groups({"Default","cart"})
+     *
+     * @return int
+     */
+    public function getFormOfAddress()
+    {
+        return $this->entity->getFormOfAddress();
+    }
+
+    /**
      * Set firstName
      *
      * @param string $firstName
