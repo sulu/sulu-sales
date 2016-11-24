@@ -13,6 +13,7 @@ before_script:
   - composer install
   - if [[ "$DB" == "mysql" ]]; then mysql -e "CREATE DATABASE sulu_test;"; fi
   - php vendor/symfony-cmf/testing/bin/console doctrine:schema:create
+  - echo "memory_limit=2048M" >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini
 
 script:
   - phpunit
