@@ -1,7 +1,7 @@
 CHANGELOG for Sulu Sales
 ========================
 
-* develop
+* 0.8.6 (2016-11-24)
 
     * ENHANCEMENT [CoreBundle]    Added field formOfAddress to BaseOrderAddress.
 
