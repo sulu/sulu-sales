@@ -396,7 +396,7 @@ abstract class BaseOrder implements OrderInterface
      */
     public function getTotalPrice()
     {
-        return $this->totalNetPrice;
+        return $this->totalPrice;
     }
 
     /**

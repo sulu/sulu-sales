@@ -1107,7 +1107,7 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
      * @SerializedName("totalPrice")
      * @Groups({"Default", "xmlOrder"})
      *
-     * @return array
+     * @return float
      */
     public function getTotalPrice()
     {
@@ -1126,7 +1126,7 @@ class Order extends ApiWrapper implements SalesDocument, ApiOrderInterface
      */
     public function getTotalPriceFormatted($locale = null)
     {
-        return $this->priceFormatter->format((float)$this->entity->getTotalNetPrice(), null, $locale);
+        return $this->priceFormatter->format((float)$this->entity->getTotalPrice(), null, $locale);
     }
 
     /**

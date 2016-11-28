@@ -1,6 +1,10 @@
 CHANGELOG for Sulu Sales
 ========================
 
+* 0.8.7 (2016-11-28)
+
+    * BUGFIX      [CoreBundle]    Fixed correct usage of totalPrice.
+
 * 0.8.6 (2016-11-24)
 
     * ENHANCEMENT [CoreBundle]    Added field formOfAddress to BaseOrderAddress.
