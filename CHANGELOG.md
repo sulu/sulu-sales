@@ -1,6 +1,10 @@
 CHANGELOG for Sulu Sales
 ========================
 
+* 0.8.8 (2016-12-07)
+
+    * BUGFIX      [CoreBundle]    Fixed doctrine schema
+
 * 0.8.7 (2016-11-28)
 
     * BUGFIX      [CoreBundle]    Fixed correct usage of totalPrice.
