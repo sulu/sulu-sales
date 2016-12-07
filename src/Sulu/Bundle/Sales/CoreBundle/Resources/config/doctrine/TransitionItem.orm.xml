@@ -11,7 +11,7 @@
         <field name="itemClass" column="itemClass" type="string" length="255" nullable="false"/>
         <field name="itemCount" column="itemCount" type="integer" nullable="false"/>
 
-        <many-to-one field="transition" target-entity="Sulu\Bundle\Sales\CoreBundle\Entity\Transition">
+        <many-to-one field="transition" target-entity="Sulu\Bundle\Sales\CoreBundle\Entity\Transition" inversed-by="items">
             <join-columns>
                 <join-column name="idTransitions" referenced-column-name="id" on-delete="CASCADE" nullable="true"/>
             </join-columns>
