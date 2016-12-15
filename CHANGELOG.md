@@ -1,6 +1,10 @@
 CHANGELOG for Sulu Sales
 ========================
 
+* 0.8.9 (2016-12-15)
+
+    * ENHANCEMENT [CoreBundle]    Implemented functionality for handling product variants.
+
 * 0.8.8 (2016-12-07)
 
     * BUGFIX      [CoreBundle]    Fixed doctrine schema

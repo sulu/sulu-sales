@@ -14,10 +14,13 @@ use DateTime;
 use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\ORM\EntityRepository;
 use Sulu\Bundle\ContactBundle\Entity\AccountInterface;
+use Sulu\Bundle\PricingBundle\Pricing\ItemPriceCalculator;
 use Sulu\Bundle\ProductBundle\Entity\Addon;
+use Sulu\Bundle\ProductBundle\Entity\CountryTaxRepository;
 use Sulu\Bundle\ProductBundle\Entity\Product;
 use Sulu\Bundle\ProductBundle\Entity\ProductAddonRepository;
 use Sulu\Bundle\ProductBundle\Entity\ProductInterface;
+use Sulu\Bundle\ProductBundle\Entity\TaxClass;
 use Sulu\Bundle\ProductBundle\Product\Exception\ProductException;
 use Sulu\Bundle\ProductBundle\Product\Exception\ProductNotFoundException;
 use Sulu\Bundle\ProductBundle\Product\ProductPriceManagerInterface;
@@ -32,12 +35,9 @@ use Sulu\Bundle\Sales\CoreBundle\Item\Exception\ItemException;
 use Sulu\Bundle\Sales\CoreBundle\Item\Exception\ItemNotFoundException;
 use Sulu\Bundle\Sales\CoreBundle\Item\Exception\MissingItemAttributeException;
 use Sulu\Bundle\Sales\CoreBundle\Manager\OrderAddressManager;
-use Sulu\Bundle\PricingBundle\Pricing\ItemPriceCalculator;
 use Sulu\Component\Contact\Model\ContactInterface;
 use Sulu\Component\Persistence\RelationTrait;
 use Sulu\Component\Security\Authentication\UserRepositoryInterface;
-use Sulu\Bundle\ProductBundle\Entity\TaxClass;
-use Sulu\Bundle\ProductBundle\Entity\CountryTaxRepository;
 
 class ItemManager
 {
@@ -253,13 +253,17 @@ class ItemManager
             case BaseItem::TYPE_ADDON:
                 if ($isNewItem) {
                     $productData = $this->getProperty($data, 'product');
+                    $parent = null;
                     if ($productData) {
                         // Set Product's data to item.
-                        $this->setItemByProductData($productData, $item, $locale);
+                        $product = $this->setItemByProductData($productData, $item, $locale);
+
+                        // Check if product has a parent.
+                        $parent = $product->getParent();
                     }
 
                     if ($lastProcessedProductItem) {
-                        $this->setAddonData($lastProcessedProductItem, $item->getEntity());
+                        $this->setAddonData($lastProcessedProductItem, $item->getEntity(), $parent);
                     }
                 }
                 break;
@@ -414,7 +418,7 @@ class ItemManager
      *
      * @return array
      */
-    public function findAllByLocale($locale, $filter = array())
+    public function findAllByLocale($locale, $filter = [])
     {
         if (empty($filter)) {
             $items = $this->itemRepository->findAllByLocale($locale);
@@ -480,13 +484,13 @@ class ItemManager
         }
 
         if (is_array($addressData)) {
-                // Set order-address.
-                $this->orderAddressManager->setOrderAddress(
-                    $item->getDeliveryAddress(),
-                    $addressData,
-                    $contact,
-                    $account
-                );
+            // Set order-address.
+            $this->orderAddressManager->setOrderAddress(
+                $item->getDeliveryAddress(),
+                $addressData,
+                $contact,
+                $account
+            );
         } elseif (is_int($addressData)) {
             $contactAddressId = $addressData;
             // Create order-address and assign contact-address data.
@@ -633,6 +637,8 @@ class ItemManager
         // set order unit
         if ($product->getOrderUnit()) {
             $item->setQuantityUnit($product->getOrderUnit()->getTranslation($locale)->getName());
+        } else if ($product->getParent() && $product->getParent()->getOrderUnit()) {
+            $item->setQuantityUnit($product->getParent()->getOrderUnit()->getTranslation($locale)->getName());
         }
 
         $item->setIsRecurringPrice($product->isRecurringPrice());
@@ -649,21 +655,33 @@ class ItemManager
     }
 
     /**
+     * Set addon data to item.
+     *
      * @param ItemInterface $lastProcessedProductItem
      * @param ItemInterface $item
-     *
-     * @return Addon
+     * @param ProductInterface $parentItemProduct Items product parent product.
      *
      * @throws \Exception
+     *
+     * @return Addon
      */
-    protected function setAddonData(ItemInterface $lastProcessedProductItem, ItemInterface $item)
-    {
+    protected function setAddonData(
+        ItemInterface $lastProcessedProductItem,
+        ItemInterface $item,
+        ProductInterface $parentItemProduct = null
+    ) {
         $item->setParent($lastProcessedProductItem);
 
         $parentProduct = $lastProcessedProductItem->getProduct();
         $addonProduct = $item->getProduct();
         /** @var Addon $addon */
         $addon = $this->addonRepository->findOneBy(['product' => $parentProduct, 'addon' => $addonProduct]);
+
+        // Check if parent product has an addon relation.
+        if (!$addon && $parentItemProduct) {
+            $addon = $this->addonRepository->findOneBy(['product' => $parentProduct, 'addon' => $parentItemProduct]);
+        }
+
         if (!$addon) {
             throw new \Exception(
                 'Addon id ' . $addonProduct->getId() . ' for product id ' . $parentProduct->getId() . ' not found.'
@@ -759,7 +777,7 @@ class ItemManager
 
                 $result = $this->processSubEntities(
                     $item->getAttributes(),
-                    isset($data['attributes']) ? $data['attributes'] : array(),
+                    isset($data['attributes']) ? $data['attributes'] : [],
                     $get,
                     $add,
                     $update,
