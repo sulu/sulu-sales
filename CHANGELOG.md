@@ -1,7 +1,7 @@
 CHANGELOG for Sulu Sales
 ========================
 
-* dev-develop
+* 0.8.10 (2017-01-13)
     * BUGFIX      [CoreBundle]    Fixed size of transition overlay.
 
 * 0.8.9 (2016-12-15)
