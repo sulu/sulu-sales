@@ -115,7 +115,6 @@ define([
                         cssClass: 'transition-overlay-container',
                         instanceName: 'transition',
                         data: overlayContent,
-                        skin: 'wide',
                         okCallback: submitTransition.bind(this),
                         okDefaultText: this.sandbox.translate(this.options.okButtonText)
                     }
