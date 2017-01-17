@@ -25,7 +25,7 @@
         "sulu/product-bundle": "~0.12",
         "sulu/pricing-bundle": "~0.5",
         "massive/pdf-bundle": "~0.1",
-        "sulu/contact-extension-bundle": "dev-develop"
+        "sulu/contact-extension-bundle": "~0.6"
     },
     "require-dev": {
         "sensio/framework-extra-bundle":  "~3.0",

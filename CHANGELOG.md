@@ -1,6 +1,9 @@
 CHANGELOG for Sulu Sales
 ========================
 
+* 0.8.10 (2017-01-17)
+    * ENHANCEMENT [General]       Changed dependency for Sulu.
+
 * 0.8.9 (2016-12-15)
 
     * ENHANCEMENT [CoreBundle]    Implemented functionality for handling product variants.
