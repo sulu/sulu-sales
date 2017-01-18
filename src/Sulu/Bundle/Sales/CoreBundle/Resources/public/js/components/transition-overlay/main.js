@@ -246,6 +246,7 @@ define([
                     name: 'select@husky',
                     options: {
                         data: transitionData,
+                        defaultLabel: this.sandbox.translate('public.please-choose'),
                         el: selectors.transitionSelect,
                         instanceName: 'transition',
                         preSelectedElements: [transitionData[0].name],
