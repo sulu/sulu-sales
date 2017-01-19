@@ -22,7 +22,7 @@
         "symfony-cmf/routing-bundle": "1.2.*",
 
         "sulu/sulu": "1.3.*",
-        "sulu/product-bundle": "0.16.*",
+        "sulu/product-bundle": "~0.16.4",
         "sulu/pricing-bundle": "~0.5",
         "massive/pdf-bundle": "~0.1",
         "sulu/contact-extension-bundle": "~0.6"
