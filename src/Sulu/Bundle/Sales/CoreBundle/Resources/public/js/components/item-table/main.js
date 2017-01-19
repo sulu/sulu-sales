@@ -103,7 +103,6 @@ define([
         },
 
         urls = {
-            products: '/admin/api/products{?filter*}',
             product: '/admin/api/products/',
             pricing: '/admin/api/pricings'
         },
@@ -373,6 +372,19 @@ define([
             if (this.options.enableNetShippingCosts === true) {
                 this.sandbox.dom.on('#item-table-form', 'focusout', netShippingCostsChangedHandler.bind(this));
             }
+        },
+
+        /**
+         * Returns url for retrieving products from backend.
+         *
+         * @param {String} productId
+         *
+         * @return {String}
+         */
+        retrieveProductsUrl = function(productId) {
+            return urls.product
+                + productId
+                + '?locale=' + this.sandbox.sulu.user.locale;
         },
 
         /**
@@ -995,7 +1007,7 @@ define([
             ]);
 
             // Load product details.
-            this.sandbox.util.load(urls.product + product.id)
+            this.sandbox.util.load(retrieveProductsUrl.call(this, product.id))
                 .then(function(response) {
                     // Set item to product.
                     itemData = setItemByProduct.call(this, response);

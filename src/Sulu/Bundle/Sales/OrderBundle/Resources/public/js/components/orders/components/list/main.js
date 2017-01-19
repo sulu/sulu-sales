@@ -14,11 +14,22 @@ define(['sulusalesorder/util/sidebar'], function(Sidebar) {
     var constants = {
             datagridInstanceName: 'orders'
         },
+
         bindCustomEvents = function() {
             // add clicked
             this.sandbox.on('sulu.toolbar.add', function() {
                 this.sandbox.emit('sulu.salesorder.order.new');
             }, this);
+        },
+
+        /**
+         * Returns url for retrieving products from backend.
+         *
+         * @returns {string}
+         */
+        retrieveOrdersUrl = function() {
+            return '/admin/api/orders?flat=true'
+                + '&locale=' + this.sandbox.sulu.user.locale;
         },
 
         // list-toolbar template
@@ -105,7 +116,7 @@ define(['sulusalesorder/util/sidebar'], function(Sidebar) {
                 },
                 {
                     el: this.sandbox.dom.find('#orders-list', this.$el),
-                    url: '/admin/api/orders?flat=true',
+                    url: retrieveOrdersUrl.call(this),
                     searchInstanceName: 'orders',
                     searchFields: ['number', 'account', 'contact'],
                     resultKey: 'orders',

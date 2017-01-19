@@ -1,8 +1,11 @@
 CHANGELOG for Sulu Sales
 ========================
 
-* 0.8.11 (2017-01-17)
-    * ENHANCEMENT [General]       Changed dependency for Sulu.
+* 0.9.0 (2017-01-19)
+    * FEATURE     [General]        Changed dependency for Sulu to work with version 1.3
+    * FEATURE     [CoreBundle]     Added locale manager.
+    * FEATURE     [OrderBundle]    Use of the locale manager.
+    * FEATURE     [ShippingBundle] Use of the locale manager.
     
 * 0.8.10 (2017-01-13)
     * BUGFIX      [CoreBundle]    Fixed size of transition overlay.

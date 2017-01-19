@@ -31,6 +31,7 @@
         <parameter key="sulu_sales_core.sales_config_parameter_service.class">Sulu\Bundle\Sales\CoreBundle\Service\SalesConfigParameterService</parameter>
         <parameter key="sulu_sales_core.jsconfig.class">Sulu\Bundle\AdminBundle\Admin\JsConfig</parameter>
         <parameter key="sulu_sales_core.customer_types_manager.class">Sulu\Bundle\Sales\CoreBundle\Manager\CustomerTypeManager</parameter>
+        <parameter key="sulu_sales_core.locale_manager.class">Sulu\Bundle\Sales\CoreBundle\Manager\LocaleManager</parameter>
 
         <!--EVENTS-->
         <parameter key="sulu_sales_core.events.create_transition" type="constant">Sulu\Bundle\Sales\CoreBundle\Transition\TransitionEvents::CREATE_TRANSITION</parameter>
@@ -155,6 +156,10 @@
                 <argument key="display_recurring_prices" type="string">%sulu_product.display_recurring_prices%</argument>
             </argument>
             <tag name="sulu.js_config" />
+        </service>
+
+        <service id="sulu_sales_core.locale_manager" class="%sulu_sales_core.locale_manager.class%">
+            <argument>%sulu_core.fallback_locale%%</argument>
         </service>
     </services>
 </container>
