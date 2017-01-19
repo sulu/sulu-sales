@@ -1,6 +1,11 @@
 CHANGELOG for Sulu Sales
 ========================
 
+* 0.9.0 (2017-01-19)
+    * FEATURE     [CoreBundle]     Added locale manager.
+    * FEATURE     [OrderBundle]    Use of the locale manager.
+    * FEATURE     [ShippingBundle] Use of the locale manager.
+
 * 0.8.11 (2017-01-17)
     * ENHANCEMENT [General]       Changed dependency for Sulu.
     

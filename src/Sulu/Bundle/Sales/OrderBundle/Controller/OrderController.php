@@ -14,6 +14,7 @@ use FOS\RestBundle\Routing\ClassResourceInterface;
 use FOS\RestBundle\Controller\Annotations\Post;
 use Hateoas\Representation\CollectionRepresentation;
 use JMS\Serializer\SerializationContext;
+use Sulu\Bundle\Sales\CoreBundle\Manager\LocaleManager;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Sulu\Component\Rest\Exception\EntityNotFoundException;
@@ -60,6 +61,14 @@ class OrderController extends RestController implements ClassResourceInterface, 
     }
 
     /**
+     * @return LocaleManager
+     */
+    private function getLocaleManager()
+    {
+        return $this->get('sulu_sales_core.locale_manager');
+    }
+
+    /**
      * Returns all fields that can be used by list.
      *
      * @param Request $request
@@ -68,7 +77,7 @@ class OrderController extends RestController implements ClassResourceInterface, 
      */
     public function fieldsAction(Request $request)
     {
-        $locale = $this->getLocale($request);
+        $locale = $this->getLocaleManager()->retrieveLocale($this->getUser(), $request->get('locale'));
 
         // Default contacts list
         return $this->handleView($this->view(array_values($this->getManager()->getFieldDescriptors($locale)), 200));
@@ -83,7 +92,7 @@ class OrderController extends RestController implements ClassResourceInterface, 
     {
         $filter = array();
 
-        $locale = $this->getLocale($request);
+        $locale = $this->getLocaleManager()->retrieveLocale($this->getUser(), $request->get('locale'));
 
         $status = $request->get('status');
         if ($status) {
@@ -109,7 +118,12 @@ class OrderController extends RestController implements ClassResourceInterface, 
             // Exclude in cart orders
             $listBuilder->whereNot($this->getStatusFieldDescriptor(), OrderStatus::STATUS_IN_CART);
 
-            $listBuilder->sort($this->getManager()->getFieldDescriptor('created', $this->getLocale($request)), 'DESC');
+            $listBuilder->sort(
+                $this->getManager()->getFieldDescriptor(
+                    'created',
+                    $this->getLocaleManager()->retrieveLocale($this->getUser(), $request->get('locale'))),
+                'DESC'
+            );
 
             $list = new ListRepresentation(
                 $listBuilder->execute(),
@@ -122,7 +136,10 @@ class OrderController extends RestController implements ClassResourceInterface, 
             );
         } else {
             $list = new CollectionRepresentation(
-                $this->getManager()->findAllByLocale($this->getLocale($request), $filter),
+                $this->getManager()->findAllByLocale(
+                    $this->getLocaleManager()->retrieveLocale($this->getUser(), $request->get('locale')),
+                    $filter
+                ),
                 self::$entityKey
             );
         }
@@ -142,7 +159,7 @@ class OrderController extends RestController implements ClassResourceInterface, 
      */
     public function getAction(Request $request, $id)
     {
-        $locale = $this->getLocale($request);
+        $locale = $this->getLocaleManager()->retrieveLocale($this->getUser(), $request->get('locale'));
         $view = $this->responseGetById(
             $id,
             function ($id) use ($locale) {
@@ -183,7 +200,7 @@ class OrderController extends RestController implements ClassResourceInterface, 
 
             $order = $this->getManager()->save(
                 $data,
-                $this->getLocale($request),
+                $this->getLocaleManager()->retrieveLocale($this->getUser(), $request->get('locale')),
                 $this->getUser()->getId()
             );
 
@@ -212,7 +229,7 @@ class OrderController extends RestController implements ClassResourceInterface, 
         try {
             $order = $this->getManager()->save(
                 $request->request->all(),
-                $this->getLocale($request),
+                $this->getLocaleManager()->retrieveLocale($this->getUser(), $request->get('locale')),
                 $this->getUser()->getId(),
                 $id
             );
@@ -254,7 +271,10 @@ class OrderController extends RestController implements ClassResourceInterface, 
         $em = $this->getDoctrine()->getManager();
 
         try {
-            $order = $this->getManager()->findByIdAndLocale($id, $this->getLocale($request));
+            $order = $this->getManager()->findByIdAndLocale(
+                $id,
+                $this->getLocaleManager()->retrieveLocale($this->getUser(), $request->get('locale'))
+            );
             if (!$order) {
                 throw new OrderNotFoundException($id);
             }

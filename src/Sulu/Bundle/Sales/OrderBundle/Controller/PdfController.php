@@ -11,6 +11,7 @@
 
 namespace Sulu\Bundle\Sales\OrderBundle\Controller;
 
+use Sulu\Bundle\Sales\CoreBundle\Manager\LocaleManager;
 use Sulu\Bundle\Sales\OrderBundle\Order\Exception\OrderNotFoundException;
 use Sulu\Bundle\Sales\OrderBundle\Order\OrderManager;
 use Sulu\Bundle\Sales\OrderBundle\Order\OrderPdfManager;
@@ -32,7 +33,7 @@ class PdfController extends RestController
      */
     public function orderConfirmationAction(Request $request, $id)
     {
-        $locale = $this->getLocale($request);
+        $locale = $this->getLocaleManager()->retrieveLocale($this->getUser(), $request->get('locale'));
 
         $this->get('translator')->setLocale($locale);
 
@@ -112,5 +113,13 @@ class PdfController extends RestController
     protected function getOrderPdfManager()
     {
         return $this->get('sulu_sales_order.order_pdf_manager');
+    }
+
+    /**
+     * @return LocaleManager
+     */
+    protected function getLocaleManager()
+    {
+        return $this->get('sulu_sales_core.locale_manager');
     }
 }

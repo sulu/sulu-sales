@@ -12,6 +12,7 @@ namespace Sulu\Bundle\Sales\ShippingBundle\Controller;
 
 use FOS\RestBundle\Routing\ClassResourceInterface;
 use Hateoas\Representation\CollectionRepresentation;
+use Sulu\Bundle\Sales\CoreBundle\Manager\LocaleManager;
 use Sulu\Bundle\Sales\ShippingBundle\Api\Shipping;
 use Sulu\Bundle\Sales\ShippingBundle\Entity\ShippingStatus;
 use Sulu\Bundle\Sales\ShippingBundle\Shipping\Exception\MissingShippingAttributeException;
@@ -56,6 +57,14 @@ class ShippingController extends RestController implements ClassResourceInterfac
     }
 
     /**
+     * @return LocaleManager
+     */
+    private function getLocaleManager()
+    {
+        return $this->get('sulu_sales_core.locale_manager');
+    }
+
+    /**
      * returns all fields that can be used by list
      *
      * @param Request $request
@@ -63,7 +72,7 @@ class ShippingController extends RestController implements ClassResourceInterfac
      */
     public function fieldsAction(Request $request)
     {
-        $locale = $this->getLocale($request);
+        $locale = $this->getLocaleManager()->retrieveLocale($this->getUser(), $request->get('locale'));
 
         $context = $request->get('context');
 
@@ -86,7 +95,7 @@ class ShippingController extends RestController implements ClassResourceInterfac
         try {
             $filter = array();
 
-            $locale = $this->getLocale($request);
+            $locale = $this->getLocaleManager()->retrieveLocale($this->getUser(), $request->get('locale'));
 
             $status = $request->get('status');
             $orderId = $request->get('orderId');
@@ -124,7 +133,7 @@ class ShippingController extends RestController implements ClassResourceInterfac
                 );
             } else {
                 $list = new CollectionRepresentation(
-                    $this->getManager()->findAllByLocale($this->getLocale($request), $filter),
+                    $this->getManager()->findAllByLocale($this->getLocaleManager()->retrieveLocale($this->getUser(), $request->get('locale')), $filter),
                     self::$entityKey
                 );
             }
@@ -147,7 +156,7 @@ class ShippingController extends RestController implements ClassResourceInterfac
      */
     public function getAction(Request $request, $id)
     {
-        $locale = $this->getLocale($request);
+        $locale = $this->getLocaleManager()->retrieveLocale($this->getUser(), $request->get('locale'));
         $view = $this->responseGetById(
             $id,
             function ($id) use ($locale){
@@ -185,7 +194,7 @@ class ShippingController extends RestController implements ClassResourceInterfac
         try {
             $shipping = $this->getManager()->save(
                 $request->request->all(),
-                $this->getLocale($request),
+                $this->getLocaleManager()->retrieveLocale($this->getUser(), $request->get('locale')),
                 $this->getUser()->getId()
             );
 
@@ -213,7 +222,7 @@ class ShippingController extends RestController implements ClassResourceInterfac
         try {
             $shipping = $this->getManager()->save(
                 $request->request->all(),
-                $this->getLocale($request),
+                $this->getLocaleManager()->retrieveLocale($this->getUser(), $request->get('locale')),
                 $this->getUser()->getId(),
                 $id
             );
@@ -245,7 +254,7 @@ class ShippingController extends RestController implements ClassResourceInterfac
         $em = $this->getDoctrine()->getManager();
 
         try {
-            $shipping = $this->getManager()->findByIdAndLocale($id, $this->getLocale($request));
+            $shipping = $this->getManager()->findByIdAndLocale($id, $this->getLocaleManager()->retrieveLocale($this->getUser(), $request->get('locale')));
 
             switch ($status) {
                 case 'deliverynote':
@@ -284,7 +293,7 @@ class ShippingController extends RestController implements ClassResourceInterfac
      */
     public function deleteAction(Request $request, $id)
     {
-        $locale = $this->getLocale($request);
+        $locale = $this->getLocaleManager()->retrieveLocale($this->getUser(), $request->get('locale'));
 
         $delete = function ($id) use ($locale){
             $this->getManager()->delete($id, $this->getUser()->getId());
