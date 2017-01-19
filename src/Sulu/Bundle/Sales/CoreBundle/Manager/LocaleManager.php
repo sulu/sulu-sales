@@ -12,6 +12,9 @@ namespace Sulu\Bundle\Sales\CoreBundle\Manager;
 
 use Sulu\Component\Security\Authentication\UserInterface;
 
+/**
+ * Locale manager for retrieving the correct locale from the request.
+ */
 class LocaleManager
 {
     /**

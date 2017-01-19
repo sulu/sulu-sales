@@ -10,24 +10,11 @@
 
 namespace Sulu\Bundle\Sales\OrderBundle\Controller;
 
-use FOS\RestBundle\Routing\ClassResourceInterface;
 use FOS\RestBundle\Controller\Annotations\Post;
+use FOS\RestBundle\Routing\ClassResourceInterface;
 use Hateoas\Representation\CollectionRepresentation;
 use JMS\Serializer\SerializationContext;
 use Sulu\Bundle\Sales\CoreBundle\Manager\LocaleManager;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
-use Sulu\Component\Rest\Exception\EntityNotFoundException;
-use Sulu\Component\Rest\Exception\MissingArgumentException;
-use Sulu\Component\Rest\Exception\RestException;
-use Sulu\Component\Rest\ListBuilder\Doctrine\DoctrineListBuilderFactory;
-use Sulu\Component\Rest\ListBuilder\Doctrine\DoctrineListBuilder;
-use Sulu\Component\Rest\ListBuilder\Doctrine\FieldDescriptor\DoctrineFieldDescriptor;
-use Sulu\Component\Rest\ListBuilder\Doctrine\FieldDescriptor\DoctrineJoinDescriptor;
-use Sulu\Component\Rest\ListBuilder\ListRepresentation;
-use Sulu\Component\Rest\RestController;
-use Sulu\Component\Rest\RestHelperInterface;
-use Sulu\Component\Security\SecuredControllerInterface;
 use Sulu\Bundle\Sales\OrderBundle\Api\Order;
 use Sulu\Bundle\Sales\OrderBundle\Entity\OrderStatus;
 use Sulu\Bundle\Sales\OrderBundle\Entity\OrderType;
@@ -37,36 +24,25 @@ use Sulu\Bundle\Sales\OrderBundle\Order\Exception\OrderException;
 use Sulu\Bundle\Sales\OrderBundle\Order\Exception\OrderNotFoundException;
 use Sulu\Bundle\Sales\OrderBundle\Order\OrderDependencyManager;
 use Sulu\Bundle\Sales\OrderBundle\Order\OrderManager;
+use Sulu\Component\Rest\Exception\EntityNotFoundException;
+use Sulu\Component\Rest\Exception\MissingArgumentException;
+use Sulu\Component\Rest\Exception\RestException;
+use Sulu\Component\Rest\ListBuilder\Doctrine\DoctrineListBuilder;
+use Sulu\Component\Rest\ListBuilder\Doctrine\DoctrineListBuilderFactory;
+use Sulu\Component\Rest\ListBuilder\Doctrine\FieldDescriptor\DoctrineFieldDescriptor;
+use Sulu\Component\Rest\ListBuilder\Doctrine\FieldDescriptor\DoctrineJoinDescriptor;
+use Sulu\Component\Rest\ListBuilder\ListRepresentation;
+use Sulu\Component\Rest\RestController;
+use Sulu\Component\Rest\RestHelperInterface;
+use Sulu\Component\Security\SecuredControllerInterface;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 class OrderController extends RestController implements ClassResourceInterface, SecuredControllerInterface
 {
     protected static $orderStatusEntityName = 'SuluSalesOrderBundle:OrderStatus';
 
     protected static $entityKey = 'orders';
-
-    /**
-     * @return OrderManager
-     */
-    private function getManager()
-    {
-        return $this->get('sulu_sales_order.order_manager');
-    }
-
-    /**
-     * @return OrderDependencyManager
-     */
-    private function getDependencyManager()
-    {
-        return $this->get('sulu_sales_order.order_dependency_manager');
-    }
-
-    /**
-     * @return LocaleManager
-     */
-    private function getLocaleManager()
-    {
-        return $this->get('sulu_sales_core.locale_manager');
-    }
 
     /**
      * Returns all fields that can be used by list.
@@ -346,6 +322,30 @@ class OrderController extends RestController implements ClassResourceInterface, 
                 ),
             )
         );
+    }
+
+    /**
+     * @return OrderManager
+     */
+    private function getManager()
+    {
+        return $this->get('sulu_sales_order.order_manager');
+    }
+
+    /**
+     * @return OrderDependencyManager
+     */
+    private function getDependencyManager()
+    {
+        return $this->get('sulu_sales_order.order_dependency_manager');
+    }
+
+    /**
+     * @return LocaleManager
+     */
+    private function getLocaleManager()
+    {
+        return $this->get('sulu_sales_core.locale_manager');
     }
 
     /**
