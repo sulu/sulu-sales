@@ -158,6 +158,8 @@
             <tag name="sulu.js_config" />
         </service>
 
-        <service id="sulu_sales_core.locale_manager" class="%sulu_sales_core.locale_manager.class%"/>
+        <service id="sulu_sales_core.locale_manager" class="%sulu_sales_core.locale_manager.class%">
+            <argument>%sulu_core.fallback_locale%%</argument>
+        </service>
     </services>
 </container>
