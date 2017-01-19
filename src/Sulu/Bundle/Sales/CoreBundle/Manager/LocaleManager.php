@@ -15,23 +15,9 @@ use Sulu\Component\Security\Authentication\UserInterface;
 class LocaleManager
 {
     /**
-     * @var array
-     */
-    private $fallbackLocale;
-
-    /**
-     * @param string $fallbackLocale
-     */
-    public function __construct($fallbackLocale)
-    {
-        $this->fallbackLocale = $fallbackLocale;
-    }
-
-    /**
      * Function returns the locale that should be used by default.
      * If request-locale is set, then use this one.
-     * Else check if the user has a locale, then return this.
-     * Else return the fallback locale of Sulu.
+     * Else return the locale of the user.
      *
      * @param UserInterface $user
      * @param null|string $requestLocale
@@ -45,10 +31,6 @@ class LocaleManager
             return $requestLocale;
         }
 
-        if ($user->getLocale()) {
-            return $user->getLocale();
-        }
-
-        return $this->fallbackLocale;
+        return $user->getLocale();
     }
 }
