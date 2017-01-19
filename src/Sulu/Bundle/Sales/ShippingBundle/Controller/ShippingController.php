@@ -49,22 +49,6 @@ class ShippingController extends RestController implements ClassResourceInterfac
     protected static $entityKey = 'shippings';
 
     /**
-     * @return ShippingManager
-     */
-    private function getManager()
-    {
-        return $this->get('sulu_sales_shipping.shipping_manager');
-    }
-
-    /**
-     * @return LocaleManager
-     */
-    private function getLocaleManager()
-    {
-        return $this->get('sulu_sales_core.locale_manager');
-    }
-
-    /**
      * returns all fields that can be used by list
      *
      * @param Request $request
@@ -302,4 +286,21 @@ class ShippingController extends RestController implements ClassResourceInterfac
 
         return $this->handleView($view);
     }
+
+    /**
+     * @return ShippingManager
+     */
+    private function getManager()
+    {
+        return $this->get('sulu_sales_shipping.shipping_manager');
+    }
+
+    /**
+     * @return LocaleManager
+     */
+    private function getLocaleManager()
+    {
+        return $this->get('sulu_sales_core.locale_manager');
+    }
+
 }
