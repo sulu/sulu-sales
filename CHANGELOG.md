@@ -1,6 +1,9 @@
 CHANGELOG for Sulu Sales
 ========================
 
+* 0.10.0 (2017-12-19)
+    * FEATURE     [General]        Changed dependency for Sulu to work with newer Sulu versions.
+
 * 0.9.0 (2017-01-19)
     * FEATURE     [General]        Changed dependency for Sulu to work with version 1.3
     * FEATURE     [CoreBundle]     Added locale manager.
