@@ -20,7 +20,7 @@ script:
 
 install:
     - mkdir wkhtmltopdf
-    - wget http://download.gna.org/wkhtmltopdf/obsolete/linux/wkhtmltopdf-0.9.9-static-amd64.tar.bz2
+    - wget https://github.com/wkhtmltopdf/obsolete-downloads/releases/download/linux/wkhtmltopdf-0.9.9-static-amd64.tar.bz2
     - tar xvjf wkhtmltopdf-0.9.9-static-amd64.tar.bz2 -C wkhtmltopdf
     - mv wkhtmltopdf/wkhtmltopdf-amd64 wkhtmltopdf/wkhtmltopdf
     - export PATH=$PATH:$PWD/wkhtmltopdf/

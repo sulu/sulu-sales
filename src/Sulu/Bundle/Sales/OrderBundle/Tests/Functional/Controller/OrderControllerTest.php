@@ -105,12 +105,13 @@ class OrderControllerTest extends OrderTestBase
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         $this->assertEquals(2, count($items));
 
-        // TODO: extend test
-        $item = $items[0];
-        $this->assertEquals('1234', $item->number);
+        $orderNumbers = [];
+        foreach ($items as $item) {
+            $orderNumbers[] = $item->number;
+        }
 
-        $item = $items[1];
-        $this->assertEquals('12345', $item->number);
+        $this->assertContains('1234', $orderNumbers);
+        $this->assertContains('12345', $orderNumbers);
     }
 
     public function testPut()
