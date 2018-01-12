@@ -1,6 +1,11 @@
 CHANGELOG for Sulu Sales
 ========================
 
+* 0.10.0 (2018-01-12)
+    * BUGFIX      [General]        Fixed test which was not working reliable.
+    * BUGFIX      [General]        Fixed link to wkhtmltopdf in for travis.
+    * FEATURE     [General]        Changed dependencies for Sulu and willdurand/hateoas-bundle to work with newer Sulu versions.
+
 * 0.9.0 (2017-01-19)
     * FEATURE     [General]        Changed dependency for Sulu to work with version 1.3
     * FEATURE     [CoreBundle]     Added locale manager.
