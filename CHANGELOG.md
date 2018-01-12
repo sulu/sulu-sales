@@ -1,9 +1,8 @@
 CHANGELOG for Sulu Sales
 ========================
 
-* 0.10.0 (2017-12-19)
-    * FEATURE     [General]        Changed dependency for Sulu to work with newer Sulu versions.
-    * FEATURE     [General]        Removed dependency for willdurand/hateoas-bundle as it is a dependency of Sulu anyway.
+* 0.10.0 (2018-01-12)
+    * FEATURE     [General]        Changed dependencies for Sulu and willdurand/hateoas-bundle to work with newer Sulu versions.
 
 * 0.9.0 (2017-01-19)
     * FEATURE     [General]        Changed dependency for Sulu to work with version 1.3
