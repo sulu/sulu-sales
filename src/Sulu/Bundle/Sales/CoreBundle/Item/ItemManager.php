@@ -644,6 +644,15 @@ class ItemManager
         $item->setIsRecurringPrice($product->isRecurringPrice());
 
         $taxClass = $product->getTaxClass();
+
+        /*
+         * If the product doesn't have a taxClass but has a parent, we try to get the taxClass from the parent.
+         * This is used for product variants, which get the taxClass from the original product.
+         */
+        if (!$taxClass && $product->getParent()) {
+            $taxClass = $product->getParent()->getTaxClass();
+        }
+
         if ($taxClass) {
             $tax = $this->retrieveTaxForClass($taxClass);
             $item->setTax($tax);
