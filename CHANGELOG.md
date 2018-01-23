@@ -1,6 +1,9 @@
 CHANGELOG for Sulu Sales
 ========================
 
+* 0.10.1 (2018-01-23)
+    * BUGFIX      [CoreBundle]     Fixed loading of taxClass from parents for product-variants.
+
 * 0.10.0 (2018-01-12)
     * BUGFIX      [General]        Fixed test which was not working reliable.
     * BUGFIX      [General]        Fixed link to wkhtmltopdf in for travis.
