@@ -38,7 +38,7 @@ class PdfController extends RestController
         $this->get('translator')->setLocale($locale);
 
         try {
-            $orderApiEntity = $this->getOrderManager()->findByIdAndLocale($id, $locale);
+            $orderApiEntity = $this->getOrderManager()->findByIdAndLocale($id, $locale, false);
             $order = $orderApiEntity->getEntity();
         } catch (OrderNotFoundException $exc) {
             throw new OrderNotFoundException($id);
@@ -77,7 +77,7 @@ class PdfController extends RestController
 
         $this->get('translator')->setLocale($locale);
 
-        $orderApiEntity = $this->getOrderManager()->findByIdAndLocale($id, $locale);
+        $orderApiEntity = $this->getOrderManager()->findByIdAndLocale($id, $locale, false);
         $order = $orderApiEntity->getEntity();
 
         // Get pdf file from manager. Function parameter fallbacks are sufficient.

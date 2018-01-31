@@ -1,6 +1,9 @@
 CHANGELOG for Sulu Sales
 ========================
 
+* 0.10.2 (2018-01-31)
+    * BUGFIX      [OrderBundle]    Fixed bug when persisted order entity is required but only an updated version is provided by the manager.
+
 * 0.10.1 (2018-01-23)
     * BUGFIX      [CoreBundle]     Fixed loading of taxClass from parents for product-variants.
 
@@ -14,7 +17,7 @@ CHANGELOG for Sulu Sales
     * FEATURE     [CoreBundle]     Added locale manager.
     * FEATURE     [OrderBundle]    Use of the locale manager.
     * FEATURE     [ShippingBundle] Use of the locale manager.
-    
+
 * 0.8.10 (2017-01-13)
     * BUGFIX      [CoreBundle]    Fixed size of transition overlay.
 
