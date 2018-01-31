@@ -654,18 +654,21 @@ class OrderManager
      *
      * @return null|Order
      */
-    public function findByIdAndLocale($id, $locale)
+    public function findByIdAndLocale($id, $locale, $updateApiEntity = true)
     {
         $order = $this->orderRepository->findByIdAndLocale($id, $locale);
 
-        if ($order) {
-            $order = $this->orderFactory->createApiEntity($order, $locale);
-            $this->updateApiEntity($order, $locale);
-
-            return $order;
+        if (!$order) {
+            return null;
         }
 
-        return null;
+        $order = $this->orderFactory->createApiEntity($order, $locale);
+
+        if ($updateApiEntity) {
+            $this->updateApiEntity($order, $locale);
+        }
+
+        return $order;
     }
 
     /**
