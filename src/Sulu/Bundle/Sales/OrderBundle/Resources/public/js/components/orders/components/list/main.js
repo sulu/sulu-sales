@@ -28,8 +28,7 @@ define(['sulusalesorder/util/sidebar'], function(Sidebar) {
          * @returns {string}
          */
         retrieveOrdersUrl = function() {
-            return '/admin/api/orders?flat=true'
-                + '&locale=' + this.sandbox.sulu.user.locale;
+            return '/admin/api/orders?flat=true';
         },
 
         // list-toolbar template

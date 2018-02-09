@@ -1,6 +1,9 @@
 CHANGELOG for Sulu Sales
 ========================
 
+* 0.10.3 (2018-02-09)
+    * BUGFIX      [OrderBundle]    Fixed check for permissions of sales-orders to be independent on language.
+
 * 0.10.2 (2018-01-31)
     * BUGFIX      [OrderBundle]    Fixed bug when persisted order entity is required but only an updated version is provided by the manager.
 
