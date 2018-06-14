@@ -1,6 +1,9 @@
 CHANGELOG for Sulu Sales
 ========================
 
+* 0.10.5 (2018-06-14)
+    * BUGFIX      [CoreBundle]     Fixed price calculation for products with variants.
+
 * 0.10.3 (2018-02-09)
     * BUGFIX      [OrderBundle]    Fixed check for permissions of sales-orders to be independent on language.
 
