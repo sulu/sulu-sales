@@ -619,6 +619,11 @@ class ItemManager
         $item->setProduct($product);
         $translation = $product->getTranslation($locale);
 
+        if ($product->getParent()) {
+            $product->setTaxClass($product->getParent()->getTaxClass());
+            $product->setAreGrossPrices($product->getParent()->getAreGrossPrices());
+        }
+
         // When the product is not available in the current language choose the first translation you find.
         if (is_null($translation)) {
             if (count($product->getTranslations()) > 0) {
