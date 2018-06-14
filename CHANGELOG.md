@@ -1,6 +1,9 @@
 CHANGELOG for Sulu Sales
 ========================
 
+* 0.10.6 (2018-06-14)
+    * BUGFIX      [CoreBundle]     Undid fix for the price calculation for products with variants as it causes problems in the checkout.
+
 * 0.10.5 (2018-06-14)
     * BUGFIX      [CoreBundle]     Fixed price calculation for products with variants.
 
